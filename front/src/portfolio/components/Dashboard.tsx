@@ -1,129 +1,105 @@
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Label,
-  Sector,
-} from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { usePortfolioStore } from "../../store/portfolioStore";
 
-interface PortfolioData {
-  name: string;
-  value: number;
-}
+const COLORS = ["#BBF5E2", "#6183EE", "#ECCD4A", "#FF6B6B"];
 
-interface DashboardProps {
-  data: PortfolioData[];
-  colors: string[];
-  activeIndex: number | undefined;
-  setActiveIndex: (index: number) => void;
-}
+const Dashboard: React.FC = () => {
+  const {
+    categories,
+    totalValue,
+    activeIndex,
+    setActiveIndex,
+    isLoading,
+    error,
+  } = usePortfolioStore();
 
-const Dashboard: React.FC<DashboardProps> = ({
-  data,
-  colors,
-  activeIndex,
-  setActiveIndex,
-}) => {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
-  const onPieEnter = (_, index) => {
-    setActiveIndex(index);
-  };
+  if (isLoading) return <div>Loading dashboard...</div>;
+  if (error) return <div>Error loading dashboard: {error}</div>;
 
-  const renderActiveShape = (props) => {
-    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
-      props;
+  const totalProfitRate =
+    categories.reduce(
+      (sum, category) =>
+        sum +
+        category.items.reduce((catSum, item) => catSum + item.profitRate, 0),
+      0
+    ) / categories.reduce((sum, category) => sum + category.items.length, 0);
 
-    return (
-      <g>
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius + 6}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-        />
-      </g>
-    );
-  };
+  const totalProfit = totalValue * totalProfitRate;
 
   return (
-    <div>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold mb-2">My Portfolio</h2>
       <p className="text-sm text-gray-500 mb-4">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
       </p>
-      <div className="flex justify-center mb-4">
-        <ResponsiveContainer width={300} height={300}>
-          <PieChart>
-            <Pie
-              activeIndex={activeIndex}
-              activeShape={renderActiveShape}
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-              onMouseEnter={onPieEnter}
-              onClick={(_, index) => setActiveIndex(index)}
+      <div className="flex justify-between items-center">
+        <div className="w-1/2">
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={categories}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="totalValue"
+                onClick={(_, index) => setActiveIndex(index)}
+              >
+                {categories.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                    stroke={activeIndex === index ? "#000" : "none"}
+                    strokeWidth={2}
+                  />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="text-center">
+            <p className="text-2xl font-bold">
+              {totalValue.toLocaleString()}원
+            </p>
+            <p
+              className={`text-lg ${totalProfit >= 0 ? "text-green-500" : "text-red-500"}`}
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={colors[index % colors.length]}
-                />
-              ))}
-              <Label
-                content={({ viewBox: { cx, cy } }) => (
-                  <g>
-                    <text
-                      x={cx}
-                      y={cy - 10}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className="text-xl font-bold"
-                    >
-                      {total.toLocaleString()}원
-                    </text>
-                    <text
-                      x={cx}
-                      y={cy + 10}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className="text-sm text-green-500"
-                    >
-                      +100원 (0.66%↑)
-                    </text>
-                  </g>
-                )}
-                position="center"
-              />
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="mt-4">
-        {data.map((item, index) => (
-          <div
-            key={item.name}
-            className="flex justify-between items-center mt-2"
-          >
-            <div className="flex items-center">
-              <div
-                className="w-3 h-3 rounded-full mr-2"
-                style={{ backgroundColor: colors[index % colors.length] }}
-              ></div>
-              <span>{item.name}</span>
-            </div>
-            <span>
-              {((item.value / total) * 100).toFixed(0)}% (
-              {item.value.toLocaleString()}원)
-            </span>
+              {totalProfit >= 0 ? "+" : "-"}
+              {Math.abs(totalProfit).toLocaleString()}원 (
+              {(totalProfitRate * 100).toFixed(2)}%
+              {totalProfit >= 0 ? "↑" : "↓"})
+            </p>
           </div>
-        ))}
+        </div>
+        <div className="w-1/2 pl-8">
+          {categories.map((category, index) => {
+            const categoryProfitRate =
+              category.items.reduce((sum, item) => sum + item.profitRate, 0) /
+              category.items.length;
+            return (
+              <div
+                key={category.name}
+                className="flex items-center justify-between mb-2"
+              >
+                <div className="flex items-center">
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  ></div>
+                  <span>{category.name}</span>
+                </div>
+                <span
+                  className={`font-bold ${categoryProfitRate >= 0 ? "text-green-500" : "text-red-500"}`}
+                >
+                  {((category.totalValue / totalValue) * 100).toFixed(0)}% (
+                  {category.totalValue.toLocaleString()}원){" "}
+                  {categoryProfitRate >= 0 ? "↑" : "↓"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
