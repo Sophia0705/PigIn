@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTimes, FaSearch } from "react-icons/fa";
+import StockItem from "../components/StockItem";
+import KoreanStocksData from '../../../data/KoreanStocksData.json';
 
 
 const StockSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
   const navigate = useNavigate();
 
@@ -18,6 +21,19 @@ const StockSearchPage: React.FC = () => {
     navigate(-1)
   }
 
+  // 검색기록 추가하는 함수
+  const handleSearch = () => {
+    if (searchQuery && !searchHistory.includes(searchQuery)) {
+      setSearchHistory([...searchHistory, searchQuery]);
+      setSearchQuery("");
+    }
+  }
+
+  // 검색기록 삭제하는 함수
+  const handleDeleteHistoryItem = (item: string) => {
+    setSearchHistory(searchHistory.filter((historyItem) => historyItem !== item));
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-start justify-start p-4 w-screen">
       <div className="flex items-center justify-start w-full p-0 mb-4 space-x-2">
@@ -27,19 +43,37 @@ const StockSearchPage: React.FC = () => {
         </div>
 
         {/* 검색 바 */}
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleInputChange}
-          placeholder="주식 이름을 입력하세요..."
-          className="flex-grow w-full p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-customDarkGreen"
-        />
+        <div className="relative flex-grow w-full">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleInputChange}
+            onKeyDown={(event) => event.key === "Enter" && handleSearch()}
+            placeholder="검색어를 입력하세요"
+            className="w-full p-2 pl-4 pr-10 border-2 border-gray-300 rounded-full focus:outline-none focus:border-customDarkGreen"
+          />
+          <FaSearch
+            onClick={handleSearch}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+          />
+        </div>
+      </div>
+
+      {/* 검색 기록 */}
+
+      <div className="flex flex-wrap gap-2 w-full max-w-md mt-4">
+        {searchHistory.map((item, index) => (
+          <div key={index} className="flex items-center bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">
+            <span>{item}</span>
+            <div onClick={() => handleDeleteHistoryItem(item)} className="ml-2 text-gray-500">
+              <FaTimes />
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* 검색 결과 */}
-      <p className="mt-4 text-lg text-white">
-        검색어: {searchQuery ? searchQuery : "없음"}
-      </p>
+
     </div>
   );
 };
