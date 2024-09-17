@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaTimes, FaSearch } from "react-icons/fa";
-import StockItem from "../components/StockItem";
+import StockSearchResults from "../components/StockSearchResults";
 import KoreanStocksData from '../../../data/KoreanStocksData.json';
 
 
 const StockSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   // 입력값 변환시키는 함수
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
+    setIsSearchTriggered(false)
   };
 
   // 이전 페이지로 이동하는 함수
@@ -25,7 +27,7 @@ const StockSearchPage: React.FC = () => {
   const handleSearch = () => {
     if (searchQuery && !searchHistory.includes(searchQuery)) {
       setSearchHistory([...searchHistory, searchQuery]);
-      setSearchQuery("");
+      setIsSearchTriggered(true);
     }
   }
 
@@ -33,6 +35,11 @@ const StockSearchPage: React.FC = () => {
   const handleDeleteHistoryItem = (item: string) => {
     setSearchHistory(searchHistory.filter((historyItem) => historyItem !== item));
   }
+
+  // 검색결과 반환하는 함수
+  const filteredStocks = searchQuery
+    ? KoreanStocksData.filter((stock) => stock.name.includes(searchQuery))
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col items-start justify-start p-4 w-screen">
@@ -60,7 +67,6 @@ const StockSearchPage: React.FC = () => {
       </div>
 
       {/* 검색 기록 */}
-
       <div className="flex flex-wrap gap-2 w-full max-w-md mt-4">
         {searchHistory.map((item, index) => (
           <div key={index} className="flex items-center bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">
@@ -73,7 +79,9 @@ const StockSearchPage: React.FC = () => {
       </div>
 
       {/* 검색 결과 */}
-
+      {isSearchTriggered && (
+        <StockSearchResults filteredStocks={filteredStocks} />
+      )}
     </div>
   );
 };
