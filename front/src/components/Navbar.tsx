@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
 
         {/* 개인정보 */}
         <NavLink
-          to="/"
+          to="/mypage"
           className={({ isActive }) =>
             `p-2 ${
               isActive
