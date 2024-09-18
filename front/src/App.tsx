@@ -14,7 +14,7 @@ import GoldDetailPage from "./investment/gold/pages/GoldDetailPage";
 import StockSearchPage from "./investment/stock/pages/StockSearchPage";
 import CryptoSearchPage from "./investment/crypto/pages/CryptoSearchPage";
 import MyPortfolio from "./portfolio/MyPortfolio";
-// import AutoInvestment from './portfolio/AutoInvestment';
+import AutoInvestment from "./portfolio/AutoInvestment";
 
 const App: React.FC = () => {
   return (
@@ -34,6 +34,7 @@ const App: React.FC = () => {
             <Route path="gold" element={<GoldDetailPage />} />
           </Route>
           <Route path="myportfolio" element={<MyPortfolio />} />
+          <Route path="auto-invest" element={<AutoInvestment />} />
         </Routes>
         <Navbar />
       </div>
