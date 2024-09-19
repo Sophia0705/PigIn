@@ -15,7 +15,8 @@ const StockDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const stockData = location.state?.item as StockItemData;
-  const [selectedOption, setSelectedOption] = useState<string>("1일");
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>("1일");
+  const [selectedInfoType, setSelectedInfoType] = useState<string>("상세정보");
 
   const [isLiked, setIsLiked] = useState(false);
 
@@ -23,8 +24,12 @@ const StockDetailPage: React.FC = () => {
     navigate(-1);
   };
 
-  const handleOptionChange = (option: string) => {
-    setSelectedOption(option);
+  const handleTimeRangeChange = (option: string) => {
+    setSelectedTimeRange(option);
+  };
+
+  const handleInfoTypeChange = (option: string) => {
+    setSelectedInfoType(option);
   };
 
   const handleHeartClick = () => {
@@ -36,7 +41,9 @@ const StockDetailPage: React.FC = () => {
   }
 
   const selectedData =
-    selectedOption === "1일" ? stockData.weeklyPrices : stockData.monthlyPrices;
+    selectedTimeRange === "1일"
+      ? stockData.weeklyPrices
+      : stockData.monthlyPrices;
 
   const chartData = selectedData.map((price, index) => ({
     name: `Day ${index + 1}`,
@@ -85,9 +92,9 @@ const StockDetailPage: React.FC = () => {
         {["1일", "1개월", "3개월", "1년"].map((option) => (
           <button
             key={option}
-            onClick={() => handleOptionChange(option)}
+            onClick={() => handleTimeRangeChange(option)}
             className={`px-6 py-2 rounded-full focus:outline-none transition-colors ${
-              selectedOption === option
+              selectedTimeRange === option
                 ? "bg-customDarkGreen text-white font-extrabold"
                 : "bg-transparent text-gray-700 font-extrabold"
             }`}
@@ -99,7 +106,7 @@ const StockDetailPage: React.FC = () => {
 
       {/* 그래프 */}
       <div className="w-fit mx-auto">
-        <div className="w-[350px] h-64">
+        <div className="w-[350px] h-32">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>
@@ -130,6 +137,21 @@ const StockDetailPage: React.FC = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+      </div>
+      <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
+        {["상세정보", "뉴스"].map((option) => (
+          <button
+            key={option}
+            onClick={() => handleInfoTypeChange(option)}
+            className={`px-6 py-2 rounded-full focus:outline-none transition-colors ${
+              selectedInfoType === option
+                ? "bg-customDarkGreen text-white font-extrabold"
+                : "bg-transparent text-gray-700 font-extrabold"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
       </div>
     </div>
   );
