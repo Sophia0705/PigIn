@@ -138,6 +138,8 @@ const StockDetailPage: React.FC = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* 상세정보, 뉴스 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
         {["상세정보", "뉴스"].map((option) => (
           <button
