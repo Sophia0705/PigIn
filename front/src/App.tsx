@@ -33,8 +33,8 @@ const App: React.FC = () => {
             </Route>
             <Route path="gold" element={<GoldDetailPage />} />
           </Route>
-          <Route path="myportfolio" element={<MyPortfolio />} />
-          <Route path="auto-invest" element={<AutoInvestment />} />
+          <Route path="/myportfolio" element={<MyPortfolio />} />
+          <Route path="/auto-invest" element={<AutoInvestment />} />
         </Routes>
         <Navbar />
       </div>
