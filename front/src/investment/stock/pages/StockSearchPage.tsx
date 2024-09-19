@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaTimes, FaSearch } from "react-icons/fa";
 import StockSearchResults from "../components/StockSearchResults";
-import KoreanStocksData from '../../../data/KoreanStocksData.json';
-
+import KoreanStocksData from "../../../data/KoreanStocksData.json";
 
 const StockSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -15,13 +14,13 @@ const StockSearchPage: React.FC = () => {
   // 입력값 변환시키는 함수
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-    setIsSearchTriggered(false)
+    setIsSearchTriggered(false);
   };
 
   // 이전 페이지로 이동하는 함수
   const handleBack = () => {
-    navigate(-1)
-  }
+    navigate(-1);
+  };
 
   // 검색기록 추가하는 함수
   const handleSearch = () => {
@@ -29,16 +28,20 @@ const StockSearchPage: React.FC = () => {
       setSearchHistory([...searchHistory, searchQuery]);
       setIsSearchTriggered(true);
     }
-  }
+  };
 
   // 검색기록 삭제하는 함수
   const handleDeleteHistoryItem = (item: string) => {
-    setSearchHistory(searchHistory.filter((historyItem) => historyItem !== item));
-  }
+    setSearchHistory(
+      searchHistory.filter((historyItem) => historyItem !== item)
+    );
+  };
 
   // 검색결과 반환하는 함수
   const filteredStocks = searchQuery
-    ? KoreanStocksData.filter((stock) => stock.name.includes(searchQuery))
+    ? KoreanStocksData.filter((stock) =>
+        stock.hts_kor_isnm.includes(searchQuery)
+      )
     : [];
 
   return (
@@ -69,9 +72,15 @@ const StockSearchPage: React.FC = () => {
       {/* 검색 기록 */}
       <div className="flex flex-wrap gap-2 w-full max-w-md mt-4">
         {searchHistory.map((item, index) => (
-          <div key={index} className="flex items-center bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">
+          <div
+            key={index}
+            className="flex items-center bg-gray-200 text-gray-700 px-3 py-1 rounded-lg"
+          >
             <span>{item}</span>
-            <div onClick={() => handleDeleteHistoryItem(item)} className="ml-2 text-gray-500">
+            <div
+              onClick={() => handleDeleteHistoryItem(item)}
+              className="ml-2 text-gray-500"
+            >
               <FaTimes />
             </div>
           </div>

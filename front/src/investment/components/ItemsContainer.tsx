@@ -4,6 +4,9 @@ import CryptoItem from "../crypto/components/CryptoItem";
 import KoreanStocksData from "../../data/KoreanStocksData.json";
 import CryptoCurrenciesData from "../../data/CryptoCurrenciesData.json";
 
+import { StockItemData } from "../interfaces/StockInterface";
+import { CryptoItemData } from "../interfaces/CryptoInterface";
+
 interface ItemContainerProps {
   title: string;
   type: "stock" | "crypto";
@@ -16,7 +19,10 @@ const ItemsContainer: React.FC<ItemContainerProps> = ({ title, type }) => {
     setSelectedOption(option);
   };
 
-  const data = type === "stock" ? KoreanStocksData : CryptoCurrenciesData;
+  const data =
+    type === "stock"
+      ? (KoreanStocksData as StockItemData[])
+      : (CryptoCurrenciesData as CryptoItemData[]);
   const ItemComponent = type === "stock" ? StockItem : CryptoItem;
 
   return (
@@ -40,10 +46,12 @@ const ItemsContainer: React.FC<ItemContainerProps> = ({ title, type }) => {
       <div className="flex flex-row overflow-x-auto space-x-4 w-80 max-w-md mx-auto flex-nowrap">
         {data.map((item) => (
           <ItemComponent
-            key={item.stck_shrn_iscd}
-            name={item.hts_kor_isnm}
-            price={item.stck_prpr}
-            percentageChange={item.prdy_ctrt}
+            key={type === "stock" ? item.stck_shrn_iscd : item.symbol}
+            name={type === "stock" ? item.hts_kor_isnm : item.name}
+            price={type === "stock" ? item.stck_prpr : item.price}
+            percentageChange={
+              type === "stock" ? item.prdy_ctrt : item.percentageChange
+            }
             weeklyPrices={item.weeklyPrices}
             data={item.weeklyPrices?.map((price, index) => ({
               name: `Day ${index + 1}`,
