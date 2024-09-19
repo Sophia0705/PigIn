@@ -40,10 +40,10 @@ const ItemsContainer: React.FC<ItemContainerProps> = ({ title, type }) => {
       <div className="flex flex-row overflow-x-auto space-x-4 w-80 max-w-md mx-auto flex-nowrap">
         {data.map((item) => (
           <ItemComponent
-            key={item.symbol}
-            name={item.name}
-            price={item.price}
-            percentageChange={item.percentageChange}
+            key={item.stck_shrn_iscd}
+            name={item.hts_kor_isnm}
+            price={item.stck_prpr}
+            percentageChange={item.prdy_ctrt}
             weeklyPrices={item.weeklyPrices}
             data={item.weeklyPrices?.map((price, index) => ({
               name: `Day ${index + 1}`,
