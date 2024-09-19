@@ -27,7 +27,7 @@ const StockItem: React.FC<StockItemProps> = ({
 
   return (
     <div className="bg-customDarkGreen rounded-xl p-4 w-50 h-60 mt-8 shadow-md flex-shrink-0">
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex justify-between items-center">
         <h3 className="text-white font-bold text-lg">{name}</h3>
         <span
           className={`flex items-center justify-center text-xs rounded-full px-2 py-1 ${

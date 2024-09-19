@@ -28,12 +28,16 @@ const ItemsContainer: React.FC<ItemContainerProps> = ({ title, type }) => {
 
   const ItemComponent = type === "stock" ? StockItem : CryptoItem;
 
-  const handleItemClick = (symbol: string) => {
-    const routePath =
-      type === "stock"
-        ? `/investment/stock/${symbol}`
-        : `/investment/cryptocurrency/${symbol}`;
-    navigate(routePath);
+  const handleItemClick = (item: StockItemData | CryptoItemData) => {
+    if (type === "stock") {
+      navigate(`/investment/stock/${item.stck_shrn_iscd}`, {
+        state: { item },
+      });
+    } else if (type === "crypto") {
+      navigate(`/investment/cryptocurrency/${item.symbol}`, {
+        state: { item },
+      });
+    }
   };
 
   return (
@@ -58,12 +62,8 @@ const ItemsContainer: React.FC<ItemContainerProps> = ({ title, type }) => {
         {data.map((item) => (
           <div
             key={type === "stock" ? item.stck_shrn_iscd : item.symbol}
-            onClick={() =>
-              handleItemClick(
-                type === "stock" ? item.stck_shrn_iscd : item.symbol
-              )
-            }
-            className="cursor-pointer flex-shrink-0 w-55"
+            onClick={() => handleItemClick(item)}
+            className="cursor-pointer flex-shrink-0 w-64 h-70"
           >
             <ItemComponent
               key={type === "stock" ? item.stck_shrn_iscd : item.symbol}
