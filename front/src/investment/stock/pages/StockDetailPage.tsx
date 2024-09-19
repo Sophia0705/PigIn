@@ -15,7 +15,7 @@ const StockDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const stockData = location.state?.item as StockItemData;
-  const [selectedTimeRange, setSelectedTimeRange] = useState<string>("1일");
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>("7일");
   const [selectedInfoType, setSelectedInfoType] = useState<string>("상세정보");
 
   const [isLiked, setIsLiked] = useState(false);
@@ -41,7 +41,7 @@ const StockDetailPage: React.FC = () => {
   }
 
   const selectedData =
-    selectedTimeRange === "1일"
+    selectedTimeRange === "7일"
       ? stockData.weeklyPrices
       : stockData.monthlyPrices;
 
@@ -89,7 +89,7 @@ const StockDetailPage: React.FC = () => {
         </div>
       </div>
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
-        {["1일", "1개월", "3개월", "1년"].map((option) => (
+        {["7일", "1개월", "3개월", "1년"].map((option) => (
           <button
             key={option}
             onClick={() => handleTimeRangeChange(option)}
