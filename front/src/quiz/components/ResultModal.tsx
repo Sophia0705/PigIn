@@ -1,3 +1,9 @@
+interface ModalProps {
+  isCorrect: boolean;
+  explanation: string;  
+  onClose: () => void;
+}
+
 const ResultModal: React.FC<ModalProps> = ({ isCorrect, explanation, onClose }) => (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
       <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md">

@@ -8,13 +8,6 @@ interface Question {
   explanation: string; 
 }
 
-interface ModalProps {
-  isCorrect: boolean;
-  explanation: string;  
-  onClose: () => void;
-}
-
-
 
 const QuizPage: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
