@@ -21,6 +21,7 @@
     "recharts": "^2.12.7",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.14.0",
+    "swiper": "^11.1.14",
     "zustand": "^4.5.5"
   },
   "devDependencies": {

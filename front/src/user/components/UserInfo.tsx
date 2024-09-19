@@ -1,6 +1,6 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { FaEdit } from "react-icons/fa"; // 수정 아이콘 (FontAwesome)
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CiEdit } from 'react-icons/ci';
 
 export const UserInfo: React.FC = () => {
   const navigate = useNavigate();
@@ -23,9 +23,9 @@ export const UserInfo: React.FC = () => {
           <label className="text-sm">비밀번호:</label>
           <span className="text-sm">********</span>
         </div>
-        <FaEdit
-          className="text-gray-500 cursor-pointer"
-          onClick={() => navigate("/edit")}
+        <CiEdit
+          className="text-gray-500 cursor-pointer text-3xl"
+          onClick={() => navigate('/edit')}
         />
       </div>
 
@@ -35,9 +35,9 @@ export const UserInfo: React.FC = () => {
           <label className="text-sm">이메일:</label>
           <span className="text-sm">example@example.com</span>
         </div>
-        <FaEdit
-          className="text-gray-500 cursor-pointer"
-          onClick={() => navigate("/edit")}
+        <CiEdit
+          className="text-gray-500 cursor-pointer text-3xl"
+          onClick={() => navigate('/edit')}
         />
       </div>
 
@@ -47,9 +47,9 @@ export const UserInfo: React.FC = () => {
           <label className="text-sm">전화번호:</label>
           <span className="text-sm">010-1234-5678</span>
         </div>
-        <FaEdit
-          className="text-gray-500 cursor-pointer"
-          onClick={() => navigate("/edit")}
+        <CiEdit
+          className="text-gray-500 cursor-pointer text-3xl"
+          onClick={() => navigate('/edit')}
         />
       </div>
     </div>
