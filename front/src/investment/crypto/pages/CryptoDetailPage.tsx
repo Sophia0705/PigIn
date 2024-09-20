@@ -80,7 +80,7 @@ const CryptoDetailPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <h1 className="text-4xl font-bold text-white text-left ml-4">
-              {cryptoData.price.toLocaleString()} 원
+              {cryptoData.price.toLocaleString()}
             </h1>
             <span
               className={`ml-8 mt-2 text-sm font-normal px-2 py-1 rounded-full ${
@@ -155,7 +155,7 @@ const CryptoDetailPage: React.FC = () => {
       </div>
 
       {/* 상세정보, 뉴스 선택 바 */}
-      <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
+      <div className="relative flex justify-center mt-6 mb-8 w-fit bg-green-100 rounded-full mx-auto">
         {["상세정보", "뉴스"].map((option) => (
           <button
             key={option}
