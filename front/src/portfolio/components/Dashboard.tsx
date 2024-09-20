@@ -1,7 +1,43 @@
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
 import { usePortfolioStore } from "../../store/portfolioStore";
 
 const COLORS = ["#BBF5E2", "#6183EE", "#ECCD4A", "#FF6B6B"];
+
+const CustomLabel = ({ viewBox, totalValue, totalProfit, totalProfitRate }) => {
+  const { cx, cy } = viewBox;
+  return (
+    <g>
+      <text
+        x={cx}
+        y={cy - 20}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="text-xl font-bold"
+      >
+        {totalValue.toLocaleString()}원
+      </text>
+      <text
+        x={cx}
+        y={cy + 10}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className={`text-sm ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+      >
+        {totalProfit >= 0 ? "+" : "-"}
+        {Math.abs(totalProfit).toLocaleString()}원
+      </text>
+      <text
+        x={cx}
+        y={cy + 30}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className={`text-sm ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+      >
+        ({(totalProfitRate * 100).toFixed(2)}%{totalProfit >= 0 ? "▲" : "▼"})
+      </text>
+    </g>
+  );
+};
 
 const Dashboard: React.FC = () => {
   const {
@@ -28,7 +64,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-2">My Portfolio</h2>
+      <h2 className="text-3xl font-bold mb-2">My Portfolio</h2>
       <p className="text-sm text-gray-500 mb-4">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
       </p>
@@ -55,22 +91,19 @@ const Dashboard: React.FC = () => {
                     strokeWidth={2}
                   />
                 ))}
+                <Label
+                  content={
+                    <CustomLabel
+                      totalValue={totalValue}
+                      totalProfit={totalProfit}
+                      totalProfitRate={totalProfitRate}
+                    />
+                  }
+                  position="center"
+                />
               </Pie>
             </PieChart>
           </ResponsiveContainer>
-          <div className="text-center">
-            <p className="text-2xl font-bold">
-              {totalValue.toLocaleString()}원
-            </p>
-            <p
-              className={`text-lg ${totalProfit >= 0 ? "text-green-500" : "text-red-500"}`}
-            >
-              {totalProfit >= 0 ? "+" : "-"}
-              {Math.abs(totalProfit).toLocaleString()}원 (
-              {(totalProfitRate * 100).toFixed(2)}%
-              {totalProfit >= 0 ? "↑" : "↓"})
-            </p>
-          </div>
         </div>
         <div className="w-1/2 pl-8">
           {categories.map((category, index) => {
@@ -94,7 +127,7 @@ const Dashboard: React.FC = () => {
                 >
                   {((category.totalValue / totalValue) * 100).toFixed(0)}% (
                   {category.totalValue.toLocaleString()}원){" "}
-                  {categoryProfitRate >= 0 ? "↑" : "↓"}
+                  {categoryProfitRate >= 0 ? "▲" : "▼"}
                 </span>
               </div>
             );

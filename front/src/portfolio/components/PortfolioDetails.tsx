@@ -42,7 +42,7 @@ const PortfolioDetails: React.FC = () => {
           className={`w-1/4 text-right py-2 ${item.profitRate >= 0 ? "text-green-500" : "text-red-500"}`}
         >
           {(item.profitRate * 100).toFixed(2)}%{" "}
-          {item.profitRate >= 0 ? "↑" : "↓"}
+          {item.profitRate >= 0 ? "▲" : "▼"}
         </div>
       </div>
     );
@@ -50,13 +50,6 @@ const PortfolioDetails: React.FC = () => {
 
   return (
     <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-xl font-bold mb-4">{category.name} 상세 내역</h3>
-      <div className="flex items-center border-b font-bold">
-        <div className="w-1/4 py-2">종목</div>
-        <div className="w-1/4 text-right py-2">수량</div>
-        <div className="w-1/4 text-right py-2">평가금액</div>
-        <div className="w-1/4 text-right py-2">수익률</div>
-      </div>
       <InfiniteLoader
         isItemLoaded={isItemLoaded}
         itemCount={itemCount}
