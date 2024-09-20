@@ -18,7 +18,9 @@ interface CryptoSearchResultsProps {
   }>;
 }
 
-const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({ filteredCryptos }) => {
+const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({
+  filteredCryptos,
+}) => {
   return (
     <div className="bg-white rounded-2xl p-4 mt-4 shadow-md w-full max-w-md">
       {filteredCryptos.length === 0 ? (
