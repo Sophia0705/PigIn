@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   AreaChart,
   XAxis,
@@ -75,7 +75,7 @@ const CryptoDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Crypto 정보 */}
+      {/* 가상화폐 정보 */}
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
