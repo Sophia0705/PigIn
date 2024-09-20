@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         customAqua: "#9CF8E1",
+        customGreen: "#00C99D",
         customDarkGreen: "#1F3F42",
       },
     },
