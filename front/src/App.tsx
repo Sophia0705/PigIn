@@ -19,6 +19,7 @@ import MyPage from './user/pages/MyPage'; // MyPage 추가
 import SignUpModal from './user/pages/SignUpModal';
 import IsLoginModal from './user/modal/IsLoginModal';
 import LoginPage from './user/pages/LoginPage';
+import FavoritePage from './user/pages/FavoritePage';
 
 const App: React.FC = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -56,15 +57,16 @@ const App: React.FC = () => {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/signup" element={<SignUpModal />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="favorite" element={<FavoritePage />} />
         </Routes>
         <Navbar />
-        {/* 로그인 모달 열기 버튼 추가 */}
+        {/* 로그인 모달 열기 버튼 추가
         <button
           onClick={openLoginModal}
           className="mt-4 p-2 bg-blue-500 text-white rounded"
         >
           로그인 모달 열기
-        </button>
+        </button> */}
       </div>
     </Router>
   );

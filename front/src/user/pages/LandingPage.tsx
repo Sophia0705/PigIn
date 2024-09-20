@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
-  // // 2초 후 자동으로 메인 페이지로 이동
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     navigate("/investment");
-  //   }, 2000);
+  // 2초 후 자동으로 메인 페이지로 이동
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('/investment');
+    }, 2000);
 
-  //   return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
-  // }, [navigate]);
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+  }, [navigate]);
 
   // 클릭 시 메인 페이지로 이동
   const handleTouch = () => {

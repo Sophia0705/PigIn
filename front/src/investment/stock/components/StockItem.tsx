@@ -1,6 +1,6 @@
-import React from "react";
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
+import React from 'react';
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 
 interface StockItemProps {
   name: string;
@@ -15,7 +15,7 @@ const StockItem: React.FC<StockItemProps> = ({
   percentageChange,
   weeklyPrices,
 }) => {
-  const isPositiveChange = percentageChange.startsWith("+");
+  const isPositiveChange = percentageChange.startsWith('+');
   const chartData = weeklyPrices.map((value, index) => ({
     name: `Day ${index + 1}`,
     value,
@@ -32,8 +32,8 @@ const StockItem: React.FC<StockItemProps> = ({
         <span
           className={`flex items-center justify-center text-xs rounded-full px-2 py-1 ${
             isPositiveChange
-              ? "bg-green-900 text-white"
-              : "bg-green-100 text-customDarkGreen"
+              ? 'bg-green-900 text-white'
+              : 'bg-green-100 text-customDarkGreen'
           }`}
         >
           {isPositiveChange ? <MdArrowDropUp /> : <MdArrowDropDown />}
