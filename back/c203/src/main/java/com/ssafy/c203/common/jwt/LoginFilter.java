@@ -66,6 +66,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         Members member = membersRepository.findByEmail(username);
         member.updateRefreshToken(refresh);
+        membersRepository.save(member);
 
         //응답 생성
         response.setHeader("access", access);

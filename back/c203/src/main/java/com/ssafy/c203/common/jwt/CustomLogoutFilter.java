@@ -97,6 +97,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //Refresh 토큰 DB에서 제거
         Members member = membersRepository.findByRefreshToken(refresh);
         member.deleteRefreshToken();
+        membersRepository.save(member);
 
         //Refresh 토큰 Cookie 값 0
         Cookie cookie = new Cookie("refresh", null);

@@ -73,6 +73,7 @@ public class ReissueController {
 
         Members member = membersRepository.findByEmail(username);
         member.updateRefreshToken(newRefresh);
+        membersRepository.save(member);
 
         //response
         response.setHeader("access", newAccess);
