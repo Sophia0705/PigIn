@@ -67,4 +67,12 @@ public class Members {
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
+    }
 }

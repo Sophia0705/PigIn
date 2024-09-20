@@ -1,6 +1,8 @@
 package com.ssafy.c203.common.jwt;
 
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
+import com.ssafy.c203.domain.members.entity.Members;
+import com.ssafy.c203.domain.members.repository.MembersRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,14 +16,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.Transactional;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private MembersRepository membersRepository;
     private final JWTUtil jwtUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, MembersRepository membersRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.membersRepository = membersRepository;
     }
 
     @Override
@@ -42,6 +47,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     //로그인 성공시 실행하는 메소드(여기서 jwt 발급)
+    @Transactional
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authentication) {
@@ -57,6 +63,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //토큰 생성
         String access = jwtUtil.createJwt("access", username, role, 600000L);
         String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+
+        Members member = membersRepository.findByEmail(username);
+        member.updateRefreshToken(refresh);
 
         //응답 생성
         response.setHeader("access", access);
@@ -81,4 +90,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         return cookie;
     }
+
 }
