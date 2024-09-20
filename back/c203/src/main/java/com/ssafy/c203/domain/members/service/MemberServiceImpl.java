@@ -8,6 +8,7 @@ import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
 import com.ssafy.c203.domain.members.entity.Members;
+import com.ssafy.c203.domain.members.exceprtion.ConflictException;
 import com.ssafy.c203.domain.members.repository.MMSAuthenticationRepository;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -42,18 +42,19 @@ public class MemberServiceImpl implements MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private static final String MMS_MESSAGE_TAIL = " PigIn 본인인증번호입니다. 정확히 입력하세요.";
-    @Value("123.123.123.123")
-    private String MY_SSAFYDATA_BASE_URL;
+    private final String MY_SSAFYDATA_BASE_URL = "${spring.ssafydata.url}";
 
 
     //Todo : 이메일 중복확인 구현 필요
 
     @Override
+    @Transactional
     public void singUp(Members members) throws NoSuchAlgorithmException {
-
         Boolean isExist = membersRepository.existsByEmail(members.getEmail());
+
+        //해당 이메일로 회원가입한 사람이 있으면 return
         if (isExist) {
-            return;
+            throw new ConflictException("이미 존재하는 이메일입니다.");
         }
 
         //패스워드 암호화
@@ -137,6 +138,12 @@ public class MemberServiceImpl implements MemberService {
             mmsCompareDto.getPhoneNumber(), mmsCompareDto.getAuthenticationNumber(), LocalDateTime.now());
         if (memberAuthentication.isPresent()) return true;
         return false;
+    }
+
+    @Override
+    public void withDrawalUser(String email) {
+        Members member = membersRepository.findByEmail(email);
+        member.withDrawal();
     }
 
     @Override

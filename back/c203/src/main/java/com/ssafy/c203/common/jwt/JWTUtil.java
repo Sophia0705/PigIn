@@ -31,6 +31,10 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
+    public String getUserKey(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userKey", String.class);
+    }
+
     public Boolean isExpired(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
@@ -38,12 +42,13 @@ public class JWTUtil {
 
 
     //토근 생성 -> 우리껄로 변경해야함
-    public String createJwt(String category,String username, String role, Long expiredMs) {
+    public String createJwt(String category,String username, String role, Long expiredMs, String userKey) {
 
         return Jwts.builder()
             .claim("category", category)
             .claim("username", username)
             .claim("role", role)
+            .claim("userKey", userKey)
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expiredMs))
             .signWith(secretKey)

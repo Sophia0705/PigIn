@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -80,6 +81,12 @@ public class MemberController {
             return ResponseEntity.ok().body("인증번호가 같습니다.");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증번호가 틀렸습니다.");
+    }
+
+    @DeleteMapping("/withdrawal")
+    public ResponseEntity<?> withDrawalUser(@RequestBody String email) {
+        memberService.withDrawalUser(email);
+        return ResponseEntity.ok().body("회원탈퇴를 완료했습니다.");
     }
 
     @PostMapping("/test-sign-up")

@@ -75,4 +75,8 @@ public class Members {
     public void deleteRefreshToken() {
         this.refreshToken = null;
     }
+
+    public void withDrawal(){
+        this.status = WithDrawalStatus.INACTIVE;
+    }
 }

@@ -14,5 +14,7 @@ public interface MemberService {
 
     boolean MMSCompare(MMSCompareDto mmsCompareDto);
 
+    void withDrawalUser(String email);
+
     void testSignUp(Members member);
 }

@@ -66,12 +66,12 @@ public class ReissueController {
 
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
+        Members member = membersRepository.findByEmail(username);
 
         //make new JWT
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+        String newAccess = jwtUtil.createJwt("access", username, role, 600000L, member.getUserKey());
+        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L, member.getUserKey());
 
-        Members member = membersRepository.findByEmail(username);
         member.updateRefreshToken(newRefresh);
         membersRepository.save(member);
 
