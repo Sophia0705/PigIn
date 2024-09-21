@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.members.service;
 
+import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
@@ -17,4 +18,6 @@ public interface MemberService {
     void withDrawalUser(String email);
 
     void testSignUp(Members member);
+
+    String findEmail(FindIdDto findIdDto);
 }

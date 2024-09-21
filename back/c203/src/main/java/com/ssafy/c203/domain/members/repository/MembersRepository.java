@@ -12,4 +12,6 @@ public interface MembersRepository extends JpaRepository<Members, Integer> {
     boolean existsByRefreshToken(String refreshToken);
 
     Members findByRefreshToken(String refreshToken);
+
+    Members findByPhoneNumber(String phoneNumber);
 }

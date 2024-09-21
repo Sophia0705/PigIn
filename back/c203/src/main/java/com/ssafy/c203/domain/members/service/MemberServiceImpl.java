@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.members.service;
 
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
+import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
@@ -150,5 +151,14 @@ public class MemberServiceImpl implements MemberService {
     public void testSignUp(Members member) {
         member.updatePassword(bCryptPasswordEncoder.encode(member.getPassword()));
         membersRepository.save(member);
+    }
+
+    @Override
+    public String findEmail(FindIdDto findIdDto) {
+        Members member = membersRepository.findByPhoneNumber(findIdDto.getPhoneNumber());
+        if (member.getName().equals(findIdDto.getName())) {
+            return member.getEmail();
+        }
+        return "fail";
     }
 }

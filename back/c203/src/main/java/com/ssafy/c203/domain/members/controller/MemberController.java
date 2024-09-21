@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.members.controller;
 
+import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
@@ -37,7 +38,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/")
-    public String test(){
+    public String test() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -106,5 +107,14 @@ public class MemberController {
 
         memberService.testSignUp(member);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/find-id")
+    public ResponseEntity<?> findByEmail(@RequestBody FindIdDto findIdDto) {
+        String email = memberService.findEmail(findIdDto);
+        if (email.equals("fail")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 번호로 가입된 아이디가 없습니다.");
+        }
+        return ResponseEntity.ok(email);
     }
 }
