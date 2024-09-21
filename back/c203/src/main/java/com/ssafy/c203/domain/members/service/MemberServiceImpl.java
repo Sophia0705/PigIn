@@ -3,6 +3,7 @@ package com.ssafy.c203.domain.members.service;
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
@@ -10,6 +11,7 @@ import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.exceprtion.ConflictException;
+import com.ssafy.c203.domain.members.exceprtion.NotFoundException;
 import com.ssafy.c203.domain.members.repository.MMSAuthenticationRepository;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import java.security.NoSuchAlgorithmException;
@@ -160,5 +162,41 @@ public class MemberServiceImpl implements MemberService {
             return member.getEmail();
         }
         return "fail";
+    }
+
+    @Override
+    public boolean findPassoword(FindPasswordDto findPasswordDto) throws Exception {
+        Members member = membersRepository.findByEmail(findPasswordDto.getEmail());
+
+        //멤버 못찾으면
+        if (member == null || !member.getName().equals(findPasswordDto.getName())
+            || !member.getPhoneNumber().equals(findPasswordDto.getPhoneNumber())) {
+            throw new NotFoundException("해당 유저를 찾을 수 없습니다.");
+        }
+
+        //멤버 존재
+        //휴대전화 인증
+        MMSService mmsService = new MMSService(restTemplate);
+
+        //6자리 인증번호 만들기
+        Random generator = new Random();
+        generator.setSeed(System.currentTimeMillis());
+        int randomNumber = generator.nextInt(1000000) % 1000000;
+        String authenticationNumber = String.format("%06d", randomNumber);
+
+        //메시지 보내기
+        String message = "[" + authenticationNumber + ']' + MMS_MESSAGE_TAIL;
+        boolean isSend = mmsService.sendMMS(message, findPasswordDto.getPhoneNumber());
+
+        if (isSend) {
+            authenticationRepository.save(MMSAuthentication
+                .builder()
+                .authenticationNumber(authenticationNumber)
+                .phoneNumber(findPasswordDto.getPhoneNumber())
+                .deadline(LocalDateTime.now().plusMinutes(5))
+                .build());
+            return true;
+        }
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.members.controller;
 
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
@@ -75,6 +76,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("메시지 전송 실패!!");
     }
 
+    //Todo : 시간이 만료된거면 시간만료라 알려주고 그게 아니면 틀렸다고 보내기
     @PostMapping("/mms-number-compare")
     public ResponseEntity<?> mmsNumberCompare(@RequestBody MMSCompareDto mmsCompareDto) {
         boolean isExist = memberService.MMSCompare(mmsCompareDto);
@@ -116,5 +118,15 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 번호로 가입된 아이디가 없습니다.");
         }
         return ResponseEntity.ok(email);
+    }
+
+    @PostMapping("/find-pwd")
+    public ResponseEntity<?> findPassword(@RequestBody FindPasswordDto findPasswordDto)
+        throws Exception {
+        boolean isSend = memberService.findPassoword(findPasswordDto);
+        if (isSend) {
+            return ResponseEntity.ok("메시지 전송 성공");
+        }
+        return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("메시지 전송 실패!");
     }
 }

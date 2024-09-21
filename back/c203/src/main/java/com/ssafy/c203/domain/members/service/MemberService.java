@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.members.service;
 
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
@@ -20,4 +21,6 @@ public interface MemberService {
     void testSignUp(Members member);
 
     String findEmail(FindIdDto findIdDto);
+
+    boolean findPassoword(FindPasswordDto findPasswordDto) throws Exception;
 }
