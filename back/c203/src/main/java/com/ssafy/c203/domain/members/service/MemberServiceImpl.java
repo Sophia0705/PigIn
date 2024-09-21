@@ -6,6 +6,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
@@ -198,5 +199,13 @@ public class MemberServiceImpl implements MemberService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void refreshPassword(RefreshPassowrdDto refreshPassowrdDto) {
+        Members member = membersRepository.findByEmail(refreshPassowrdDto.getEmail());
+        String password = bCryptPasswordEncoder.encode(refreshPassowrdDto.getPassword());
+
+        member.updatePassword(password);
     }
 }
