@@ -1,12 +1,14 @@
 package com.ssafy.securities.stock.service.stockWebSocket;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Slf4j
 public class StockWebSocketService {
 
     @Value("${stock.websocket.url}")
@@ -15,25 +17,33 @@ public class StockWebSocketService {
     @Value("#{'${stock.codes}'.split(',')}")
     private List<String> stockCodes;
 
-    private final MultiStockDataProcessor dataProcessor;
-    private final ConcurrentHashMap<String, StockWebSocketClient> clients = new ConcurrentHashMap<>();
+    private final StockWebSocketClient webSocketClient;
 
-    public StockWebSocketService(MultiStockDataProcessor dataProcessor) {
-        this.dataProcessor = dataProcessor;
+    public StockWebSocketService(StockWebSocketClient webSocketClient) {
+        this.webSocketClient = webSocketClient;
     }
 
     @PostConstruct
     public void init() {
-        stockCodes.forEach(this::connectToStockWebSocket);
+        try {
+            webSocketClient.connect(stockWebsocketUrl);
+            subscribeToStocks();
+        } catch (Exception e) {
+            log.error("Failed to initialize WebSocket connection", e);
+        }
     }
 
-    private void connectToStockWebSocket(String stockCode) {
-        try {
-            StockWebSocketClient client = new StockWebSocketClient(stockCode, dataProcessor);
-            client.connect(stockWebsocketUrl);
-            clients.put(stockCode, client);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void subscribeToStocks() {
+        stockCodes.forEach(stockCode -> {
+            try {
+                webSocketClient.subscribeStock(stockCode);
+            } catch (Exception e) {
+                log.error("Failed to subscribe to stock: {}", stockCode, e);
+            }
+        });
+    }
+
+    public void disconnect() {
+        // Implement disconnect logic if needed
     }
 }

@@ -1,83 +1,97 @@
 package com.ssafy.securities.stock.service.stockWebSocket;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.securities.stock.dto.StockBarDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
+@Slf4j
+@Component
 public class StockWebSocketClient extends TextWebSocketHandler {
 
-    private WebSocketSession session;
-    private final String stockCode;
+    private final AtomicReference<WebSocketSession> sessionRef = new AtomicReference<>();
     private final MultiStockDataProcessor dataProcessor;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Value("${koreainvestment.APPKEY}")
-    private String appkey;
-    @Value("${koreainvestment.APPSECRET}")
-    private String appsecret;
-    private String personalsecKey = "";
-    private String custType = "P";
-    private String contentType = "utf-8";
+    private final String appkey;
+    private final String appsecret;
+    private final String personalsecKey = "";
+    private final String custType = "P";
+    private final String contentType = "utf-8";
 
-    public StockWebSocketClient(String stockCode, MultiStockDataProcessor dataProcessor) {
-        this.stockCode = stockCode;
+    public StockWebSocketClient(MultiStockDataProcessor dataProcessor,
+                                @Value("${koreainvestment.APPKEY}") String appkey,
+                                @Value("${koreainvestment.APPSECRET}") String appsecret) {
         this.dataProcessor = dataProcessor;
+        this.appkey = appkey;
+        this.appsecret = appsecret;
     }
 
     public void connect(String url) throws Exception {
         WebSocketClient client = new StandardWebSocketClient();
-        session = client.doHandshake(this, url).get();
+        sessionRef.set(client.doHandshake(this, url).get());
+        log.info("WebSocket connected successfully");
     }
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        System.out.println("WebSocket 연결 성공: " + stockCode);
-        sendSubscriptionRequest();
+    public void subscribeStock(String stockCode) {
+        WebSocketSession session = sessionRef.get();
+//        if (session != null && session.isOpen()) {
+            try {
+                String subscriptionMessage = createSubscriptionMessage(stockCode);
+                session.sendMessage(new TextMessage(subscriptionMessage));
+                log.info("Subscription request sent for stock: {} = {}", stockCode, subscriptionMessage);
+            } catch (Exception e) {
+                log.error("Failed to send subscription request for stock: {}", stockCode, e);
+            }
+//        } else {
+//            log.error("WebSocket session is null or closed");
+//        }
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        StockBarDTO stockData = parseStockData(message.getPayload());
-        dataProcessor.handleMessage(stockCode, stockData);
-    }
-
-    private void sendSubscriptionRequest() {
+        String payload = message.getPayload();
+        log.info("Received message: {}", message);
         try {
-            String subscriptionMessage = createSubscriptionMessage(stockCode);
-            session.sendMessage(new TextMessage(subscriptionMessage));
-            System.out.println("구독 요청 전송: " + stockCode);
+            // 메시지 처리 로직 (종목 코드 추출 및 데이터 처리)
+            StockBarDTO stockData = parseStockData(payload);
+            String stockCode = extractStockCode(payload); // 이 메서드는 구현 필요
+            dataProcessor.handleMessage(stockCode, stockData);
         } catch (Exception e) {
-            e.printStackTrace();
+            //log.error("Error processing message: ", e);
         }
     }
-
     private String createSubscriptionMessage(String stockCode) throws JsonProcessingException {
-        // 실제 구독 메시지 형식에 맞게 구현
-        Map<String, Object> request = Map.of(
-                "header", Map.of(
-                        "personalseckey", "",
-                        "appsecret", appsecret,
-                        "tr_type", "1",
-                        "appkey", appkey,
-                        "content-type", contentType,
-                        "custtype", custType
-                ),
-                "body", Map.of(
-                        "input", Map.of(
-                                "tr_id", "H0STCNT0",
-                                "tr_key", stockCode
-                        )
-                )
-        );
+        Map<String, Object> header = new HashMap<>();
+        header.put("personalseckey", personalsecKey);
+        header.put("appsecret", appsecret);
+        header.put("tr_type", "1");
+        header.put("appkey", appkey);
+        header.put("content-type", contentType);
+        header.put("custtype", custType);
+
+        Map<String, Object> input = new HashMap<>();
+        input.put("tr_id", "H0STCNT0");
+        input.put("tr_key", stockCode);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("input", input);
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("header", header);
+        request.put("body", body);
         return objectMapper.writeValueAsString(request);
     }
-
     private StockBarDTO parseStockData(String payload) {
         // JSON 파싱 로직 구현
         String[] arrValue = payload.split("\\^");
@@ -97,6 +111,12 @@ public class StockWebSocketClient extends TextWebSocketHandler {
                 .prdyVrss(arrValue[4])          // 전일대비
                 .revlIssuReas("")               // 공시 사유 (해당 데이터 없음)
                 .build();
+    }
+
+    private String extractStockCode(String payload) {
+        // 페이로드에서 종목 코드를 추출하는 로직 구현
+        // 예: JSON 파싱 후 해당 필드 추출
+        return ""; // 실제 구현 필요
     }
 
 }
