@@ -24,11 +24,13 @@ const MyPortfolio: React.FC = () => {
     );
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="bg-customDarkGreen">
-        <div className="max-w-3xl mx-auto py-8 px-4">
+    <div className="bg-gray-100 h-screen flex flex-col">
+      <div className="bg-customDarkGreen flex-none" style={{ height: 'calc(33.33vh - 20px)' }}>
+        <div className="max-w-3xl mx-auto h-full py-4 px-4">
           <Dashboard />
         </div>
+      </div>
+      <div className="flex-grow overflow-hidden">
         <PortfolioDetails />
       </div>
     </div>
