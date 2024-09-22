@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStore } from '../../store/userStore'; // Zustand로 관리되는 상태를 가져옴
+import { useStore } from '../../store/UserStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 

@@ -20,6 +20,10 @@ import SignUpModal from './user/pages/SignUpModal';
 import IsLoginModal from './user/modal/IsLoginModal';
 import LoginPage from './user/pages/LoginPage';
 import FavoritePage from './user/pages/FavoritePage';
+import StockFavoritesPage from './user/pages/StockFavoritesPage'; // 주식 찜 목록 페이지
+import CryptoFavoritesPage from './user/pages/CryptoFavoritesPage';
+import InvestmentAccountCreation from './user/pages/InvestmentAccountCreation';
+import SpendingAccountRegister from './user/pages/SpendingAccountRegister';
 
 const App: React.FC = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -58,6 +62,16 @@ const App: React.FC = () => {
           <Route path="/signup" element={<SignUpModal />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="favorite" element={<FavoritePage />} />
+          <Route path="/stock-favorites" element={<StockFavoritesPage />} />
+          <Route path="/crypto-favorites" element={<CryptoFavoritesPage />} />
+          <Route
+            path="/investment-account-creation"
+            element={<InvestmentAccountCreation />}
+          />
+          <Route
+            path="/spending-account-register"
+            element={<SpendingAccountRegister />}
+          />
         </Routes>
         <Navbar />
         {/* 로그인 모달 열기 버튼 추가

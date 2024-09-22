@@ -1,15 +1,25 @@
 import React from 'react';
-import StockList from '../components/StockList'; // 주식 목록 컴포넌트를 가져옴
+import StockList from '../components/StockList'; // 주식 목록 컴포넌트
+import CryptoList from '../components/CryptoList'; // 가상화폐 목록 컴포넌트
 
-// '찜 목록' 페이지를 렌더링하는 컴포넌트
 const FavoritePage: React.FC = () => {
   return (
-    // 배경색과 패딩을 가진 페이지 컨테이너
-    <div className="p-6 dark:bg-gray-900 min-h-screen">
-      {/* 페이지 타이틀. 중앙 정렬 및 큰 글씨로 설정 */}
-      <h2 className="text-2xl text-center mb-6 text-white">찜 목록</h2>
-      {/* 주식 목록을 렌더링 */}
-      <StockList />
+    <div className="w-[412px] h-[915px]">
+      <div className="flex justify-between items-center w-screen pt-10 bg-customDarkGreen">
+        <h1 className="text-2xl font-bold text-white absolute left-1/2 transform -translate-x-1/2 pb-3 mt-2">
+          찜 목록
+        </h1>
+      </div>
+      {/* 주식 목록을 5개만 렌더링, 더보기 버튼 추가 */}
+      <div className="mt-7">
+        {/* 주식 목록 위로 간격 추가 */}
+        <StockList limit={5} showTitle={true} />
+      </div>
+      {/* 가상화폐 목록을 5개만 렌더링, 더보기 버튼 추가 */}
+      <div className="mt-7">
+        {/* 가상화폐 목록 위로 더 큰 간격 추가 */}
+        <CryptoList limit={5} showTitle={true} />
+      </div>
     </div>
   );
 };
