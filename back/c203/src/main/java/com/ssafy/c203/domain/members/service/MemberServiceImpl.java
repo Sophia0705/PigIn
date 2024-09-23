@@ -9,6 +9,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -226,5 +227,19 @@ public class MemberServiceImpl implements MemberService {
         } else {
             throw new WrongPasswordException();
         }
+    }
+
+    @Override
+    public UserInfoDto getUserInfo(Long userId) {
+        Members member = membersRepository.findByIdAndStatus(userId, WithDrawalStatus.ACTIVE)
+            .orElseThrow(MemberNotFoundException::new);
+        return UserInfoDto
+            .builder()
+            .birth(member.getBirth())
+            .name(member.getName())
+            .email(member.getEmail())
+            .phoneNumber(member.getPhoneNumber())
+            .savingRate(member.getSavingRate())
+            .build();
     }
 }

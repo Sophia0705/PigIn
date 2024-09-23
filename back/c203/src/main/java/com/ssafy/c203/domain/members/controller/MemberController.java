@@ -10,6 +10,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.service.MemberService;
@@ -136,7 +137,8 @@ public class MemberController {
     }
 
     @PutMapping("/update-member")
-    public ResponseEntity<?> updatePassword(@RequestBody UpdateMemberDto updateMemberDto, @AuthenticationPrincipal
+    public ResponseEntity<?> updatePassword(@RequestBody UpdateMemberDto updateMemberDto,
+        @AuthenticationPrincipal
         CustomUserDetails customUserDetails) {
         memberService.updateMember(updateMemberDto, customUserDetails.getUserId());
         return ResponseEntity.ok("패스워드 변경을 완료했습니다.");
@@ -162,5 +164,12 @@ public class MemberController {
     @PostMapping("/account")
     public ResponseEntity<?> addAccount(@RequestBody MemberAccountDto memberAccountDto) {
         return null;
+    }
+
+    @GetMapping("/userInfo")
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        UserInfoDto userInfo = memberService.getUserInfo(userId);
+        return ResponseEntity.ok(userInfo);
     }
 }
