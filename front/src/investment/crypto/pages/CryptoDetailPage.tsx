@@ -11,6 +11,7 @@ import {
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { CgChevronLeft } from "react-icons/cg";
 import { CryptoItemData } from "../../interfaces/CryptoInterface";
+import CryptoPurchaseModal from "../components/CryptoPurchaseModal";
 
 const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -19,8 +20,9 @@ const CryptoDetailPage: React.FC = () => {
   const cryptoData = location.state?.item as CryptoItemData;
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>("7일");
   const [selectedInfoType, setSelectedInfoType] = useState<string>("상세정보");
-
   const [isLiked, setIsLiked] = useState(false);
+  const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
+  const [inputValue, setInputValue] = useState<string>("");
 
   const handleBackClick = () => {
     navigate(-1);
@@ -40,6 +42,15 @@ const CryptoDetailPage: React.FC = () => {
 
   const handleHeartClick = () => {
     setIsLiked((prevLiked) => !prevLiked);
+  };
+
+  const handleBuyClick = () => {
+    setIsBuyModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsBuyModalVisible(false);
+    setInputValue("");
   };
 
   if (!cryptoData) {
@@ -92,14 +103,6 @@ const CryptoDetailPage: React.FC = () => {
             >
               {cryptoData.percentageChange}
             </span>
-          </div>
-
-          {/* 포트폴리오 추가 버튼 */}
-          <div
-            className="text-white font-bold py-2 px-4 rounded-lg mr-4"
-            onClick={handleAddToPortfolio}
-          >
-            +
           </div>
         </div>
       </div>
@@ -202,14 +205,31 @@ const CryptoDetailPage: React.FC = () => {
       </div>
 
       {/* 매수, 매도 버튼 */}
-      <div className="mt-6 flex justify-between w-11/12 mx-auto">
-        <button className="w-1/2 bg-green-400 text-white py-2 rounded-lg mr-2">
+      <div className="mt-6 flex justify-between w-10/12 mx-auto">
+        <button
+          className="w-1/2 bg-green-400 text-white py-2 rounded-lg mr-2"
+          onClick={handleBuyClick}
+        >
           매수
         </button>
-        <button className="w-1/2 bg-red-400 text-white py-2 rounded-lg ml-2">
-          매도
+        <button
+          className="w-1/2 bg-blue-500 text-white py-2 rounded-lg ml-2"
+          onClick={handleAddToPortfolio}
+        >
+          자동투자하기
         </button>
       </div>
+
+      {/* 매수 모달 */}
+      {isBuyModalVisible && (
+        <CryptoPurchaseModal
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          onClose={handleModalClose}
+          cryptoName={cryptoData.name}
+          cryptoPrice={cryptoData.price}
+        />
+      )}
     </div>
   );
 };

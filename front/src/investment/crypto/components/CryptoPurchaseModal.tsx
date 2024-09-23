@@ -128,7 +128,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
         </div>
 
         {/* 매수하기 버튼 */}
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-1">
           <button className="bg-green-500 text-white w-3/4 py-3 rounded-full text-lg font-bold">
             매수하기
           </button>
