@@ -140,7 +140,14 @@ public class MemberServiceImpl implements MemberService {
     public boolean MMSCompare(MMSCompareDto mmsCompareDto) {
         Optional<MMSAuthentication> memberAuthentication = authenticationRepository.findFirstByPhoneNumberAndAuthenticationNumberAndDeadlineBeforeOrderByCreateTimeDesc(
             mmsCompareDto.getPhoneNumber(), mmsCompareDto.getAuthenticationNumber(), LocalDateTime.now());
-        if (memberAuthentication.isPresent()) return true;
+        if (memberAuthentication.isPresent()) {
+            MMSAuthentication authentication = memberAuthentication.get();
+            if (mmsCompareDto.getAuthenticationNumber()
+                .equals(authentication.getAuthenticationNumber())) {
+                return true;
+            }
+            throw new ConflictException("인증번호가 틀립니다.");
+        }
         return false;
     }
 

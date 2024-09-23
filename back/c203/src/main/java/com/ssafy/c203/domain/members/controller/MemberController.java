@@ -8,12 +8,10 @@ import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
-import com.ssafy.c203.domain.members.service.MMSService;
 import com.ssafy.c203.domain.members.service.MemberService;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Iterator;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,9 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/member")
@@ -85,7 +81,7 @@ public class MemberController {
         if (isExist) {
             return ResponseEntity.ok().body("인증번호가 같습니다.");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증번호가 틀렸습니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증번호가 만료되었습니다.");
     }
 
     @DeleteMapping("/withdrawal")
