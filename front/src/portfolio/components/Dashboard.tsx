@@ -6,9 +6,9 @@ const COLORS = ["#BBF5E2", "#6183EE", "#ECCD4A", "#FF6B6B"];
 const CustomLabel = ({ viewBox, totalValue, totalProfit, totalProfitRate }) => {
   const { cx, cy } = viewBox;
 
-  console.log(totalProfit);
-  console.log(Math.abs(totalProfit));
-  console.log(Math.abs(totalProfit).toLocaleString());
+  // console.log(totalProfit);
+  // console.log(Math.abs(totalProfit));
+  // console.log(Math.abs(totalProfit).toLocaleString());
 
   return (
     <g>
