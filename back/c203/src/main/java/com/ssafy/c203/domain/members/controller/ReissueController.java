@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.members.controller;
 
 import com.ssafy.c203.common.jwt.JWTUtil;
 import com.ssafy.c203.domain.members.entity.Members;
+import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -67,7 +68,7 @@ public class ReissueController {
 
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
-        Members member = membersRepository.findByEmail(username).orElseThrow(
+        Members member = membersRepository.findByEmailAndStatus(username, WithDrawalStatus.ACTIVE).orElseThrow(
             MemberNotFoundException::new);
 
         //make new JWT

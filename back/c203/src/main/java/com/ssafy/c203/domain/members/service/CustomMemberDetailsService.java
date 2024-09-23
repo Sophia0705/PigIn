@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.members.service;
 
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.entity.Members;
+import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class CustomMemberDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Members userData = membersRepository.findByEmail(username).orElseThrow(
+        Members userData = membersRepository.findByEmailAndStatus(username, WithDrawalStatus.ACTIVE).orElseThrow(
             MemberNotFoundException::new);
 
         if (username != null) {

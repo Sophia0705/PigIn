@@ -46,9 +46,11 @@ public class Members {
 
     private String role;
 
+    private int savingRate;
+
     @Builder
     public Members(String email, String password, String name, String phoneNumber,
-        WithDrawalStatus status, String userKey, String birth, String role, String refreshToken) {
+        WithDrawalStatus status, String userKey, String birth, String role, String refreshToken, int savingRate) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -58,6 +60,7 @@ public class Members {
         this.birth = birth;
         this.role = role;
         this.refreshToken = refreshToken;
+        this.savingRate = savingRate;
     }
 
     public void updateUserKey(String userKey) {
@@ -78,5 +81,9 @@ public class Members {
 
     public void withDrawal(){
         this.status = WithDrawalStatus.INACTIVE;
+    }
+
+    public void updateSavingRate(int savingRate) {
+        this.savingRate = savingRate;
     }
 }

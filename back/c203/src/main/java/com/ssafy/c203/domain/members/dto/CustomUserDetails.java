@@ -3,13 +3,13 @@ package com.ssafy.c203.domain.members.dto;
 import com.ssafy.c203.domain.members.entity.Members;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 
     private final Members userEntity;
+
     public CustomUserDetails(Members userEntity) {
         this.userEntity = userEntity;
     }

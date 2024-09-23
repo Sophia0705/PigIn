@@ -1,6 +1,7 @@
 package com.ssafy.c203.common.jwt;
 
 import com.ssafy.c203.domain.members.entity.Members;
+import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import jakarta.servlet.FilterChain;
@@ -57,7 +58,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        Members member = membersRepository.findByEmail(username).orElseThrow(
+        Members member = membersRepository.findByEmailAndStatus(username, WithDrawalStatus.ACTIVE).orElseThrow(
             MemberNotFoundException::new);
 
         //토큰 생성

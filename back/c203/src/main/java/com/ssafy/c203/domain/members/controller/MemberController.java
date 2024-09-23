@@ -64,6 +64,7 @@ public class MemberController {
             .phoneNumber(signUpDto.getPhoneNumber())
             .status(WithDrawalStatus.ACTIVE)
             .password(signUpDto.getPassword())
+            .savingRate(signUpDto.getSavingRate())
             .build());
         return ResponseEntity.ok().body("회원가입을 성공하였습니다.");
     }
@@ -106,6 +107,7 @@ public class MemberController {
             .userKey("123")
             .role("123")
             .refreshToken("123")
+            .savingRate(signUpDto.getSavingRate())
             .build();
 
         memberService.testSignUp(member);
@@ -133,13 +135,14 @@ public class MemberController {
 
     @PutMapping("/update-password")
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
-        return null;
+        memberService.updatePassword(updatePasswordDto);
+        return ResponseEntity.ok("패스워드 변경을 완료했습니다.");
     }
 
     @PutMapping("/refresh-pwd")
     public ResponseEntity<?> refreshPassword(@RequestBody RefreshPassowrdDto refreshPassowrdDto) {
         memberService.refreshPassword(refreshPassowrdDto);
-        return ResponseEntity.ok("패스워드 변경완료");
+        return ResponseEntity.ok("패스워드 변경을 완료했습니다.");
     }
 
     @PostMapping("/account-authentication")
