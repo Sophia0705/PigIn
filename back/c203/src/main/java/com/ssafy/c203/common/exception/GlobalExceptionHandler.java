@@ -1,8 +1,9 @@
 package com.ssafy.c203.common.exception;
 
-import com.ssafy.c203.domain.members.exceprtion.ConflictException;
-import com.ssafy.c203.domain.members.exceprtion.NotFoundException;
-import org.springframework.http.HttpStatus;
+import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
+import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
+import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
+import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,13 +11,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<String> handleConflictException(ConflictException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    @ExceptionHandler(AuthenticationConflictException.class)
+    public ResponseEntity<String> handleAuthenticationConflictException(AuthenticationConflictException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(MemberNotFoundException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(EmailConflictException.class)
+    public ResponseEntity<String> handleEmailConflictException(EmailConflictException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(WrongPasswordException.class)
+    public ResponseEntity<String> handleWrongPasswordException(WrongPasswordException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }

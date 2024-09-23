@@ -7,12 +7,15 @@ import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.UpdatePasswordDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
 import com.ssafy.c203.domain.members.entity.Members;
-import com.ssafy.c203.domain.members.exceprtion.ConflictException;
-import com.ssafy.c203.domain.members.exceprtion.NotFoundException;
+import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
+import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
+import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
+import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
 import com.ssafy.c203.domain.members.repository.MMSAuthenticationRepository;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import java.security.NoSuchAlgorithmException;
@@ -23,11 +26,9 @@ import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,6 @@ public class MemberServiceImpl implements MemberService {
     private static final String MMS_MESSAGE_TAIL = " PigIn 본인인증번호입니다. 정확히 입력하세요.";
     private final String MY_SSAFYDATA_BASE_URL = "${spring.ssafydata.url}";
 
-
     //Todo : 이메일 중복확인 구현 필요
 
     @Override
@@ -58,7 +58,7 @@ public class MemberServiceImpl implements MemberService {
 
         //해당 이메일로 회원가입한 사람이 있으면 return
         if (isExist) {
-            throw new ConflictException("이미 존재하는 이메일입니다.");
+            throw new EmailConflictException();
         }
 
         //패스워드 암호화
@@ -139,21 +139,22 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean MMSCompare(MMSCompareDto mmsCompareDto) {
         Optional<MMSAuthentication> memberAuthentication = authenticationRepository.findFirstByPhoneNumberAndAuthenticationNumberAndDeadlineBeforeOrderByCreateTimeDesc(
-            mmsCompareDto.getPhoneNumber(), mmsCompareDto.getAuthenticationNumber(), LocalDateTime.now());
+            mmsCompareDto.getPhoneNumber(), mmsCompareDto.getAuthenticationNumber(),
+            LocalDateTime.now());
         if (memberAuthentication.isPresent()) {
             MMSAuthentication authentication = memberAuthentication.get();
             if (mmsCompareDto.getAuthenticationNumber()
                 .equals(authentication.getAuthenticationNumber())) {
                 return true;
             }
-            throw new ConflictException("인증번호가 틀립니다.");
+            throw new AuthenticationConflictException();
         }
         return false;
     }
 
     @Override
     public void withDrawalUser(String email) {
-        Members member = membersRepository.findByEmail(email);
+        Members member = membersRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         member.withDrawal();
     }
 
@@ -174,14 +175,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean findPassoword(FindPasswordDto findPasswordDto) throws Exception {
-        Members member = membersRepository.findByEmail(findPasswordDto.getEmail());
-
-        //멤버 못찾으면
-        if (member == null || !member.getName().equals(findPasswordDto.getName())
-            || !member.getPhoneNumber().equals(findPasswordDto.getPhoneNumber())) {
-            throw new NotFoundException("해당 유저를 찾을 수 없습니다.");
-        }
-
+        Members member = membersRepository.findByEmail(findPasswordDto.getEmail())
+            .orElseThrow(MemberNotFoundException::new);
         //멤버 존재
         //휴대전화 인증
         MMSService mmsService = new MMSService(restTemplate);
@@ -210,9 +205,22 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void refreshPassword(RefreshPassowrdDto refreshPassowrdDto) {
-        Members member = membersRepository.findByEmail(refreshPassowrdDto.getEmail());
+        Members member = membersRepository.findByEmail(refreshPassowrdDto.getEmail())
+            .orElseThrow(MemberNotFoundException::new);
         String password = bCryptPasswordEncoder.encode(refreshPassowrdDto.getPassword());
 
         member.updatePassword(password);
+    }
+
+    @Override
+    public void updatePassword(UpdatePasswordDto updatePasswordDto) {
+        Members member = membersRepository.findByEmail(updatePasswordDto.getEmail())
+            .orElseThrow(MemberNotFoundException::new);
+        if (member.getPassword().equals(bCryptPasswordEncoder.encode(
+            updatePasswordDto.getOldPassword()))) {
+            member.updatePassword(bCryptPasswordEncoder.encode(updatePasswordDto.getNewPassword()));
+        } else {
+            throw new WrongPasswordException();
+        }
     }
 }

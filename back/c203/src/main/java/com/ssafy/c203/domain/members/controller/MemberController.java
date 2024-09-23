@@ -8,6 +8,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.UpdatePasswordDto;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.service.MemberService;
@@ -128,6 +129,11 @@ public class MemberController {
             return ResponseEntity.ok("메시지 전송 성공");
         }
         return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("메시지 전송 실패!");
+    }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
+        return null;
     }
 
     @PutMapping("/refresh-pwd")

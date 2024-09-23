@@ -1,7 +1,7 @@
 package com.ssafy.c203.common.jwt;
 
-import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.entity.Members;
+import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
@@ -57,7 +57,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        Members member = membersRepository.findByEmail(username);
+        Members member = membersRepository.findByEmail(username).orElseThrow(
+            MemberNotFoundException::new);
 
         //토큰 생성
         String access = jwtUtil.createJwt("access", username, role, 600000L, member.getUserKey());

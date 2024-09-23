@@ -1,6 +1,6 @@
 package com.ssafy.c203.domain.members.exceprtion;
 
-public class NotFoundException extends RuntimeException {
+public class MemberNotFoundException extends RuntimeException {
 
     @Override
     public String getMessage() {

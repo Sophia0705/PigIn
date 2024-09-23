@@ -6,6 +6,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.UpdatePasswordDto;
 import com.ssafy.c203.domain.members.entity.Members;
 import java.security.NoSuchAlgorithmException;
 
@@ -26,4 +27,6 @@ public interface MemberService {
     boolean findPassoword(FindPasswordDto findPasswordDto) throws Exception;
 
     void refreshPassword(RefreshPassowrdDto refreshPassowrdDto);
+
+    void updatePassword(UpdatePasswordDto updatePasswordDto);
 }

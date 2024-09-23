@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.members.service;
 
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.entity.Members;
+import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,8 @@ public class CustomMemberDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Members userData = membersRepository.findByEmail(username);
+        Members userData = membersRepository.findByEmail(username).orElseThrow(
+            MemberNotFoundException::new);
 
         if (username != null) {
             //UserDetails에 담아서 return 하면 AuthenticationManager가 검증
