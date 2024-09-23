@@ -31,4 +31,6 @@ public interface MemberService {
     void updateMember(UpdateMemberDto updateMemberDto, Long userId);
 
     UserInfoDto getUserInfo(Long userId);
+
+    void oneWonSend(String accountNo, String userKey);
 }

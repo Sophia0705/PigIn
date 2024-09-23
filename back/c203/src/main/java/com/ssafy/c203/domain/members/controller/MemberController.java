@@ -42,20 +42,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/")
-    public String test() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iter = authorities.iterator();
-        GrantedAuthority auth = iter.next();
-        String role = auth.getAuthority();
-
-        return username + " " + role;
-    }
-
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@ModelAttribute SignUpDto signUpDto)
         throws NoSuchAlgorithmException {
@@ -152,7 +138,9 @@ public class MemberController {
     }
 
     @PostMapping("/account-authentication")
-    public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo) {
+    public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        String userKey = customUserDetails.getUserKey();
+        memberService.oneWonSend(accountNo, userKey);
         return null;
     }
 

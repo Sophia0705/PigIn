@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.members.service;
 
+import com.ssafy.c203.common.dto.header.UserHeader;
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
@@ -48,6 +49,8 @@ public class MemberServiceImpl implements MemberService {
     private final SavingsAccountRepository savingsAccountRepository;
     private final MMSAuthenticationRepository authenticationRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    //Todo : application.properties에 추가
+    private String apiKey = "test";
 
     private static final String MMS_MESSAGE_TAIL = " PigIn 본인인증번호입니다. 정확히 입력하세요.";
     private final String MY_SSAFYDATA_BASE_URL = "${spring.ssafydata.url}";
@@ -242,5 +245,28 @@ public class MemberServiceImpl implements MemberService {
             .phoneNumber(member.getPhoneNumber())
             .savingRate(member.getSavingRate())
             .build();
+    }
+
+    @Override
+    public void oneWonSend(String accountNo, String userKey) {
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/accountAuth/openAccountAuth";
+        Map<String, Object> requestBody = new HashMap<>();
+        UserHeader userHeader = new UserHeader("openAccountAuth", apiKey, userKey);
+        requestBody.put("Header", userHeader);
+        requestBody.put("accountNo", accountNo);
+        requestBody.put("authText", "SSAFY");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        //요청 전송 및 응답 받기
+//        ResponseEntity<TransactionAllResponse> response = restTemplate.exchange(
+//            url,
+//            HttpMethod.POST,
+//            entity,
+//            TransactionAllResponse.class
+//        );
     }
 }
