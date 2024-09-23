@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaSearch } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
+import { CgChevronLeft } from "react-icons/cg";
 
 interface DetailHeaderProps {
   title: string;
@@ -28,7 +29,7 @@ const DetailHeader: React.FC<DetailHeaderProps> = ({ title }) => {
     <div className="flex justify-between items-center w-screen p-4 bg-customDarkGreen">
       {/* 뒤로가기 */}
       <p onClick={handleBack} className="text-white bg-inherit">
-        <FaArrowLeft size={20} />
+        <CgChevronLeft size={20} />
       </p>
 
       {/* 제목 */}
