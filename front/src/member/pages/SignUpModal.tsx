@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStore } from '../../store/UserStore'; // Zustand로 관리되는 상태를 가져옴
+import { useStore } from '../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 
@@ -17,6 +17,8 @@ const SignUpModal: React.FC = () => {
   const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 상태
   const [isEmailValid, setIsEmailValid] = useState(true); // 이메일 유효성 상태
   const [isBirthValid, setIsBirthValid] = useState(true); // 생년월일 유효성 상태
+  const [savingRate, setSavingRate] = useState(0); // 저축률 상태
+  const [savingRateValid, setSavingRateValid] = useState(true); // 저축률 유효성 상태
 
   // 이메일 유효성 검사 함수
   const isEmailFormatValid = (email: string) => {
@@ -36,6 +38,24 @@ const SignUpModal: React.FC = () => {
   const isBirthFormatValid = (birth: string): boolean => {
     const regex = /^(?:[0-9]{2})(?:0[1-9]|1[0-2])(?:0[1-9]|[12][0-9]|3[01])$/;
     return regex.test(birth);
+  };
+
+  const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+
+    // 소수점 앞에 '0'이 있는 경우 소수점을 포함한 값은 그대로 유지
+    if (value.startsWith('0') && value.length > 1 && !value.includes('.')) {
+      value = value.slice(1); // 소수점이 없을 때만 앞의 0을 제거
+    }
+
+    // 숫자 값으로 변환하여 범위 검증 후 상태 업데이트
+    const parsedValue = parseFloat(value);
+    if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 10) {
+      setSavingRate(parsedValue); // 숫자 값으로 상태 업데이트
+    } else if (value === '') {
+      // 값이 빈 문자열일 때 (입력을 지울 때) 0으로 설정
+      setSavingRate(0);
+    }
   };
 
   // 입력 필드가 변경될 때 호출되는 핸들러 함수
@@ -113,33 +133,33 @@ const SignUpModal: React.FC = () => {
     setAuthenticationNumber(e.target.value);
   };
 
-  // 인증번호 확인 핸들러
-  const verifyCode = async () => {
-    try {
-      const response = await fetch(
-        'http://localhost:8080/api/member/mms-number-compare',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            authenticationNumber,
-            phoneNumber: formData.phoneNumber,
-          }),
-        }
-      );
+  // // 인증번호 확인 핸들러
+  // const verifyCode = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       'http://localhost:8080/api/member/mms-number-compare',
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           authenticationNumber,
+  //           phoneNumber: formData.phoneNumber,
+  //         }),
+  //       }
+  //     );
 
-      if (response.ok) {
-        alert('인증이 완료되었습니다.');
-      } else {
-        alert('인증번호가 일치하지 않습니다.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('서버 오류가 발생했습니다.');
-    }
-  };
+  //     if (response.ok) {
+  //       alert('인증이 완료되었습니다.');
+  //     } else {
+  //       alert('인증번호가 일치하지 않습니다.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     alert('서버 오류가 발생했습니다.');
+  //   }
+  // };
 
   // 폼 제출 시 호출되는 핸들러 함수
   const handleSubmit = (e: React.FormEvent) => {
@@ -241,7 +261,7 @@ const SignUpModal: React.FC = () => {
               onClick={requestVerificationCode}
               className={`p-2 rounded ${
                 formData.phoneNumber.length === 13
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={formData.phoneNumber.length !== 13}
@@ -326,12 +346,47 @@ const SignUpModal: React.FC = () => {
               ))}
           </div>
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+
+          <div className="mt-4">
+            <label className="text-gray-700 text-sm block mb-2">
+              저축률 설정
+            </label>
+            <div className="flex items-center space-x-4 mt-2">
+              {/* range input for saving rate */}
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="0.1"
+                value={savingRate}
+                onChange={handleSavingRateChange}
+                className="w-full"
+              />
+              {/* number input for saving rate */}
+              <input
+                type="number"
+                min="0"
+                max="10"
+                step="0.1"
+                value={savingRate}
+                onChange={handleSavingRateChange}
+                className="w-7 p-1 text-right border-none border-gray-300 rounded"
+                disabled
+              />
+              <span className="!ml-0">%</span>
+            </div>
+            {/* {!savingRateValid && (
+              <p className="text-xs text-red-500 mt-1">
+                저축률을 0에서 10 사이로 입력해주세요.
+              </p>
+            )} */}
+          </div>
           {/* 회원가입 버튼 */}
           <button
             type="submit"
             className={`w-full py-2 rounded ${
               isFormValid()
-                ? 'bg-green-300 text-white font-semibold hover:bg-green-400'
+                ? 'bg-[#9CF8E1] text-gray-900 font-semibold hover:bg-[#9CF8E1]'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             disabled={!isFormValid()}

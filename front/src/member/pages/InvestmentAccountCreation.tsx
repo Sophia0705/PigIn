@@ -15,7 +15,7 @@ const InvestmentAccountCreation: React.FC = () => {
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // 비밀번호 확인 가리기/보이기 상태
   const [passwordConfirm, setPasswordConfirm] = useState(''); // 비밀번호 확인
   const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 상태
-  const [savingRate, setSavingRate] = useState<number>(0); // 저축률 상태
+  const [savingRate, setSavingRate] = useState(0); // 저축률 상태
   const [savingRateValid, setSavingRateValid] = useState(true); // 저축률 유효성 상태
 
   // 비밀번호 유효성 검사 함수
@@ -60,14 +60,21 @@ const InvestmentAccountCreation: React.FC = () => {
     setIsPasswordMatch(formData.password === value);
   };
 
-  // 저축률 설정 핸들러 (게이지 바 및 입력 필드)
   const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    if (value >= 0 && value <= 10) {
-      setSavingRate(value);
-      setSavingRateValid(true); // 유효한 값이면 valid
-    } else {
-      setSavingRateValid(false); // 유효하지 않은 값이면 invalid
+    let value = e.target.value;
+
+    // 소수점 앞에 '0'이 있는 경우 소수점을 포함한 값은 그대로 유지
+    if (value.startsWith('0') && value.length > 1 && !value.includes('.')) {
+      value = value.slice(1); // 소수점이 없을 때만 앞의 0을 제거
+    }
+
+    // 숫자 값으로 변환하여 범위 검증 후 상태 업데이트
+    const parsedValue = parseFloat(value);
+    if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 10) {
+      setSavingRate(parsedValue); // 숫자 값으로 상태 업데이트
+    } else if (value === '') {
+      // 값이 빈 문자열일 때 (입력을 지울 때) 0으로 설정
+      setSavingRate(0);
     }
   };
 
@@ -102,33 +109,33 @@ const InvestmentAccountCreation: React.FC = () => {
     setAuthenticationNumber(e.target.value);
   };
 
-  // 인증번호 확인 핸들러
-  const verifyCode = async () => {
-    try {
-      const response = await fetch(
-        'http://localhost:8080/api/member/mms-number-compare',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            authenticationNumber,
-            phoneNumber: formData.phoneNumber,
-          }),
-        }
-      );
+  // // 인증번호 확인 핸들러
+  // const verifyCode = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       'http://localhost:8080/api/member/mms-number-compare',
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           authenticationNumber,
+  //           phoneNumber: formData.phoneNumber,
+  //         }),
+  //       }
+  //     );
 
-      if (response.ok) {
-        alert('인증이 완료되었습니다.');
-      } else {
-        alert('인증번호가 일치하지 않습니다.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('서버 오류가 발생했습니다.');
-    }
-  };
+  //     if (response.ok) {
+  //       alert('인증이 완료되었습니다.');
+  //     } else {
+  //       alert('인증번호가 일치하지 않습니다.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     alert('서버 오류가 발생했습니다.');
+  //   }
+  // };
 
   // 폼 제출 시 호출되는 핸들러 함수
   const handleSubmit = (e: React.FormEvent) => {
@@ -288,15 +295,16 @@ const InvestmentAccountCreation: React.FC = () => {
                 step="0.1"
                 value={savingRate}
                 onChange={handleSavingRateChange}
-                className="w-8 p-1 text-right border-none border-gray-300 rounded"
+                className="w-8 p-1 text-right border-none border-gray-300 rounded bg-transparent disabled:bg-transparent"
+                disabled
               />
               <span className="!ml-0">%</span>
             </div>
-            {!savingRateValid && (
+            {/* {!savingRateValid && (
               <p className="text-xs text-red-500 mt-1">
                 저축률을 0에서 10 사이로 입력해주세요.
               </p>
-            )}
+            )} */}
           </div>
 
           <button

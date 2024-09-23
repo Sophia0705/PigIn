@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CiEdit } from 'react-icons/ci';
 
-export const UserInfo: React.FC = () => {
+export const MemberInfo: React.FC = () => {
   const navigate = useNavigate();
 
   // 회원 정보 데이터를 배열로 정의

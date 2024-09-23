@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserInfo } from '../components/UserInfo';
+import { MemberInfo } from '../components/MemberInfo';
 import AccountSlider from '../components/AccountSlider'; // 기본 내보내기는 중괄호 없이 불러와야 함
 
 const MyPage: React.FC = () => {
@@ -13,7 +13,7 @@ const MyPage: React.FC = () => {
       {/* 회원 정보 컴포넌트 */}
       <div className="mt-4 w-full flex justify-center">
         <div className="flex flex-col items-center">
-          <UserInfo />
+          <MemberInfo />
         </div>
       </div>
 
