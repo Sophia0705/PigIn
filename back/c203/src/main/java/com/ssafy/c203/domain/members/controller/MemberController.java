@@ -59,7 +59,6 @@ public class MemberController {
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@ModelAttribute SignUpDto signUpDto)
         throws NoSuchAlgorithmException {
-        //Todo : 유저 저축 최대금액 설정
         memberService.singUp(Members
             .builder()
             .name(signUpDto.getName())

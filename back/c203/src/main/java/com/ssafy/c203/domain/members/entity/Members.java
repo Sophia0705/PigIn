@@ -48,6 +48,10 @@ public class Members {
 
     private int savingRate;
 
+    private int savingAmount;
+
+    private AutoFundingStatus autoFundingStatus;
+
     @Builder
     public Members(String email, String password, String name, String phoneNumber,
         WithDrawalStatus status, String userKey, String birth, String role, String refreshToken, int savingRate) {
@@ -61,6 +65,8 @@ public class Members {
         this.role = role;
         this.refreshToken = refreshToken;
         this.savingRate = savingRate;
+        this.savingAmount = 0;
+        this.autoFundingStatus = AutoFundingStatus.INACTIVE;
     }
 
     public void updateUserKey(String userKey) {
