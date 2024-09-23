@@ -146,7 +146,9 @@ public class MemberController {
 
     @PostMapping("/account-authentication-compare")
     public ResponseEntity<?> accountAuthenticationCompare(@RequestBody
-    AccountAuthenticationCompareDto accountAuthenticationCompareDto) {
+    AccountAuthenticationCompareDto accountAuthenticationCompareDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        String userKey = customUserDetails.getUserKey();
+        memberService.oneWonAuthentication(accountAuthenticationCompareDto, userKey);
         return null;
     }
 

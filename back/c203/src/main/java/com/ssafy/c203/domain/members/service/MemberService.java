@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.members.service;
 
+import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
@@ -33,4 +34,6 @@ public interface MemberService {
     UserInfoDto getUserInfo(Long userId);
 
     void oneWonSend(String accountNo, String userKey);
+
+    void oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
 }

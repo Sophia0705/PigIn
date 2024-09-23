@@ -3,6 +3,7 @@ package com.ssafy.c203.domain.members.service;
 import com.ssafy.c203.common.dto.header.UserHeader;
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
+import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
@@ -269,4 +270,30 @@ public class MemberServiceImpl implements MemberService {
 //            TransactionAllResponse.class
 //        );
     }
+
+    @Override
+    public void oneWonAuthentication(
+        AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey) {
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/accountAuth/checkAuthCode";
+        Map<String, Object> requestBody = new HashMap<>();
+        UserHeader userHeader = new UserHeader("checkAuthCode", apiKey, userKey);
+        requestBody.put("Header", userHeader);
+        requestBody.put("accountNo", accountAuthenticationCompareDto.getAccountNo());
+        requestBody.put("authText", "SSAFY");
+        requestBody.put("authCode", accountAuthenticationCompareDto.getAuthCode());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        //요청 전송 및 응답 받기
+//        ResponseEntity<TransactionAllResponse> response = restTemplate.exchange(
+//            url,
+//            HttpMethod.POST,
+//            entity,
+//            TransactionAllResponse.class
+//        );
+    }
+
 }
