@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CryptoItem from "./CryptoItem";
 import CryptoCurrenciesData from "../../../data/CryptoCurrenciesData.json";
@@ -12,7 +12,39 @@ const CryptoItemsContainer: React.FC<CryptoItemsContainerProps> = ({
   title,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string>("시가총액");
+  const [sortedData, setSortedData] = useState<CryptoItemData[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // 선택 옵션에 따른 정렬 로직
+    const sortedCryptos = [...CryptoCurrenciesData].sort((a, b) => {
+      switch (selectedOption) {
+        case "시가총액":
+          return (
+            parseFloat(b.marketCap.replace("조", "")) -
+            parseFloat(a.marketCap.replace("조", ""))
+          );
+        case "거래량":
+          return (
+            parseFloat(b.volume.replace("B", "")) -
+            parseFloat(a.volume.replace("B", ""))
+          );
+        case "등락률":
+          return (
+            parseFloat(b.percentageChange.replace("%", "")) -
+            parseFloat(a.percentageChange.replace("%", ""))
+          );
+        case "거래대금":
+          return (
+            parseFloat(b.volume.replace("B", "")) * b.price -
+            parseFloat(a.volume.replace("B", "")) * a.price
+          ); // 거래대금 = 거래량 * 현재가
+        default:
+          return 0;
+      }
+    });
+    setSortedData(sortedCryptos);
+  }, [selectedOption]);
 
   const handleOptionChange = (option: string) => {
     setSelectedOption(option);
@@ -43,7 +75,7 @@ const CryptoItemsContainer: React.FC<CryptoItemsContainerProps> = ({
         ))}
       </div>
       <div className="flex flex-row overflow-x-auto space-x-4 w-80 max-w-full mx-auto flex-nowrap">
-        {CryptoCurrenciesData.map((item: CryptoItemData) => (
+        {sortedData.map((item: CryptoItemData) => (
           <div
             key={item.symbol}
             onClick={() => handleItemClick(item)}
