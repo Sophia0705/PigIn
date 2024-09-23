@@ -20,25 +20,16 @@ const CryptoItemsContainer: React.FC<CryptoItemsContainerProps> = ({
     const sortedCryptos = [...CryptoCurrenciesData].sort((a, b) => {
       switch (selectedOption) {
         case "시가총액":
-          return (
-            parseFloat(b.marketCap.replace("조", "")) -
-            parseFloat(a.marketCap.replace("조", ""))
-          );
+          return b.marketCap - a.marketCap;
         case "거래량":
-          return (
-            parseFloat(b.volume.replace("B", "")) -
-            parseFloat(a.volume.replace("B", ""))
-          );
+          return b.volume - a.volume;
         case "등락률":
           return (
             parseFloat(b.percentageChange.replace("%", "")) -
             parseFloat(a.percentageChange.replace("%", ""))
           );
         case "거래대금":
-          return (
-            parseFloat(b.volume.replace("B", "")) * b.price -
-            parseFloat(a.volume.replace("B", "")) * a.price
-          ); // 거래대금 = 거래량 * 현재가
+          return b.volume * b.price - a.volume * a.price; // 거래대금 = 거래량 * 현재가
         default:
           return 0;
       }
