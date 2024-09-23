@@ -8,7 +8,8 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { FaArrowLeft, FaRegHeart, FaHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { CgChevronLeft } from "react-icons/cg";
 import { CryptoItemData } from "../../interfaces/CryptoInterface";
 
 const CryptoDetailPage: React.FC = () => {
@@ -65,7 +66,7 @@ const CryptoDetailPage: React.FC = () => {
     <div className="min-h-screen w-full flex flex-col bg-customDarkGreen">
       <div className="flex justify-between items-center p-4 w-screen">
         <div onClick={handleBackClick} className="text-white">
-          <FaArrowLeft size={24} />
+          <CgChevronLeft size={24} />
         </div>
         <h1 className="text-xl font-bold text-center text-white">
           {cryptoData.name}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaTimes, FaSearch } from "react-icons/fa";
+import { FaTimes, FaSearch } from "react-icons/fa";
+import { CgChevronLeft } from "react-icons/cg";
 import CryptoSearchResults from "../components/CryptoSearchResults";
 import CryptoCurrenciesData from "../../../data/CryptoCurrenciesData.json";
 
@@ -32,7 +33,9 @@ const CryptoSearchPage: React.FC = () => {
 
   // 검색기록 삭제하는 함수
   const handleDeleteHistoryItem = (item: string) => {
-    setSearchHistory(searchHistory.filter((historyItem) => historyItem !== item));
+    setSearchHistory(
+      searchHistory.filter((historyItem) => historyItem !== item)
+    );
   };
 
   // 검색결과 반환하는 함수
@@ -45,7 +48,7 @@ const CryptoSearchPage: React.FC = () => {
       <div className="flex items-center justify-start w-full mb-4 space-x-2 relative">
         {/* 뒤로가기 버튼 */}
         <div onClick={handleBack} className="self-start mt-2 text-white">
-          <FaArrowLeft size={24} />
+          <CgChevronLeft size={24} />
         </div>
 
         {/* 검색 바 */}
@@ -68,9 +71,15 @@ const CryptoSearchPage: React.FC = () => {
       {/* 검색 기록 */}
       <div className="flex flex-wrap gap-2 w-full max-w-md mt-4">
         {searchHistory.map((item, index) => (
-          <div key={index} className="flex items-center bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
+          <div
+            key={index}
+            className="flex items-center bg-gray-200 text-gray-700 px-3 py-1 rounded-full"
+          >
             <span>{item}</span>
-            <div onClick={() => handleDeleteHistoryItem(item)} className="ml-2 text-gray-500">
+            <div
+              onClick={() => handleDeleteHistoryItem(item)}
+              className="ml-2 text-gray-500"
+            >
               <FaTimes />
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaTimes, FaSearch } from "react-icons/fa";
+import { FaTimes, FaSearch } from "react-icons/fa";
+import { CgChevronLeft } from "react-icons/cg";
 import StockSearchResults from "../components/StockSearchResults";
 import KoreanStocksData from "../../../data/KoreanStocksData.json";
 
@@ -49,7 +50,7 @@ const StockSearchPage: React.FC = () => {
       <div className="flex items-center justify-start w-full p-0 mb-4 space-x-2">
         {/* 뒤로가기 버튼 */}
         <div onClick={handleBack} className="self-start mt-2 text-white">
-          <FaArrowLeft size={24} />
+          <CgChevronLeft size={24} />
         </div>
 
         {/* 검색 바 */}
