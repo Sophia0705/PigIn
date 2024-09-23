@@ -27,19 +27,11 @@ public class StockWebSocketClient extends TextWebSocketHandler {
     private final AtomicReference<WebSocketSession> sessionRef = new AtomicReference<>();
     private final MultiStockDataProcessor dataProcessor;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final String appkey;
-    private final String appsecret;
-    private final String personalsecKey = "";
-    private final String custType = "P";
     private final String contentType = "utf-8";
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public StockWebSocketClient(MultiStockDataProcessor dataProcessor,
-                                @Value("${koreainvestment.APPKEY}") String appkey,
-                                @Value("${koreainvestment.APPSECRET}") String appsecret) {
+    public StockWebSocketClient(MultiStockDataProcessor dataProcessor) {
         this.dataProcessor = dataProcessor;
-        this.appkey = appkey;
-        this.appsecret = appsecret;
     }
 
     public void connect(String url) throws Exception {
