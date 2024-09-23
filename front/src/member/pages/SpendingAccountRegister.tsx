@@ -3,6 +3,20 @@ import { useStore } from '../../store/SpendingAccountStore'; // Zustand로 관�
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 
+const bankOptions = [
+  '싸피뱅크',
+  'KB국민은행',
+  '신한은행',
+  '하나은행',
+  '우리은행',
+  'NH농협은행',
+  'IBK기업은행',
+  'SC제일은행',
+  '한국씨티은행',
+  '카카오뱅크',
+  '케이뱅크',
+];
+
 const SpendingAccountRegister: React.FC = () => {
   // Zustand 스토어에서 상태와 상태 변경 함수를 가져옵니다.
   const { formData, setFormData } = useStore();
@@ -22,6 +36,27 @@ const SpendingAccountRegister: React.FC = () => {
     return regex.test(password);
   };
 
+  // 계좌번호 입력 필드의 하이픈 자동 배치 함수
+  const handleAccountNumberChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value.replace(/[^0-9]/g, ''); // 숫자가 아닌 문자 제거
+    if (value.length <= 4) {
+      setFormData({ accountNumber: value });
+    } else if (value.length <= 8) {
+      setFormData({ accountNumber: value.slice(0, 4) + '-' + value.slice(4) });
+    } else {
+      setFormData({
+        accountNumber:
+          value.slice(0, 4) +
+          '-' +
+          value.slice(4, 8) +
+          '-' +
+          value.slice(8, 14),
+      });
+    }
+  };
+
   // 계좌번호 1원 인증 함수
   const handleAccountVerification = () => {
     // 실제 1원 인증 API 요청 로직을 여기에 추가
@@ -30,7 +65,9 @@ const SpendingAccountRegister: React.FC = () => {
   };
 
   // 입력 필드가 변경될 때 호출되는 핸들러 함수
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ [name]: value }); // 상태 업데이트
 
@@ -104,16 +141,24 @@ const SpendingAccountRegister: React.FC = () => {
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-
-          {/* 은행 이름 입력 필드 */}
-          <input
-            type="text"
+          {/* 은행 선택 필드 */}
+          <select
             name="bankName"
             value={formData.bankName}
             onChange={handleChange}
-            placeholder="은행이름"
-            className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-          />
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+            style={{
+              fontSize: '14px', // 선택지의 글자 크기를 줄여서 옵션 리스트의 크기를 줄임
+              padding: '4px', // 패딩을 줄여서 선택지 항목의 높이를 줄임
+            }}
+          >
+            <option value="">은행 선택</option>
+            {bankOptions.map((bank, index) => (
+              <option key={index} value={bank}>
+                {bank}
+              </option>
+            ))}
+          </select>
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
 
           {/* 계좌번호 입력 필드 및 1원 인증 버튼 */}
@@ -122,25 +167,25 @@ const SpendingAccountRegister: React.FC = () => {
               type="text"
               name="accountNumber"
               value={formData.accountNumber}
-              onChange={handleChange}
+              onChange={handleAccountNumberChange}
               placeholder="계좌번호"
               className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              maxLength={14} // 예시: 하이픈 포함 최대 14자리로 제한
             />
             <button
               type="button"
               onClick={handleAccountVerification}
-              className={`p-2 rounded ${
+              className={`px-3 py-2 rounded w-[70px] justify-center ${
                 formData.accountNumber
                   ? 'bg-[#9CF8E1] text-gray-900'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={!formData.accountNumber}
             >
-              1원 인증
+              인증
             </button>
           </div>
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-
           {/* 인증번호 입력 필드 */}
           <input
             type="text"
@@ -151,7 +196,6 @@ const SpendingAccountRegister: React.FC = () => {
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
             <input
@@ -182,7 +226,6 @@ const SpendingAccountRegister: React.FC = () => {
               ))}
           </div>
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-
           {/* 비밀번호 확인 입력 필드 */}
           <div className="relative flex items-center">
             <input
@@ -211,7 +254,6 @@ const SpendingAccountRegister: React.FC = () => {
               ))}
           </div>
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-
           {/* 계좌 등록 버튼 */}
           <button
             type="submit"

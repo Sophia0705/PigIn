@@ -18,7 +18,6 @@ const SignUpModal: React.FC = () => {
   const [isEmailValid, setIsEmailValid] = useState(true); // 이메일 유효성 상태
   const [isBirthValid, setIsBirthValid] = useState(true); // 생년월일 유효성 상태
   const [savingRate, setSavingRate] = useState(0); // 저축률 상태
-  const [savingRateValid, setSavingRateValid] = useState(true); // 저축률 유효성 상태
 
   // 이메일 유효성 검사 함수
   const isEmailFormatValid = (email: string) => {

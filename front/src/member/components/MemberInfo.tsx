@@ -2,7 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CiEdit } from 'react-icons/ci';
 
-export const MemberInfo: React.FC = () => {
+// MemberInfo 컴포넌트에서 openUpdateProfileModal props를 받음
+interface MemberInfoProps {
+  openUpdateProfileModal: () => void;
+}
+
+export const MemberInfo: React.FC<MemberInfoProps> = ({
+  openUpdateProfileModal,
+}) => {
   const navigate = useNavigate();
 
   // 회원 정보 데이터를 배열로 정의
@@ -32,7 +39,7 @@ export const MemberInfo: React.FC = () => {
           {info.editable && (
             <CiEdit
               className="text-gray-500 cursor-pointer text-4xl"
-              onClick={() => navigate('/edit')}
+              onClick={() => navigate('/update-profile')}
             />
           )}
         </div>

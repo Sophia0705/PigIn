@@ -1,56 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 
-const WithdrawalModal: React.FC = () => {
+const UpdateProfileModal: React.FC = () => {
   // Zustand 스토어에서 상태와 상태 변경 함수를 가져옵니다.
-  const { formData, setFormData } = useStore();
+  const { formData, setFormData, loadUserData } = useStore();
 
   // 상태 관리
-  const [showPassword, setShowPassword] = useState(false); // 비밀번호 가리기/보이기 상태
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // 비밀번호 확인 가리기/보이기 상태
-  const [passwordConfirm, setPasswordConfirm] = useState(''); // 비밀번호 확인
-  const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 상태
-  const [isEmailValid, setIsEmailValid] = useState(true); // 이메일 유효성 상태
-
-  // 이메일 유효성 검사 함수
-  const isEmailFormatValid = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 간단한 이메일 정규식
-    return regex.test(email);
-  };
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [isPasswordMatch, setIsPasswordMatch] = useState(false);
+  const [savingRate, setSavingRate] = useState(0);
 
   // 비밀번호 유효성 검사 함수
   const isPasswordValid = (password: string) => {
-    // 최소 8자 이상, 영문자(대소문자), 숫자, 특수문자를 포함할 수 있음
     const regex =
       /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+[\]{};':"\\|,.<>/?-]{8,}$/;
     return regex.test(password);
   };
 
-  // 입력 필드가 변경될 때 호출되는 핸들러 함수
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
 
-    // 이메일 유효성 검사
-    if (name === 'email') {
-      setIsEmailValid(isEmailFormatValid(value));
+    if (value.startsWith('0') && value.length > 1 && !value.includes('.')) {
+      value = value.slice(1);
     }
 
+    const parsedValue = parseFloat(value);
+    if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 10) {
+      setSavingRate(parsedValue);
+    } else if (value === '') {
+      setSavingRate(0);
+    }
+  };
+
+  // 회원 정보 수정 페이지가 렌더링될 때 기존 사용자 정보를 로드
+  useEffect(() => {
+    loadUserData(); // 상태에 저장된 사용자 데이터를 불러옴
+    setSavingRate(formData.savingRate); // 사용자 저장된 저축률을 설정
+  }, [loadUserData, formData.savingRate]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // 비밀번호 확인 필드와 비교하여 일치하는지 확인
     if (name === 'password' || name === 'passwordConfirm') {
       setIsPasswordMatch(formData.password === passwordConfirm);
     }
   };
 
-  // 비밀번호 필드 변경 핸들러
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, password: e.target.value });
   };
 
-  // 비밀번호 확인 필드 입력 핸들러
   const handlePasswordConfirmChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -59,62 +63,37 @@ const WithdrawalModal: React.FC = () => {
     setIsPasswordMatch(formData.password === value);
   };
 
-  // 폼 제출 시 호출되는 핸들러 함수 (회원탈퇴 처리)
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // 기본 폼 제출 동작을 방지하여 페이지 새로고침을 막습니다.
-    if (!isPasswordMatch) {
-      alert('비밀번호가 일치하지 않습니다.');
-      return;
-    }
-
-    console.log('탈퇴 정보:', formData.email, formData.password);
-    // 회원탈퇴 API 요청을 여기에 추가
-    alert('회원 탈퇴가 완료되었습니다.');
+    e.preventDefault();
+    console.log('Updated Data:', formData);
   };
 
-  // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
   const isFormValid = () => {
     return (
-      isEmailValid &&
-      formData.email &&
-      formData.password &&
-      passwordConfirm &&
-      isPasswordMatch &&
-      isPasswordValid(formData.password)
+      formData.name && isPasswordValid(formData.password) && isPasswordMatch
     );
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
-      {/* 모달 본체 */}
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
-          회원 탈퇴
+          회원 정보 수정
         </h2>
-
         <form
           onSubmit={handleSubmit}
           className="flex flex-col space-y-3 w-full"
         >
-          {/* 이메일 입력 필드 */}
+          {/* 이름 입력 필드 */}
           <input
-            type="email"
-            name="email"
-            value={formData.email}
+            type="text"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
-            placeholder="이메일"
-            className={`w-full p-2 border-none rounded focus:outline-none focus:ring-2 ${
-              isEmailValid
-                ? 'border-gray-300 focus:ring-green-300'
-                : 'border-red-500 focus:ring-red-500'
-            } mb-1`}
-            required
+            placeholder="이름"
+            className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
-          {!isEmailValid && (
-            <p className="text-xs text-red-500 mt-1">
-              유효한 이메일 주소를 입력해주세요.
-            </p>
-          )}
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
 
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
@@ -123,7 +102,7 @@ const WithdrawalModal: React.FC = () => {
               name="password"
               value={formData.password}
               onChange={handlePasswordChange}
-              placeholder="비밀번호"
+              placeholder="새 비밀번호"
               className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
             />
             <button
@@ -137,7 +116,6 @@ const WithdrawalModal: React.FC = () => {
                 <AiOutlineEye className="bg-transparent" />
               )}
             </button>
-            {/* 비밀번호 유효성 체크 아이콘 */}
             {formData.password &&
               (isPasswordValid(formData.password) ? (
                 <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
@@ -146,13 +124,15 @@ const WithdrawalModal: React.FC = () => {
               ))}
           </div>
 
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+
           {/* 비밀번호 확인 입력 필드 */}
           <div className="relative flex items-center">
             <input
               type={showPasswordConfirm ? 'text' : 'password'}
               value={passwordConfirm}
               onChange={handlePasswordConfirmChange}
-              placeholder="비밀번호 확인"
+              placeholder="새 비밀번호 확인"
               className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
             />
             <button
@@ -173,18 +153,48 @@ const WithdrawalModal: React.FC = () => {
                 <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
               ))}
           </div>
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
 
-          {/* 회원 탈퇴 버튼 */}
+          {/* 저축률 설정 */}
+          <div className="mt-4">
+            <label className="text-gray-700 text-sm block mb-2">
+              저축률 설정
+            </label>
+            <div className="flex items-center space-x-4 mt-2">
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="0.1"
+                value={savingRate}
+                onChange={handleSavingRateChange}
+                className="w-full"
+              />
+              <input
+                type="number"
+                min="0"
+                max="10"
+                step="0.1"
+                value={savingRate}
+                onChange={handleSavingRateChange}
+                className="w-7 p-1 text-right border-none border-gray-300 rounded"
+                disabled
+              />
+              <span className="!ml-0">%</span>
+            </div>
+          </div>
+
+          {/* 정보 수정 버튼 */}
           <button
             type="submit"
             className={`w-full py-2 rounded ${
               isFormValid()
-                ? 'bg-[#FF2414] text-gray-900 font-semibold hover:bg-[#FF2414]'
+                ? 'bg-[#9CF8E1] text-gray-900 font-semibold hover:bg-[#9CF8E1]'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             disabled={!isFormValid()}
           >
-            회원 탈퇴
+            정보 수정
           </button>
         </form>
       </div>
@@ -192,4 +202,4 @@ const WithdrawalModal: React.FC = () => {
   );
 };
 
-export default WithdrawalModal;
+export default UpdateProfileModal;
