@@ -2,6 +2,8 @@ package com.ssafy.c203.domain.members.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -33,6 +36,7 @@ public class Members {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private WithDrawalStatus status;
 
@@ -48,13 +52,15 @@ public class Members {
 
     private int savingRate;
 
-    private int savingAmount;
+    private int savingAmount = 0;
 
-    private AutoFundingStatus autoFundingStatus;
+    @Enumerated(EnumType.STRING)
+    private AutoFundingStatus autoFundingStatus = AutoFundingStatus.INACTIVE;
 
     @Builder
     public Members(String email, String password, String name, String phoneNumber,
-        WithDrawalStatus status, String userKey, String birth, String role, String refreshToken, int savingRate) {
+        WithDrawalStatus status, String userKey, String birth, String role, String refreshToken,
+        int savingRate) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -65,8 +71,6 @@ public class Members {
         this.role = role;
         this.refreshToken = refreshToken;
         this.savingRate = savingRate;
-        this.savingAmount = 0;
-        this.autoFundingStatus = AutoFundingStatus.INACTIVE;
     }
 
     public void updateUserKey(String userKey) {
@@ -85,7 +89,7 @@ public class Members {
         this.refreshToken = null;
     }
 
-    public void withDrawal(){
+    public void withDrawal() {
         this.status = WithDrawalStatus.INACTIVE;
     }
 
