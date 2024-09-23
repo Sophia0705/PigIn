@@ -19,7 +19,7 @@ public class Members {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -85,5 +85,9 @@ public class Members {
 
     public void updateSavingRate(int savingRate) {
         this.savingRate = savingRate;
+    }
+
+    public void updateId(Long id) {
+        this.id = id;
     }
 }

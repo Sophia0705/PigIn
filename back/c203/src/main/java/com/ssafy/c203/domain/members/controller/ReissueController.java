@@ -72,8 +72,8 @@ public class ReissueController {
             MemberNotFoundException::new);
 
         //make new JWT
-        String newAccess = jwtUtil.createJwt("access", username, role, 600000L, member.getUserKey());
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L, member.getUserKey());
+        String newAccess = jwtUtil.createJwt("access", username, role, 600000L, member.getUserKey(), member.getId());
+        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L, member.getUserKey(), member.getId());
 
         member.updateRefreshToken(newRefresh);
         membersRepository.save(member);

@@ -1,6 +1,7 @@
 package com.ssafy.c203.common.exception;
 
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
+import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
@@ -28,6 +29,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(WrongPasswordException.class)
     public ResponseEntity<String> handleWrongPasswordException(WrongPasswordException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationNotFoundException.class)
+    public ResponseEntity<String> handleAuthenticationNotFoundException(AuthenticationNotFoundException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }

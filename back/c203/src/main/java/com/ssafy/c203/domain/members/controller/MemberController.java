@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.members.controller;
 
+import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
@@ -8,7 +9,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
-import com.ssafy.c203.domain.members.dto.RequestDto.UpdatePasswordDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.service.MemberService;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -133,9 +135,10 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body("메시지 전송 실패!");
     }
 
-    @PutMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
-        memberService.updatePassword(updatePasswordDto);
+    @PutMapping("/update-member")
+    public ResponseEntity<?> updatePassword(@RequestBody UpdateMemberDto updateMemberDto, @AuthenticationPrincipal
+        CustomUserDetails customUserDetails) {
+        memberService.updateMember(updateMemberDto, customUserDetails.getUserId());
         return ResponseEntity.ok("패스워드 변경을 완료했습니다.");
     }
 

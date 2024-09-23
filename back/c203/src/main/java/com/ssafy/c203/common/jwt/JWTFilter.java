@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 access키에 담긴 토큰을 꺼냄
         String accessToken = request.getHeader("access");
-
+        System.out.println(accessToken);
 // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {
 
@@ -52,7 +52,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 // 토큰이 access인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(accessToken);
-
+        System.out.println(category);
         if (!category.equals("access")) {
 
             //response body
@@ -67,8 +67,12 @@ public class JWTFilter extends OncePerRequestFilter {
 // username, role 값을 획득
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
+        String userKey = jwtUtil.getUserKey(accessToken);
+        Long userId = jwtUtil.getUserId(accessToken);
 
-        Members userEntity = Members.builder().email(username).role(role).build();
+        Members userEntity = Members.builder().email(username).role(role).userKey(userKey).build();
+        userEntity.updateId(userId);
+        System.out.println(userEntity.toString());
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());

@@ -16,4 +16,6 @@ public interface MembersRepository extends JpaRepository<Members, Integer> {
     Members findByRefreshToken(String refreshToken);
 
     Optional<Members> findByPhoneNumberAndStatus(String phoneNumber, WithDrawalStatus withDrawalStatus);
+
+    Optional<Members> findByIdAndStatus(Long id, WithDrawalStatus withDrawalStatus);
 }

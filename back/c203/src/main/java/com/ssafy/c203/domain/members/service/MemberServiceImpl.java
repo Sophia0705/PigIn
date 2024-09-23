@@ -7,13 +7,14 @@ import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
-import com.ssafy.c203.domain.members.dto.RequestDto.UpdatePasswordDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
+import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
@@ -139,23 +140,21 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean MMSCompare(MMSCompareDto mmsCompareDto) {
-        Optional<MMSAuthentication> memberAuthentication = authenticationRepository.findFirstByPhoneNumberAndAuthenticationNumberAndDeadlineBeforeOrderByCreateTimeDesc(
+        MMSAuthentication authentication = authenticationRepository.findFirstByPhoneNumberAndAuthenticationNumberAndDeadlineBeforeOrderByCreateTimeDesc(
             mmsCompareDto.getPhoneNumber(), mmsCompareDto.getAuthenticationNumber(),
-            LocalDateTime.now());
-        if (memberAuthentication.isPresent()) {
-            MMSAuthentication authentication = memberAuthentication.get();
-            if (mmsCompareDto.getAuthenticationNumber()
-                .equals(authentication.getAuthenticationNumber())) {
-                return true;
-            }
+            LocalDateTime.now()).orElseThrow(AuthenticationNotFoundException::new);
+        if (mmsCompareDto.getAuthenticationNumber()
+            .equals(authentication.getAuthenticationNumber())) {
+            return true;
+        } else {
             throw new AuthenticationConflictException();
         }
-        return false;
     }
 
     @Override
     public void withDrawalUser(String email) {
-        Members member = membersRepository.findByEmailAndStatus(email, WithDrawalStatus.ACTIVE).orElseThrow(MemberNotFoundException::new);
+        Members member = membersRepository.findByEmailAndStatus(email, WithDrawalStatus.ACTIVE)
+            .orElseThrow(MemberNotFoundException::new);
         member.withDrawal();
     }
 
@@ -167,7 +166,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public String findEmail(FindIdDto findIdDto) {
-        Members member = membersRepository.findByPhoneNumberAndStatus(findIdDto.getPhoneNumber(), WithDrawalStatus.ACTIVE).orElseThrow(MemberNotFoundException::new);
+        Members member = membersRepository.findByPhoneNumberAndStatus(findIdDto.getPhoneNumber(),
+            WithDrawalStatus.ACTIVE).orElseThrow(MemberNotFoundException::new);
         if (member.getName().equals(findIdDto.getName())) {
             return member.getEmail();
         }
@@ -176,7 +176,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean findPassoword(FindPasswordDto findPasswordDto) throws Exception {
-        Members member = membersRepository.findByEmailAndStatus(findPasswordDto.getEmail(), WithDrawalStatus.ACTIVE)
+        Members member = membersRepository.findByEmailAndStatus(findPasswordDto.getEmail(),
+                WithDrawalStatus.ACTIVE)
             .orElseThrow(MemberNotFoundException::new);
         //멤버 존재
         //휴대전화 인증
@@ -206,7 +207,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void refreshPassword(RefreshPassowrdDto refreshPassowrdDto) {
-        Members member = membersRepository.findByEmailAndStatus(refreshPassowrdDto.getEmail(), WithDrawalStatus.ACTIVE)
+        Members member = membersRepository.findByEmailAndStatus(refreshPassowrdDto.getEmail(),
+                WithDrawalStatus.ACTIVE)
             .orElseThrow(MemberNotFoundException::new);
         String password = bCryptPasswordEncoder.encode(refreshPassowrdDto.getPassword());
 
@@ -214,12 +216,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void updatePassword(UpdatePasswordDto updatePasswordDto) {
-        Members member = membersRepository.findByEmailAndStatus(updatePasswordDto.getEmail(), WithDrawalStatus.ACTIVE)
+    public void updateMember(UpdateMemberDto updateMemberDto, Long userId) {
+        Members member = membersRepository.findByIdAndStatus(userId, WithDrawalStatus.ACTIVE)
             .orElseThrow(MemberNotFoundException::new);
         if (member.getPassword().equals(bCryptPasswordEncoder.encode(
-            updatePasswordDto.getOldPassword()))) {
-            member.updatePassword(bCryptPasswordEncoder.encode(updatePasswordDto.getNewPassword()));
+            updateMemberDto.getOldPassword()))) {
+            member.updatePassword(bCryptPasswordEncoder.encode(updateMemberDto.getNewPassword()));
+            member.updateSavingRate(updateMemberDto.getSavingRate());
         } else {
             throw new WrongPasswordException();
         }

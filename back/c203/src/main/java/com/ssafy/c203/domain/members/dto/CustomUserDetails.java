@@ -55,4 +55,12 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public String getUserKey(){
+        return userEntity.getUserKey();
+    }
+
+    public Long getUserId(){
+        return userEntity.getId();
+    }
 }
