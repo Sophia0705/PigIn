@@ -22,6 +22,9 @@ public class MemberAccount {
     @Column(nullable = false)
     private String accountNo;
 
+    @Column(nullable = false)
+    private String bank;
+
     @OneToOne
     @JoinColumn(name = "member_id")
     private Members member;

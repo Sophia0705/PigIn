@@ -1,9 +1,11 @@
 package com.ssafy.c203.domain.members.controller;
 
+import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -132,5 +134,21 @@ public class MemberController {
     public ResponseEntity<?> refreshPassword(@RequestBody RefreshPassowrdDto refreshPassowrdDto) {
         memberService.refreshPassword(refreshPassowrdDto);
         return ResponseEntity.ok("패스워드 변경완료");
+    }
+
+    @PostMapping("/account-authentication")
+    public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo) {
+        return null;
+    }
+
+    @PostMapping("/account-authentication-compare")
+    public ResponseEntity<?> accountAuthenticationCompare(@RequestBody
+    AccountAuthenticationCompareDto accountAuthenticationCompareDto) {
+        return null;
+    }
+
+    @PostMapping("/account")
+    public ResponseEntity<?> addAccount(@RequestBody MemberAccountDto memberAccountDto) {
+        return null;
     }
 }
