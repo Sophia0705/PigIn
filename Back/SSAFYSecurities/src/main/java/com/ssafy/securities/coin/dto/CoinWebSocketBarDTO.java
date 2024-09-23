@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CoinBarDTO {
+public class CoinWebSocketBarDTO {
 
     @JsonProperty("type")
     private String type;

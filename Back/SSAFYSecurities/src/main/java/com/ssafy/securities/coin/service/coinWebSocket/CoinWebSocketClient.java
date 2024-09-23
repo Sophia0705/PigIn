@@ -2,10 +2,8 @@ package com.ssafy.securities.coin.service.coinWebSocket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.securities.coin.dto.CoinBarDTO;
-import com.ssafy.securities.stock.dto.StockBarDTO;
+import com.ssafy.securities.coin.dto.CoinWebSocketBarDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -27,11 +25,11 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
     private final AtomicReference<WebSocketSession> sessionRef = new AtomicReference<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void connect(String url, String token) throws Exception {
+    public void connect(String url) throws Exception {
         WebSocketClient client = new StandardWebSocketClient();
 
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, token);
+//        headers.add(HttpHeaders.AUTHORIZATION, token);
 
         sessionRef.set(client.doHandshake(this, headers, URI.create(url)).get());
         log.info("Coin WebSocket connected successfully");
@@ -40,9 +38,9 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
     public void subscribeStock(List<String> stockCodes) throws Exception {
         WebSocketSession session = sessionRef.get();
 //        if (session != null && session.isOpen()) {
-            String subscriptionMessage = createSubscriptionMessage(stockCodes);
-            session.sendMessage(new TextMessage(subscriptionMessage));
-            log.info("Subscribed to stock: {}", stockCodes);
+        String subscriptionMessage = createSubscriptionMessage(stockCodes);
+        session.sendMessage(new TextMessage(subscriptionMessage));
+        log.info("Subscribed to stock: {}", stockCodes);
 //        } else {
 //            log.error("WebSocket session is not open");
 //        }
@@ -52,7 +50,7 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         try {
             String payload = message.getPayload();
-            CoinBarDTO stockData = parseCoinData(payload);
+            CoinWebSocketBarDTO stockData = parseCoinData(payload);
             log.info("Received Coin data: {}", stockData);
             // Here you can process the stock data further, e.g., save to database or notify clients
         } catch (Exception e) {
@@ -72,10 +70,10 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
         return subMessage;
     }
 
-    private CoinBarDTO parseCoinData(String payload) throws JsonProcessingException {
+    private CoinWebSocketBarDTO parseCoinData(String payload) throws JsonProcessingException {
         // This is a simplified parsing. Adjust according to the actual data structure.
         Map<String, Object> data = objectMapper.readValue(payload, Map.class);
-        return CoinBarDTO.builder()
+        return CoinWebSocketBarDTO.builder()
                 .code((String) data.get("code"))
                 .tradePrice((Double) data.get("trade_price"))
                 .tradeVolume((Double) data.get("trade_volume"))

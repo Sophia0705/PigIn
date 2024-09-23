@@ -3,6 +3,7 @@ package com.ssafy.securities.stock.service.stockWebSocket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -17,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class StockWebSocketService {
 
@@ -34,9 +36,9 @@ public class StockWebSocketService {
     private final StockWebSocketClient webSocketClient;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public StockWebSocketService(StockWebSocketClient webSocketClient) {
-        this.webSocketClient = webSocketClient;
-    }
+//    public StockWebSocketService(StockWebSocketClient webSocketClient) {
+//        this.webSocketClient = webSocketClient;
+//    }
 
     @PostConstruct
     public void init() {
