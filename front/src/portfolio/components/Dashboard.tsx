@@ -5,6 +5,11 @@ const COLORS = ["#BBF5E2", "#6183EE", "#ECCD4A", "#FF6B6B"];
 
 const CustomLabel = ({ viewBox, totalValue, totalProfit, totalProfitRate }) => {
   const { cx, cy } = viewBox;
+
+  console.log(totalProfit);
+  console.log(Math.abs(totalProfit));
+  console.log(Math.abs(totalProfit).toLocaleString());
+
   return (
     <g>
       <text
@@ -21,7 +26,7 @@ const CustomLabel = ({ viewBox, totalValue, totalProfit, totalProfitRate }) => {
         y={cy + 10}
         textAnchor="middle"
         dominantBaseline="central"
-        className={`text-sm ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+        className={`text-sm font-semibold ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
       >
         {totalProfit >= 0 ? "+" : "-"}
         {Math.abs(totalProfit).toLocaleString()}원
@@ -31,7 +36,7 @@ const CustomLabel = ({ viewBox, totalValue, totalProfit, totalProfitRate }) => {
         y={cy + 30}
         textAnchor="middle"
         dominantBaseline="central"
-        className={`text-sm ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+        className={`text-sm font-semibold ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
       >
         ({(totalProfitRate * 100).toFixed(2)}%{totalProfit >= 0 ? "▲" : "▼"})
       </text>
@@ -63,9 +68,9 @@ const Dashboard: React.FC = () => {
   const totalProfit = totalValue * totalProfitRate;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white h-full rounded-lg shadow-md p-4">
       <h2 className="text-3xl font-bold mb-2">My Portfolio</h2>
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-gray-500 mb-1">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
       </p>
       <div className="flex justify-between items-center">
@@ -113,22 +118,26 @@ const Dashboard: React.FC = () => {
             return (
               <div
                 key={category.name}
-                className="flex items-center justify-between mb-2"
+                className="mb-2" // 각 카테고리 항목 사이의 간격
               >
-                <div className="flex items-center">
+                <div className="flex items-center mb-1">
+                  {/* 색상 원과 카테고리 이름을 포함하는 상단 줄 */}
                   <div
                     className="w-3 h-3 rounded-full mr-2"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   ></div>
-                  <span>{category.name}</span>
+                  <span className="text-gray-700 text-sm font-medium">
+                    {category.name}
+                  </span>{" "}
                 </div>
-                <span
-                  className={`font-bold ${categoryProfitRate >= 0 ? "text-green-500" : "text-red-500"}`}
-                >
-                  {((category.totalValue / totalValue) * 100).toFixed(0)}% (
-                  {category.totalValue.toLocaleString()}원){" "}
-                  {categoryProfitRate >= 0 ? "▲" : "▼"}
-                </span>
+                <div className="pl-5 text-sm">
+                  <span className="">
+                    {((category.totalValue / totalValue) * 100).toFixed(1)}%{" "}
+                  </span>
+                  <span className="ml-2">
+                    ({category.totalValue.toLocaleString()}원)
+                  </span>
+                </div>
               </div>
             );
           })}

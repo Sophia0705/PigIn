@@ -25,8 +25,11 @@ const MyPortfolio: React.FC = () => {
 
   return (
     <div className="bg-gray-100 h-screen flex flex-col">
-      <div className="bg-customDarkGreen flex-none" style={{ height: 'calc(33.33vh - 20px)' }}>
-        <div className="max-w-3xl mx-auto h-full py-4 px-4">
+      <div
+        className="bg-customDarkGreen flex-none"
+        style={{ height: "calc(44vh - 20px)" }}
+      >
+        <div className="max-w-5xl mx-auto h-full py-6 px-6">
           <Dashboard />
         </div>
       </div>

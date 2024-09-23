@@ -8,25 +8,25 @@
     {
       "name": "삼성전자",
       "quantity": 0.1,
-      "price": 5000000,
+      "price": 500000,
       "profitRate": 0.15
     },
     {
       "name": "SK하이닉스",
       "quantity": 0.2,
-      "price": 4000000,
+      "price": 400000,
       "profitRate": -0.05
     },
     {
       "name": "NAVER",
       "quantity": 0.05,
-      "price": 3000000,
+      "price": 300000,
       "profitRate": 0.1
     },
     {
       "name": "카카오",
       "quantity": 0.15,
-      "price": 3000000,
+      "price": 300000,
       "profitRate": -0.08
     }
   ],
@@ -62,19 +62,19 @@
     {
       "name": "미국 달러",
       "quantity": 20,
-      "price": 2200000,
+      "price": 1400,
       "profitRate": 0.02
     },
     {
       "name": "유로",
       "quantity": 10,
-      "price": 1300000,
+      "price": 1300,
       "profitRate": -0.01
     },
     {
       "name": "일본 엔",
       "quantity": 500,
-      "price": 500000,
+      "price": 90,
       "profitRate": 0.05
     }
   ]
