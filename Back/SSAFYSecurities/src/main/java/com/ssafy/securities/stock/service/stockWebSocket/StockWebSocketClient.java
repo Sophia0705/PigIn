@@ -12,8 +12,12 @@ import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -28,6 +32,7 @@ public class StockWebSocketClient extends TextWebSocketHandler {
     private final String personalsecKey = "";
     private final String custType = "P";
     private final String contentType = "utf-8";
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public StockWebSocketClient(MultiStockDataProcessor dataProcessor,
                                 @Value("${koreainvestment.APPKEY}") String appkey,
@@ -43,11 +48,11 @@ public class StockWebSocketClient extends TextWebSocketHandler {
         log.info("WebSocket connected successfully");
     }
 
-    public void subscribeStock(String stockCode) {
+    public void subscribeStock(String stockCode, String approvalKey) {
         WebSocketSession session = sessionRef.get();
 //        if (session != null && session.isOpen()) {
             try {
-                String subscriptionMessage = createSubscriptionMessage(stockCode);
+                String subscriptionMessage = createSubscriptionMessage(stockCode, approvalKey);
                 session.sendMessage(new TextMessage(subscriptionMessage));
                 log.info("Subscription request sent for stock: {} = {}", stockCode, subscriptionMessage);
             } catch (Exception e) {
@@ -61,24 +66,24 @@ public class StockWebSocketClient extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         String payload = message.getPayload();
-        log.info("Received message: {}", message);
+//        log.info("Received message:{} - {}",message, message.getPayload());
         try {
             // 메시지 처리 로직 (종목 코드 추출 및 데이터 처리)
             StockBarDTO stockData = parseStockData(payload);
+//            log.info(stockData.toString());
             String stockCode = extractStockCode(payload); // 이 메서드는 구현 필요
             dataProcessor.handleMessage(stockCode, stockData);
         } catch (Exception e) {
+            log.info("Other: {}", message.getPayload());
             //log.error("Error processing message: ", e);
         }
     }
-    private String createSubscriptionMessage(String stockCode) throws JsonProcessingException {
+    private String createSubscriptionMessage(String stockCode, String approvalKey) throws JsonProcessingException {
         Map<String, Object> header = new HashMap<>();
-        header.put("personalseckey", personalsecKey);
-        header.put("appsecret", appsecret);
+        header.put("approval_key", approvalKey);
+        header.put("custtype", "P");
         header.put("tr_type", "1");
-        header.put("appkey", appkey);
         header.put("content-type", contentType);
-        header.put("custtype", custType);
 
         Map<String, Object> input = new HashMap<>();
         input.put("tr_id", "H0STCNT0");
@@ -116,7 +121,11 @@ public class StockWebSocketClient extends TextWebSocketHandler {
     private String extractStockCode(String payload) {
         // 페이로드에서 종목 코드를 추출하는 로직 구현
         // 예: JSON 파싱 후 해당 필드 추출
-        return ""; // 실제 구현 필요
+        String[] arrValue = payload.split("\\^");
+//        log.info("payload: {}", Arrays.toString(arrValue));
+        String[] keys = arrValue[0].split("\\|");
+//        log.info("keys: {}", Arrays.toString(keys));
+        return keys[3]; // 실제 구현 필요
     }
 
 }

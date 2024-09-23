@@ -4,6 +4,8 @@ import com.ssafy.securities.stock.dto.StockBarDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,17 +29,19 @@ public class MultiStockDataProcessor {
     }
 
     private void startScheduler() {
-        scheduler.scheduleAtFixedRate(this::processAndSaveData, 0, 1, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(this::processAndSaveData, 0, 10, TimeUnit.SECONDS);
         log.info("Scheduler started");
     }
 
     private void processAndSaveData() {
-        log.info("Processing data");
+        log.info("Processing date:{}[{}]", LocalDate.now(), LocalTime.now());
+        log.info("====================================================================");
         latestDataMap.forEach((stockCode, stockData) -> {
             stockDataService.saveStockData(stockCode, stockData);
             System.out.println("Processed and saved data for stock: " + stockCode);
         });
         latestDataMap.clear();
+        log.info("====================================================================");
     }
 
     public void shutdown() {
