@@ -71,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
         members.updatePassword(password);
 
         //userkey 지정
-        Map<String, String> requestBody = new HashMap<String, String>();
+        Map<String, String> requestBody = new HashMap<>();
         requestBody.put("userId", members.getEmail());
 
         HttpHeaders headers = new HttpHeaders();
@@ -95,6 +95,7 @@ public class MemberServiceImpl implements MemberService {
         requestBody = new HashMap<>();
         requestBody.put("userKey", userKey);
 
+        //Todo : 등록용 계좌개설을 해야함
         entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<AccountNoDto> AccountNoResponse = restTemplate.exchange(

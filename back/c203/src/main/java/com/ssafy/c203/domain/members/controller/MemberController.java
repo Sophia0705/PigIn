@@ -59,6 +59,7 @@ public class MemberController {
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@ModelAttribute SignUpDto signUpDto)
         throws NoSuchAlgorithmException {
+        //Todo : 유저 저축 최대금액 설정
         memberService.singUp(Members
             .builder()
             .name(signUpDto.getName())
@@ -140,6 +141,7 @@ public class MemberController {
     public ResponseEntity<?> updatePassword(@RequestBody UpdateMemberDto updateMemberDto,
         @AuthenticationPrincipal
         CustomUserDetails customUserDetails) {
+        //Todo : 유저 저축 최대금액 수정부분 추가
         memberService.updateMember(updateMemberDto, customUserDetails.getUserId());
         return ResponseEntity.ok("패스워드 변경을 완료했습니다.");
     }
