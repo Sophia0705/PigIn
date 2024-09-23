@@ -1,20 +1,18 @@
 import React, { useEffect, useCallback } from "react";
 import { CgClose } from "react-icons/cg";
 
-interface CryptoPurchaseModalProps {
+interface GoldPurchaseModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  cryptoName: string;
-  cryptoPrice: number;
+  goldPrice: number;
 }
 
-const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
+const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  cryptoName,
-  cryptoPrice,
+  goldPrice,
 }) => {
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
@@ -30,13 +28,6 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
     setInputValue((prev) => prev.slice(0, -1));
   }, [setInputValue]);
 
-  const handleAddAmount = (amount: number) => {
-    setInputValue((prev) => {
-      const newValue = parseInt(prev || "0") + amount;
-      return newValue.toString();
-    });
-  };
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Backspace") {
@@ -45,19 +36,17 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleBackspace]);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
+  const percentage = ((inputAmount / goldPrice) * 100).toFixed(2);
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
-        {/* 모달 상단 */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-black flex justify-center">
             얼마를 매수하시겠어요?
@@ -68,10 +57,9 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {cryptoName} 현재가 : {cryptoPrice.toLocaleString()}원
+          금 현재가 : {goldPrice.toLocaleString()}원
         </div>
 
-        {/* 가격 표시 칸 */}
         <div className="relative flex justify-center mb-6">
           <input
             type="text"
@@ -90,25 +78,22 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
           </div>
         </div>
 
-        {/* 500, 1000, 3000, 5000원 추가 버튼 */}
         <div className="flex justify-center space-x-4 mb-6">
-          {[
-            { label: "+500원", value: 500 },
-            { label: "+1000원", value: 1000 },
-            { label: "+3000원", value: 3000 },
-            { label: "+5000원", value: 5000 },
-          ].map((button) => (
+          {[500, 1000, 3000, 5000].map((amount) => (
             <button
-              key={button.value}
+              key={amount}
               className="bg-customDarkGreen p-2 text-sm rounded-full  transition-colors"
-              onClick={() => handleAddAmount(button.value)}
+              onClick={() =>
+                setInputValue((prev) =>
+                  (parseInt(prev || "0") + amount).toString()
+                )
+              }
             >
-              {button.label}
+              +{amount.toLocaleString()}원
             </button>
           ))}
         </div>
 
-        {/* 키패드 */}
         <div className="grid grid-cols-3 gap-4 justify-center">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((num) => (
             <button
@@ -127,15 +112,12 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
           </button>
         </div>
 
-        {/* 매수하기 버튼 */}
-        <div className="flex justify-center mt-1">
-          <button className="bg-green-500 text-white w-full py-3 rounded-md text-lg font-bold">
-            매수하기
-          </button>
-        </div>
+        <button className="w-full bg-green-500 text-white py-3 rounded-md mt-1">
+          매수하기
+        </button>
       </div>
     </div>
   );
 };
 
-export default CryptoPurchaseModal;
+export default GoldPurchaseModal;
