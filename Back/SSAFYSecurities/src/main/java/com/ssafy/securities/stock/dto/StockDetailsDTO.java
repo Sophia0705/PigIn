@@ -3,6 +3,8 @@ package com.ssafy.securities.stock.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class StockDetailsDTO {
     @JsonProperty("prdy_vrss")
@@ -27,7 +29,7 @@ public class StockDetailsDTO {
     private String htsKorIsnm;         // 종목명 (한글)
 
     @JsonProperty("stck_prpr")
-    private String stckPrpr;           // 현재가
+    private String stckPrpr;           // 현재가 (종가)
 
     @JsonProperty("stck_shrn_iscd")
     private String stckShrnIscd;       // 종목코드
@@ -94,4 +96,7 @@ public class StockDetailsDTO {
 
     @JsonProperty("itewhol_loan_rmnd_ratem")
     private String itewholLoanRmndRate; // 대차잔고 비율
+
+    @JsonProperty("stck_bsop_date")
+    private LocalDate stckBsopDate;
 }

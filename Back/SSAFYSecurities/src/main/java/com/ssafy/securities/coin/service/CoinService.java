@@ -2,6 +2,10 @@ package com.ssafy.securities.coin.service;
 
 import com.ssafy.securities.coin.dto.CoinRestDTO;
 import com.ssafy.securities.coin.dto.CoinWebSocketBarDTO;
+import com.ssafy.securities.coin.entity.CoinMinute;
+import com.ssafy.securities.coin.repository.CoinHistoryRepository;
+import com.ssafy.securities.coin.repository.CoinMinuteRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +29,14 @@ public class CoinService {
     @Value("#{'${upbit.codes}'.split(',')}")
     private List<String> codes;
     private final RestTemplate restTemplate;
+
+    private final CoinHistoryRepository coinHistoryRepository;
+    private final CoinMinuteRepository coinMinuteRepository;
+
+    @PostConstruct
+    public void init() {
+        
+    }
 
     public List<CoinRestDTO> getBar(String market, String candle, String count) {
 

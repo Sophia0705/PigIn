@@ -1,5 +1,6 @@
 package com.ssafy.securities.coin.entity;
 
+import com.ssafy.securities.coin.dto.CoinRestDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 public class CoinHistory {
 
     @Id
-    private String id;
+    private String id; // [code + date]
     private String coin; // 코인 종류
     private LocalDate date;
     private Double open;
@@ -26,4 +27,16 @@ public class CoinHistory {
     private Double low;
     private Double volume;
     private String interval;
+
+    public CoinHistory (CoinRestDTO coinRestDTO, String interval) {
+        this.id = coinRestDTO.getMarket() + coinRestDTO.getTimestamp();
+        this.coin = coinRestDTO.getMarket();
+        this.date = coinRestDTO.getCandleDateTimeKst().toLocalDate();
+        this.open = coinRestDTO.getOpeningPrice();
+        this.close = coinRestDTO.getTradePrice();
+        this.high = coinRestDTO.getHighPrice();
+        this.low = coinRestDTO.getLowPrice();
+        this.volume = coinRestDTO.getCandleAccTradeVolume();
+        this.interval = interval;
+    }
 }

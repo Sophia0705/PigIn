@@ -1,6 +1,6 @@
 package com.ssafy.securities.stock.service.stockWebSocket;
 
-import com.ssafy.securities.stock.dto.StockBarDTO;
+import com.ssafy.securities.stock.dto.StockDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class MultiStockDataProcessor {
 
-    private final ConcurrentHashMap<String, StockBarDTO> latestDataMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, StockDTO> latestDataMap = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final StockDataService stockDataService;
 
@@ -24,7 +24,7 @@ public class MultiStockDataProcessor {
         startScheduler();
     }
 
-    public void handleMessage(String stockCode, StockBarDTO stockData) {
+    public void handleMessage(String stockCode, StockDTO stockData) {
         latestDataMap.put(stockCode, stockData);
     }
 
@@ -37,8 +37,9 @@ public class MultiStockDataProcessor {
         log.info("Processing date:{}[{}]", LocalDate.now(), LocalTime.now());
         log.info("====================================================================");
         latestDataMap.forEach((stockCode, stockData) -> {
-            stockDataService.saveStockData(stockCode, stockData);
             System.out.println("Processed and saved data for stock: " + stockCode);
+            stockDataService.saveStockData(stockData);
+
         });
         latestDataMap.clear();
         log.info("====================================================================");
