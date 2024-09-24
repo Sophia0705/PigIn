@@ -6,7 +6,7 @@ import {
   Outlet,
 } from 'react-router-dom';
 import './App.css';
-import Navbar from './components/Navbar';
+import Navbar from './components/Navbar'; 
 import InvestmentPage from './pages/InvestmentPage';
 import StockDetailPage from './investment/stock/pages/StockMainPage';
 import CryptoDetailPage from './investment/crypto/pages/CryptoMainPage';
