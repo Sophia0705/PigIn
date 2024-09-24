@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { CgChevronLeft } from "react-icons/cg";
+import { CgChevronLeft, CgCheckR, CgAddR } from "react-icons/cg";
 import GoldData from "../../../data/GoldData.json";
 import GoldPurchaseModal from "../components/GoldPurchaseModal";
+import GoldSellModal from "../components/GoldSellModal";
 import GoldDetailGraph from "../components/GoldDetailGraph";
 import GoldDetailInfo from "../components/GoldDetailInfo";
 import GoldNews from "../components/GoldNews";
@@ -25,15 +26,19 @@ const GoldDetailPage: React.FC = () => {
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>("7일");
   const [selectedInfoType, setSelectedInfoType] = useState<string>("상세정보");
   const [isLiked, setIsLiked] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
-  const [inputValue, setInputValue] = useState<string>("");
+  const [buyInputValue, setBuyInputValue] = useState<string>("");
+  const [isSellModalVisible, setIsSellModalVisible] = useState(false);
+  const [sellInputValue, setSellInputValue] = useState<string>("");
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleAddToPortfolio = () => {
-    alert(`금 추가 완료!`);
+    setIsAdded((prevAdded) => !prevAdded);
+    alert(isAdded ? "금 제거 완료!" : "금 추가 완료!");
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -52,9 +57,18 @@ const GoldDetailPage: React.FC = () => {
     setIsBuyModalVisible(true);
   };
 
-  const handleModalClose = () => {
+  const handleBuyModalClose = () => {
     setIsBuyModalVisible(false);
-    setInputValue("");
+    setBuyInputValue("");
+  };
+
+  const handleSellClick = () => {
+    setIsSellModalVisible(true);
+  };
+
+  const handleSellModalClose = () => {
+    setIsSellModalVisible(false);
+    setSellInputValue("");
   };
 
   const selectedData =
@@ -84,8 +98,13 @@ const GoldDetailPage: React.FC = () => {
           <CgChevronLeft size={24} />
         </div>
         <h1 className="text-xl font-bold text-center text-white">금</h1>
-        <div className="text-white" onClick={handleHeartClick}>
-          {isLiked ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
+        <div className="flex items-center space-x-4 text-white">
+          <div onClick={handleHeartClick}>
+            {isLiked ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
+          </div>
+          <div onClick={handleAddToPortfolio}>
+            {isAdded ? <CgCheckR size={28} /> : <CgAddR size={28} />}
+          </div>
         </div>
       </div>
 
@@ -159,25 +178,35 @@ const GoldDetailPage: React.FC = () => {
       {/* 매수, 매도 버튼 */}
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
         <button
-          className="w-1/2 bg-green-400 text-white py-2 rounded-lg mr-2"
+          className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
           onClick={handleBuyClick}
         >
           매수
         </button>
         <button
-          className="w-1/2 bg-blue-500 text-white py-2 rounded-lg ml-2"
-          onClick={handleAddToPortfolio}
+          className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
+          onClick={handleSellClick}
         >
-          자동투자하기
+          매도
         </button>
       </div>
 
       {/* 매수 모달 */}
       {isBuyModalVisible && (
         <GoldPurchaseModal
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          onClose={handleModalClose}
+          inputValue={buyInputValue}
+          setInputValue={setBuyInputValue}
+          onClose={handleBuyModalClose}
+          goldPrice={latestValue}
+        />
+      )}
+
+      {/* 매도 모달 */}
+      {isSellModalVisible && (
+        <GoldSellModal
+          inputValue={sellInputValue}
+          setInputValue={setSellInputValue}
+          onClose={handleSellModalClose}
           goldPrice={latestValue}
         />
       )}

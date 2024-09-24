@@ -1,20 +1,18 @@
 import React, { useEffect, useCallback } from "react";
 import { CgClose } from "react-icons/cg";
 
-interface CryptoPurchaseModalProps {
+interface GoldSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  cryptoName: string;
-  cryptoPrice: number;
+  goldPrice: number;
 }
 
-const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
+const GoldSellModal: React.FC<GoldSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  cryptoName,
-  cryptoPrice,
+  goldPrice,
 }) => {
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
@@ -52,15 +50,14 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
   }, [handleBackspace]);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
+  const percentage = ((inputAmount / goldPrice) * 100).toFixed(2);
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
-        {/* 모달 상단 */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-black flex justify-center">
-            얼마를 매수하시겠어요?
+            얼마를 매도하시겠어요?
           </h1>
           <div onClick={onClose} className="text-black">
             <CgClose size={24} />
@@ -68,21 +65,20 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {cryptoName} 현재가 : {cryptoPrice.toLocaleString()}원
+          금 현재 보유 : {goldPrice.toLocaleString()} 원
         </div>
 
-        {/* 가격 표시 칸 */}
         <div className="relative flex justify-center mb-6">
           <input
             type="text"
             value={inputValue}
             readOnly
-            className={`bg-transparent text-center text-black text-3xl w-3/4 p-2 transition-all ${
+            className={`bg-transparent text-center text-black text-3xl w-6/7 p-2 transition-all ${
               inputValue ? "border-b border-black" : ""
             }`}
           />
           <div
-            className={`absolute right-4 mt-3 flex items-center space-x-1 ${
+            className={`absolute right-4 mt-4 flex items-center space-x-1 ${
               inputValue ? "text-black" : ""
             }`}
           >
@@ -90,7 +86,6 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
           </div>
         </div>
 
-        {/* 500, 1000, 3000, 5000원 추가 버튼 */}
         <div className="flex justify-center space-x-4 mb-6">
           {[
             { label: "+500원", value: 500 },
@@ -100,7 +95,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
           ].map((button) => (
             <button
               key={button.value}
-              className="bg-customDarkGreen p-2 text-sm rounded-full  transition-colors"
+              className="bg-customDarkGreen p-2 text-sm rounded-full transition-colors"
               onClick={() => handleAddAmount(button.value)}
             >
               {button.label}
@@ -108,7 +103,6 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
           ))}
         </div>
 
-        {/* 키패드 */}
         <div className="grid grid-cols-3 gap-4 justify-center">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((num) => (
             <button
@@ -127,10 +121,9 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
           </button>
         </div>
 
-        {/* 매수하기 버튼 */}
         <div className="flex justify-center mt-1">
-          <button className="bg-green-500 text-white w-full py-3 rounded-md text-lg font-bold">
-            매수하기
+          <button className="bg-red-500 text-white text-lg py-3 rounded-lg w-full font-bold">
+            매도하기
           </button>
         </div>
       </div>
@@ -138,4 +131,4 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
   );
 };
 
-export default CryptoPurchaseModal;
+export default GoldSellModal;

@@ -16,7 +16,7 @@ const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
 }) => {
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
-      if (prev.length < 5) {
+      if (prev.length < 6) {
         return prev + number;
       } else {
         return prev;

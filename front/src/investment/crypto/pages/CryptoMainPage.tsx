@@ -23,7 +23,7 @@ const CryptoMainPage: React.FC = () => {
         <DetailPageGraph
           data={BTCData}
           subject="BTC"
-          value={latestValue.toString()}
+          value={latestValue.toLocaleString()}
           percentageChange={formattedPercentageChange}
         />
       </div>
