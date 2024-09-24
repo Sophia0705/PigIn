@@ -8,5 +8,4 @@ import lombok.ToString;
 public class MemberAccountDto {
     private String bank;
     private String accountNo;
-    private String email;
 }
