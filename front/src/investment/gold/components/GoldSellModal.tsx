@@ -65,7 +65,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          금 현재 가격 : {goldPrice.toLocaleString()} 원
+          금 현재 보유 : {goldPrice.toLocaleString()} 원
         </div>
 
         <div className="relative flex justify-center mb-6">

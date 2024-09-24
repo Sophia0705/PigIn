@@ -124,6 +124,7 @@ const CryptoDetailPage: React.FC = () => {
         </div>
       </div>
 
+      {/* 시간 범위 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
         {["7일", "1개월", "3개월", "1년"].map((option) => (
           <button
