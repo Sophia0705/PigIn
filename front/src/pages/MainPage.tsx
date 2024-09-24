@@ -15,7 +15,7 @@ interface FinanceState {
   savings: number;
 }
 
-const useFinanceStore = create<FinanceState>((set) => ({
+const useFinanceStore = create<FinanceState>((_set) => ({
   balance: 15100,
   stocks: 9060,
   cash: 3020,
@@ -135,7 +135,6 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
                   fill="#8884d8"
                   paddingAngle={5}
                   dataKey="value"
-                  activeShape={() => null} // 클릭 시 나타나는 네모 칸 제거
                 >
                   {data.map((entry, index) => (
                     <Cell
@@ -159,7 +158,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
             </ResponsiveContainer>
           </div>
           <div className="w-1/2 pl-8">
-            {data.map((category, index) => (
+            {data.map((category, _index) => (
               <div key={category.name} className="mb-2">
                 <div className="flex items-center mb-1">
                   <div

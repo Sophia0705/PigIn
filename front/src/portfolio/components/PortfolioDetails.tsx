@@ -31,7 +31,7 @@ const PortfolioDetails: React.FC = () => {
 
   const itemCount = category.items.length;
   const isItemLoaded = (index: number) => index < category.items.length;
-  const loadMoreItems = (startIndex: number, stopIndex: number) => {
+  const loadMoreItems = (_startIndex: number, _stopIndex: number) => {
     return Promise.resolve();
   };
 
@@ -90,7 +90,7 @@ const PortfolioDetails: React.FC = () => {
               itemCount={itemCount}
               loadMoreItems={loadMoreItems}
             >
-              {({ onItemsRendered, ref }) => (
+              {({ onItemsRendered, ref }: any) => (
                 <List
                   height={listHeight}
                   itemCount={itemCount}

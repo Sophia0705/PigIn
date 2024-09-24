@@ -3,7 +3,12 @@ import { usePortfolioStore } from "../../store/portfolioStore";
 
 const COLORS = ["#BBF5E2", "#6183EE", "#ECCD4A", "#FF6B6B"];
 
-const CustomLabel = ({ viewBox, totalValue, totalProfit, totalProfitRate }) => {
+const CustomLabel = ({
+  viewBox,
+  totalValue,
+  totalProfit,
+  totalProfitRate,
+}: any) => {
   const { cx, cy } = viewBox;
 
   // console.log(totalProfit);
@@ -88,7 +93,7 @@ const Dashboard: React.FC = () => {
                 dataKey="totalValue"
                 onClick={(_, index) => setActiveIndex(index)}
               >
-                {categories.map((entry, index) => (
+                {categories.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -112,9 +117,9 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="w-1/2 pl-8">
           {categories.map((category, index) => {
-            const categoryProfitRate =
-              category.items.reduce((sum, item) => sum + item.profitRate, 0) /
-              category.items.length;
+            // const categoryProfitRate =
+            //   category.items.reduce((sum, item) => sum + item.profitRate, 0) /
+            //   category.items.length;
             return (
               <div
                 key={category.name}
