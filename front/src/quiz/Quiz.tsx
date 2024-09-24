@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ShadowButton from "../components/ShadowButton";
 
+// SVG 파일을 React 컴포넌트로 import
 import Qimg from "../assets/Q image.svg";
 import Oimg from "../assets/O image.svg";
 import Ximg from "../assets/X image.svg";
@@ -19,7 +20,8 @@ const ResultModal: React.FC<ModalProps> = ({
   <div className="fixed inset-0 bg-gray-600 bg-opacity-40 overflow-y-auto h-full w-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
     <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md h-3/5">
       <div className="flex items-center justify-center mb-4">
-        {isCorrect ? <img src={Oimg} alt="O" /> : <img src={Ximg} alt="X" />}
+        {/* SVG 컴포넌트 직접 사용 */}
+        {isCorrect ? <Oimg /> : <Ximg />}
       </div>
       <p className="text-3xl font-semibold mb-4">
         {isCorrect ? "정답입니다!" : "틀렸습니다."}
@@ -64,7 +66,8 @@ const QuizPage: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-200">
       <div className="relative bg-customDarkGreen rounded-b-[40px] h-3/5 p-6 flex flex-col items-center pt-16">
-        <img src={Qimg} alt="Q" />
+        {/* SVG 컴포넌트 직접 사용 */}
+        <Qimg />
         <div
           className="bg-white rounded-[20px] shadow-lg p-8 w-11/12 max-w-md flex items-center justify-center"
           style={{ minHeight: "300px" }}
