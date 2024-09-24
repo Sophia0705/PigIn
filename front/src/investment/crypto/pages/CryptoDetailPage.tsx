@@ -1,27 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { CgChevronLeft } from "react-icons/cg";
-import GoldData from "../../../data/GoldData.json";
-import GoldPurchaseModal from "../components/GoldPurchaseModal";
-import GoldDetailGraph from "../components/GoldDetailGraph";
-import GoldDetailInfo from "../components/GoldDetailInfo";
-import GoldNews from "../components/GoldNews";
+import { CryptoItemData } from "../../interfaces/CryptoInterface";
+import CryptoPurchaseModal from "../components/CryptoPurchaseModal";
+import CryptoDetailGraph from "../components/CryptoDetailGraph";
+import CryptoDetailInfo from "../components/CryptoDetailInfo";
+import CryptoNews from "../components/CryptoNews";
 
-const GoldDetailPage: React.FC = () => {
+const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const latestValue = GoldData[GoldData.length - 1].value;
-  const previousValue = GoldData[GoldData.length - 2]?.value || 0;
-  const percentageChange = (
-    ((latestValue - previousValue) / previousValue) *
-    100
-  ).toFixed(2);
-  const formattedPercentageChange =
-    Number(percentageChange) >= 0
-      ? `+${percentageChange}%`
-      : `${percentageChange}%`;
-
+  const cryptoData = location.state?.item as CryptoItemData;
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>("7일");
   const [selectedInfoType, setSelectedInfoType] = useState<string>("상세정보");
   const [isLiked, setIsLiked] = useState(false);
@@ -33,7 +24,7 @@ const GoldDetailPage: React.FC = () => {
   };
 
   const handleAddToPortfolio = () => {
-    alert(`금 추가 완료!`);
+    alert(`${cryptoData.name} 추가 완료!`);
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -57,22 +48,22 @@ const GoldDetailPage: React.FC = () => {
     setInputValue("");
   };
 
+  if (!cryptoData) {
+    return <div>로딩중...</div>;
+  }
+
   const selectedData =
     selectedTimeRange === "7일"
-      ? GoldData.slice(-7)
-      : selectedTimeRange === "1개월"
-        ? GoldData.slice(-30)
-        : selectedTimeRange === "3개월"
-          ? GoldData.slice(-90)
-          : GoldData;
+      ? cryptoData.weeklyPrices
+      : cryptoData.monthlyPrices;
 
-  const chartData = selectedData.map((entry, index) => ({
+  const chartData = selectedData.map((price, index) => ({
     name: `Day ${index + 1}`,
-    value: entry.value,
+    value: price,
   }));
 
-  const minPrice = Math.min(...selectedData.map((data) => data.value));
-  const maxPrice = Math.max(...selectedData.map((data) => data.value));
+  const minPrice = Math.min(...selectedData);
+  const maxPrice = Math.max(...selectedData);
   const padding = (maxPrice - minPrice) * 0.1;
   const adjustedMin = minPrice - padding;
   const adjustedMax = maxPrice + padding;
@@ -83,31 +74,32 @@ const GoldDetailPage: React.FC = () => {
         <div onClick={handleBackClick} className="text-white">
           <CgChevronLeft size={24} />
         </div>
-        <h1 className="text-xl font-bold text-center text-white">금</h1>
+        <h1 className="text-xl font-bold text-center text-white">
+          {cryptoData.name}
+        </h1>
         <div className="text-white" onClick={handleHeartClick}>
           {isLiked ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
         </div>
       </div>
 
-      {/* 금 정보 */}
+      {/* 가상화폐 정보 */}
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white text-left ml-4">
-            {latestValue.toLocaleString()}원
+            {cryptoData.price.toLocaleString()}
           </h1>
           <span
             className={`mr-4 mt-2 text-md font-normal px-2 py-1 rounded-full ${
-              Number(percentageChange) >= 0
+              cryptoData.percentageChange.startsWith("+")
                 ? "bg-green-900 text-white"
                 : "bg-green-100 text-black"
             }`}
           >
-            {formattedPercentageChange}
+            {cryptoData.percentageChange}
           </span>
         </div>
       </div>
 
-      {/* 시간 범위 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
         {["7일", "1개월", "3개월", "1년"].map((option) => (
           <button
@@ -125,7 +117,7 @@ const GoldDetailPage: React.FC = () => {
       </div>
 
       {/* 그래프 */}
-      <GoldDetailGraph
+      <CryptoDetailGraph
         chartData={chartData}
         adjustedMin={adjustedMin}
         adjustedMax={adjustedMax}
@@ -148,13 +140,13 @@ const GoldDetailPage: React.FC = () => {
         ))}
       </div>
 
-      {/* 금 상세 정보 */}
+      {/* 가상화폐 정보 */}
       {selectedInfoType === "상세정보" && (
-        <GoldDetailInfo latestValue={latestValue} />
+        <CryptoDetailInfo cryptoData={cryptoData} />
       )}
 
       {/* 뉴스 */}
-      {selectedInfoType === "뉴스" && <GoldNews />}
+      {selectedInfoType === "뉴스" && <CryptoNews />}
 
       {/* 매수, 매도 버튼 */}
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
@@ -174,15 +166,16 @@ const GoldDetailPage: React.FC = () => {
 
       {/* 매수 모달 */}
       {isBuyModalVisible && (
-        <GoldPurchaseModal
+        <CryptoPurchaseModal
           inputValue={inputValue}
           setInputValue={setInputValue}
           onClose={handleModalClose}
-          goldPrice={latestValue}
+          cryptoName={cryptoData.name}
+          cryptoPrice={cryptoData.price}
         />
       )}
     </div>
   );
 };
 
-export default GoldDetailPage;
+export default CryptoDetailPage;

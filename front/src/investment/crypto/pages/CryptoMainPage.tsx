@@ -2,7 +2,7 @@ import React from "react";
 import DetailHeader from "../../components/DetailHeader";
 import DetailPageGraph from "../../components/DetailPageGraph";
 import BTCData from "../../../data/BTCData.json";
-import ItemsContainer from "../../components/ItemsContainer";
+import CryptoItemsContainer from "../components/CryptoItemsContainer";
 
 const CryptoMainPage: React.FC = () => {
   const latestValue = BTCData[BTCData.length - 1].value;
@@ -27,7 +27,7 @@ const CryptoMainPage: React.FC = () => {
           percentageChange={formattedPercentageChange}
         />
       </div>
-      <ItemsContainer title="가상화폐" type="crypto"></ItemsContainer>
+      <CryptoItemsContainer title="가상화폐"></CryptoItemsContainer>
     </div>
   );
 };

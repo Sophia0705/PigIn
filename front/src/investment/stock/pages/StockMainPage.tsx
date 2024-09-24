@@ -2,7 +2,7 @@ import React from "react";
 import DetailHeader from "../../components/DetailHeader";
 import DetailPageGraph from "../../components/DetailPageGraph";
 import KospiData from "../../../data/KospiData.json";
-import ItemsContainer from "../../components/ItemsContainer";
+import StockItemsContainer from "../components/StockItemsContainer";
 
 const StockMainPage: React.FC = () => {
   const latestValue = KospiData[KospiData.length - 1].value;
@@ -30,7 +30,7 @@ const StockMainPage: React.FC = () => {
         />
       </div>
       {/* 상세 주식 항목들 */}
-      <ItemsContainer title="주식" type="stock" />
+      <StockItemsContainer title="주식" />
     </div>
   );
 };
