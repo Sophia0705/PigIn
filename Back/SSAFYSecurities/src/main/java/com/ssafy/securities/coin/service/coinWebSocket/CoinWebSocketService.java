@@ -19,10 +19,6 @@ public class CoinWebSocketService {
     private String upbitProd;
     @Value("#{'${upbit.codes}'.split(',')}")
     private List<String> coinCodes;
-    @Value("${upbit.ACCESSKEY}")
-    private String upbitAccessKey;
-    @Value("${upbit.SECRETKEY}")
-    private String upbitSecretKey;
 
     @PostConstruct
     public void init() {

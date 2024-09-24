@@ -81,8 +81,6 @@ public class StockServiceImpl implements StockService{
                 request,
                 AccessTokenResponse.class
         );
-
-//        log.info(response.getBody().toString());
     }
 
     @Override
@@ -134,10 +132,6 @@ public class StockServiceImpl implements StockService{
         headers.add("tr_id", "FHKST03010100");
         HttpEntity<Object> request = new HttpEntity(headers);
 
-//        log.info(request.toString());
-//        log.info("uri: {}", builder.toUriString());
-
-
         try {
             HttpEntity<StockResponse> response = restTemplate.exchange(
                     builder.toUriString(),
@@ -145,7 +139,6 @@ public class StockServiceImpl implements StockService{
                     request,
                     StockResponse.class
             );
-
 
             String stockCode = response.getBody().getStockDetails().getStckShrnIscd();
 
@@ -174,7 +167,6 @@ public class StockServiceImpl implements StockService{
         body.put("appsecret", appSecret);
 
         HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
-//        log.info(request.toString());
 
         try {
             HttpEntity<AccessTokenDTO> response = restTemplate.exchange(
@@ -183,7 +175,6 @@ public class StockServiceImpl implements StockService{
                     request,
                     AccessTokenDTO.class
             );
-//            log.info(response.getBody().toString());
             accessToken = response.getBody().getAccessToken();
         } catch (Exception e) {
             e.printStackTrace();
