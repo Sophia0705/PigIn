@@ -140,8 +140,11 @@ public class MemberController {
     @PostMapping("/account-authentication")
     public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userKey = customUserDetails.getUserKey();
-        memberService.oneWonSend(accountNo, userKey);
-        return null;
+        boolean isSend = memberService.oneWonSend(accountNo, userKey);
+        if (isSend) {
+            return ResponseEntity.ok("1원 송금 완료");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("등록된 계좌가 아닙니다.");
     }
 
     @PostMapping("/account-authentication-compare")

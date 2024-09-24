@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.members.service;
 
 import com.ssafy.c203.common.dto.header.UserHeader;
+import com.ssafy.c203.common.dto.response.OneWonResponseDto;
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
 import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
@@ -31,9 +32,12 @@ import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,10 +55,11 @@ public class MemberServiceImpl implements MemberService {
     private final MMSAuthenticationRepository authenticationRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     //Todo : application.properties에 추가
-    private String apiKey = "test";
+    @Value("${ssafy.api.key}")
+    private String apiKey;
 
     private static final String MMS_MESSAGE_TAIL = " PigIn 본인인증번호입니다. 정확히 입력하세요.";
-    private final String MY_SSAFYDATA_BASE_URL = "${spring.ssafydata.url}";
+    private final String MY_SSAFYDATA_BASE_URL = "${ssafy.ssafydata.url}";
 
     //Todo : 이메일 중복확인 구현 필요
 
@@ -249,7 +254,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void oneWonSend(String accountNo, String userKey) {
+    public boolean oneWonSend(String accountNo, String userKey) {
         String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/accountAuth/openAccountAuth";
         Map<String, Object> requestBody = new HashMap<>();
         UserHeader userHeader = new UserHeader("openAccountAuth", apiKey, userKey);
@@ -263,12 +268,18 @@ public class MemberServiceImpl implements MemberService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         //요청 전송 및 응답 받기
-//        ResponseEntity<TransactionAllResponse> response = restTemplate.exchange(
-//            url,
-//            HttpMethod.POST,
-//            entity,
-//            TransactionAllResponse.class
-//        );
+        ResponseEntity<OneWonResponseDto> response = restTemplate.exchange(
+            url,
+            HttpMethod.POST,
+            entity,
+            OneWonResponseDto.class
+        );
+
+        HttpStatusCode statusCode = response.getStatusCode();
+        if (statusCode.equals(HttpStatus.OK)){
+            return true;
+        }
+        return false;
     }
 
     @Override

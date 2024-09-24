@@ -66,12 +66,12 @@ public class MMSService {
             String date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toString().split("\\[")[0];
 
             Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec("${spring.message.secret}".getBytes(StandardCharsets.UTF_8),
+            SecretKeySpec secret_key = new SecretKeySpec("${message.key.secret}".getBytes(StandardCharsets.UTF_8),
                 "HmacSHA256");
             sha256_HMAC.init(secret_key);
             String signature = new String(
                 Hex.encodeHex(sha256_HMAC.doFinal((date + salt).getBytes(StandardCharsets.UTF_8))));
-            return "HMAC-SHA256 ApiKey=" + "${spring.message.apiKey}" + ", Date=" + date + ", salt=" + salt
+            return "HMAC-SHA256 ApiKey=" + "${message.key.apiKey}" + ", Date=" + date + ", salt=" + salt
                 + ", signature=" + signature;
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             e.printStackTrace();

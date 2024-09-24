@@ -33,7 +33,7 @@ public interface MemberService {
 
     UserInfoDto getUserInfo(Long userId);
 
-    void oneWonSend(String accountNo, String userKey);
+    boolean oneWonSend(String accountNo, String userKey);
 
     void oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
 }
