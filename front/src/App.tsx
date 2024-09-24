@@ -1,27 +1,19 @@
-import React from "react";
+import React from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Outlet,
-} from "react-router-dom";
-import "./App.css";
-import Navbar from "./components/Navbar";
-import InvestmentPage from "./pages/InvestmentPage";
-import StockDetailPage from "./investment/stock/pages/StockMainPage";
-import CryptoDetailPage from "./investment/crypto/pages/CryptoMainPage";
-import GoldDetailPage from "./investment/gold/pages/GoldDetailPage";
-import StockSearchPage from "./investment/stock/pages/StockSearchPage";
-import CryptoSearchPage from "./investment/crypto/pages/CryptoSearchPage";
+} from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
-import LandingPage from './member/pages/LandingPage';
 import InvestmentPage from './pages/InvestmentPage';
 import StockDetailPage from './investment/stock/pages/StockMainPage';
 import CryptoDetailPage from './investment/crypto/pages/CryptoMainPage';
 import GoldDetailPage from './investment/gold/pages/GoldDetailPage';
 import StockSearchPage from './investment/stock/pages/StockSearchPage';
 import CryptoSearchPage from './investment/crypto/pages/CryptoSearchPage';
+import LandingPage from './member/pages/LandingPage';
 import MyPage from './member/pages/MyPage';
 import SignUpModal from './member/pages/SignUpModal';
 import LoginPage from './member/pages/LoginPage';
@@ -35,8 +27,8 @@ const App: React.FC = () => {
     <Router>
       <div className="min-h-screen w-full flex flex-col justify-between items-center bg-customDarkGreen">
         <Routes>
-          <Route path="/" element={<LandingPage />} />{' '}
           {/* LandingPage를 기본 경로로 설정 */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/investment" element={<InvestmentLayout />}>
             <Route index element={<InvestmentPage />} />
             <Route path="stock" element={<StockDetailLayout />}>
