@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.members.service;
 
 import com.ssafy.c203.common.dto.header.UserHeader;
+import com.ssafy.c203.common.dto.response.OneWonAuthenticationDto;
 import com.ssafy.c203.common.dto.response.OneWonResponseDto;
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
@@ -283,7 +284,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void oneWonAuthentication(
+    public String oneWonAuthentication(
         AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey) {
         String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/accountAuth/checkAuthCode";
         Map<String, Object> requestBody = new HashMap<>();
@@ -299,12 +300,21 @@ public class MemberServiceImpl implements MemberService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         //요청 전송 및 응답 받기
-//        ResponseEntity<TransactionAllResponse> response = restTemplate.exchange(
-//            url,
-//            HttpMethod.POST,
-//            entity,
-//            TransactionAllResponse.class
-//        );
-    }
+        ResponseEntity<OneWonAuthenticationDto> response = restTemplate.exchange(
+            url,
+            HttpMethod.POST,
+            entity,
+            OneWonAuthenticationDto.class
+        );
 
+        HttpStatusCode statusCode = response.getStatusCode();
+        if (statusCode.equals(HttpStatus.OK)){
+            if (response.getBody().getREC().getStatus().equals("SUCCESS")) {
+                return "SUCCESS";
+            } else {
+                return "FAIL";
+            }
+        }
+        return "account not found";
+    }
 }

@@ -35,5 +35,5 @@ public interface MemberService {
 
     boolean oneWonSend(String accountNo, String userKey);
 
-    void oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
+    String oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
 }

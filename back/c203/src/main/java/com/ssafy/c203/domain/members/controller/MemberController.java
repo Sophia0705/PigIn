@@ -144,15 +144,21 @@ public class MemberController {
         if (isSend) {
             return ResponseEntity.ok("1원 송금 완료");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("등록된 계좌가 아닙니다.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("등록된 계좌가 아닙니다.");
     }
 
     @PostMapping("/account-authentication-compare")
     public ResponseEntity<?> accountAuthenticationCompare(@RequestBody
     AccountAuthenticationCompareDto accountAuthenticationCompareDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userKey = customUserDetails.getUserKey();
-        memberService.oneWonAuthentication(accountAuthenticationCompareDto, userKey);
-        return null;
+        String response = memberService.oneWonAuthentication(accountAuthenticationCompareDto, userKey);
+        if (response.equals("SUCCESS")) {
+            return ResponseEntity.ok("인증 성공");
+        } else if (response.equals("FAIL")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 실패");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("등록된 계좌가 아닙니다.");
+        }
     }
 
     @PostMapping("/account")
