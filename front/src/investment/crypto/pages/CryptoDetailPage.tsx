@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { CgChevronLeft } from "react-icons/cg";
+import { CgChevronLeft, CgCheckR, CgAddR } from "react-icons/cg";
 import { CryptoItemData } from "../../interfaces/CryptoInterface";
 import CryptoPurchaseModal from "../components/CryptoPurchaseModal";
 import CryptoDetailGraph from "../components/CryptoDetailGraph";

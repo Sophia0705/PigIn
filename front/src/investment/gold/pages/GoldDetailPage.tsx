@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { CgChevronLeft } from "react-icons/cg";
+import { CgChevronLeft, CgCheckR, CgAddR } from "react-icons/cg";
 import GoldData from "../../../data/GoldData.json";
 import GoldPurchaseModal from "../components/GoldPurchaseModal";
 import GoldDetailGraph from "../components/GoldDetailGraph";

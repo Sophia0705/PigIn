@@ -18,7 +18,7 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
 }) => {
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
-      if (prev.length < 5) {
+      if (prev.length < 6) {
         return prev + number;
       } else {
         return prev; // 5자리 넘어가면 입력 x
