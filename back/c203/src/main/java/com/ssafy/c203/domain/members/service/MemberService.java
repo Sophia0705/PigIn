@@ -5,6 +5,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
@@ -36,4 +37,6 @@ public interface MemberService {
     boolean oneWonSend(String accountNo, String userKey);
 
     String oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
+
+    void addAccount(MemberAccountDto memberAccountDto);
 }

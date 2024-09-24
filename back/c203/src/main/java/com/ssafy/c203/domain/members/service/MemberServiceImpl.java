@@ -10,12 +10,14 @@ import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
+import com.ssafy.c203.domain.members.entity.MemberAccount;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
@@ -24,6 +26,7 @@ import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
 import com.ssafy.c203.domain.members.repository.MMSAuthenticationRepository;
+import com.ssafy.c203.domain.members.repository.MemberAccountRepository;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -55,6 +58,7 @@ public class MemberServiceImpl implements MemberService {
     private final SavingsAccountRepository savingsAccountRepository;
     private final MMSAuthenticationRepository authenticationRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MemberAccountRepository memberAccountRepository;
     //Todo : application.properties에 추가
     @Value("${ssafy.api.key}")
     private String apiKey;
@@ -316,5 +320,18 @@ public class MemberServiceImpl implements MemberService {
             }
         }
         return "account not found";
+    }
+
+    @Override
+    public void addAccount(MemberAccountDto memberAccountDto) {
+        Members member = membersRepository.findByEmailAndStatus(memberAccountDto.getEmail(),
+            WithDrawalStatus.ACTIVE).orElseThrow(MemberNotFoundException::new);
+
+        memberAccountRepository.save(MemberAccount
+            .builder()
+            .accountNo(memberAccountDto.getAccountNo())
+            .bank(memberAccountDto.getBank())
+            .member(member)
+            .build());
     }
 }

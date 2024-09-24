@@ -163,7 +163,8 @@ public class MemberController {
 
     @PostMapping("/account")
     public ResponseEntity<?> addAccount(@RequestBody MemberAccountDto memberAccountDto) {
-        return null;
+        memberService.addAccount(memberAccountDto);
+        return ResponseEntity.ok("계좌 등록 완료");
     }
 
     @GetMapping("/userInfo")

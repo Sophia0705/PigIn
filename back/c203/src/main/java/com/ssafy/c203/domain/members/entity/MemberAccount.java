@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,10 @@ public class MemberAccount {
     @JoinColumn(name = "member_id")
     private Members member;
 
+    @Builder
+    public MemberAccount(String accountNo, String bank, Members member) {
+        this.accountNo = accountNo;
+        this.bank = bank;
+        this.member = member;
+    }
 }
