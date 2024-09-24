@@ -1,7 +1,6 @@
 services:
   backend:
     build:
-      context: ./back
     image: zzun73/pigin-be-main:latest
     container_name: pigin-be-main
     ports:
