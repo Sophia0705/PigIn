@@ -1,11 +1,18 @@
-import React from 'react';
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Outlet,
-  // Navigate,
-} from 'react-router-dom';
+} from "react-router-dom";
+import "./App.css";
+import Navbar from "./components/Navbar";
+import InvestmentPage from "./pages/InvestmentPage";
+import StockDetailPage from "./investment/stock/pages/StockMainPage";
+import CryptoDetailPage from "./investment/crypto/pages/CryptoMainPage";
+import GoldDetailPage from "./investment/gold/pages/GoldDetailPage";
+import StockSearchPage from "./investment/stock/pages/StockSearchPage";
+import CryptoSearchPage from "./investment/crypto/pages/CryptoSearchPage";
 import './App.css';
 import Navbar from './components/Navbar';
 import LandingPage from './member/pages/LandingPage';
