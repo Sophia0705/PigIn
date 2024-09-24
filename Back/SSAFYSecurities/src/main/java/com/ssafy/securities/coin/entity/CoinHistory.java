@@ -20,23 +20,22 @@ public class CoinHistory {
     @Id
     private String id; // [code + date]
     private String coin; // 코인 종류
-    private LocalDate date;
-    private Double open;
-    private Double close;
-    private Double high;
-    private Double low;
-    private Double volume;
+    private String date;
+    private String open;
+    private String close;
+    private String high;
+    private String low;
+    private String volume;
     private String interval;
 
     public CoinHistory (CoinRestDTO coinRestDTO, String interval) {
-        this.id = coinRestDTO.getMarket() + coinRestDTO.getTimestamp();
         this.coin = coinRestDTO.getMarket();
-        this.date = coinRestDTO.getCandleDateTimeKst().toLocalDate();
-        this.open = coinRestDTO.getOpeningPrice();
-        this.close = coinRestDTO.getTradePrice();
-        this.high = coinRestDTO.getHighPrice();
-        this.low = coinRestDTO.getLowPrice();
-        this.volume = coinRestDTO.getCandleAccTradeVolume();
+        this.date = coinRestDTO.getCandleDateTimeKst().toLocalDate().toString();
+        this.open = String.valueOf(coinRestDTO.getOpeningPrice());
+        this.close = String.valueOf(coinRestDTO.getTradePrice());
+        this.high = String.valueOf(coinRestDTO.getHighPrice());
+        this.low = String.valueOf(coinRestDTO.getLowPrice());
+        this.volume = String.valueOf(coinRestDTO.getCandleAccTradeVolume());
         this.interval = interval;
     }
 }
