@@ -1,0 +1,76 @@
+{
+  "hash": "6ab587d6",
+  "configHash": "282d35ea",
+  "lockfileHash": "d0f44c43",
+  "browserHash": "fd964a44",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "56325830",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "d4e4d432",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "6a095d00",
+      "needsInterop": false
+    },
+    "react-icons/fa": {
+      "src": "../../node_modules/react-icons/fa/index.mjs",
+      "file": "react-icons_fa.js",
+      "fileHash": "0e457294",
+      "needsInterop": false
+    },
+    "react-icons/md": {
+      "src": "../../node_modules/react-icons/md/index.mjs",
+      "file": "react-icons_md.js",
+      "fileHash": "4c0e6b12",
+      "needsInterop": false
+    },
+    "recharts": {
+      "src": "../../node_modules/recharts/es6/index.js",
+      "file": "recharts.js",
+      "fileHash": "40639d7b",
+      "needsInterop": false
+    },
+    "zustand": {
+      "src": "../../node_modules/zustand/esm/index.mjs",
+      "file": "zustand.js",
+      "fileHash": "b86e80f7",
+      "needsInterop": false
+    },
+    "react-window": {
+      "src": "../../node_modules/react-window/dist/index.esm.js",
+      "file": "react-window.js",
+      "fileHash": "47270b89",
+      "needsInterop": false
+    },
+    "react-window-infinite-loader": {
+      "src": "../../node_modules/react-window-infinite-loader/dist/index.esm.js",
+      "file": "react-window-infinite-loader.js",
+      "fileHash": "5385554f",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-CY6MSIJI": {
+      "file": "chunk-CY6MSIJI.js"
+    },
+    "chunk-YBFRUR3B": {
+      "file": "chunk-YBFRUR3B.js"
+    },
+    "chunk-EPC3OAYZ": {
+      "file": "chunk-EPC3OAYZ.js"
+    },
+    "chunk-JRE55LYH": {
+      "file": "chunk-JRE55LYH.js"
+    }
+  }
+}

@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
 
         {/* 포트폴리오 */}
         <NavLink
-          to="/"
+          to="/myportfolio"
           className={({ isActive }) =>
             `p-2 ${
               isActive

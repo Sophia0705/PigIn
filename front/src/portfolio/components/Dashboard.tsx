@@ -1,129 +1,152 @@
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Label,
-  Sector,
-} from 'recharts';
+import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
+import { usePortfolioStore } from "../../store/portfolioStore";
 
-interface PortfolioData {
-  name: string;
-  value: number;
-}
+const COLORS = ["#BBF5E2", "#6183EE", "#ECCD4A", "#FF6B6B"];
 
-interface DashboardProps {
-  data: PortfolioData[];
-  colors: string[];
-  activeIndex: number | undefined;
-  setActiveIndex: (index: number) => void;
-}
+const CustomLabel = ({
+  viewBox,
+  totalValue,
+  totalProfit,
+  totalProfitRate,
+}: any) => {
+  const { cx, cy } = viewBox;
 
-const Dashboard: React.FC<DashboardProps> = ({
-  data,
-  colors,
-  activeIndex,
-  setActiveIndex,
-}) => {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
-  const onPieEnter = (_, index) => {
-    setActiveIndex(index);
-  };
-
-  const renderActiveShape = (props) => {
-    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
-      props;
-
-    return (
-      <g>
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius + 6}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-        />
-      </g>
-    );
-  };
+  // console.log(totalProfit);
+  // console.log(Math.abs(totalProfit));
+  // console.log(Math.abs(totalProfit).toLocaleString());
 
   return (
-    <div>
-      <p className="text-sm text-gray-500 mb-4">
+    <g>
+      <text
+        x={cx}
+        y={cy - 20}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="text-xl font-bold"
+      >
+        {totalValue.toLocaleString()}원
+      </text>
+      <text
+        x={cx}
+        y={cy + 10}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className={`text-sm font-semibold ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+      >
+        {totalProfit >= 0 ? "+" : "-"}
+        {Math.abs(totalProfit).toLocaleString()}원
+      </text>
+      <text
+        x={cx}
+        y={cy + 30}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className={`text-sm font-semibold ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+      >
+        ({(totalProfitRate * 100).toFixed(2)}%{totalProfit >= 0 ? "▲" : "▼"})
+      </text>
+    </g>
+  );
+};
+
+const Dashboard: React.FC = () => {
+  const {
+    categories,
+    totalValue,
+    activeIndex,
+    setActiveIndex,
+    isLoading,
+    error,
+  } = usePortfolioStore();
+
+  if (isLoading) return <div>Loading dashboard...</div>;
+  if (error) return <div>Error loading dashboard: {error}</div>;
+
+  const totalProfitRate =
+    categories.reduce(
+      (sum, category) =>
+        sum +
+        category.items.reduce((catSum, item) => catSum + item.profitRate, 0),
+      0
+    ) / categories.reduce((sum, category) => sum + category.items.length, 0);
+
+  const totalProfit = totalValue * totalProfitRate;
+
+  return (
+    <div className="bg-white h-full rounded-lg shadow-md p-4">
+      <h2 className="text-3xl font-bold mb-2">My Portfolio</h2>
+      <p className="text-sm text-gray-500 mb-1">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
       </p>
-      <div className="flex justify-center mb-4">
-        <ResponsiveContainer width={300} height={300}>
-          <PieChart>
-            <Pie
-              activeIndex={activeIndex}
-              activeShape={renderActiveShape}
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-              onMouseEnter={onPieEnter}
-              onClick={(_, index) => setActiveIndex(index)}
-            >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={colors[index % colors.length]}
+      <div className="flex justify-between items-center">
+        <div className="w-1/2">
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={categories}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="totalValue"
+                onClick={(_, index) => setActiveIndex(index)}
+              >
+                {categories.map((_entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                    stroke={activeIndex === index ? "#000" : "none"}
+                    strokeWidth={2}
+                  />
+                ))}
+                <Label
+                  content={
+                    <CustomLabel
+                      totalValue={totalValue}
+                      totalProfit={totalProfit}
+                      totalProfitRate={totalProfitRate}
+                    />
+                  }
+                  position="center"
                 />
-              ))}
-              <Label
-                content={({ viewBox: { cx, cy } }) => (
-                  <g>
-                    <text
-                      x={cx}
-                      y={cy - 10}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className="text-xl font-bold"
-                    >
-                      {total.toLocaleString()}원
-                    </text>
-                    <text
-                      x={cx}
-                      y={cy + 10}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className="text-sm text-green-500"
-                    >
-                      +100원 (0.66%↑)
-                    </text>
-                  </g>
-                )}
-                position="center"
-              />
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="mt-4">
-        {data.map((item, index) => (
-          <div
-            key={item.name}
-            className="flex justify-between items-center mt-2"
-          >
-            <div className="flex items-center">
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="w-1/2 pl-8">
+          {categories.map((category, index) => {
+            // const categoryProfitRate =
+            //   category.items.reduce((sum, item) => sum + item.profitRate, 0) /
+            //   category.items.length;
+            return (
               <div
-                className="w-3 h-3 rounded-full mr-2"
-                style={{ backgroundColor: colors[index % colors.length] }}
-              ></div>
-              <span>{item.name}</span>
-            </div>
-            <span>
-              {((item.value / total) * 100).toFixed(0)}% (
-              {item.value.toLocaleString()}원)
-            </span>
-          </div>
-        ))}
+                key={category.name}
+                className="mb-2" // 각 카테고리 항목 사이의 간격
+              >
+                <div className="flex items-center mb-1">
+                  {/* 색상 원과 카테고리 이름을 포함하는 상단 줄 */}
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  ></div>
+                  <span className="text-gray-700 text-sm font-medium">
+                    {category.name}
+                  </span>{" "}
+                </div>
+                <div className="pl-5 text-sm">
+                  <span className="">
+                    {((category.totalValue / totalValue) * 100).toFixed(1)}%{" "}
+                  </span>
+                  <span className="ml-2">
+                    ({category.totalValue.toLocaleString()}원)
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
