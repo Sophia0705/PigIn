@@ -7,6 +7,7 @@ import CryptoPurchaseModal from "../components/CryptoPurchaseModal";
 import CryptoDetailGraph from "../components/CryptoDetailGraph";
 import CryptoDetailInfo from "../components/CryptoDetailInfo";
 import CryptoNews from "../components/CryptoNews";
+import CryptoSellModal from "../components/CryptoSellModal";
 
 const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,15 +17,23 @@ const CryptoDetailPage: React.FC = () => {
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>("7일");
   const [selectedInfoType, setSelectedInfoType] = useState<string>("상세정보");
   const [isLiked, setIsLiked] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
-  const [inputValue, setInputValue] = useState<string>("");
+  const [buyInputValue, setBuyInputValue] = useState<string>("");
+  const [isSellModalVisible, setIsSellModalVisible] = useState(false);
+  const [sellInputValue, setSellInputValue] = useState<string>("");
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleAddToPortfolio = () => {
-    alert(`${cryptoData.name} 추가 완료!`);
+    setIsAdded((prevAdded) => !prevAdded);
+    alert(
+      isAdded
+        ? `${cryptoData.name} 제거 완료!`
+        : `${cryptoData.name} 추가 완료!`
+    );
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -43,9 +52,18 @@ const CryptoDetailPage: React.FC = () => {
     setIsBuyModalVisible(true);
   };
 
-  const handleModalClose = () => {
+  const handleBuyModalClose = () => {
     setIsBuyModalVisible(false);
-    setInputValue("");
+    setBuyInputValue("");
+  };
+
+  const handleSellClick = () => {
+    setIsSellModalVisible(true);
+  };
+
+  const handleSellModalClose = () => {
+    setIsSellModalVisible(false);
+    setSellInputValue("");
   };
 
   if (!cryptoData) {
@@ -64,6 +82,7 @@ const CryptoDetailPage: React.FC = () => {
 
   const minPrice = Math.min(...selectedData);
   const maxPrice = Math.max(...selectedData);
+
   const padding = (maxPrice - minPrice) * 0.1;
   const adjustedMin = minPrice - padding;
   const adjustedMax = maxPrice + padding;
@@ -77,8 +96,13 @@ const CryptoDetailPage: React.FC = () => {
         <h1 className="text-xl font-bold text-center text-white">
           {cryptoData.name}
         </h1>
-        <div className="text-white" onClick={handleHeartClick}>
-          {isLiked ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
+        <div className="flex items-center space-x-4 text-white">
+          <div onClick={handleHeartClick}>
+            {isLiked ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
+          </div>
+          <div onClick={handleAddToPortfolio}>
+            {isAdded ? <CgCheckR size={28} /> : <CgAddR size={28} />}
+          </div>
         </div>
       </div>
 
@@ -151,25 +175,36 @@ const CryptoDetailPage: React.FC = () => {
       {/* 매수, 매도 버튼 */}
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
         <button
-          className="w-1/2 bg-green-400 text-white py-2 rounded-lg mr-2"
+          className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
           onClick={handleBuyClick}
         >
           매수
         </button>
         <button
-          className="w-1/2 bg-blue-500 text-white py-2 rounded-lg ml-2"
-          onClick={handleAddToPortfolio}
+          className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
+          onClick={handleSellClick}
         >
-          자동투자하기
+          매도
         </button>
       </div>
 
       {/* 매수 모달 */}
       {isBuyModalVisible && (
         <CryptoPurchaseModal
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          onClose={handleModalClose}
+          inputValue={buyInputValue}
+          setInputValue={setBuyInputValue}
+          onClose={handleBuyModalClose}
+          cryptoName={cryptoData.name}
+          cryptoPrice={cryptoData.price}
+        />
+      )}
+
+      {/* 매도 모달 */}
+      {isSellModalVisible && (
+        <CryptoSellModal
+          inputValue={sellInputValue}
+          setInputValue={setSellInputValue}
+          onClose={handleSellModalClose}
           cryptoName={cryptoData.name}
           cryptoPrice={cryptoData.price}
         />
