@@ -1,7 +1,7 @@
-import { useMemo, useRef, useEffect, useState } from "react";
-import { usePortfolioStore } from "../../store/portfolioStore";
-import { FixedSizeList as List } from "react-window";
-import InfiniteLoader from "react-window-infinite-loader";
+import { useMemo, useRef, useEffect, useState } from 'react';
+import { usePortfolioStore } from '../../store/portfolioStore';
+import { FixedSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
 
 const PortfolioDetails: React.FC = () => {
   const { categories, activeIndex, isLoading, error } = usePortfolioStore();
@@ -59,10 +59,10 @@ const PortfolioDetails: React.FC = () => {
         <div className="w-1/3 text-right py-2 text-sm">
           <div>{calculateTotalValue(item.price, item.quantity)}원</div>
           <div
-            className={`${item.profitRate >= 0 ? "text-green-500" : "text-red-500"}`}
+            className={`${item.profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
           >
-            {(item.profitRate * 100).toFixed(1)}%{" "}
-            {item.profitRate >= 0 ? "▲" : "▼"}
+            {(item.profitRate * 100).toFixed(1)}%{' '}
+            {item.profitRate >= 0 ? '▲' : '▼'}
           </div>
         </div>
       </div>
@@ -80,7 +80,7 @@ const PortfolioDetails: React.FC = () => {
         <div
           ref={containerRef}
           className="bg-white overflow-hidden relative"
-          style={{ height: "calc(100% - 24px)" }}
+          style={{ height: 'calc(100% - 24px)' }}
         >
           <h2 className="text-xl font-bold pt-4 mb-4 px-4">{category.name}</h2>
           {/* 안쪽만 스크롤 */}
@@ -108,7 +108,7 @@ const PortfolioDetails: React.FC = () => {
           {/* 회색 원 8개 */}
           <div
             className="absolute bottom-0 left-0 right-0 px-3"
-            style={{ transform: "translateY(50%)" }}
+            style={{ transform: 'translateY(50%)' }}
           >
             <div className="flex justify-between items-center h-10">
               {[...Array(8)].map((_, i) => (

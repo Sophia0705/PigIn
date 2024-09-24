@@ -1,10 +1,10 @@
-import { useState } from "react";
-import ShadowButton from "../components/ShadowButton";
+import { useState } from 'react';
+import ShadowButton from '../components/ShadowButton';
 
 // SVG 파일을 React 컴포넌트로 import
-import QImg from "../assets/QImage.svg";
-import OImg from "../assets/OImage.svg";
-import XImg from "../assets/XImage.svg";
+import QImg from '../assets/Q_Image.svg';
+import OImg from '../assets/O_Image.svg';
+import XImg from '../assets/X_Image.svg';
 
 interface ModalProps {
   isCorrect: boolean;
@@ -28,7 +28,7 @@ const ResultModal: React.FC<ModalProps> = ({
         )}
       </div>
       <p className="text-3xl font-semibold mb-4">
-        {isCorrect ? "정답입니다!" : "틀렸습니다."}
+        {isCorrect ? '정답입니다!' : '틀렸습니다.'}
       </p>
       <p
         className="text-xl text-gray-600 mb-6"
@@ -51,11 +51,11 @@ const QuizPage: React.FC = () => {
   const [isCorrect, setIsCorrect] = useState(false);
 
   const question: Question = {
-    text: "주식을 소유하면 회사의 일부를 소유하는 것이다.",
-    options: ["O", "X"],
-    correctAnswer: "O",
+    text: '주식을 소유하면 회사의 일부를 소유하는 것이다.',
+    options: ['O', 'X'],
+    correctAnswer: 'O',
     explanation:
-      "주식은 회사의 실질적인 일부를 나타내며, 소유자에게 회사의 자산과 수익에 대한 청구권을 부여합니다.",
+      '주식은 회사의 실질적인 일부를 나타내며, 소유자에게 회사의 자산과 수익에 대한 청구권을 부여합니다.',
   };
 
   const handleAnswer = (answer: string) => {
@@ -73,7 +73,7 @@ const QuizPage: React.FC = () => {
         <img src={QImg} alt="Question" />
         <div
           className="bg-white rounded-[20px] shadow-lg p-8 w-11/12 max-w-md flex items-center justify-center"
-          style={{ minHeight: "300px" }}
+          style={{ minHeight: '300px' }}
         >
           <p className="text-2xl text-gray-800 font-medium text-center">
             {question.text}
