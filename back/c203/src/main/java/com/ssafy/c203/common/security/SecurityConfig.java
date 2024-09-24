@@ -6,7 +6,9 @@ import com.ssafy.c203.common.jwt.JWTUtil;
 import com.ssafy.c203.common.jwt.LoginFilter;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +34,7 @@ public class SecurityConfig {
     private final MembersRepository membersRepository;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration,
-        JWTUtil jwtUtil, MembersRepository membersRepository) {
+                          JWTUtil jwtUtil, MembersRepository membersRepository) {
         this.jwtUtil = jwtUtil;
         this.authenticationConfiguration = authenticationConfiguration;
         this.membersRepository = membersRepository;
@@ -46,7 +48,7 @@ public class SecurityConfig {
     //AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-        throws Exception {
+            throws Exception {
 
         return configuration.getAuthenticationManager();
     }
@@ -54,68 +56,69 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors((cors) -> cors
-                .configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration configuration = new CorsConfiguration();
-                        //프론트엔드 주소 넣을 것
-                        configuration.setAllowedOrigins(
-                            Collections.singletonList("http://localhost:3000"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
+                .cors((cors) -> cors
+                        .configurationSource(new CorsConfigurationSource() {
+                            @Override
+                            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                                CorsConfiguration configuration = new CorsConfiguration();
+                                //프론트엔드 주소 넣을 것
+                                configuration.setAllowedOrigins(
+                                        Collections.singletonList("http://localhost:3000"));
+                                configuration.setAllowedMethods(Collections.singletonList("*"));
+                                configuration.setAllowCredentials(true);
+                                configuration.setAllowedHeaders(Collections.singletonList("*"));
+                                configuration.setMaxAge(3600L);
 
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
-                        return configuration;
-                    }
-                }));
+                                return configuration;
+                            }
+                        }));
 
         //csrf disable
         http
-            .csrf((auth) -> auth.disable());
+                .csrf((auth) -> auth.disable());
 
         //form 로그인 방식 disable
         http
-            .formLogin((auth) -> auth.disable());
+                .formLogin((auth) -> auth.disable());
 
         //http basic 인증 방식 disable
         http
-            .httpBasic((auth) -> auth.disable());
+                .httpBasic((auth) -> auth.disable());
 
         //경로별 인가 작업
         http
-            .authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/member/login", "/member/test-sign-up",
-                    "/member/reissue",
-                    "/member/sign-up", "/member/mms-number-compare",
-                    "/member/mms-number-generate", "/member/find-id",
-                    "/member/find-pwd", "/member/refresh-pwd",
-                    "/member/account-authentication", "/member/account",
-                    "/member/account-authentication-compare")
-                .permitAll()
-                .anyRequest().authenticated());
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("health-check",
+                                "/member/login", "/member/test-sign-up",
+                                "/member/reissue",
+                                "/member/sign-up", "/member/mms-number-compare",
+                                "/member/mms-number-generate", "/member/find-id",
+                                "/member/find-pwd", "/member/refresh-pwd",
+                                "/member/account-authentication", "/member/account",
+                                "/member/account-authentication-compare")
+                        .permitAll()
+                        .anyRequest().authenticated());
 
         http
-            .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
-            .addFilterAt(
-                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
-                    membersRepository),
-                UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(
+                        new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
+                                membersRepository),
+                        UsernamePasswordAuthenticationFilter.class);
 
         http
-            .addFilterBefore(new CustomLogoutFilter(jwtUtil, membersRepository),
-                LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, membersRepository),
+                        LogoutFilter.class);
 
         //세션 설정
         http
-            .sessionManagement((session) -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
