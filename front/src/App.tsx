@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
+import MainPage from "./pages/MainPage";
 import InvestmentPage from "./pages/InvestmentPage";
 import StockDetailPage from "./investment/stock/pages/StockMainPage";
 import CryptoDetailPage from "./investment/crypto/pages/CryptoMainPage";
@@ -21,6 +22,7 @@ const App: React.FC = () => {
     <Router>
       <div className="min-h-screen w-full flex flex-col justify-between items-center bg-customDarkGreen">
         <Routes>
+          <Route path="/" element={<MainPage />} />
           <Route path="/investment" element={<InvestmentLayout />}>
             <Route index element={<InvestmentPage />} />
             <Route path="stock" element={<StockDetailLayout />}>
