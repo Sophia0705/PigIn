@@ -2,9 +2,9 @@ import { useState } from "react";
 import ShadowButton from "../components/ShadowButton";
 
 // SVG 파일을 React 컴포넌트로 import
-import Qimg from "../assets/Q image.svg";
-import Oimg from "../assets/O image.svg";
-import Ximg from "../assets/X image.svg";
+import QImg from "../assets/QImage.svg";
+import OImg from "../assets/OImage.svg";
+import XImg from "../assets/XImage.svg";
 
 interface ModalProps {
   isCorrect: boolean;
@@ -21,7 +21,11 @@ const ResultModal: React.FC<ModalProps> = ({
     <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md h-3/5">
       <div className="flex items-center justify-center mb-4">
         {/* SVG 컴포넌트 직접 사용 */}
-        {isCorrect ? <Oimg /> : <Ximg />}
+        {isCorrect ? (
+          <img src={OImg} alt="Correct" />
+        ) : (
+          <img src={XImg} alt="Incorrect" />
+        )}
       </div>
       <p className="text-3xl font-semibold mb-4">
         {isCorrect ? "정답입니다!" : "틀렸습니다."}
@@ -66,8 +70,7 @@ const QuizPage: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-200">
       <div className="relative bg-customDarkGreen rounded-b-[40px] h-3/5 p-6 flex flex-col items-center pt-16">
-        {/* SVG 컴포넌트 직접 사용 */}
-        <Qimg />
+        <img src={QImg} alt="Question" />
         <div
           className="bg-white rounded-[20px] shadow-lg p-8 w-11/12 max-w-md flex items-center justify-center"
           style={{ minHeight: "300px" }}
@@ -77,9 +80,9 @@ const QuizPage: React.FC = () => {
           </p>
         </div>
       </div>
-      <div className="flex-grow flex flex-col justify-center items-center gap-12 pb-24 px-6">
+      <div className="flex-grow flex flex-col w-full justify-center items-center gap-12 pb-24 px-6">
         {question.options.map((option) => (
-          <div key={option} className="w-full max-w-md">
+          <div key={option} className="w-full flex justify-center">
             <ShadowButton text={option} onClick={() => handleAnswer(option)} />
           </div>
         ))}
