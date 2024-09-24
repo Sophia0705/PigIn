@@ -28,6 +28,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.membersRepository = membersRepository;
+        setFilterProcessesUrl("/member/login");
     }
 
     @Override

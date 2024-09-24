@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.members.controller;
 
+import com.ssafy.c203.common.jwt.JWTUtil;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
@@ -13,7 +14,13 @@ import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
+import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
+import com.ssafy.c203.domain.members.repository.MembersRepository;
 import com.ssafy.c203.domain.members.service.MemberService;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,12 +42,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/member")
 @RequiredArgsConstructor
 @Slf4j
 public class MemberController {
 
     private final MemberService memberService;
+    private final JWTUtil jwtUtil;
+    private final MembersRepository membersRepository;
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@ModelAttribute SignUpDto signUpDto)
@@ -138,7 +147,8 @@ public class MemberController {
     }
 
     @PostMapping("/account-authentication")
-    public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userKey = customUserDetails.getUserKey();
         boolean isSend = memberService.oneWonSend(accountNo, userKey);
         if (isSend) {
@@ -149,9 +159,11 @@ public class MemberController {
 
     @PostMapping("/account-authentication-compare")
     public ResponseEntity<?> accountAuthenticationCompare(@RequestBody
-    AccountAuthenticationCompareDto accountAuthenticationCompareDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    AccountAuthenticationCompareDto accountAuthenticationCompareDto,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userKey = customUserDetails.getUserKey();
-        String response = memberService.oneWonAuthentication(accountAuthenticationCompareDto, userKey);
+        String response = memberService.oneWonAuthentication(accountAuthenticationCompareDto,
+            userKey);
         if (response.equals("SUCCESS")) {
             return ResponseEntity.ok("인증 성공");
         } else if (response.equals("FAIL")) {
@@ -162,15 +174,91 @@ public class MemberController {
     }
 
     @PostMapping("/account")
-    public ResponseEntity<?> addAccount(@RequestBody MemberAccountDto memberAccountDto) {
-        memberService.addAccount(memberAccountDto);
+    public ResponseEntity<?> addAccount(@RequestBody MemberAccountDto memberAccountDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        memberService.addAccount(memberAccountDto, userId);
+
         return ResponseEntity.ok("계좌 등록 완료");
     }
 
     @GetMapping("/userInfo")
-    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> getUserInfo(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         UserInfoDto userInfo = memberService.getUserInfo(userId);
         return ResponseEntity.ok(userInfo);
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+        //get refresh token
+        String refresh = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+
+            if (cookie.getName().equals("refresh")) {
+
+                refresh = cookie.getValue();
+            }
+        }
+
+        if (refresh == null) {
+
+            //response status code
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("refresh token null");
+        }
+
+        //expired check
+        try {
+            jwtUtil.isExpired(refresh);
+        } catch (ExpiredJwtException e) {
+
+            //response status code
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("refresh token expired");
+        }
+
+        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
+        String category = jwtUtil.getCategory(refresh);
+
+        if (!category.equals("refresh")) {
+
+            //response status code
+            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean isExist = membersRepository.existsByRefreshToken(refresh);
+
+        if (!isExist) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid refresh token");
+        }
+
+        String username = jwtUtil.getUsername(refresh);
+        String role = jwtUtil.getRole(refresh);
+        Members member = membersRepository.findByEmailAndStatus(username, WithDrawalStatus.ACTIVE).orElseThrow(
+            MemberNotFoundException::new);
+
+        //make new JWT
+        String newAccess = jwtUtil.createJwt("access", username, role, 600000L, member.getUserKey(), member.getId());
+        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L, member.getUserKey(), member.getId());
+
+        member.updateRefreshToken(newRefresh);
+        membersRepository.save(member);
+
+        //response
+        response.setHeader("access", newAccess);
+        response.addCookie(createCookie("refresh", newRefresh));
+
+        return ResponseEntity.ok().build();
+    }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+        //cookie.setSecure(true);
+        //cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 }

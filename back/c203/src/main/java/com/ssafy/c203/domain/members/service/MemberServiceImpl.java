@@ -32,7 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -323,9 +322,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void addAccount(MemberAccountDto memberAccountDto) {
-        Members member = membersRepository.findByEmailAndStatus(memberAccountDto.getEmail(),
-            WithDrawalStatus.ACTIVE).orElseThrow(MemberNotFoundException::new);
+    public void addAccount(MemberAccountDto memberAccountDto, Long userId) {
+        Members member = membersRepository.findByIdAndStatus(userId, WithDrawalStatus.ACTIVE)
+            .orElseThrow(MemberNotFoundException::new);
 
         memberAccountRepository.save(MemberAccount
             .builder()

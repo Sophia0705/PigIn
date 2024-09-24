@@ -38,5 +38,5 @@ public interface MemberService {
 
     String oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
 
-    void addAccount(MemberAccountDto memberAccountDto);
+    void addAccount(MemberAccountDto memberAccountDto, Long userId);
 }

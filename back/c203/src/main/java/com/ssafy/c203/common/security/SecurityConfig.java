@@ -88,8 +88,13 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
             .authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/login", "/", "/api/member/test-sign-up", "/api/member/",
-                    "/reissue")
+                .requestMatchers("/member/login", "/member/test-sign-up",
+                    "/member/reissue",
+                    "/member/sign-up", "/member/mms-number-compare",
+                    "/member/mms-number-generate", "/member/find-id",
+                    "/member/find-pwd", "/member/refresh-pwd",
+                    "/member/account-authentication", "/member/account",
+                    "/member/account-authentication-compare")
                 .permitAll()
                 .anyRequest().authenticated());
 
@@ -99,11 +104,13 @@ public class SecurityConfig {
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
             .addFilterAt(
-                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, membersRepository),
+                new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
+                    membersRepository),
                 UsernamePasswordAuthenticationFilter.class);
 
         http
-            .addFilterBefore(new CustomLogoutFilter(jwtUtil, membersRepository), LogoutFilter.class);
+            .addFilterBefore(new CustomLogoutFilter(jwtUtil, membersRepository),
+                LogoutFilter.class);
 
         //세션 설정
         http
