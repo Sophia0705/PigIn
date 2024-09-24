@@ -25,7 +25,7 @@ const App: React.FC = () => {
     <Router>
       <div className="min-h-screen w-full flex flex-col justify-between items-center bg-customDarkGreen">
         <Routes>
-          <Route path="/" element={<MainPage />} />
+          <Route path="/main" element={<MainPage />} />
           <Route path="/investment" element={<InvestmentLayout />}>
             <Route index element={<InvestmentPage />} />
             <Route path="stock" element={<StockDetailLayout />}>

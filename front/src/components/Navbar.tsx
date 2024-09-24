@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
       <div className="flex items-center justify-around w-full max-w-md h-[75px] bg-green-100 rounded-full shadow-md px-4">
         {/* 홈 */}
         <NavLink
-          to="/"
+          to="/main"
           className={({ isActive }) =>
             `p-2 ${
               isActive
