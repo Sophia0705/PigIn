@@ -7,7 +7,7 @@ const LandingPage: React.FC = () => {
   // 2초 후 자동으로 메인 페이지로 이동
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/investment');
+      navigate('/main');
     }, 2000);
 
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
@@ -53,14 +53,14 @@ const LandingPage: React.FC = () => {
         <h1>자동 저축 투자 플랫폼</h1>
         {/* 돼지 저금통 이미지 */}
         <img
-          src="../src/user/assets/pig.png"
+          src="../src/member/assets/pig.png"
           alt="Piggy Bank"
           className="mt-4 md:mt-6 lg:mt-8 w-[600px] md:w-[960px] lg:w-[1440px] h-auto z-20 block mx-auto"
         />
 
         {/* 동전 이미지 */}
         <img
-          src="../src/user/assets/coin.png"
+          src="../src/member/assets/coin.png"
           alt="Coin"
           style={{ animation: 'dropCoin 2s infinite' }}
           className="absolute top-[100px] left-[180px] w-36 md:w-42 lg:w-48 h-36 md:h-42 lg:h-48 z-30"

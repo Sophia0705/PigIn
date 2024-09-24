@@ -5,13 +5,13 @@ import CryptoList from '../components/CryptoList'; // 가상화폐 목록 컴포
 const FavoritePage: React.FC = () => {
   return (
     <div className="w-[412px] h-[915px]">
-      <div className="flex justify-between items-center w-screen pt-10 bg-customDarkGreen">
-        <h1 className="text-2xl font-bold text-white absolute left-1/2 transform -translate-x-1/2 pb-3 mt-2">
+      <div className="flex justify-between items-center w-screen pt-8 bg-customDarkGreen">
+        <h1 className="text-2xl font-bold text-white absolute left-1/2 transform -translate-x-1/2 pb-2 mt-0">
           찜 목록
         </h1>
       </div>
       {/* 주식 목록을 5개만 렌더링, 더보기 버튼 추가 */}
-      <div className="mt-7">
+      <div className="mt-6">
         {/* 주식 목록 위로 간격 추가 */}
         <StockList limit={5} showTitle={true} />
       </div>

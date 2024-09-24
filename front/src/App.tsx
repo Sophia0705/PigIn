@@ -8,38 +8,22 @@ import {
 } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
-import LandingPage from './member/pages/LandingPage'; // LandingPage 추가
+import LandingPage from './member/pages/LandingPage';
 import InvestmentPage from './pages/InvestmentPage';
 import StockDetailPage from './investment/stock/pages/StockMainPage';
 import CryptoDetailPage from './investment/crypto/pages/CryptoMainPage';
 import GoldDetailPage from './investment/gold/pages/GoldDetailPage';
 import StockSearchPage from './investment/stock/pages/StockSearchPage';
 import CryptoSearchPage from './investment/crypto/pages/CryptoSearchPage';
-import MyPage from './member/pages/MyPage'; // MyPage 추가
+import MyPage from './member/pages/MyPage';
 import SignUpModal from './member/pages/SignUpModal';
-// import IsLoginModal from './member/modal/IsLoginModal';
 import LoginPage from './member/pages/LoginPage';
 import FavoritePage from './member/pages/FavoritePage';
-import StockFavoritesPage from './member/pages/StockFavoritesPage'; // 주식 찜 목록 페이지
+import StockFavoritesPage from './member/pages/StockFavoritesPage';
 import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
-import InvestmentAccountCreation from './member/pages/InvestmentAccountCreation';
 import SpendingAccountRegister from './member/pages/SpendingAccountRegister';
-import WithdrawalModal from './member/modal/WithdrawalModal';
-import UpdateProfileModal from './member/modal/UpdateProfileModal';
 
 const App: React.FC = () => {
-  // const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  // // 로그인 모달 열기
-  // const openLoginModal = () => {
-  //   setIsLoginModalOpen(true);
-  // };
-
-  // // 로그인 모달 닫기
-  // const closeLoginModal = () => {
-  //   setIsLoginModalOpen(false);
-  // };
-
   return (
     <Router>
       <div className="min-h-screen w-full flex flex-col justify-between items-center bg-customDarkGreen">
@@ -61,15 +45,9 @@ const App: React.FC = () => {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/signup" element={<SignUpModal />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/update-profile" element={<UpdateProfileModal />} />
-          <Route path="/withdrawal" element={<WithdrawalModal />} />
           <Route path="/favorite" element={<FavoritePage />} />
           <Route path="/stock-favorites" element={<StockFavoritesPage />} />
           <Route path="/crypto-favorites" element={<CryptoFavoritesPage />} />
-          <Route
-            path="/investment-account-creation"
-            element={<InvestmentAccountCreation />}
-          />
           <Route
             path="/spending-account-register"
             element={<SpendingAccountRegister />}

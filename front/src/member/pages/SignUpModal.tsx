@@ -4,17 +4,17 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 
 const SignUpModal: React.FC = () => {
-  // Zustand 스토어에서 상태와 상태 변경 함수를 가져옵니다.
+  // Zustand 스토어에서 상태와 상태 변경 함수를 가져옴
   const { formData, setFormData } = useStore();
 
-  // 상태 관리
-  const [isCodeSent, setIsCodeSent] = useState(false);
-  const [authenticationNumber, setAuthenticationNumber] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  // 상태 관리 훅: 인증번호 전송 여부, 비밀번호 확인, 이메일 및 생년월일 유효성 상태 등
+  const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
+  const [authenticationNumber, setAuthenticationNumber] = useState(''); // 인증번호
+  const [showModal, setShowModal] = useState(false); // 인증번호 전송 모달 표시 여부
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 가리기/보이기 상태
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // 비밀번호 확인 가리기/보이기 상태
   const [passwordConfirm, setPasswordConfirm] = useState(''); // 비밀번호 확인
-  const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 상태
+  const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 여부
   const [isEmailValid, setIsEmailValid] = useState(true); // 이메일 유효성 상태
   const [isBirthValid, setIsBirthValid] = useState(true); // 생년월일 유효성 상태
   const [savingRate, setSavingRate] = useState(0); // 저축률 상태
@@ -22,23 +22,23 @@ const SignUpModal: React.FC = () => {
   // 이메일 유효성 검사 함수
   const isEmailFormatValid = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 간단한 이메일 정규식
-    return regex.test(email);
+    return regex.test(email); // 유효성 검사 결과 반환
   };
 
-  // 비밀번호 유효성 검사 함수
+  // 비밀번호 유효성 검사 함수: 최소 8자 이상, 영문자와 숫자 포함
   const isPasswordValid = (password: string) => {
-    // 최소 8자 이상, 영문자(대소문자), 숫자, 특수문자를 포함할 수 있음
     const regex =
       /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+[\]{};':"\\|,.<>/?-]{8,}$/;
-    return regex.test(password);
+    return regex.test(password); // 유효성 검사 결과 반환
   };
 
   // 생년월일 유효성 검사 함수
   const isBirthFormatValid = (birth: string): boolean => {
     const regex = /^(?:[0-9]{2})(?:0[1-9]|1[0-2])(?:0[1-9]|[12][0-9]|3[01])$/;
-    return regex.test(birth);
+    return regex.test(birth); // 유효성 검사 결과 반환
   };
 
+  // 저축률 입력 핸들러: 입력 값이 유효한 범위(0~10)인지 확인 후 상태 업데이트
   const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
 
@@ -52,7 +52,7 @@ const SignUpModal: React.FC = () => {
     if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 10) {
       setSavingRate(parsedValue); // 숫자 값으로 상태 업데이트
     } else if (value === '') {
-      // 값이 빈 문자열일 때 (입력을 지울 때) 0으로 설정
+      // 값이 빈 문자열일 때 0으로 설정
       setSavingRate(0);
     }
   };
@@ -81,7 +81,7 @@ const SignUpModal: React.FC = () => {
       setFormData({ ...formData, [name]: value });
     }
 
-    // 비밀번호 확인 필드와 비교하여 일치하는지 확인
+    // 비밀번호와 비밀번호 확인이 일치하는지 확인
     if (name === 'password' || name === 'passwordConfirm') {
       setIsPasswordMatch(formData.password === passwordConfirm);
     }
@@ -98,10 +98,10 @@ const SignUpModal: React.FC = () => {
   ) => {
     const { value } = e.target;
     setPasswordConfirm(value);
-    setIsPasswordMatch(formData.password === value);
+    setIsPasswordMatch(formData.password === value); // 비밀번호 일치 여부 설정
   };
 
-  // SMS 인증 요청 핸들러
+  // SMS 인증 요청 핸들러: 서버에 전화번호 전송하여 인증번호 요청
   const requestVerificationCode = async () => {
     try {
       const response = await fetch(
@@ -132,39 +132,10 @@ const SignUpModal: React.FC = () => {
     setAuthenticationNumber(e.target.value);
   };
 
-  // // 인증번호 확인 핸들러
-  // const verifyCode = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       'http://localhost:8080/api/member/mms-number-compare',
-  //       {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({
-  //           authenticationNumber,
-  //           phoneNumber: formData.phoneNumber,
-  //         }),
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       alert('인증이 완료되었습니다.');
-  //     } else {
-  //       alert('인증번호가 일치하지 않습니다.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     alert('서버 오류가 발생했습니다.');
-  //   }
-  // };
-
   // 폼 제출 시 호출되는 핸들러 함수
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // 기본 폼 제출 동작을 방지하여 페이지 새로고침을 막습니다.
-    // 현재 상태의 formData를 콘솔에 출력합니다.
-    console.log('Submitted Data:', formData);
+    e.preventDefault(); // 기본 폼 제출 동작 방지
+    console.log('Submitted Data:', formData); // 제출된 데이터 콘솔 출력
   };
 
   // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
@@ -182,14 +153,14 @@ const SignUpModal: React.FC = () => {
   };
 
   return (
-    // 모달의 배경을 설정: 화면 전체를 덮는 반투명 배경
+    // 모달 배경
     <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
-      {/* 모달 본체: 흰색 배경, 패딩, 모서리 둥글게, 그림자 추가 */}
+      {/* 모달 본체 */}
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
           회원가입
         </h2>
-        {/* 폼을 렌더링하며, 제출 시 handleSubmit 함수 호출 */}
+        {/* 회원가입 폼 */}
         <form
           onSubmit={handleSubmit}
           className="flex flex-col space-y-3 w-full"
@@ -253,7 +224,7 @@ const SignUpModal: React.FC = () => {
               onChange={handleChange}
               placeholder="전화번호 (예: 01012345678)"
               className="flex-1 p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              maxLength={13} // 하이픈 포함 길이
+              maxLength={14} // 하이픈 포함 길이, 수정 가능
             />
             <button
               type="button"
@@ -346,12 +317,13 @@ const SignUpModal: React.FC = () => {
           </div>
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
 
+          {/* 저축률 설정 */}
           <div className="mt-4">
             <label className="text-gray-700 text-sm block mb-2">
               저축률 설정
             </label>
             <div className="flex items-center space-x-4 mt-2">
-              {/* range input for saving rate */}
+              {/* 저축률 레인지 */}
               <input
                 type="range"
                 min="0"
@@ -361,7 +333,7 @@ const SignUpModal: React.FC = () => {
                 onChange={handleSavingRateChange}
                 className="w-full"
               />
-              {/* number input for saving rate */}
+              {/* 저축률 인풋 */}
               <input
                 type="number"
                 min="0"
@@ -374,11 +346,6 @@ const SignUpModal: React.FC = () => {
               />
               <span className="!ml-0">%</span>
             </div>
-            {/* {!savingRateValid && (
-              <p className="text-xs text-red-500 mt-1">
-                저축률을 0에서 10 사이로 입력해주세요.
-              </p>
-            )} */}
           </div>
           {/* 회원가입 버튼 */}
           <button

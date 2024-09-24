@@ -1,24 +1,21 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { CiEdit } from 'react-icons/ci';
 
 // MemberInfo 컴포넌트에서 openUpdateProfileModal props를 받음
 interface MemberInfoProps {
-  openUpdateProfileModal: () => void;
+  openUpdateProfileModal: () => void; // 모달을 열기 위한 함수 (부모 컴포넌트에서 전달받음)
 }
 
 export const MemberInfo: React.FC<MemberInfoProps> = ({
   openUpdateProfileModal,
 }) => {
-  const navigate = useNavigate();
-
-  // 회원 정보 데이터를 배열로 정의
+  // 회원 정보 데이터를 배열로 정의 (이름, 생년월일, 비밀번호 등)
   const userInfo = [
     { label: '이름', value: '홍길동', editable: false },
     { label: '생년월일', value: '950502', editable: false },
-    { label: '비밀번호', value: '********', editable: true },
-    { label: '이메일', value: 'example@example.com', editable: true },
-    { label: '전화번호', value: '010-1234-5678', editable: true },
+    { label: '비밀번호', value: '********', editable: true }, // 비밀번호만 수정 가능
+    { label: '이메일', value: 'example@example.com', editable: false },
+    { label: '전화번호', value: '010-1234-5678', editable: false },
   ];
 
   return (
@@ -28,18 +25,18 @@ export const MemberInfo: React.FC<MemberInfoProps> = ({
       {/* 반복문을 사용하여 회원 정보 출력 */}
       {userInfo.map((info, index) => (
         <div
-          key={index}
+          key={index} // 배열을 순회할 때 고유한 key 필요
           className="flex justify-between items-center mb-2 border-b border-gray-300 pb-2"
         >
           <div className="flex flex-col text-left">
-            <label className="text-sm">{info.label}:</label>
-            <span className="text-sm">{info.value}</span>
+            <label className="text-sm">{info.label}:</label> {/* 항목 이름 */}
+            <span className="text-sm">{info.value}</span> {/* 항목 값 */}
           </div>
-          {/* 비밀번호, 이메일, 전화번호는 수정 가능 */}
+          {/* 비밀번호만 수정 가능 */}
           {info.editable && (
             <CiEdit
               className="text-gray-500 cursor-pointer text-4xl"
-              onClick={() => navigate('/update-profile')}
+              onClick={openUpdateProfileModal} // 수정 아이콘 클릭 시 회원정보수정 모달을 열기
             />
           )}
         </div>
