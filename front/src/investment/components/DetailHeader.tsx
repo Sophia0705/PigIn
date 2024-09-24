@@ -1,7 +1,7 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
-import { CgChevronLeft } from "react-icons/cg";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CgChevronLeft } from 'react-icons/cg';
+import { FaSearch } from 'react-icons/fa';
 
 interface DetailHeaderProps {
   title: string;
@@ -11,16 +11,16 @@ const DetailHeader: React.FC<DetailHeaderProps> = ({ title }) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate("/investment");
+    navigate('/investment');
   };
 
   const handleSearch = () => {
     switch (title) {
-      case "주식":
-        navigate("/investment/stock/search");
+      case '주식':
+        navigate('/investment/stock/search');
         break;
-      case "가상화폐":
-        navigate("/investment/cryptocurrency/search");
+      case '가상화폐':
+        navigate('/investment/cryptocurrency/search');
         break;
     }
   };
@@ -38,7 +38,7 @@ const DetailHeader: React.FC<DetailHeaderProps> = ({ title }) => {
       </h1>
 
       {/* 검색 */}
-      {title !== "금" && (
+      {title !== '금' && (
         <p onClick={handleSearch} className="text-white">
           <FaSearch size={20} />
         </p>

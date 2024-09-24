@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 import {
   FaHome,
   FaChartPie,
   FaChartBar,
   FaHeart,
   FaUser,
-} from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+} from 'react-icons/fa';
+import { NavLink } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   return (
@@ -18,8 +18,8 @@ const Navbar: React.FC = () => {
           className={({ isActive }) =>
             `p-2 ${
               isActive
-                ? "text-customAqua hover:text-customAqua"
-                : "text-black hover:text-black"
+                ? 'text-customAqua hover:text-customAqua'
+                : 'text-black hover:text-black'
             }`
           }
         >
@@ -32,8 +32,8 @@ const Navbar: React.FC = () => {
           className={({ isActive }) =>
             `p-2 ${
               isActive
-                ? "text-customAqua hover:text-customAqua"
-                : "text-black hover:text-black"
+                ? 'text-customAqua hover:text-customAqua'
+                : 'text-black hover:text-black'
             }`
           }
         >
@@ -46,8 +46,8 @@ const Navbar: React.FC = () => {
           className={({ isActive }) =>
             `p-2 ${
               isActive
-                ? "text-customAqua hover:text-customAqua"
-                : "text-black hover:text-black"
+                ? 'text-customAqua hover:text-customAqua'
+                : 'text-black hover:text-black'
             }`
           }
         >
@@ -56,12 +56,12 @@ const Navbar: React.FC = () => {
 
         {/* 찜 */}
         <NavLink
-          to="/"
+          to="/favorite"
           className={({ isActive }) =>
             `p-2 ${
               isActive
-                ? "text-customAqua hover:text-customAqua"
-                : "text-black hover:text-black"
+                ? 'text-customAqua hover:text-customAqua'
+                : 'text-black hover:text-black'
             }`
           }
         >
@@ -70,12 +70,12 @@ const Navbar: React.FC = () => {
 
         {/* 개인정보 */}
         <NavLink
-          to="/"
+          to="/mypage"
           className={({ isActive }) =>
             `p-2 ${
               isActive
-                ? "text-customAqua hover:text-customAqua"
-                : "text-black hover:text-black"
+                ? 'text-customAqua hover:text-customAqua'
+                : 'text-black hover:text-black'
             }`
           }
         >
