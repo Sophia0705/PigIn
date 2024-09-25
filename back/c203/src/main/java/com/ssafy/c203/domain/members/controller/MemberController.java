@@ -91,26 +91,6 @@ public class MemberController {
         return ResponseEntity.ok().body("회원탈퇴를 완료했습니다.");
     }
 
-    @PostMapping("/test-sign-up")
-    public ResponseEntity<?> testSignUp(@RequestBody SignUpDto signUpDto) throws Exception {
-        Members member = Members
-            .builder()
-            .email(signUpDto.getEmail())
-            .password(signUpDto.getPassword())
-            .status(WithDrawalStatus.ACTIVE)
-            .name(signUpDto.getName())
-            .birth("123")
-            .phoneNumber("123")
-            .userKey("123")
-            .role("123")
-            .refreshToken("123")
-            .savingRate(signUpDto.getSavingRate())
-            .build();
-
-        memberService.testSignUp(member);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/find-id")
     public ResponseEntity<?> findByEmail(@RequestBody FindIdDto findIdDto) {
         String email = memberService.findEmail(findIdDto);
