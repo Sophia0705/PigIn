@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.stock.service;
 
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockDetailRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockHistoryRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockMinuteRepository;
@@ -21,8 +22,15 @@ public class StockServiceImpl implements StockService {
     private final MongoStockMinuteRepository mongoStockMinuteRepository;
 
     @Override
-    public List<?> findAllStock() {
-        return List.of();
+    public List<MongoStockDetail> findAllStock() {
+        try {
+            // 연결 테스트
+            mongoStockDetailRepository.count();
+            return mongoStockDetailRepository.findAll();
+        } catch (Exception e) {
+            log.error("Error fetching all stocks: ", e);
+            throw new RuntimeException("Failed to fetch stocks from database", e);
+        }
     }
 
     @Override
