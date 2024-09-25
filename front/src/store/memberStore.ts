@@ -9,6 +9,7 @@ interface FormData {
   email: string;
   password: string;
   passwordConfirm: string;
+  authNumber: string;
   savingRate: number;
 }
 
@@ -28,6 +29,7 @@ export const useStore = create<memberStore>((set) => ({
     email: '',
     password: '',
     passwordConfirm: '',
+    authNumber: '',
     savingRate: 0,
   },
   // 상태를 업데이트하는 함수: 기존 상태를 유지하면서 새로운 입력값을 적용합니다.
@@ -46,6 +48,7 @@ export const useStore = create<memberStore>((set) => ({
         email: 'hong@example.com',
         password: '',
         passwordConfirm: '',
+        authNumber: '',
         savingRate: 5,
       },
     });

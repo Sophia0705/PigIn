@@ -27,6 +27,8 @@ const SpendingAccountRegister: React.FC = () => {
   const [passwordConfirm, setPasswordConfirm] = useState(''); // 비밀번호 확인
   const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 상태
   const [isAccountVerified, setIsAccountVerified] = useState(false); // 1원 인증 여부
+  const [isCodeInputVisible, setIsCodeInputVisible] = useState(false); // 인증번호 입력 필드 표시 여부
+  const [verificationCode, setVerificationCode] = useState(''); // 인증번호
 
   // 비밀번호 유효성 검사 함수
   const isPasswordValid = (password: string) => {
@@ -61,7 +63,8 @@ const SpendingAccountRegister: React.FC = () => {
   const handleAccountVerification = () => {
     // 실제 1원 인증 API 요청 로직을 여기에 추가
     setIsAccountVerified(true); // 1원 인증 성공 상태로 설정
-    alert('1원 인증이 완료되었습니다.');
+    setIsCodeInputVisible(true); // 인증번호 입력 필드 표시
+    alert('1원 인증 번호가 전송되었습니다. 계좌 내역을 확인하세요.');
   };
 
   // 입력 필드가 변경될 때 호출되는 핸들러 함수
@@ -89,6 +92,16 @@ const SpendingAccountRegister: React.FC = () => {
     const { value } = e.target;
     setPasswordConfirm(value);
     setIsPasswordMatch(formData.password === value);
+  };
+
+  // 인증 확인 버튼을 눌렀을 때 실행되는 함수
+  const handleVerificationSubmit = () => {
+    if (verificationCode === '123456') {
+      // 가상 인증 코드 "123456"
+      alert('계좌 인증이 완료되었습니다.');
+    } else {
+      alert('인증번호가 올바르지 않습니다.');
+    }
   };
 
   // 폼 제출 시 호출되는 핸들러 함수 (계좌 등록 처리)
@@ -140,17 +153,13 @@ const SpendingAccountRegister: React.FC = () => {
             placeholder="이름"
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 은행 선택 필드 */}
           <select
             name="bankName"
             value={formData.bankName}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-            style={{
-              fontSize: '14px', // 선택지의 글자 크기를 줄여서 옵션 리스트의 크기를 줄임
-              padding: '4px', // 패딩을 줄여서 선택지 항목의 높이를 줄임
-            }}
           >
             <option value="">은행 선택</option>
             {bankOptions.map((bank, index) => (
@@ -159,43 +168,54 @@ const SpendingAccountRegister: React.FC = () => {
               </option>
             ))}
           </select>
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-
-          {/* 계좌번호 입력 필드 및 1원 인증 버튼 */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 w-full">
             <input
               type="text"
               name="accountNumber"
               value={formData.accountNumber}
               onChange={handleAccountNumberChange}
               placeholder="계좌번호"
-              className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="flex-1 p-2 border-none border-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
               maxLength={14} // 예시: 하이픈 포함 최대 14자리로 제한
             />
             <button
               type="button"
               onClick={handleAccountVerification}
-              className={`px-3 py-2 rounded w-[70px] justify-center ${
+              className={`px-3 py-2 rounded w-auto justify-center ${
                 formData.accountNumber
                   ? 'bg-[#9CF8E1] text-gray-900'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={!formData.accountNumber}
             >
-              인증
+              1원 인증
             </button>
           </div>
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-          {/* 인증번호 입력 필드 */}
-          <input
-            type="text"
-            name="verificationCode"
-            value={formData.verificationCode}
-            onChange={handleChange}
-            placeholder="인증번호"
-            className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-          />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
+
+          {/* 인증번호 입력 필드 및 인증 확인 버튼 */}
+          {isCodeInputVisible && (
+            <>
+              <input
+                type="text"
+                name="verificationCode"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                placeholder="인증번호"
+                className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              />
+              <button
+                type="button"
+                onClick={handleVerificationSubmit}
+                className="px-3 py-2 mt-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                인증 확인
+              </button>
+            </>
+          )}
+
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
             <input
@@ -225,7 +245,7 @@ const SpendingAccountRegister: React.FC = () => {
                 <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
               ))}
           </div>
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 비밀번호 확인 입력 필드 */}
           <div className="relative flex items-center">
             <input
@@ -253,7 +273,7 @@ const SpendingAccountRegister: React.FC = () => {
                 <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
               ))}
           </div>
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 계좌 등록 버튼 */}
           <button
             type="submit"
