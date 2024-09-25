@@ -22,12 +22,10 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
         return prev;
       }
       // input 비어있으면 0, 00 입력 방지
-      if (prev === '' && (number === '0' || number === '00')) {
-        return prev;
-      }
       // 빈칸에 숫자 더해지면 숫자 + 00 추가(100원 단위 투자 가능하도록)
+
       if (prev === '00') {
-        return number + '00';
+        return number === '0' || number === '00' ? prev : number + '00';
       }
       return prev.slice(0, -2) + number + '00';
     });

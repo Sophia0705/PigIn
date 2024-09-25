@@ -21,7 +21,7 @@ const StockDetailPage: React.FC = () => {
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
   const [buyInputValue, setBuyInputValue] = useState('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
-  const [sellInputValue, setSellInputValue] = useState<string>('');
+  const [sellInputValue, setSellInputValue] = useState('00');
 
   const handleBackClick = () => {
     navigate(-1);
