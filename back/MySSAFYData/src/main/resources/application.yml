@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: MySSAFYData
+  datasource:
+    url: jdbc:mysql://stg-yswa-kr-practice-db-master.mariadb.database.azure.com:3306/S11P22C203?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: S11P22C203
+    password: CeMgWdnuyQ
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+server:
+  port: 8088
+  servlet:
+    context-path: /mySSAFYdata
+
+
+SSAFY:
+  api:
+    key: 155c3dd6ae294b28a15782455d133cab
+
+
+#  mysql -h stg-yswa-kr-practice-db-master.mariadb.database.azure.com -P 3306 -u S11P22C203@stg-yswa-kr-practice-db-master -p --database=S11P22C203 --default-character-set=utf8

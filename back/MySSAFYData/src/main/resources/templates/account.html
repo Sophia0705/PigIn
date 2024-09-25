@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>유저 상세 정보</title>
+</head>
+<body>
+
+<h1>계좌 거래 기록</h1>
+
+<form th:action="@{/mySSAFYdata/accounts/deposit}" method="post">
+    <label for="money">입금 금액:</label>
+    <input type="number" id="money" name="money" placeholder="입금 금액 입력" required>
+
+    <!-- Hidden input fields to send userKey and accountNo -->
+    <input type="hidden" name="userKey" th:value="${userKey}">
+    <input type="hidden" name="accountNo" th:value="${accountNo}">
+
+    <button type="submit">입금</button>
+</form>
+
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>거래 번호</th>
+        <th>거래 일자</th>
+        <th>계좌 시각</th>
+        <th>계좌 구분</th>
+        <th>거래 금액</th>
+        <th>계좌 잔액</th>
+        <th>거래 요약 내용</th>
+        <th>거래 메모</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr th:each="trade : ${trades}">
+        <td th:text="${trade.transactionUniqueNo}"></td>
+        <td th:text="${trade.transactionDate}"></td>
+        <td th:text="${trade.transactionTime}"></td>
+        <td th:text="${trade.transactionTypeName}"></td>
+        <td th:text="${trade.transactionBalance}"></td>
+        <td th:text="${trade.transactionAfterBalance}"></td>
+        <td th:text="${trade.transactionSummary}"></td>
+        <td th:text="${trade.transactionMemo}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
