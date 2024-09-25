@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../../../store/memberStore';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import CompleteModal from './CompleteModal';
+import SuccessModal from './SuccessModal';
 
 interface WithdrawalModalProps {
   closeModal: () => void;
@@ -16,7 +16,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ closeModal }) => {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(true);
-  const [isComplete, setIsComplete] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const isEmailFormatValid = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -63,7 +63,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ closeModal }) => {
     }
 
     console.log('탈퇴 정보:', formData.email, formData.password);
-    setIsComplete(true);
+    setIsSuccess(true);
   };
 
   const isFormValid = () => {
@@ -88,17 +88,17 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ closeModal }) => {
         onClick={closeModal}
       ></div>
 
-      {/* CompletedModal 표시 */}
-      {isComplete && (
-        <CompleteModal
-          setShowModal={setIsComplete}
+      {/* SuccessModal 표시 */}
+      {isSuccess && (
+        <SuccessModal
+          setShowModal={setIsSuccess}
           title="회원 탈퇴가 완료되었습니다."
           buttonText="확인"
         />
       )}
 
       {/* 탈퇴 모달 본체 */}
-      {!isComplete && (
+      {!isSuccess && (
         <div
           className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center animate-slide-up z-50"
           onClick={(e) => e.stopPropagation()} // 모달 본체 클릭 시 이벤트 전파 차단

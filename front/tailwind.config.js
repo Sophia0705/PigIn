@@ -7,6 +7,7 @@ module.exports = {
         customAqua: '#9CF8E1', // 커스텀 색상 추가
         customDarkGreen: '#1F3F42', // 커스텀 색상 추가
         customGreen: '#00C99D',
+        customRed: '#FF2414',
       },
       keyframes: {
         // 동전이 떨어지는 애니메이션
