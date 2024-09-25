@@ -1,4 +1,4 @@
-ervices:
+services:
   frontend:
     image: zzun73/pigin-front:latest
     container_name: pigin-front
