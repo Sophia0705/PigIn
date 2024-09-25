@@ -182,8 +182,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void withDrawalUser(String email) {
-        Members member = membersRepository.findByEmailAndStatus(email, WithDrawalStatus.ACTIVE)
+    @Transactional
+    public void withDrawalUser(Long userId) {
+        Members member = membersRepository.findByIdAndStatus(userId, WithDrawalStatus.ACTIVE)
             .orElseThrow(MemberNotFoundException::new);
         member.withDrawal();
     }
