@@ -24,12 +24,12 @@ const CryptoFavoritesPage: React.FC = () => {
         <h1 className="text-2xl font-bold text-white absolute left-1/2 transform -translate-x-1/2">
           가상화폐 찜 목록
         </h1>
-      </div>
 
-      {/* 가상화폐 목록을 표시, 제목은 숨김 */}
-      <div className="overflow-x-hidden w-full">
-        <CryptoList showTitle={false} />{' '}
-        {/* CryptoList 컴포넌트 호출, showTitle 속성을 false로 설정해 제목 숨김 */}
+        {/* 가상화폐 목록을 표시, 제목은 숨김 */}
+        <div className="overflow-x-hidden justify-center">
+          <CryptoList showTitle={false} />{' '}
+          {/* CryptoList 컴포넌트 호출, showTitle 속성을 false로 설정해 제목 숨김 */}
+        </div>
       </div>
     </div>
   );

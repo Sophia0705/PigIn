@@ -10,7 +10,7 @@ const StockFavoritesPage: React.FC = () => {
   return (
     <div className="dark:bg-gray-900 w-screen h-screen">
       {/* 상단 바: 뒤로 가기 버튼과 페이지 제목 */}
-      <div className="flex justify-between items-center w-full p-2 bg-customDarkGreen">
+      <div className="flex justify-between items-center p-2 bg-customDarkGreen">
         {/* 뒤로 가기 버튼 */}
         <button
           onClick={() => navigate(-1)} // 이전 페이지로 돌아가는 함수 호출

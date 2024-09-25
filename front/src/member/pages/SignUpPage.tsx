@@ -174,7 +174,7 @@ const SignUpPage: React.FC = () => {
             placeholder="이름"
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 이메일 입력 필드 */}
           <input
             type="email"
@@ -189,7 +189,7 @@ const SignUpPage: React.FC = () => {
             } mb-1`}
             required
           />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {!isEmailValid && (
             <p className="text-xs text-red-500 mt-1">
               유효한 이메일 주소를 입력해주세요.
@@ -209,7 +209,7 @@ const SignUpPage: React.FC = () => {
                 : 'border-red-500 focus:ring-red-500'
             }`}
           />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {!isBirthValid && (
             <p className="text-xs text-red-500 mt-1">
               유효한 생년월일을 입력해주세요.
@@ -239,7 +239,7 @@ const SignUpPage: React.FC = () => {
               인증 요청
             </button>
           </div>
-          <hr className="w-[240px] ml-0 border-t border-gray-300 relative top-[-12px]" />
+          <hr className="w-8/11 ml-0 border-t border-gray-300 relative top-[-12px]" />
 
           {/* 인증번호 입력 필드 */}
           {isCodeSent && (
@@ -282,7 +282,7 @@ const SignUpPage: React.FC = () => {
               ))}
           </div>
           <div>
-            <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+            <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
             <p className="text-xs text-gray-500 mt-0 mb-0">
               8자 이상, 영문, 숫자 포함
             </p>
@@ -315,7 +315,7 @@ const SignUpPage: React.FC = () => {
                 <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
               ))}
           </div>
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
 
           {/* 저축률 설정 */}
           <div className="mt-4">
