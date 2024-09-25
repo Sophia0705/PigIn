@@ -4,7 +4,7 @@ import CryptoList from '../components/CryptoList'; // 가상화폐 목록 컴포
 
 const FavoritePage: React.FC = () => {
   return (
-    <div className="w-[412px] h-[915px]">
+    <div className="w-full h-screen">
       <div className="flex justify-between items-center w-screen pt-10 bg-customDarkGreen">
         <h1 className="text-2xl font-bold text-white absolute left-1/2 transform -translate-x-1/2 pb-2">
           찜 목록

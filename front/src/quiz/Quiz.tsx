@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import ShadowButton from '../components/ShadowButton';
-
-// SVG 파일을 React 컴포넌트로 import
 import QImg from '../assets/Q_Image.svg?url';
 import OImg from '../assets/O_Image.svg?url';
 import XImg from '../assets/X_Image.svg?url';
@@ -20,7 +18,6 @@ const ResultModal: React.FC<ModalProps> = ({
   <div className="fixed inset-0 bg-gray-600 bg-opacity-40 overflow-y-auto h-full w-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
     <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md h-3/5">
       <div className="flex items-center justify-center mb-4">
-        {/* SVG 컴포넌트 직접 사용 */}
         {isCorrect ? (
           <img src={OImg} alt="Correct" />
         ) : (
