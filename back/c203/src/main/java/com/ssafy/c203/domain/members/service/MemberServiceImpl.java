@@ -79,13 +79,14 @@ public class MemberServiceImpl implements MemberService {
 
         //패스워드 암호화
         String password = bCryptPasswordEncoder.encode(members.getPassword());
-
-        //members에 salt값, password 지성
         members.updatePassword(password);
 
         //userkey 지정
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("userId", members.getEmail());
+        requestBody.put("email", members.getEmail());
+        requestBody.put("name", members.getName());
+        requestBody.put("phoneNumber", members.getPhoneNumber());
+        requestBody.put("birth", members.getBirth());
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
