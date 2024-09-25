@@ -20,7 +20,7 @@ public interface MemberService {
 
     boolean MMSCompare(MMSCompareDto mmsCompareDto);
 
-    void withDrawalUser(String email);
+    void withDrawalUser(Long userId);
 
     void testSignUp(Members member);
 
