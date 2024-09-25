@@ -19,7 +19,7 @@ const StockDetailPage: React.FC = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
-  const [buyInputValue, setBuyInputValue] = useState<string>('');
+  const [buyInputValue, setBuyInputValue] = useState('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState<string>('');
 
