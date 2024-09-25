@@ -62,7 +62,6 @@ public class MemberController {
             .phoneNumber(signUpDto.getPhoneNumber())
             .status(WithDrawalStatus.ACTIVE)
             .password(signUpDto.getPassword())
-            .savingRate(signUpDto.getSavingRate())
             .build());
         return ResponseEntity.ok().body("회원가입을 성공하였습니다.");
     }

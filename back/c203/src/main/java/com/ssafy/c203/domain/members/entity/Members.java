@@ -50,7 +50,7 @@ public class Members {
 
     private String role;
 
-    private int savingRate;
+    private int savingRate = 0;
 
     private int savingAmount = 0;
 
@@ -95,6 +95,11 @@ public class Members {
 
     public void updateSavingRate(int savingRate) {
         this.savingRate = savingRate;
+    }
+
+    public void updateSavingRateAndPhoneNumber(int savingRate, String phoneNumber) {
+        this.savingRate = savingRate;
+        this.phoneNumber = phoneNumber;
     }
 
     public void updateId(Long id) {

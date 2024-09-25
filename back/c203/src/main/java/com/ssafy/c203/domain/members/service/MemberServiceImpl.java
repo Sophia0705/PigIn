@@ -119,6 +119,21 @@ public class MemberServiceImpl implements MemberService {
         );
 
         String accountNo = AccountNoResponse.getBody().getAccountNo();
+
+        //계좌 개설
+        requestBody = new HashMap<>();
+        requestBody.put("userKey", userKey);
+
+        //Todo : 등록용 계좌개설을 해야함
+        entity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<AccountNoDto> AccountNoResponse2 = restTemplate.exchange(
+            MY_SSAFYDATA_BASE_URL,
+            HttpMethod.POST,
+            entity,
+            AccountNoDto.class
+        );
+
         //Todo : accountNo가 Null일때 처리 필요
         savingsAccountRepository.save(SavingsAccount
             .builder()
@@ -231,16 +246,25 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void updateMember(UpdateMemberDto updateMemberDto, Long userId) {
         Members member = membersRepository.findByIdAndStatus(userId, WithDrawalStatus.ACTIVE)
             .orElseThrow(MemberNotFoundException::new);
-        if (member.getPassword().equals(bCryptPasswordEncoder.encode(
-            updateMemberDto.getOldPassword()))) {
-            member.updatePassword(bCryptPasswordEncoder.encode(updateMemberDto.getNewPassword()));
-            member.updateSavingRate(updateMemberDto.getSavingRate());
-        } else {
+
+        //기존 패스워드 검증
+        if (!member.getPassword()
+            .equals(bCryptPasswordEncoder.encode(updateMemberDto.getOldPassword()))) {
             throw new WrongPasswordException();
         }
+
+        //패스워드 변경인지 확인
+        if (updateMemberDto.isChange()) {
+            member.updatePassword(bCryptPasswordEncoder.encode(updateMemberDto.getNewPassword()));
+        }
+
+        //사용자 데이터 변경
+        member.updateSavingRateAndPhoneNumber(updateMemberDto.getSavingRate(),
+            updateMemberDto.getPhoneNumber());
     }
 
     @Override
@@ -280,7 +304,7 @@ public class MemberServiceImpl implements MemberService {
         );
 
         HttpStatusCode statusCode = response.getStatusCode();
-        if (statusCode.equals(HttpStatus.OK)){
+        if (statusCode.equals(HttpStatus.OK)) {
             return true;
         }
         return false;
@@ -311,7 +335,7 @@ public class MemberServiceImpl implements MemberService {
         );
 
         HttpStatusCode statusCode = response.getStatusCode();
-        if (statusCode.equals(HttpStatus.OK)){
+        if (statusCode.equals(HttpStatus.OK)) {
             if (response.getBody().getREC().getStatus().equals("SUCCESS")) {
                 return "SUCCESS";
             } else {
