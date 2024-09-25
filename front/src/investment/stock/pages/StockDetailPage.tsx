@@ -22,18 +22,29 @@ const StockDetailPage: React.FC = () => {
   const [buyInputValue, setBuyInputValue] = useState('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState('00');
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  const handleActionForLoggedInUsers = (action: () => void) => {
+    if (isLoggedIn) {
+      action();
+    } else {
+      alert('로그인이 필요합니다.');
+    }
+  };
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleAddToPortfolio = () => {
-    setIsAdded((prevAdded) => !prevAdded);
-    alert(
-      isAdded
-        ? `${stockData.hts_kor_isnm} 제거 완료!`
-        : `${stockData.hts_kor_isnm} 추가 완료!`
-    );
+    handleActionForLoggedInUsers(() => {
+      setIsAdded((prevAdded) => !prevAdded);
+      alert(
+        isAdded
+          ? `${stockData.hts_kor_isnm} 제거 완료!`
+          : `${stockData.hts_kor_isnm} 추가 완료!`
+      );
+    });
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -45,7 +56,9 @@ const StockDetailPage: React.FC = () => {
   };
 
   const handleHeartClick = () => {
-    setIsLiked((prevLiked) => !prevLiked);
+    handleActionForLoggedInUsers(() => {
+      setIsLiked((prevLiked) => !prevLiked);
+    });
   };
 
   const handleBuyClick = () => {
@@ -177,12 +190,14 @@ const StockDetailPage: React.FC = () => {
         <button
           className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
           onClick={handleBuyClick}
+          disabled={!isLoggedIn}
         >
           매수
         </button>
         <button
           className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
           onClick={handleSellClick}
+          disabled={!isLoggedIn}
         >
           매도
         </button>
