@@ -37,12 +37,14 @@ const CryptoDetailPage: React.FC = () => {
   };
 
   const handleAddToPortfolio = () => {
-    setIsAdded((prevAdded) => !prevAdded);
-    alert(
-      isAdded
-        ? `${cryptoData.name} 제거 완료!`
-        : `${cryptoData.name} 추가 완료!`
-    );
+    handleActionForLoggedInUsers(() => {
+      setIsAdded((prevAdded) => !prevAdded);
+      alert(
+        isAdded
+          ? `${cryptoData.name} 제거 완료!`
+          : `${cryptoData.name} 추가 완료!`
+      );
+    });
   };
 
   const handleTimeRangeChange = (option: string) => {
