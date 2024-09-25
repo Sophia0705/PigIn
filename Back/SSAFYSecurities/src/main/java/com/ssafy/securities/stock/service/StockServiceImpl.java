@@ -1,10 +1,10 @@
 package com.ssafy.securities.stock.service;
 
 import com.ssafy.securities.stock.dto.AccessTokenDTO;
-import com.ssafy.securities.stock.dto.apiResponse.apiResponse.AccessTokenResponse;
-import com.ssafy.securities.stock.dto.apiResponse.apiResponse.StockDataDTO;
 import com.ssafy.securities.stock.dto.apiResponse.apiResponse.StockResponse;
+import com.ssafy.securities.stock.entity.StockDetail;
 import com.ssafy.securities.stock.entity.StockHistory;
+import com.ssafy.securities.stock.repository.StockDetailRepository;
 import com.ssafy.securities.stock.repository.StockHistoryRepository;
 import com.ssafy.securities.stock.repository.StockMinuteRepository;
 import jakarta.annotation.PostConstruct;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -51,36 +50,18 @@ public class StockServiceImpl implements StockService{
     private final RestTemplate restTemplate;
     private final StockHistoryRepository stockHistoryRepository;
     private final StockMinuteRepository stockMinuteRepository;
+    private final StockDetailRepository stockDetailRepository;
 
     @PostConstruct
     public void init() {
         // MongoDB 싹다 지우기 일봉, 주봉, 월봉 데이터를 MongoDB에 저장
         stockHistoryRepository.deleteAll();
         stockMinuteRepository.deleteAll();
+        stockDetailRepository.deleteAll();
         scheduler.scheduleAtFixedRate(this::getToken, 0, 23, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getMonthlyBar, 0, 24 * 28, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getWeeklyBar, 0, 24 * 7, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getDailyBar, 0, 24, TimeUnit.HOURS);
-    }
-
-    @Override
-    public void getAccessToken() {
-        String url = prop + "/oauth2/tokenP";
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("content-type", "application/json");
-        HashMap<String, String> body = new HashMap<>();
-        body.put("grant_type", "client_credentials");
-        body.put("appkey", appKey);
-        body.put("appsecret", appSecret);
-
-        HttpEntity<HashMap> request = new HttpEntity<>(body, headers);
-
-        ResponseEntity<AccessTokenResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                request,
-                AccessTokenResponse.class
-        );
     }
 
     @Override
@@ -147,6 +128,11 @@ public class StockServiceImpl implements StockService{
                     .collect(Collectors.toList());
 
             stockHistoryRepository.insert(stockHistoryList);
+
+            if (FID_PERIOD_DIV_CODE.equals("D")) {
+                StockDetail stockDetail = new StockDetail(response.getBody().getStockDetails());
+                stockDetailRepository.save(stockDetail);
+            }
 
             return response.getBody();
         } catch (Exception e) {

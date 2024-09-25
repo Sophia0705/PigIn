@@ -2,9 +2,6 @@ package com.ssafy.securities.stock.service;
 
 public interface StockService {
 
-    // 1. 하루에 한번 Token 받아오기
-    public void getAccessToken();
-
     // 2. 월봉 받아오기
     public void getMonthlyBar();
 

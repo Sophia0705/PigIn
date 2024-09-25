@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -44,12 +45,14 @@ public class StockWebSocketService {
     public void init() {
         try {
             webSocketClient.connect(stockWebsocketUrl);
-            scheduler.scheduleAtFixedRate(this::subscribeToStocks, 0, 1, TimeUnit.HOURS);
+//            scheduler.scheduleAtFixedRate(this::subscribeToStocks, 0, 1, TimeUnit.HOURS);
+            subscribeToStocks();
         } catch (Exception e) {
             log.error("Failed to initialize WebSocket connection", e);
         }
     }
 
+    @Scheduled(cron = "0 30 9 * * *")
     private void subscribeToStocks() {
         stockCodes.forEach(stockCode -> {
             try {
