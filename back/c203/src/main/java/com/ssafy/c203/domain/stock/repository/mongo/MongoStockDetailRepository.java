@@ -5,8 +5,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MongoStockDetailRepository extends MongoRepository<MongoStockDetail, String> {
     @Query("{ 'htsKorIsnm': { $regex: ?0, $options: 'i' } }")
     List<MongoStockDetail> findByHtsKorIsnmLike(String keyword);
+    Optional<MongoStockDetail> findByStckShrnIscd(String stockCode);
 }

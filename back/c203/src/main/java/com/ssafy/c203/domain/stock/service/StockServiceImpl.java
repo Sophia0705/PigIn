@@ -1,11 +1,15 @@
 package com.ssafy.c203.domain.stock.service;
 
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockDetailRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockHistoryRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockMinuteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,12 +43,16 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public void findStock(String stockCode) {
-
+    public MongoStockDetail findStock(String stockCode) {
+        return mongoStockDetailRepository.findByStckShrnIscd(stockCode).orElseThrow();
     }
 
     @Override
-    public List<?> findStockChart() {
-        return List.of();
+    public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count) {
+        Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
+        List<MongoStockHistory> tmp = mongoStockHistoryRepository.findByStockCodeAndIntervalOrderByDateDesc(stockCode, interval, pageable);
+//        return mongoStockHistoryRepository.findByStockCodeAndIntervalOrderByDateDesc(stockCode, interval);
+        log.info("tmp = {}", tmp);
+        return tmp;
     }
 }
