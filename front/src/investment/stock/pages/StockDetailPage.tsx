@@ -54,7 +54,7 @@ const StockDetailPage: React.FC = () => {
 
   const handleBuyModalClose = () => {
     setIsBuyModalVisible(false);
-    setBuyInputValue('');
+    setBuyInputValue('00');
   };
 
   const handleSellClick = () => {
@@ -63,7 +63,7 @@ const StockDetailPage: React.FC = () => {
 
   const handleSellModalClose = () => {
     setIsSellModalVisible(false);
-    setSellInputValue('');
+    setSellInputValue('00');
   };
 
   if (!stockData) {

@@ -19,9 +19,9 @@ const CryptoDetailPage: React.FC = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
-  const [buyInputValue, setBuyInputValue] = useState<string>('');
+  const [buyInputValue, setBuyInputValue] = useState<string>('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
-  const [sellInputValue, setSellInputValue] = useState<string>('');
+  const [sellInputValue, setSellInputValue] = useState<string>('00');
 
   const handleBackClick = () => {
     navigate(-1);
@@ -54,7 +54,7 @@ const CryptoDetailPage: React.FC = () => {
 
   const handleBuyModalClose = () => {
     setIsBuyModalVisible(false);
-    setBuyInputValue('');
+    setBuyInputValue('00');
   };
 
   const handleSellClick = () => {
@@ -63,7 +63,7 @@ const CryptoDetailPage: React.FC = () => {
 
   const handleSellModalClose = () => {
     setIsSellModalVisible(false);
-    setSellInputValue('');
+    setSellInputValue('00');
   };
 
   if (!cryptoData) {
