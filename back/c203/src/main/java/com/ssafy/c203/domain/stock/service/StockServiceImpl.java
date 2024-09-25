@@ -34,8 +34,8 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<?> searchStock(String keyword) {
-        return List.of();
+    public List<MongoStockDetail> searchStock(String keyword) {
+        return mongoStockDetailRepository.findByHtsKorIsnmLike(keyword);
     }
 
     @Override

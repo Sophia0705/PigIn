@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface StockService {
     public List<MongoStockDetail> findAllStock();
-    public List<?> searchStock(String keyword);
+    public List<MongoStockDetail> searchStock(String keyword);
     public void findStock(String stockCode);
     public List<?> findStockChart();
 }
