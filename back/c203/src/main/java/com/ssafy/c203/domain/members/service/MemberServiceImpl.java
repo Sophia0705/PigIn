@@ -83,10 +83,7 @@ public class MemberServiceImpl implements MemberService {
 
         //userkey 지정
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("email", members.getEmail());
-        requestBody.put("name", members.getName());
-        requestBody.put("phoneNumber", members.getPhoneNumber());
-        requestBody.put("birth", members.getBirth());
+        requestBody.put("userId", members.getEmail());
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
@@ -108,6 +105,10 @@ public class MemberServiceImpl implements MemberService {
         //계좌 개설
         requestBody = new HashMap<>();
         requestBody.put("userKey", userKey);
+        requestBody.put("email", members.getEmail());
+        requestBody.put("name", members.getName());
+        requestBody.put("phoneNumber", members.getPhoneNumber());
+        requestBody.put("birth", members.getBirth());
 
         //Todo : 등록용 계좌개설을 해야함
         entity = new HttpEntity<>(requestBody, headers);
@@ -188,12 +189,6 @@ public class MemberServiceImpl implements MemberService {
         Members member = membersRepository.findByIdAndStatus(userId, WithDrawalStatus.ACTIVE)
             .orElseThrow(MemberNotFoundException::new);
         member.withDrawal();
-    }
-
-    @Override
-    public void testSignUp(Members member) {
-        member.updatePassword(bCryptPasswordEncoder.encode(member.getPassword()));
-        membersRepository.save(member);
     }
 
     @Override
