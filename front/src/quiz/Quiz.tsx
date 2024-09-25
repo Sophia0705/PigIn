@@ -2,9 +2,9 @@ import { useState } from 'react';
 import ShadowButton from '../components/ShadowButton';
 
 // SVG 파일을 React 컴포넌트로 import
-import QImg from '../assets/Q_Image.svg';
-import OImg from '../assets/O_Image.svg';
-import XImg from '../assets/X_Image.svg';
+import QImg from '../assets/Q_Image.svg?url';
+import OImg from '../assets/O_Image.svg?url';
+import XImg from '../assets/X_Image.svg?url';
 
 interface ModalProps {
   isCorrect: boolean;

@@ -7,6 +7,7 @@ import Dashboard from '../components/Dashboard';
 import { useState, useMemo } from 'react';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 import { useNavigate } from 'react-router-dom';
+import { Edit } from 'lucide-react';
 
 const CATEGORIES = ['주식', '가상화폐', '금'];
 
@@ -133,49 +134,50 @@ const AutoInvestment: React.FC = () => {
       {isAutoInvestmentEnabled && (
         <>
           {showInput ? (
-            <div className="mb-6">
+            <div className="flex justify-center mb-6 bg-white rounded-lg">
               <input
                 type="text"
                 value={localInvestmentAmount}
                 onChange={handleInvestmentAmountChange}
-                className="w-full bg-transparent border-b border-customAqua py-2 text-white placeholder-gray-400 focus:outline-none"
+                className="w-full bg-transparent border-b border-customAqua py-2 text-black placeholder-gray-400 focus:outline-none"
                 placeholder="자동 투자하실 금액을 입력해주세요"
               />
               <button
                 onClick={() => setShowInput(false)}
-                className="mt-2 bg-customAqua text-customDarkGreen py-2 px-4 rounded"
+                className="mt-2 bg-customAqua text-customDarkGreen py-4 px-4 rounded"
               >
                 확인
               </button>
             </div>
           ) : (
-            <div className="mb-6">
-              <p className="text-lg">자동 투자금액 설정금액</p>
-              <p className="text-3xl font-bold">
-                {localInvestmentAmount.toLocaleString()}원
-              </p>
-              <button
-                onClick={() => setShowInput(true)}
-                className="text-customAqua"
-              >
-                수정
-              </button>
+            <div className="mb-6 text-center">
+              <p className="text-lg mb-2">자동 투자금액 설정금액</p>
+              <div className="flex items-center justify-center">
+                <p className="text-3xl font-bold mr-2">
+                  {localInvestmentAmount.toLocaleString()}원
+                </p>
+                <Edit onClick={() => setShowInput(true)} />
+              </div>
             </div>
           )}
 
           <Dashboard />
 
           <div className="mt-6">
-            <div className="flex justify-between mb-4">
+            <div className="bg-[#EAFFF7] p-1 rounded-full flex justify-between items-center mb-4">
               {CATEGORIES.map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`py-2 px-4 rounded ${
+                  className={`
+                  flex-1 py-2 px-4 text-sm font-medium rounded-full
+                  ${
                     activeCategory === category
-                      ? 'bg-customAqua text-customDarkGreen'
-                      : 'bg-gray-600 text-white'
-                  }`}
+                      ? 'bg-customDarkGreen text-white'
+                      : 'bg-transparent text-customDarkGreen'
+                  }
+                  transition-colors duration-200
+                `}
                 >
                   {category}
                 </button>
@@ -216,13 +218,14 @@ const AutoInvestment: React.FC = () => {
               </div>
             ))}
           </div>
-
-          <button
-            onClick={handleSubmit}
-            className="mt-6 bg-customAqua text-customDarkGreen py-2 px-4 rounded w-full font-bold"
-          >
-            설정완료
-          </button>
+          <div className="flex justify-end">
+            <button
+              onClick={handleSubmit}
+              className="mt-6 bg-customAqua text-customDarkGreen py-2 px-4 rounded justify-end w-1/3 font-bold"
+            >
+              설정완료
+            </button>
+          </div>
         </>
       )}
     </div>

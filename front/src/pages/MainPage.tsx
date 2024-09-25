@@ -1,12 +1,7 @@
-import { useState } from "react";
-import { create } from "zustand";
-import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
-import { ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
-
-import stockimg from "../assets/stock.svg";
-import cryptoimg from "../assets/cryptocurrency.svg";
-import goldimg from "../assets/gold.svg";
-import currencyimg from "../assets/currency.svg";
+import { useState } from 'react';
+import { create } from 'zustand';
+import { PieChart, Pie, Cell, Label, ResponsiveContainer } from 'recharts';
+import { ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface FinanceState {
   balance: number;
@@ -171,7 +166,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
                 </div>
                 <div className="pl-5 text-sm">
                   <span>
-                    {((category.value / totalBalance) * 100).toFixed(1)}%{" "}
+                    {((category.value / totalBalance) * 100).toFixed(1)}%{' '}
                   </span>
                   <span className="ml-2">
                     ({category.value.toLocaleString()}원)
@@ -186,25 +181,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
   );
 };
 
-interface CategoryButtonProps {
-  icon: string;
-  label: string;
-}
-
-const CategoryButton: React.FC<CategoryButtonProps> = ({ icon, label }) => (
-  <button className="flex flex-col items-center justify-center bg-white rounded-full p-6 w-32 h-32">
-    <img src={icon} alt={label} className="w-15 h-15 mb-2" />
-    <span className="text-base text-black">{label}</span>
-  </button>
-);
-
 const MainPage: React.FC = () => {
   const { balance, stocks, cash, savings } = useFinanceStore();
 
   const investmentData = [
-    { name: "주식", value: stocks, color: "#3B82F6" },
-    { name: "금", value: cash, color: "#FBBF24" },
-    { name: "가상화폐", value: savings, color: "#D1D5DB" },
+    { name: '주식', value: stocks, color: '#3B82F6' },
+    { name: '금', value: cash, color: '#FBBF24' },
+    { name: '가상화폐', value: savings, color: '#D1D5DB' },
   ];
 
   return (
@@ -216,16 +199,6 @@ const MainPage: React.FC = () => {
         percentageChange={0.66}
         data={investmentData}
       />
-      <div className="flex flex-col items-center justify-center mb-10 w-full">
-        <div className="flex justify-evenly w-full mb-8">
-          <CategoryButton icon={stockimg} label="주식" />
-          <CategoryButton icon={cryptoimg} label="가상계좌" />
-        </div>
-        <div className="flex justify-evenly w-full">
-          <CategoryButton icon={goldimg} label="금" />
-          <CategoryButton icon={currencyimg} label="환율" />
-        </div>
-      </div>
     </div>
   );
 };
