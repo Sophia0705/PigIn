@@ -22,7 +22,7 @@ const MyPage: React.FC = () => {
   const closeUpdateProfileModal = () => setIsUpdateModalOpen(false);
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center bg-customDarkGreen p-4">
+    <div className="w-full h-full flex flex-col items-center bg-customDarkGreen p-4">
       {/* MyPage 타이틀 및 회원 탈퇴 버튼 */}
       <div className="w-full pt-0 flex justify-center relative">
         {/* 페이지 타이틀 */}
