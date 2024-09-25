@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// 이미지 파일을 src 폴더 내에서 import
+import pigImage from '../../assets/pig.png'; // 돼지 저금통 이미지
+import coinImage from '../../assets/coin.png'; // 동전 이미지
+
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
@@ -39,13 +43,13 @@ const LandingPage: React.FC = () => {
           {/* Pig와 In 텍스트 크기와 애니메이션 적용 */}
           <span
             style={{ animation: `moveLeftExpand 2s infinite` }}
-            className="text-[90px] md:text-[180px] lg:text-[240px] font-bold text-gray-800"
+            className="text-[90px] md:text-[180px] lg:text-[240px] font-bold text-gray-800 animate-moveLeftExpand"
           >
             Pig
           </span>
           <span
             style={{ animation: 'moveRightExpand 2s infinite' }}
-            className="text-[90px] md:text-[180px] lg:text-[240px] font-bold text-gray-800"
+            className="text-[90px] md:text-[180px] lg:text-[240px] font-bold text-gray-800 animate-moveRightExpand"
           >
             In
           </span>
@@ -53,17 +57,16 @@ const LandingPage: React.FC = () => {
         <h1>자동 저축 투자 플랫폼</h1>
         {/* 돼지 저금통 이미지 */}
         <img
-          src="../src/member/assets/pig.png"
+          src={pigImage}
           alt="Piggy Bank"
           className="mt-4 md:mt-6 lg:mt-8 w-[600px] md:w-[960px] lg:w-[1440px] h-auto z-20 block mx-auto"
         />
 
         {/* 동전 이미지 */}
         <img
-          src="../src/member/assets/coin.png"
+          src={coinImage}
           alt="Coin"
-          style={{ animation: 'dropCoin 2s infinite' }}
-          className="absolute top-[100px] left-[180px] w-36 md:w-42 lg:w-48 h-36 md:h-42 lg:h-48 z-30"
+          className="absolute top-[100px] left-[180px] w-36 md:w-42 lg:w-48 h-36 md:h-42 lg:h-48 z-30 animate-dropCoin"
         />
       </div>
     </div>

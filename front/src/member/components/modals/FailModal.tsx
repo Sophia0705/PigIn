@@ -1,7 +1,7 @@
 import React from 'react';
 
-// CompleteModal 컴포넌트의 props 타입을 정의
-interface CompleteModalProps {
+// FailModal 컴포넌트의 props 타입을 정의
+interface FailModalProps {
   setShowModal: (show: boolean) => void; // 모달을 닫기 위한 상태 변경 함수
   title: string; // 모달의 제목을 표시할 문자열
   buttonText: string; // 버튼에 표시할 텍스트
@@ -9,13 +9,13 @@ interface CompleteModalProps {
   buttonHoverColor?: string; // 버튼 hover 색상 (선택 사항, 기본값 있음)
 }
 
-// CompleteModal 컴포넌트를 정의
-const CompleteModal: React.FC<CompleteModalProps> = ({
+// FailModal 컴포넌트를 정의
+const FailModal: React.FC<FailModalProps> = ({
   setShowModal, // 부모 컴포넌트에서 전달받은 모달을 닫기 위한 함수
   title, // 모달의 제목 텍스트
   buttonText, // 버튼에 표시할 텍스트
-  buttonColor = 'bg-customAqua', // 기본값으로 customAqua 색상을 버튼 배경으로 설정
-  buttonHoverColor = 'hover:bg-[#7ee9ce]', // hover 시의 색상을 설정, 기본값으로 밝은 customAqua 색상
+  buttonColor = 'bg-customRed', // 기본값으로 customRed 색상을 버튼 배경으로 설정
+  buttonHoverColor = 'hover:bg-[#FF2414]', // 기본 hover 색상 customRed (#FF2414)
 }) => {
   return (
     // 모달의 배경 (화면 전체를 덮는 검은 반투명 배경)
@@ -42,4 +42,4 @@ const CompleteModal: React.FC<CompleteModalProps> = ({
   );
 };
 
-export default CompleteModal;
+export default FailModal;

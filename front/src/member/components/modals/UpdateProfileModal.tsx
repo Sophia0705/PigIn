@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '../../../store/memberStore';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import CompleteModal from './CompleteModal'; // CompleteModal 임포트
+import SuccessModal from './SuccessModal';
 
 interface UpdateProfileModalProps {
   closeModal: () => void;
@@ -18,7 +18,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
   const [savingRate, setSavingRate] = useState(0);
-  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false); // CompleteModal 상태 추가
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // SuccessModal 상태 추가
 
   useEffect(() => {
     loadUserData(); // 사용자 정보를 불러옴
@@ -67,8 +67,8 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
     e.preventDefault();
     console.log('Updated Data:', formData);
 
-    // 정보 수정 완료 후 CompleteModal 띄우기
-    setIsCompleteModalOpen(true); // 모달을 띄우기 위한 상태 변경
+    // 정보 수정 완료 후 SuccessModal 띄우기
+    setIsSuccessModalOpen(true); // 모달을 띄우기 위한 상태 변경
   };
 
   const isFormValid = () => {
@@ -194,11 +194,11 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
               </div>
             </div>
 
-            {/* CompleteModal을 수정 완료 후 표시 */}
-            {isCompleteModalOpen && (
-              <CompleteModal
+            {/* SuccessModal을 수정 완료 후 표시 */}
+            {isSuccessModalOpen && (
+              <SuccessModal
                 setShowModal={() => {
-                  setIsCompleteModalOpen(false);
+                  setIsSuccessModalOpen(false);
                   closeModal(); // 모달을 닫음
                 }}
                 title={'회원 정보 수정\n완료되었습니다.'}
