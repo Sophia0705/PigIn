@@ -27,6 +27,7 @@ import FavoritePage from './member/pages/FavoritePage';
 import StockFavoritesPage from './member/pages/StockFavoritesPage';
 import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
 import SpendingAccountRegister from './member/pages/SpendingAccountRegister';
+import TestPage from './member/pages/TestPage';
 
 const App: React.FC = () => {
   return (
@@ -63,6 +64,7 @@ const App: React.FC = () => {
             path="/spending-account-register"
             element={<SpendingAccountRegister />}
           />
+          <Route path="test" element={<TestPage />} />
         </Routes>
         <Navbar />
       </div>
