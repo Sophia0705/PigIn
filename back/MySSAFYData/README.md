@@ -1,1 +1,1 @@
-# PigIn - MyData
+# PigIn - Wallet
