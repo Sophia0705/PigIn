@@ -3,7 +3,7 @@ import { useStore } from '../../store/memberStore'; // Zustand로 관리되는 �
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 
-const SignUpModal: React.FC = () => {
+const SignUpPage: React.FC = () => {
   // Zustand 스토어에서 상태와 상태 변경 함수를 가져옴
   const { formData, setFormData } = useStore();
 
@@ -382,4 +382,4 @@ const SignUpModal: React.FC = () => {
   );
 };
 
-export default SignUpModal;
+export default SignUpPage;

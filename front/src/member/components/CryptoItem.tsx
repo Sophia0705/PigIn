@@ -56,7 +56,7 @@ const CryptoItem: React.FC<CryptoItemProps> = ({
       {/* 가격 및 등락률 표시 */}
       <div className="text-right basis-2/5 min-w-[100px]">
         <p className="font-bold text-gray-900 text-xs">
-          {price.toLocaleString()} USD {/* 가격을 통화 형식으로 출력 */}
+          {price.toLocaleString()} 원 {/* 가격을 통화 형식으로 출력 */}
         </p>
         <p
           className="flex items-center justify-end text-sm"

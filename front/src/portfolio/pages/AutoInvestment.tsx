@@ -1,14 +1,14 @@
 // 1. 자동투자금 or 금액 설정 input
 // 2. Dashboard 재사용
-import Dashboard from "./components/Dashboard";
+import Dashboard from '../components/Dashboard';
 // 3. 메뉴바(주식, 가상화페, 금) 설정하게
 // 4. 메뉴바 누른 것에 따라서 밑에 나올 결과값 & %나 금액 설정, 삭제할 곳
 
-import { useState, useMemo } from "react";
-import { useAutoInvestmentStore } from "../store/autoInvestmentStore";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from 'react';
+import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
+import { useNavigate } from 'react-router-dom';
 
-const CATEGORIES = ["주식", "가상화폐", "금"];
+const CATEGORIES = ['주식', '가상화폐', '금'];
 
 const AutoInvestment: React.FC = () => {
   const nav = useNavigate();
@@ -61,14 +61,14 @@ const AutoInvestment: React.FC = () => {
       setAllocations(localAllocations);
 
       // 임시로 콘솔에 로그 출력
-      console.log("설정이 저장되었습니다:", {
+      console.log('설정이 저장되었습니다:', {
         investmentAmount: localInvestmentAmount,
         allocations: localAllocations,
         isEnabled: isAutoInvestmentEnabled,
       });
 
       // 임시 성공 메시지 표시
-      alert("설정이 성공적으로 저장되었습니다.");
+      alert('설정이 성공적으로 저장되었습니다.');
 
       //       // API 호출을 통한 DB 저장
       //       const response = await fetch('api주소', {
@@ -91,8 +91,8 @@ const AutoInvestment: React.FC = () => {
       //       // 성공 메시지 표시
       //       alert('설정이 성공적으로 저장되었습니다.');
     } catch (error) {
-      console.error("자동 투자 설정 저장 중 오류:", error);
-      alert("설정 저장 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      console.error('자동 투자 설정 저장 중 오류:', error);
+      alert('설정 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -112,12 +112,12 @@ const AutoInvestment: React.FC = () => {
         <div className="flex items-center">
           <span className="mr-2 text-lg">자동화 투자</span>
           <div
-            className={`w-12 h-6 ${isAutoInvestmentEnabled ? "bg-customAqua" : "bg-gray-600"} rounded-full p-1 cursor-pointer transition-colors duration-300 ease-in-out`}
+            className={`w-12 h-6 ${isAutoInvestmentEnabled ? 'bg-customAqua' : 'bg-gray-600'} rounded-full p-1 cursor-pointer transition-colors duration-300 ease-in-out`}
             onClick={() => setIsAutoInvestmentEnabled(!isAutoInvestmentEnabled)}
           >
             <div
               className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out ${
-                isAutoInvestmentEnabled ? "translate-x-6" : ""
+                isAutoInvestmentEnabled ? 'translate-x-6' : ''
               }`}
             ></div>
           </div>
@@ -173,8 +173,8 @@ const AutoInvestment: React.FC = () => {
                   onClick={() => setActiveCategory(category)}
                   className={`py-2 px-4 rounded ${
                     activeCategory === category
-                      ? "bg-customAqua text-customDarkGreen"
-                      : "bg-gray-600 text-white"
+                      ? 'bg-customAqua text-customDarkGreen'
+                      : 'bg-gray-600 text-white'
                   }`}
                 >
                   {category}

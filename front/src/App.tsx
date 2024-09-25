@@ -16,12 +16,12 @@ import StockSearchPage from './investment/stock/pages/StockSearchPage';
 import CryptoSearchPage from './investment/crypto/pages/CryptoSearchPage';
 import StockDetailPage from './investment/stock/pages/StockDetailPage';
 import CryptoDetailPage from './investment/crypto/pages/CryptoDetailPage';
-import MyPortfolio from './portfolio/MyPortfolio';
-import AutoInvestment from './portfolio/AutoInvestment';
+import MyPortfolio from './portfolio/pages/MyPortfolio';
+import AutoInvestment from './portfolio/pages/AutoInvestment';
 import Quiz from './quiz/Quiz';
 import LandingPage from './member/pages/LandingPage';
 import MyPage from './member/pages/MyPage';
-import SignUpModal from './member/pages/SignUpModal';
+import SignUpPage from './member/pages/SignUpPage';
 import LoginPage from './member/pages/LoginPage';
 import FavoritePage from './member/pages/FavoritePage';
 import StockFavoritesPage from './member/pages/StockFavoritesPage';
@@ -54,7 +54,7 @@ const App: React.FC = () => {
           <Route path="/auto-invest" element={<AutoInvestment />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/signup" element={<SignUpModal />} />
+          <Route path="/signup" element={<SignUpPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/favorite" element={<FavoritePage />} />
           <Route path="/stock-favorites" element={<StockFavoritesPage />} />

@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import Dashboard from "./components/Dashboard";
-import PortfolioDetails from "./components/PortfolioDetails";
-import { usePortfolioStore } from "../store/portfolioStore";
+import { useEffect } from 'react';
+import Dashboard from '../components/Dashboard';
+import PortfolioDetails from '../components/PortfolioDetails';
+import { usePortfolioStore } from '../../store/portfolioStore';
 
 const MyPortfolio: React.FC = () => {
   const { fetchPortfolioData, isLoading, error } = usePortfolioStore();
@@ -27,7 +27,7 @@ const MyPortfolio: React.FC = () => {
     <div className="bg-gray-100 h-screen flex flex-col">
       <div
         className="bg-customDarkGreen flex-none"
-        style={{ height: "calc(44vh - 20px)" }}
+        style={{ height: 'calc(44vh - 20px)' }}
       >
         <div className="max-w-5xl mx-auto h-full py-6 px-6">
           <Dashboard />

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 useNavigate 훅
 import CryptoItem from './CryptoItem'; // 개별 암호화폐 항목을 나타내는 컴포넌트
-import CryptoData from '../data/CryptoData'; // 암호화폐 데이터를 불러옴
+import CryptoData from '../../data/CryptoCurrenciesData.json'; // 암호화폐 데이터를 불러옴
 
 // CryptoList 컴포넌트의 props 타입 정의
 interface CryptoListProps {

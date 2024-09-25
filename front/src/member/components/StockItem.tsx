@@ -54,7 +54,7 @@ const StockItem: React.FC<StockItemProps> = ({
       {/* 주식 가격 및 등락률 표시 */}
       <div className="text-right basis-2/5 min-w-[100px]">
         <p className="font-bold text-gray-900 text-xs">
-          {price.toLocaleString()} KRW {/* 가격을 KRW로 포맷팅하여 표시 */}
+          {price.toLocaleString()} 원
         </p>
 
         {/* 등락률 표시 (색상 및 아이콘 포함) */}
