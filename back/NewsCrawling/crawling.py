@@ -45,9 +45,9 @@ def crawlingNews():
         # 뉴스 매체 가지고 오기
         sources = html.select('.info')
         source_result = [source.get_text() for source in sources] 
-        result= {"날짜" : date_result, "언론사" : source_result, "기사제목" : title_result, "링크" : link_result}
+        result= {"Date" : date_result, "NewsCompany" : source_result, "NewsTitle" : title_result, "Link" : link_result}
         df = pd.DataFrame(result)
-        df["주식번호"] = i
+        df["StockId"] = i
 
 
         data = df.to_dict('records')
@@ -55,3 +55,20 @@ def crawlingNews():
         collection.insert_many(data)
     client.close()
     return "success"
+
+def getStockNews(stockId):
+    load_dotenv()
+    mongodb_URI = os.getenv("MongoDBUrl")
+    client = MongoClient(mongodb_URI)
+    db = client["S11P23C203"]
+    collection = db['news']
+
+    results = collection.find({"StockId" : stockId})
+
+    response = []
+
+    print(results)
+    for document in results:
+        response.append({"Date" : document["Date"], "NewsCompany" : document["NewsCompany"], "NewsTitle" : document["NewsTitle"], "Link" : document["Link"]})
+    client.close()
+    return response
