@@ -88,7 +88,8 @@ public class MemberController {
     @Operation(summary = "메세지 인증 검증", description = "<big>메시지 인증을 검증</big> 합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "인증번호가 같습니다."),
-        @ApiResponse(responseCode = "400", description = "인증번호가 만료되었습니다.")
+        @ApiResponse(responseCode = "400", description = "인증번호가 만료되었습니다."),
+        @ApiResponse(responseCode = "409", description = "인증번호가 틀렸습니다.")
     })
     @PostMapping("/mms-number-compare")
     public ResponseEntity<?> mmsNumberCompare(@RequestBody MMSCompareDto mmsCompareDto) {
@@ -102,6 +103,7 @@ public class MemberController {
     @Operation(summary = "회원탈퇴", description = "<big>회원탈퇴</big> 합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "회원탈퇴를 완료했습니다."),
+        @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
     @DeleteMapping("/withdrawal")
     public ResponseEntity<?> withDrawalUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -113,6 +115,7 @@ public class MemberController {
     @Operation(summary = "아이디 찾기", description = "<big>아이디 차지</big> 합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "ID(이메일) response"),
+        @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
     @GetMapping("/find-id")
     public ResponseEntity<?> findByEmail(@RequestBody FindIdDto findIdDto) {
@@ -126,6 +129,8 @@ public class MemberController {
     @Operation(summary = "비밀번호 찾기", description = "<big>비밀번호 찾기</big> 합니다. 이메일 검증을 통해 사용자가 존재하는지 확인 후 존재하면 메시지 인증번호를 보냄")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "메시지 전송 성공"),
+        @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다."),
+        @ApiResponse(responseCode = "408", description = "메시지 전송 실패!")
     })
     @PostMapping("/find-pwd")
     public ResponseEntity<?> findPassword(@RequestBody FindPasswordDto findPasswordDto)
@@ -140,6 +145,7 @@ public class MemberController {
     @Operation(summary = "사용자 정보 수정", description = "<big>사용자의 정보를 수정</big> 합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "사용자 정보 수정을 완료했습니다."),
+        @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
     @PutMapping("/update-member")
     public ResponseEntity<?> updateMember(@RequestBody UpdateMemberDto updateMemberDto,
@@ -153,6 +159,7 @@ public class MemberController {
     @Operation(summary = "패스워드 재설정", description = "<big>패스워드를 재설정</big> 합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "패스워드 변경을 완료했습니다."),
+        @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
     @PutMapping("/refresh-pwd")
     public ResponseEntity<?> refreshPassword(@RequestBody RefreshPassowrdDto refreshPassowrdDto) {
@@ -163,6 +170,7 @@ public class MemberController {
     @Operation(summary = "1원 송금", description = "<big>1원 송금</big> 합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "1원 송금 완료"),
+        @ApiResponse(responseCode = "404", description = "등록된 계좌가 아닙니다.")
     })
     @PostMapping("/account-authentication")
     public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo,
@@ -200,6 +208,7 @@ public class MemberController {
     @Operation(summary = "소비 통장 등록", description = "<big>소비용 통장을 등록</big> 합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "계좌 등록 완료"),
+        @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
     @PostMapping("/account")
     public ResponseEntity<?> addAccount(@RequestBody MemberAccountDto memberAccountDto,
