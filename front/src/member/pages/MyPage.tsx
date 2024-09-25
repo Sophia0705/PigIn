@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { MemberInfo } from '../components/MemberInfo'; // 회원 정보를 보여주는 컴포넌트
 import AccountSlider from '../components/AccountSlider'; // 계좌 정보를 보여주는 슬라이더 컴포넌트
 import { FaUserMinus } from 'react-icons/fa'; // 탈퇴 버튼에 사용할 아이콘
-import UpdateProfileModal from '../modal/UpdateProfileModal'; // 회원 정보 수정 모달 컴포넌트
-import WithdrawalModal from '../modal/WithDrawalModal'; // 회원 탈퇴 모달 컴포넌트
+import UpdateProfileModal from '../components/modals/UpdateProfileModal'; // 회원 정보 수정 모달 컴포넌트
+import WithdrawalModal from '../components/modals/WithDrawalModal'; // 회원 탈퇴 모달 컴포넌트
 
 const MyPage: React.FC = () => {
   // 회원 정보 수정 모달 열림/닫힘 상태를 관리하는 useState

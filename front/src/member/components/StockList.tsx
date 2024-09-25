@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 useNavigate 훅
 import StockItem from './StockItem'; // 개별 주식 항목을 표시하는 컴포넌트
-import StockData from '../data/StockData'; // 주식 데이터 가져오기
+import StockData from '../../data/KoreanStocksData.json'; // 주식 데이터 가져오기
 
 // StockList 컴포넌트의 props 타입 정의
 interface StockListProps {
@@ -16,7 +16,7 @@ const StockList: React.FC<StockListProps> = ({ limit, showTitle = true }) => {
   const displayData = limit ? StockData.slice(0, limit) : StockData; // limit가 있으면 그만큼 데이터 자르기
 
   return (
-    <div className="bg-white rounded-lg shadow-md w-[352px] mx-auto p-4 mt-0 mb-0">
+    <div className="bg-white rounded-lg shadow-md w-[352px] mx-auto p-4 mt-8 mb-0">
       {/* 주식 목록의 상단 제목 및 "더 보기" 버튼 */}
       {showTitle && (
         <div className="flex justify-between items-center mb-0 px-0">

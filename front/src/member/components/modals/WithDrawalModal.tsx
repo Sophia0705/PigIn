@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStore } from '../../store/memberStore';
+import { useStore } from '../../../store/memberStore';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import CompleteModal from './CompleteModal';
