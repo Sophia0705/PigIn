@@ -4,11 +4,16 @@ import axios, {
   AxiosResponse,
   AxiosError,
 } from 'axios';
+
 import {
   getAccessToken,
   setAccessToken,
   removeAccessToken,
-} from '@/utils/localUtils';
+} from '../utils/localUtils';
+
+interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 // 환경 변수에서 API 기본 URL 가져오기
 const baseURL = 'https://j11c203.p.ssafy.io/';
@@ -25,7 +30,9 @@ const axiosInstance: AxiosInstance = axios.create({
 
 // 요청 인터셉터 설정
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+  (
+    config: InternalAxiosRequestConfig
+  ): InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig> => {
     const token = getAccessToken();
     if (token && config.headers) {
       // 액세스 토큰이 있으면 헤더에 추가
@@ -46,13 +53,13 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse['data'] => response.data, // 정상 응답에서 데이터만 추출
 
   // 토큰이 만료되거나 오류가 발생한 경우 동작하는 코드
-  async (error: AxiosError): Promise<any> => {
-    const originalRequest = error.config; // 실패한 요청의 설정 가져오기
+  async (error: AxiosError): Promise<never> => {
+    const originalRequest = error.config as ExtendedAxiosRequestConfig; // 실패한 요청의 설정 가져오기
 
     // 오류가 발생하면 아래 요청 수행
     if (
-      (error.response && error.response.status === 401) ||
-      (error.response && error.response.status === 403)
+      originalRequest &&
+      (error.response?.status === 401 || error.response?.status === 403)
     ) {
       // 요청이 이미 한 번 재시도 되었는지 확인
       if (!originalRequest._retry) {
