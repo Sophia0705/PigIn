@@ -8,6 +8,7 @@ import GoldSellModal from '../components/modals/GoldSellModal';
 import GoldDetailGraph from '../components/GoldDetailGraph';
 import GoldDetailInfo from '../components/GoldDetailInfo';
 import GoldNews from '../components/GoldNews';
+import IsLoginModal from '../../../member/components/modals/IsLoginModal';
 
 const GoldDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,12 +33,13 @@ const GoldDetailPage: React.FC = () => {
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState<string>('00');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
 
   const handleActionForLoggedInUsers = (action: () => void) => {
     if (isLoggedIn) {
       action();
     } else {
-      alert('로그인이 필요합니다.');
+      setIsLoginModalVisible(true);
     }
   };
 
@@ -84,6 +86,10 @@ const GoldDetailPage: React.FC = () => {
     setSellInputValue('00');
   };
 
+  const handleLoginModalClose = () => {
+    setIsLoginModalVisible(false);
+  };
+
   const selectedData =
     selectedTimeRange === '7일'
       ? GoldData.slice(-7)
@@ -100,6 +106,7 @@ const GoldDetailPage: React.FC = () => {
 
   const minPrice = Math.min(...selectedData.map((data) => data.value));
   const maxPrice = Math.max(...selectedData.map((data) => data.value));
+
   const padding = (maxPrice - minPrice) * 0.1;
   const adjustedMin = minPrice - padding;
   const adjustedMax = maxPrice + padding;
@@ -192,15 +199,13 @@ const GoldDetailPage: React.FC = () => {
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
         <button
           className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
-          onClick={handleBuyClick}
-          disabled={!isLoggedIn}
+          onClick={() => handleActionForLoggedInUsers(handleBuyClick)}
         >
           매수
         </button>
         <button
           className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
-          onClick={handleSellClick}
-          disabled={!isLoggedIn}
+          onClick={() => handleActionForLoggedInUsers(handleSellClick)}
         >
           매도
         </button>
@@ -223,6 +228,14 @@ const GoldDetailPage: React.FC = () => {
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
           goldPrice={latestValue}
+        />
+      )}
+
+      {/* 로그인 모달 */}
+      {isLoginModalVisible && (
+        <IsLoginModal
+          isOpen={isLoginModalVisible}
+          onClose={handleLoginModalClose}
         />
       )}
     </div>

@@ -8,14 +8,15 @@ import CryptoDetailGraph from '../components/CryptoDetailGraph';
 import CryptoDetailInfo from '../components/CryptoDetailInfo';
 import CryptoNews from '../components/CryptoNews';
 import CryptoSellModal from '../components/modals/CryptoSellModal';
+import IsLoginModal from '../../../member/components/modals/IsLoginModal';
 
 const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const cryptoData = location.state?.item as CryptoItemData;
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
   const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
+
   const [isLiked, setIsLiked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
@@ -23,12 +24,13 @@ const CryptoDetailPage: React.FC = () => {
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState<string>('00');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
 
   const handleActionForLoggedInUsers = (action: () => void) => {
     if (isLoggedIn) {
       action();
     } else {
-      alert('로그인이 필요합니다.');
+      setIsLoginModalVisible(true);
     }
   };
 
@@ -77,6 +79,10 @@ const CryptoDetailPage: React.FC = () => {
   const handleSellModalClose = () => {
     setIsSellModalVisible(false);
     setSellInputValue('00');
+  };
+
+  const handleLoginModalClose = () => {
+    setIsLoginModalVisible(false);
   };
 
   if (!cryptoData) {
@@ -190,15 +196,13 @@ const CryptoDetailPage: React.FC = () => {
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
         <button
           className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
-          onClick={handleBuyClick}
-          disabled={!isLoggedIn}
+          onClick={() => handleActionForLoggedInUsers(handleBuyClick)}
         >
           매수
         </button>
         <button
           className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
-          onClick={handleSellClick}
-          disabled={!isLoggedIn}
+          onClick={() => handleActionForLoggedInUsers(handleSellClick)}
         >
           매도
         </button>
@@ -223,6 +227,14 @@ const CryptoDetailPage: React.FC = () => {
           onClose={handleSellModalClose}
           cryptoName={cryptoData.name}
           cryptoPrice={cryptoData.price}
+        />
+      )}
+
+      {/* 로그인 모달 */}
+      {isLoginModalVisible && (
+        <IsLoginModal
+          isOpen={isLoginModalVisible}
+          onClose={handleLoginModalClose}
         />
       )}
     </div>

@@ -8,6 +8,7 @@ import StockDetailInfo from '../components/StockDetailInfo';
 import StockPurchaseModal from '../components/modals/StockPurchaseModal';
 import StockNews from '../components/StockNews';
 import StockSellModal from '../components/modals/StockSellModal';
+import IsLoginModal from '../../../member/components/modals/IsLoginModal';
 
 const StockDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,12 +24,13 @@ const StockDetailPage: React.FC = () => {
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState('00');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
 
   const handleActionForLoggedInUsers = (action: () => void) => {
     if (isLoggedIn) {
       action();
     } else {
-      alert('로그인이 필요합니다.');
+      setIsLoginModalVisible(true);
     }
   };
 
@@ -77,6 +79,10 @@ const StockDetailPage: React.FC = () => {
   const handleSellModalClose = () => {
     setIsSellModalVisible(false);
     setSellInputValue('00');
+  };
+
+  const handleLoginModalClose = () => {
+    setIsLoginModalVisible(false);
   };
 
   if (!stockData) {
@@ -137,6 +143,7 @@ const StockDetailPage: React.FC = () => {
         </div>
       </div>
 
+      {/* 시간 범위 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
         {['7일', '1개월', '3개월', '1년'].map((option) => (
           <button
@@ -189,15 +196,13 @@ const StockDetailPage: React.FC = () => {
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
         <button
           className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
-          onClick={handleBuyClick}
-          disabled={!isLoggedIn}
+          onClick={() => handleActionForLoggedInUsers(handleBuyClick)}
         >
           매수
         </button>
         <button
           className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
-          onClick={handleSellClick}
-          disabled={!isLoggedIn}
+          onClick={() => handleActionForLoggedInUsers(handleSellClick)}
         >
           매도
         </button>
@@ -222,6 +227,14 @@ const StockDetailPage: React.FC = () => {
           onClose={handleSellModalClose}
           stockName={stockData.hts_kor_isnm}
           stockPrice={stockData.stck_prpr}
+        />
+      )}
+
+      {/* 로그인 모달 */}
+      {isLoginModalVisible && (
+        <IsLoginModal
+          isOpen={isLoginModalVisible}
+          onClose={handleLoginModalClose}
         />
       )}
     </div>
