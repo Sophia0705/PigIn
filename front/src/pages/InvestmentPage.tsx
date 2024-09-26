@@ -1,13 +1,13 @@
-import React from "react";
-import InvestMainHeader from "../investment/components/InvestMainHeader";
-import InvestmentCard from "../investment/components/InvestmentCard";
-import KospiData from "../data/KospiData.json";
-import BTCData from "../data/BTCData.json";
-import GoldData from "../data/GoldData.json";
+import React from 'react';
+import InvestMainHeader from '../investment/components/InvestMainHeader';
+import InvestmentCard from '../investment/components/InvestmentCard';
+import KospiData from '../data/KospiData.json';
+import BTCData from '../data/BTCData.json';
+import GoldData from '../data/GoldData.json';
 
 const calculatePercentageChange = (data: { name: string; value: number }[]) => {
   const lastTwoValues = data.slice(-2);
-  if (lastTwoValues.length < 2) return "0.00%";
+  if (lastTwoValues.length < 2) return '0.00%';
 
   const [secondLastValue, lastValue] = lastTwoValues;
   const change =
@@ -17,7 +17,7 @@ const calculatePercentageChange = (data: { name: string; value: number }[]) => {
 
 const getCurrentValue = (data: { name: string; value: number }[]) => {
   const lastValue = data[data.length - 1];
-  return lastValue ? lastValue.value.toLocaleString() : "0";
+  return lastValue ? lastValue.value.toLocaleString() : '0';
 };
 
 const InvestmentPage: React.FC = () => {
@@ -32,7 +32,7 @@ const InvestmentPage: React.FC = () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center">
       <InvestMainHeader />
-      <div className="flex flex-col items-center w-screen max-w-md">
+      <div className="flex flex-col items-center w-full max-w-md">
         {/* 주식 */}
         <InvestmentCard
           subject="주식"

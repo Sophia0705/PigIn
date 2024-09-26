@@ -80,7 +80,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   return (
     <>
       <div
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
         onClick={closeModal} // 모달 바깥을 클릭 시 닫힘
       >
         <div

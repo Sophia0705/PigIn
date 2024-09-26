@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --app-width: 100%;
+}
+
+.app-container {
+  width: var(--app-width);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* 모달을 위한 스타일 */
+.modal-content {
+  width: var(--app-width);
+  max-width: 100%;
+  margin: 0 auto;
+}

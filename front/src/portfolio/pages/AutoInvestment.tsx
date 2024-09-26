@@ -105,7 +105,7 @@ const AutoInvestment: React.FC = () => {
   }, [localAllocations, activeCategory, localInvestmentAmount]);
 
   return (
-    <div className="bg-customDarkGreen w-screen text-white p-4">
+    <div className="bg-customDarkGreen w-full text-white p-4">
       <div className="flex justify-between items-center mb-6">
         <button onClick={() => nav(-1)} className="text-xl">
           &lt;

@@ -31,7 +31,7 @@ module.exports = {
         },
       },
       animation: {
-        'dropCoin': 'dropCoin 2s infinite', // 동전이 떨어지는 애니메이션
+        'dropCoin': 'dropCoin 3.5s infinite', // 동전이 떨어지는 애니메이션
         'moveLeftExpand': 'moveLeftExpand 2s infinite', // Pig 텍스트 벌어짐 애니메이션
         'moveRightExpand': 'moveRightExpand 2s infinite', // In 텍스트 벌어짐 애니메이션
         'slide-up': 'slideUp 0.5s ease-out forwards', // 모달창 아래에서 위로 올라오는 애니메이션

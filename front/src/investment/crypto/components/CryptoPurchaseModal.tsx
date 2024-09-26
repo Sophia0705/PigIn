@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from "react";
-import { CgClose } from "react-icons/cg";
+import React, { useEffect, useCallback } from 'react';
+import { CgClose } from 'react-icons/cg';
 
 interface CryptoPurchaseModalProps {
   inputValue: string;
@@ -32,22 +32,22 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
 
   const handleAddAmount = (amount: number) => {
     setInputValue((prev) => {
-      const newValue = parseInt(prev || "0") + amount;
+      const newValue = parseInt(prev || '0') + amount;
       return newValue.toString();
     });
   };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Backspace") {
+      if (event.key === 'Backspace') {
         handleBackspace();
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleBackspace]);
 
@@ -55,7 +55,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
   const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
+    <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
         {/* 모달 상단 */}
         <div className="flex justify-between items-center mb-4">
@@ -78,12 +78,12 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
             value={inputValue}
             readOnly
             className={`bg-transparent text-center text-black text-3xl w-3/4 p-2 transition-all ${
-              inputValue ? "border-b border-black" : ""
+              inputValue ? 'border-b border-black' : ''
             }`}
           />
           <div
             className={`absolute right-4 mt-3 flex items-center space-x-1 ${
-              inputValue ? "text-black" : ""
+              inputValue ? 'text-black' : ''
             }`}
           >
             <span className="text-xl">원 ({percentage}%)</span>
@@ -93,14 +93,14 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
         {/* 500, 1000, 3000, 5000원 추가 버튼 */}
         <div className="flex justify-center space-x-4 mb-6">
           {[
-            { label: "+500원", value: 500 },
-            { label: "+1000원", value: 1000 },
-            { label: "+3000원", value: 3000 },
-            { label: "+5000원", value: 5000 },
+            { label: '+500원', value: 500 },
+            { label: '+1000원', value: 1000 },
+            { label: '+3000원', value: 3000 },
+            { label: '+5000원', value: 5000 },
           ].map((button) => (
             <button
               key={button.value}
-              className="bg-customDarkGreen p-2 text-sm rounded-full  transition-colors"
+              className="bg-customDarkGreen p-2 text-sm text-white rounded-full transition-colors"
               onClick={() => handleAddAmount(button.value)}
             >
               {button.label}
@@ -110,7 +110,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
 
         {/* 키패드 */}
         <div className="grid grid-cols-3 gap-4 justify-center">
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((num) => (
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
             <button
               key={num}
               className="bg-transparent text-black text-2xl p-4 rounded-lg transition-colors w-full h-20"
@@ -121,7 +121,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
           ))}
           <button
             className="bg-transparent text-black text-2xl p-4 rounded-lg transition-colors w-full h-20 col-span-3"
-            onClick={() => handleKeypadClick("0")}
+            onClick={() => handleKeypadClick('0')}
           >
             0
           </button>

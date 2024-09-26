@@ -120,7 +120,7 @@ const SpendingAccountRegister: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f] w-full">
       {/* 모달 본체 */}
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
@@ -140,7 +140,7 @@ const SpendingAccountRegister: React.FC = () => {
             placeholder="이름"
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 은행 선택 필드 */}
           <select
             name="bankName"
@@ -159,7 +159,7 @@ const SpendingAccountRegister: React.FC = () => {
               </option>
             ))}
           </select>
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
 
           {/* 계좌번호 입력 필드 및 1원 인증 버튼 */}
           <div className="flex items-center space-x-2">
@@ -175,7 +175,7 @@ const SpendingAccountRegister: React.FC = () => {
             <button
               type="button"
               onClick={handleAccountVerification}
-              className={`px-3 py-2 rounded w-7/33 justify-center ${
+              className={`px-3 py-2 rounded w-[70px] justify-center ${
                 formData.accountNumber
                   ? 'bg-[#9CF8E1] text-gray-900'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -185,7 +185,7 @@ const SpendingAccountRegister: React.FC = () => {
               인증
             </button>
           </div>
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 인증번호 입력 필드 */}
           <input
             type="text"
@@ -195,7 +195,7 @@ const SpendingAccountRegister: React.FC = () => {
             placeholder="인증번호"
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
             <input
@@ -225,7 +225,7 @@ const SpendingAccountRegister: React.FC = () => {
                 <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
               ))}
           </div>
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 비밀번호 확인 입력 필드 */}
           <div className="relative flex items-center">
             <input
@@ -253,7 +253,7 @@ const SpendingAccountRegister: React.FC = () => {
                 <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
               ))}
           </div>
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 계좌 등록 버튼 */}
           <button
             type="submit"

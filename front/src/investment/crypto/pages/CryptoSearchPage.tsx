@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaTimes, FaSearch } from "react-icons/fa";
-import { CgChevronLeft } from "react-icons/cg";
-import CryptoSearchResults from "../components/CryptoSearchResults";
-import CryptoCurrenciesData from "../../../data/CryptoCurrenciesData.json";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaTimes, FaSearch } from 'react-icons/fa';
+import { CgChevronLeft } from 'react-icons/cg';
+import CryptoSearchResults from '../components/CryptoSearchResults';
+import CryptoCurrenciesData from '../../../data/CryptoCurrenciesData.json';
 
 const CryptoSearchPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
 
@@ -44,7 +44,7 @@ const CryptoSearchPage: React.FC = () => {
     : [];
 
   return (
-    <div className="min-h-screen flex flex-col items-start justify-start p-4 w-screen bg-customDarkGreen">
+    <div className="min-h-screen flex flex-col items-start justify-start p-4 w-full bg-customDarkGreen">
       <div className="flex items-center justify-start w-full mb-4 space-x-2 relative">
         {/* 뒤로가기 버튼 */}
         <div onClick={handleBack} className="self-start mt-2 text-white">
@@ -57,7 +57,7 @@ const CryptoSearchPage: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={handleInputChange}
-            onKeyDown={(event) => event.key === "Enter" && handleSearch()}
+            onKeyDown={(event) => event.key === 'Enter' && handleSearch()}
             placeholder="검색어를 입력하세요"
             className="w-full p-2 pl-4 pr-10 border-2 border-gray-300 rounded-full focus:outline-none focus:border-customDarkGreen"
           />

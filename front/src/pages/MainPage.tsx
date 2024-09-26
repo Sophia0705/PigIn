@@ -249,8 +249,8 @@ const Top5Lists: React.FC = () => {
 
   return (
     <div className="flex gap-4 p-4 bg-customDarkGreen">
-      <Top5List title="주식 점 Top5" items={stockItems} />
-      <Top5List title="가상화폐 점 Top5" items={cryptoItems} />
+      <Top5List title="주식 찜 Top5" items={stockItems} />
+      <Top5List title="가상화폐 찜 Top5" items={cryptoItems} />
     </div>
   );
 };

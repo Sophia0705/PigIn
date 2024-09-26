@@ -154,7 +154,7 @@ const SignUpPage: React.FC = () => {
 
   return (
     // 모달 배경
-    <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
+    <div className="modal-content fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
       {/* 모달 본체 */}
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
@@ -331,7 +331,7 @@ const SignUpPage: React.FC = () => {
                 step="0.1"
                 value={savingRate}
                 onChange={handleSavingRateChange}
-                className="w-full"
+                className="w-4/5"
               />
               {/* 저축률 인풋 */}
               <input
@@ -341,7 +341,7 @@ const SignUpPage: React.FC = () => {
                 step="0.1"
                 value={savingRate}
                 onChange={handleSavingRateChange}
-                className="w-7 p-1 text-right border-none border-gray-300 rounded"
+                className="w-1/5 p-1 text-right border-none border-gray-300 rounded"
                 disabled
               />
               <span className="!ml-0">%</span>
