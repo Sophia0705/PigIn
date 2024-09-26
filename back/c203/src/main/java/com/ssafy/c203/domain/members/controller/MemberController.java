@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,7 +55,7 @@ public class MemberController {
         @ApiResponse(responseCode = "200", description = "회원가입을 성공하였습니다."),
     })
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@ModelAttribute SignUpDto signUpDto)
+    public ResponseEntity<?> signUp(@RequestBody SignUpDto signUpDto)
         throws NoSuchAlgorithmException {
         memberService.singUp(Members
             .builder()
@@ -106,7 +105,8 @@ public class MemberController {
         @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
     @DeleteMapping("/withdrawal")
-    public ResponseEntity<?> withDrawalUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> withDrawalUser(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         memberService.withDrawalUser(userId);
         return ResponseEntity.ok().body("회원탈퇴를 완료했습니다.");
