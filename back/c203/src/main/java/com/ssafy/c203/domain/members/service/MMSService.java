@@ -14,19 +14,34 @@ import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-@RequiredArgsConstructor
+@Service
 public class MMSService {
+
     private final RestTemplate restTemplate;
+    private String SECRETKEY;
+    private String APIKEY;
+
+    public MMSService(RestTemplate restTemplate, @Value("${message.key.secret}") String SECRETKEY,
+        @Value("${message.key.apiKey}") String APIKEY) {
+        this.restTemplate = restTemplate;
+        this.SECRETKEY = SECRETKEY;
+        this.APIKEY = APIKEY;
+    }
+
     public boolean sendMMS(String text, String phoneNumber) throws Exception {
+        log.info("SECRETKEY: {}", SECRETKEY);
+        log.info("APIKEY: {}", APIKEY);
         String targetUrl = "http://api.coolsms.co.kr/messages/v4/send";
         Map<String, Object> params = new HashMap<>();
         Map<String, String> message = new HashMap<>();
@@ -65,12 +80,12 @@ public class MMSService {
             String date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toString().split("\\[")[0];
 
             Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec("${message.key.secret}".getBytes(StandardCharsets.UTF_8),
+            SecretKeySpec secret_key = new SecretKeySpec(SECRETKEY.getBytes(StandardCharsets.UTF_8),
                 "HmacSHA256");
             sha256_HMAC.init(secret_key);
             String signature = new String(
                 Hex.encodeHex(sha256_HMAC.doFinal((date + salt).getBytes(StandardCharsets.UTF_8))));
-            return "HMAC-SHA256 ApiKey=" + "${message.key.apiKey}" + ", Date=" + date + ", salt=" + salt
+            return "HMAC-SHA256 ApiKey=" + APIKEY + ", Date=" + date + ", salt=" + salt
                 + ", signature=" + signature;
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             e.printStackTrace();
