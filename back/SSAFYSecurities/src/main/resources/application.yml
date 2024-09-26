@@ -9,6 +9,18 @@ spring:
       # host: MongoDB 서버 주소 (예: localhost)
       # port: MongoDB 포트 (기본값은 27017)
       # database_name: 접속할 데이터베이스 이름
+  datasource:
+    url: jdbc:postgresql://j11c203.p.ssafy.io:5432/postgres
+    username: postgres
+    password: ssafy
+  jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQL10Dialect
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
 
 koreainvestment:
   PROD: https://openapi.koreainvestment.com:9443
@@ -28,6 +40,9 @@ upbit:
 #  ACCESSKEY: QauB92cfsThPbex33yRgUltQKMyPs3IDLrxL8cbE
 #  SECRETKEY: PixamNeEMqTYxJ0lDVg89UDvxJO2BuKbD8eW7CjU
   codes: KRW-BTC,KRW-ETH
+
+gold:
+  APIKEY: 5/75qRHyFnJO2xACrRNa2fuTmdWmPhiTl2h00EhPfhLTET2KYsiGIT6o5nTPCNW/IO1llDBB619wGYitVsyggg==
 
 server:
   port: 8089

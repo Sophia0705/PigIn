@@ -27,7 +27,7 @@ public class Members {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String password;
 
     @Column(nullable = false)
@@ -46,6 +46,7 @@ public class Members {
     @Column(nullable = false)
     private String birth;
 
+    @Column(columnDefinition = "TEXT")
     private String refreshToken;
 
     private String role;
