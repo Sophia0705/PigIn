@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MemberInfo } from '../components/MemberInfo'; // 회원 정보를 보여주는 컴포넌트
 import AccountSlider from '../components/AccountSlider'; // 계좌 정보를 보여주는 슬라이더 컴포넌트
 import { FaUserMinus } from 'react-icons/fa'; // 탈퇴 버튼에 사용할 아이콘
 import UpdateProfileModal from '../components/modals/UpdateProfileModal'; // 회원 정보 수정 모달 컴포넌트
 import WithdrawalModal from '../components/modals/WithDrawalModal'; // 회원 탈퇴 모달 컴포넌트
+import { useAuthStore } from '../../store/AuthStore';
+// import IsLoginModal from '../components/modals/IsLoginModal';
+import LoginModal from '../components/modals/LoginModal';
 
 const MyPage: React.FC = () => {
+  const {
+    isLoggedIn,
+    isLoginModalOpen,
+    checkLoginStatus,
+    closeLoginModal,
+    // openLoginModal,
+  } = useAuthStore(); // 상태와 함수들 가져오기
   // 회원 정보 수정 모달 열림/닫힘 상태를 관리하는 useState
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   // 회원 탈퇴 모달 열림/닫힘 상태를 관리하는 useState
@@ -20,6 +30,34 @@ const MyPage: React.FC = () => {
   const openUpdateProfileModal = () => setIsUpdateModalOpen(true);
   // 회원 정보 수정 모달 닫기
   const closeUpdateProfileModal = () => setIsUpdateModalOpen(false);
+
+  useEffect(() => {
+    checkLoginStatus(); // 컴포넌트 마운트 시 로그인 상태 확인
+  }, [checkLoginStatus]);
+
+  // 로그인 여부에 따라 모달을 띄우고 페이지를 렌더링하지 않음
+  // if (!isLoggedIn && isLoginModalOpen) {
+  //   return (
+  //     <IsLoginModal
+  //       isOpen={isLoginModalOpen}
+  //       onClose={closeLoginModal}
+  //       onOpenLoginModal={openLoginModal}
+  //     />
+  //   );
+  // }
+
+  // 로그인 여부에 따라 로그인 모달을 띄우고 페이지를 렌더링하지 않음
+  if (!isLoggedIn && isLoginModalOpen) {
+    return (
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={closeLoginModal}
+        onOpenSignUpModal={() => {}}
+        onOpenFindIdModal={() => {}}
+        onOpenFindPasswordModal={() => {}}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center">

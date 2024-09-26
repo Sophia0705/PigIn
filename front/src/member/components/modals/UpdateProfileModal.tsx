@@ -3,7 +3,7 @@ import { useStore } from '../../../store/memberStore';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle, FaTimesCircle, FaUserMinus } from 'react-icons/fa'; // 탈퇴 아이콘 추가
 import SuccessModal from './SuccessModal';
-import WithdrawalModal from './WithdrawalModal'; // 회원 탈퇴 모달 추가
+import WithdrawalModal from './WithDrawalModal'; // 회원 탈퇴 모달 추가
 
 interface UpdateProfileModalProps {
   closeModal: () => void;

@@ -14,6 +14,7 @@ const SignUpPage: React.FC = () => {
   // 상태 관리 훅: 인증번호 전송 여부, 비밀번호 확인, 이메일 및 생년월일 유효성 상태 등
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
   const [authenticationNumber, setAuthenticationNumber] = useState(''); // 인증번호
+  const [isVerified, setIsVerified] = useState(false); // 인증번호 확인 여부 상태 추가
   const [showSuccessModal, setShowSuccessModal] = useState(false); // 성공 모달
   const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
   const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
@@ -109,26 +110,88 @@ const SignUpPage: React.FC = () => {
     setIsPasswordMatch(formData.password === value); // 비밀번호 일치 여부 설정
   };
 
+  // 전화번호에서 하이픈 제거하는 함수
+  const removeHyphenFromPhoneNumber = (phoneNumber: string): string => {
+    return phoneNumber.replace(/-/g, ''); // 하이픈(-)을 제거
+  };
+
   // SMS 인증 요청 핸들러: 서버에 전화번호 전송하여 인증번호 요청
   const requestVerificationCode = async () => {
     try {
-      const response = await fetch(`${BASE_URL}member/mms-number-compare`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phoneNumber: formData.phoneNumber }),
-      });
+      // 하이픈 제거한 전화번호
+      const sanitizedPhoneNumber = removeHyphenFromPhoneNumber(
+        formData.phoneNumber
+      );
 
-      if (response.ok) {
+      const requestData = {
+        name: formData.name, // 요청 바디에 이름 추가
+        phoneNumber: sanitizedPhoneNumber, // 하이픈 제거한 전화번호 추가
+      };
+
+      // 전송할 데이터 콘솔 출력
+      console.log('SMS 인증 요청 데이터:', requestData);
+
+      const response = await axios.post(
+        `${BASE_URL}member/mms-number-generate`, // https://j11c203.p.ssafy.io/api/
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // 응답 처리
+      if (response.status === 200) {
         setIsCodeSent(true); // 인증번호 요청 성공 시 상태 변경
-        setShowSuccessModal(true); // 인증번호 전송 모달 표시
+        setShowSuccessModal(true); // 인증번호 전송 성공 모달 표시
       } else {
-        setShowSuccessModal(false);
+        setShowSuccessModal(false); // 실패 시 성공 모달 숨김
       }
     } catch (error) {
       console.error('Error:', error);
-      setShowFailModal(false);
+      setShowFailModal(false); // 실패 시 실패 모달 표시
+    }
+  };
+
+  // SMS 인증번호 검증 핸들러: 서버에 전화번호와 인증번호 전송
+  const verifyAuthenticationCode = async () => {
+    try {
+      // 하이픈 제거한 전화번호
+      const sanitizedPhoneNumber = removeHyphenFromPhoneNumber(
+        formData.phoneNumber
+      );
+
+      const requestData = {
+        phoneNumber: sanitizedPhoneNumber, // 하이픈 제거한 전화번호 추가
+        authenticationNumber: authenticationNumber, // 요청 바디에 인증번호 추가
+      };
+
+      // 전송할 데이터 콘솔 출력
+      console.log('인증번호 검증 요청 데이터:', requestData);
+
+      const response = await axios.post(
+        `${BASE_URL}member/mms-number-compare`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // 응답 처리
+      if (response.status === 200) {
+        // 인증 성공 처리
+        console.log('인증 성공:', response.data);
+        setIsVerified(true);
+      } else {
+        // 인증 실패 처리
+        console.log('인증 실패');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // 실패 처리
     }
   };
 
@@ -189,7 +252,8 @@ const SignUpPage: React.FC = () => {
       formData.birth &&
       isBirthValid &&
       formData.phoneNumber.length === 13 &&
-      // authenticationNumber.length === 6 &&
+      authenticationNumber.length === 6 &&
+      isVerified &&
       isPasswordValid(formData.password) &&
       isPasswordMatch
     );
@@ -286,15 +350,32 @@ const SignUpPage: React.FC = () => {
 
           {/* 인증번호 입력 필드 */}
           {isCodeSent && (
-            <input
-              type="text"
-              value={authenticationNumber}
-              onChange={handleAuthNumberChange}
-              placeholder="인증번호 입력"
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              maxLength={6}
-            />
+            <>
+              <input
+                type="text"
+                value={authenticationNumber} // authenticationNumber 상태를 사용
+                onChange={handleAuthNumberChange} // 입력 변경 시 상태 업데이트
+                placeholder="인증번호 입력"
+                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+                maxLength={6} // 인증번호는 6자리로 제한
+              />
+              {/* 인증 버튼 */}
+              <button
+                type="button"
+                onClick={verifyAuthenticationCode} // 인증번호 검증 핸들러 호출
+                className={`w-full mt-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-300 ${
+                  isVerified
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' // 인증 완료 시 비활성화
+                    : 'bg-green-500 text-white hover:bg-green-600'
+                }`}
+                disabled={isVerified} // 인증 완료 시 버튼 비활성화
+              >
+                {isVerified ? '인증 완료' : '인증 확인'}{' '}
+                {/* 인증 완료 여부에 따라 텍스트 변경 */}
+              </button>
+            </>
           )}
+
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
             <input

@@ -22,8 +22,7 @@ import Quiz from './quiz/Quiz';
 import LandingPage from './member/pages/LandingPage';
 import MyPage from './member/pages/MyPage';
 import SignUpPage from './member/pages/SignUpPage';
-import SignUpModal from './member/components/modals/SignUpModal';
-import LoginPage from './member/pages/LoginPage';
+// import SignUpModal from './member/components/modals/SignUpModal';
 import FavoritePage from './member/pages/FavoritePage';
 import StockFavoritesPage from './member/pages/StockFavoritesPage';
 import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
@@ -57,11 +56,9 @@ const App: React.FC = () => {
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/favorite" element={<FavoritePage />} />
           <Route path="/stock-favorites" element={<StockFavoritesPage />} />
           <Route path="/crypto-favorites" element={<CryptoFavoritesPage />} />
-          <Route path="/signupmodal" element={<SignUpModal />} />
           <Route
             path="/spending-account-register"
             element={<SpendingAccountRegister />}

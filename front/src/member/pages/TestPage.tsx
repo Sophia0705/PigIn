@@ -9,7 +9,7 @@ const TestPage: React.FC = () => {
     // API 호출을 위한 함수
     const checkHealth = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/health-check`);
+        const response = await axios.get(`${BASE_URL}health-check`);
         setHealthStatus(response.data); // 성공 시 서버에서 받은 데이터 저장
       } catch (error) {
         console.error('Error fetching health check:', error);

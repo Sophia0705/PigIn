@@ -5,19 +5,29 @@ import { useNavigate } from 'react-router-dom';
 interface IsLoginModalProps {
   isOpen: boolean; // 모달이 열려있는지 여부를 나타내는 상태값
   onClose: () => void; // 모달을 닫기 위한 함수
+  onOpenLoginModal: () => void; // LoginModal을 여는 함수
 }
 
 // 로그인 모달 컴포넌트
-const LoginModal: React.FC<IsLoginModalProps> = ({ isOpen, onClose }) => {
-  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅 사용
+const IsLoginModal: React.FC<IsLoginModalProps> = ({
+  isOpen,
+  onClose,
+  onOpenLoginModal,
+}) => {
+  const navigate = useNavigate(); // 이전 페이지로 돌아가기 위한 useNavigate 훅 사용
 
-  // 로그인 버튼 클릭 시 호출되는 함수
+  // 로그인 버튼 클릭 시 호출되는 함수 (LoginModal 열기)
   const handleLoginClick = () => {
-    onClose(); // 모달을 닫음
-    navigate('/login'); // 로그인 페이지로 이동
+    onClose(); // 현재 모달을 닫고
+    onOpenLoginModal(); // LoginModal을 열기
   };
 
-  // 모달이 열려있지 않으면 null을 반환해 렌더링하지 않음
+  // 취소 버튼 클릭 시 호출되는 함수 (이전 페이지로 리다이렉트)
+  const handleCancelClick = () => {
+    onClose(); // 모달을 닫음
+    navigate(-1); // 이전 페이지로 이동
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -34,14 +44,14 @@ const LoginModal: React.FC<IsLoginModalProps> = ({ isOpen, onClose }) => {
           {/* 취소 버튼 */}
           <button
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
-            onClick={onClose} // 취소 버튼 클릭 시 모달을 닫음
+            onClick={handleCancelClick} // 취소 버튼 클릭 시 이전 페이지로 이동
           >
             취소
           </button>
           {/* 로그인 버튼 */}
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-            onClick={handleLoginClick} // 로그인 버튼 클릭 시 로그인 페이지로 이동
+            onClick={handleLoginClick} // 로그인 버튼 클릭 시 LoginModal 띄우기
           >
             로그인
           </button>
@@ -51,4 +61,4 @@ const LoginModal: React.FC<IsLoginModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default LoginModal;
+export default IsLoginModal;
