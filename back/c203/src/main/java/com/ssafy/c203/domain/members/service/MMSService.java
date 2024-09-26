@@ -53,7 +53,6 @@ public class MMSService {
 
         HttpStatusCode statusCode = MMSResponse.getStatusCode();
 
-        log.info(statusCode.toString());
         if (statusCode.equals(HttpStatus.OK)) {
             return true;
         }

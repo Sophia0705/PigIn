@@ -27,7 +27,6 @@ public class CustomMemberDetailsService implements UserDetailsService {
 
         if (username != null) {
             //UserDetails에 담아서 return 하면 AuthenticationManager가 검증
-            log.info("검증들어왔다. : {}", userData.toString());
             return new CustomUserDetails(userData);
         }
         return null;
