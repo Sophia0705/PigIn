@@ -32,7 +32,7 @@ const InvestmentPage: React.FC = () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center">
       <InvestMainHeader />
-      <div className="flex flex-col items-center w-screen max-w-lg">
+      <div className="flex flex-col items-center w-full max-w-md">
         {/* 주식 */}
         <InvestmentCard
           subject="주식"

@@ -1,43 +1,33 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
 
-interface StockSellModalProps {
+interface CryptoSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  stockName: string;
-  stockPrice: number;
+  cryptoName: string;
+  cryptoPrice: number;
 }
 
-const StockSellModal: React.FC<StockSellModalProps> = ({
+const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  stockName,
-  stockPrice,
+  cryptoName,
+  cryptoPrice,
 }) => {
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
-      if (prev.length > 4) {
+      if (prev.length < 6) {
+        return prev + number;
+      } else {
         return prev;
       }
-      // input 비어있으면 0, 00 입력 방지
-      // 빈칸에 숫자 더해지면 숫자 + 00 추가(100원 단위 투자 가능하도록)
-
-      if (prev === '00') {
-        return number === '0' || number === '00' ? prev : number + '00';
-      }
-      return prev.slice(0, -2) + number + '00';
     });
   };
 
   const handleBackspace = useCallback(() => {
-    setInputValue((prev) => {
-      if (prev === '00' || prev.length === 3) {
-        return '00';
-      }
-      return prev.slice(0, -3) + '00';
-    });
+    setInputValue((prev) => prev.slice(0, -1));
   }, [setInputValue]);
 
   const handleAddAmount = (amount: number) => {
@@ -62,12 +52,11 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
   }, [handleBackspace]);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / stockPrice) * 100).toFixed(2);
+  const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
 
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
-        {/* 모달 상단 */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-black flex justify-center">
             얼마를 매도하시겠어요?
@@ -78,14 +67,13 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {stockName} 현재 보유 : {stockPrice.toLocaleString()}원
+          {cryptoName} 현재 보유 : {cryptoPrice.toLocaleString()} 원
         </div>
 
-        {/* 가격 표시 칸 */}
         <div className="relative flex justify-center mb-6">
           <input
             type="text"
-            value={inputValue === '00' ? '' : inputValue}
+            value={inputValue}
             readOnly
             className={`bg-transparent text-center text-black text-3xl w-6/7 p-2 transition-all ${
               inputValue ? 'border-b border-black' : ''
@@ -100,7 +88,6 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
           </div>
         </div>
 
-        {/* 100, 1000, 3000, 5000원 추가 버튼 */}
         <div className="flex justify-center space-x-4 mb-6">
           {[
             { label: '+500원', value: 500 },
@@ -110,7 +97,7 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
           ].map((button) => (
             <button
               key={button.value}
-              className="bg-customDarkGreen p-2 text-sm rounded-full text-white transition-colors"
+              className="bg-customDarkGreen p-2 text-sm text-white rounded-full transition-colors"
               onClick={() => handleAddAmount(button.value)}
             >
               {button.label}
@@ -118,61 +105,26 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
           ))}
         </div>
 
-        {/* 키패드 */}
         <div className="grid grid-cols-3 gap-4 justify-center">
-          {[
-            '1',
-            '2',
-            '3',
-            '4',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9',
-            '00',
-            '0',
-            'backspace',
-          ].map((key) => (
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
             <button
-              key={key}
+              key={num}
               className="bg-transparent text-black text-2xl p-4 rounded-lg transition-colors w-full h-20"
-              onClick={() =>
-                key === 'backspace' ? handleBackspace() : handleKeypadClick(key)
-              }
+              onClick={() => handleKeypadClick(num)}
             >
-              {key === 'backspace' ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="w-6 h-6 ml-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 12H5M12 19l-7-7 7-7"
-                  />
-                </svg>
-              ) : (
-                key
-              )}
+              {num}
             </button>
           ))}
+          <button
+            className="bg-transparent text-black text-2xl p-4 rounded-lg transition-colors w-full h-20 col-span-3"
+            onClick={() => handleKeypadClick('0')}
+          >
+            0
+          </button>
         </div>
 
-        {/* 매도하기 버튼 */}
         <div className="flex justify-center mt-1">
-          <button
-            className={`w-full py-3 rounded-md text-lg font-bold ${
-              inputValue === '00'
-                ? 'bg-gray-300 text-white cursor-not-allowed'
-                : 'bg-red-500 text-white'
-            }`}
-            disabled={inputValue === '00'}
-          >
+          <button className="bg-red-500 text-white text-lg py-3 rounded-lg w-full font-bold">
             매도하기
           </button>
         </div>
@@ -181,4 +133,4 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
   );
 };
 
-export default StockSellModal;
+export default CryptoSellModal;

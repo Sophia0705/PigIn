@@ -26,7 +26,7 @@ const DetailHeader: React.FC<DetailHeaderProps> = ({ title }) => {
   };
 
   return (
-    <div className="flex justify-between items-center w-screen p-4 bg-customDarkGreen">
+    <div className="flex justify-between items-center w-full p-4 bg-customDarkGreen">
       {/* 뒤로가기 */}
       <p onClick={handleBack} className="text-white bg-inherit">
         <CgChevronLeft size={20} />

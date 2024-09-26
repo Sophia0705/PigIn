@@ -1,19 +1,27 @@
-import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
-import { usePortfolioStore } from "../../store/portfolioStore";
+import { PieChart, Pie, Cell, Label, ResponsiveContainer } from 'recharts';
+import { usePortfolioStore } from '../../store/portfolioStore';
 
-const COLORS = ["#BBF5E2", "#6183EE", "#ECCD4A", "#FF6B6B"];
+const COLORS = ['#BBF5E2', '#6183EE', '#ECCD4A', '#FF6B6B'];
 
-const CustomLabel = ({
-  viewBox,
+interface viewBoxType {
+  cx: number;
+  cy: number;
+}
+
+interface CustomLabelProps {
+  viewBox?: viewBoxType;
+  totalValue: number;
+  totalProfit: number;
+  totalProfitRate: number;
+}
+
+const CustomLabel: React.FC<CustomLabelProps> = ({
+  viewBox = { cx: 0, cy: 0 }, // 기본값으로
   totalValue,
   totalProfit,
   totalProfitRate,
-}: any) => {
+}) => {
   const { cx, cy } = viewBox;
-
-  // console.log(totalProfit);
-  // console.log(Math.abs(totalProfit));
-  // console.log(Math.abs(totalProfit).toLocaleString());
 
   return (
     <g>
@@ -31,9 +39,9 @@ const CustomLabel = ({
         y={cy + 10}
         textAnchor="middle"
         dominantBaseline="central"
-        className={`text-sm font-semibold ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+        className={`text-sm font-semibold ${totalProfit >= 0 ? 'fill-green-500' : 'fill-red-500'}`}
       >
-        {totalProfit >= 0 ? "+" : "-"}
+        {totalProfit >= 0 ? '+' : '-'}
         {Math.abs(totalProfit).toLocaleString()}원
       </text>
       <text
@@ -41,9 +49,9 @@ const CustomLabel = ({
         y={cy + 30}
         textAnchor="middle"
         dominantBaseline="central"
-        className={`text-sm font-semibold ${totalProfit >= 0 ? "fill-green-500" : "fill-red-500"}`}
+        className={`text-sm font-semibold ${totalProfit >= 0 ? 'fill-green-500' : 'fill-red-500'}`}
       >
-        ({(totalProfitRate * 100).toFixed(2)}%{totalProfit >= 0 ? "▲" : "▼"})
+        ({(totalProfitRate * 100).toFixed(2)}%{totalProfit >= 0 ? '▲' : '▼'})
       </text>
     </g>
   );
@@ -97,7 +105,7 @@ const Dashboard: React.FC = () => {
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
-                    stroke={activeIndex === index ? "#000" : "none"}
+                    stroke={activeIndex === index ? '#000' : 'none'}
                     strokeWidth={2}
                   />
                 ))}
@@ -133,11 +141,11 @@ const Dashboard: React.FC = () => {
                   ></div>
                   <span className="text-gray-700 text-sm font-medium">
                     {category.name}
-                  </span>{" "}
+                  </span>{' '}
                 </div>
                 <div className="pl-5 text-sm">
                   <span className="">
-                    {((category.totalValue / totalValue) * 100).toFixed(1)}%{" "}
+                    {((category.totalValue / totalValue) * 100).toFixed(1)}%{' '}
                   </span>
                   <span className="ml-2">
                     ({category.totalValue.toLocaleString()}원)

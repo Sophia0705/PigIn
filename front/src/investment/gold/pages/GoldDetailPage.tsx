@@ -113,7 +113,7 @@ const GoldDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-customDarkGreen">
-      <div className="flex justify-between items-center p-4 w-screen">
+      <div className="flex justify-between items-center p-4 w-full">
         <div onClick={handleBackClick} className="text-white">
           <CgChevronLeft size={24} />
         </div>

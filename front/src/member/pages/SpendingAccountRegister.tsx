@@ -120,7 +120,7 @@ const SpendingAccountRegister: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f] w-full">
       {/* 모달 본체 */}
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">

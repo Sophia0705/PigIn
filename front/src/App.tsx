@@ -6,6 +6,7 @@ import {
   Outlet,
 } from 'react-router-dom';
 import './App.css';
+import Layout from './mobileLayout';
 import Navbar from './components/Navbar';
 import MainPage from './pages/MainPage';
 import InvestmentPage from './pages/InvestmentPage';
@@ -27,11 +28,12 @@ import FavoritePage from './member/pages/FavoritePage';
 import StockFavoritesPage from './member/pages/StockFavoritesPage';
 import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
 import SpendingAccountRegister from './member/pages/SpendingAccountRegister';
+// import { Layer } from 'recharts';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="min-h-screen w-full flex flex-col justify-between items-center bg-customDarkGreen">
+      <Layout>
         <Routes>
           <Route path="/main" element={<MainPage />} />
           {/* LandingPage를 기본 경로로 설정 */}
@@ -65,7 +67,7 @@ const App: React.FC = () => {
           />
         </Routes>
         <Navbar />
-      </div>
+      </Layout>
     </Router>
   );
 };

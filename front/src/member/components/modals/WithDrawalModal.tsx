@@ -79,7 +79,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ closeModal }) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50"
+      className="modal-content fixed inset-0 flex items-center justify-center z-50"
       onClick={closeModal} // 백드롭 클릭 시 모달 닫힘
     >
       {/* 백드롭 */}

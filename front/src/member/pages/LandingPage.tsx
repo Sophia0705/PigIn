@@ -1,73 +1,87 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// 이미지 파일을 src 폴더 내에서 import
-import pigImage from '../../assets/pig.png'; // 돼지 저금통 이미지
-import coinImage from '../../assets/coin.png'; // 동전 이미지
-
-const LandingPage: React.FC = () => {
+const LandingPage = () => {
   const navigate = useNavigate();
+  const [containerSize, setContainerSize] = useState({
+    width: '0px',
+    height: '0px',
+  });
 
-  // 2초 후 자동으로 메인 페이지로 이동
   useEffect(() => {
+    const updateContainerSize = () => {
+      const ratio = 412 / 915;
+      const containerHeight = window.innerHeight;
+      const calculatedWidth = containerHeight * ratio;
+      setContainerSize({
+        width: `${calculatedWidth}px`,
+        height: `${containerHeight}px`,
+      });
+    };
+
+    updateContainerSize();
+    window.addEventListener('resize', updateContainerSize);
+
+    // 2초 후 자동으로 메인 페이지로 이동
     const timer = setTimeout(() => {
       navigate('/main');
     }, 2000);
 
-    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+    return () => {
+      window.removeEventListener('resize', updateContainerSize);
+      clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+    };
   }, [navigate]);
 
-  // 클릭 시 메인 페이지로 이동
   const handleTouch = () => {
     navigate('/main');
   };
 
   return (
     <div
-      onClick={handleTouch} // 클릭 이벤트 핸들러 추가
+      onClick={handleTouch}
       className="relative flex justify-center items-center h-screen bg-gray-100 overflow-hidden"
     >
-      {/* 전체 화면을 덮는 비디오 */}
-      <video
-        autoPlay
-        loop
-        muted
-        className="absolute top-0 left-0 w-full h-full object-cover z-0"
+      <div
+        style={{ width: containerSize.width, height: containerSize.height }}
+        className="relative flex flex-col items-center justify-center bg-gray-100 overflow-hidden"
       >
-        <source src="coin_rain.mp4" type="video/mp4" />
-      </video>
+        {/* 비디오 배경 */}
+        <video
+          autoPlay
+          loop
+          muted
+          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+        >
+          <source src="coin_rain.mp4" type="video/mp4" />
+        </video>
 
-      <div className="relative flex flex-col items-center justify-center w-full h-full z-10">
-        {/* 애니메이션 콘텐츠 */}
-        <header className="flex items-center space-x-0">
-          {/* Pig와 In 텍스트 크기와 애니메이션 적용 */}
-          <span
-            style={{ animation: `moveLeftExpand 2s infinite` }}
-            className="text-[90px] md:text-[180px] lg:text-[240px] font-bold text-gray-800 animate-moveLeftExpand"
-          >
-            Pig
-          </span>
-          <span
-            style={{ animation: 'moveRightExpand 2s infinite' }}
-            className="text-[90px] md:text-[180px] lg:text-[240px] font-bold text-gray-800 animate-moveRightExpand"
-          >
-            In
-          </span>
-        </header>
-        <h1>자동 저축 투자 플랫폼</h1>
-        {/* 돼지 저금통 이미지 */}
-        <img
-          src={pigImage}
-          alt="Piggy Bank"
-          className="mt-4 md:mt-6 lg:mt-8 w-[600px] md:w-[960px] lg:w-[1440px] h-auto z-20 block mx-auto"
-        />
+        <div className="relative flex flex-col items-center justify-center w-full h-full z-10">
+          {/* 헤더 텍스트 */}
+          <header className="flex items-center space-x-0 mb-4">
+            <span className="text-7xl font-bold text-gray-800 animate-moveLeftExpand">
+              Pig
+            </span>
+            <span className="text-7xl font-bold text-gray-800 animate-moveRightExpand">
+              In
+            </span>
+          </header>
+          <h1 className="text-2xl mb-6 text-gray-800">자동 저축 투자 플랫폼</h1>
 
-        {/* 동전 이미지 */}
-        <img
-          src={coinImage}
-          alt="Coin"
-          className="absolute top-[100px] left-[180px] w-36 md:w-42 lg:w-48 h-36 md:h-42 lg:h-48 z-30 animate-dropCoin"
-        />
+          {/* 돼지 저금통 이미지 */}
+          <img
+            src="../src/assets/pig.png"
+            alt="Piggy Bank"
+            className="w-7/8 h-auto z-20 block mx-auto"
+          />
+
+          {/* 동전 이미지 */}
+          <img
+            src="../src/assets/coin.png"
+            alt="Coin"
+            className="absolute top-1/4 left-2/4 w-20 h-20 z-30 animate-dropCoin"
+          />
+        </div>
       </div>
     </div>
   );

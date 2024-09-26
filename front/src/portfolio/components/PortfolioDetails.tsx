@@ -17,7 +17,7 @@ const PortfolioDetails: React.FC = () => {
       if (containerRef.current) {
         // 리스트 높이를 동적으로 조정 -> 타입 에러로 주석 처리
         // const height = containerRef.current.clientHeight - 80;
-        console.log('컨테이너 높이:', containerRef.current.clientHeight - 80);
+        // console.log('컨테이너 높이:', containerRef.current.clientHeight - 80);
       }
     };
 

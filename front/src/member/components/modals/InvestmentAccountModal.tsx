@@ -11,7 +11,7 @@ const SignUpCompleteModal: React.FC<InvestmentAccountCompleteModalProps> = ({
 }) => {
   return (
     // 모달 창의 배경 설정 (화면 전체를 덮는 반투명 배경)
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       {/* 모달 본체: 흰색 배경, 둥근 모서리, 그림자 효과 */}
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
         {/* 모달 제목 */}

@@ -1,30 +1,22 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useStore } from '../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
-import axios from 'axios';
-import SuccessModal from '../components/modals/SuccessModal'; // 성공 모달 컴포넌트
-import FailModal from '../components/modals/FailModal'; // 실패 모달 컴포넌트
 
 const SignUpPage: React.FC = () => {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
   // Zustand 스토어에서 상태와 상태 변경 함수를 가져옴
   const { formData, setFormData } = useStore();
 
   // 상태 관리 훅: 인증번호 전송 여부, 비밀번호 확인, 이메일 및 생년월일 유효성 상태 등
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
   const [authenticationNumber, setAuthenticationNumber] = useState(''); // 인증번호
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // 성공 모달
-  const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
-  const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
-  const [failMessage, setFailMessage] = useState(''); // 실패 메시지
+  const [showModal, setShowModal] = useState(false); // 인증번호 전송 모달 표시 여부
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 가리기/보이기 상태
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // 비밀번호 확인 가리기/보이기 상태
   const [passwordConfirm, setPasswordConfirm] = useState(''); // 비밀번호 확인
   const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 여부
   const [isEmailValid, setIsEmailValid] = useState(true); // 이메일 유효성 상태
   const [isBirthValid, setIsBirthValid] = useState(true); // 생년월일 유효성 상태
-
   // const [savingRate, setSavingRate] = useState(0); // 저축률 상태
 
   // 이메일 유효성 검사 함수
@@ -46,7 +38,7 @@ const SignUpPage: React.FC = () => {
     return regex.test(birth); // 유효성 검사 결과 반환
   };
 
-  // 저축률 입력 핸들러: 입력 값이 유효한 범위(0~10)인지 확인 후 상태 업데이트
+  // // 저축률 입력 핸들러: 입력 값이 유효한 범위(0~10)인지 확인 후 상태 업데이트
   // const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   let value = e.target.value;
 
@@ -112,23 +104,26 @@ const SignUpPage: React.FC = () => {
   // SMS 인증 요청 핸들러: 서버에 전화번호 전송하여 인증번호 요청
   const requestVerificationCode = async () => {
     try {
-      const response = await fetch(`${BASE_URL}member/mms-number-compare`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phoneNumber: formData.phoneNumber }),
-      });
+      const response = await fetch(
+        'http://localhost:8080/api/member/mms-number-compare',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ phoneNumber: formData.phoneNumber }),
+        }
+      );
 
       if (response.ok) {
         setIsCodeSent(true); // 인증번호 요청 성공 시 상태 변경
-        setShowSuccessModal(true); // 인증번호 전송 모달 표시
+        setShowModal(true); // 인증번호 전송 모달 표시
       } else {
-        setShowSuccessModal(false);
+        alert('인증번호 전송에 실패했습니다.');
       }
     } catch (error) {
       console.error('Error:', error);
-      setShowFailModal(false);
+      alert('서버 오류가 발생했습니다.');
     }
   };
 
@@ -138,47 +133,9 @@ const SignUpPage: React.FC = () => {
   };
 
   // 폼 제출 시 호출되는 핸들러 함수
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
-
-    // formData를 새로운 객체로 복사
-    const sanitizedFormData = { ...formData };
-
-    // 하이픈을 제거한 전화번호로 변환
-    sanitizedFormData.phoneNumber = formData.phoneNumber.replace(/-/g, '');
-
-    // passwordConfirm 필드를 삭제 (타입 단언 사용)
-    delete (sanitizedFormData as any).passwordConfirm;
-
-    console.log('Submitted Data:', sanitizedFormData); // 하이픈 제거된 데이터 출력
-
-    // 서버로 POST 요청 보내기
-    try {
-      const response = await axios.post(
-        `${BASE_URL}member/sign-up`,
-        sanitizedFormData
-      );
-
-      // 성공 시 처리
-      console.log('회원가입 성공:', response.data);
-      setSuccessMessage('회원가입이 완료되었습니다.');
-      setShowSuccessModal(true); // 성공 모달 열기
-    } catch (error) {
-      // 오류가 발생한 경우, error를 string으로 변환하여 처리
-      if (axios.isAxiosError(error)) {
-        // AxiosError 타입으로 오류를 처리
-        console.error(
-          '회원가입 실패:',
-          error.response ? error.response.data : error.message
-        );
-        setFailMessage('회원가입에 실패했습니다. 다시 시도해주세요.');
-        setShowFailModal(true); // 실패 모달 열기
-      } else {
-        console.error('알 수 없는 오류:', error);
-        setFailMessage('알 수 없는 오류가 발생했습니다.');
-        setShowFailModal(true); // 실패 모달 열기
-      }
-    }
+    console.log('Submitted Data:', formData); // 제출된 데이터 콘솔 출력
   };
 
   // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
@@ -189,7 +146,7 @@ const SignUpPage: React.FC = () => {
       formData.birth &&
       isBirthValid &&
       formData.phoneNumber.length === 13 &&
-      // authenticationNumber.length === 6 &&
+      authenticationNumber.length === 6 &&
       isPasswordValid(formData.password) &&
       isPasswordMatch
     );
@@ -197,7 +154,7 @@ const SignUpPage: React.FC = () => {
 
   return (
     // 모달 배경
-    <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
+    <div className="modal-content fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
       {/* 모달 본체 */}
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
@@ -360,8 +317,8 @@ const SignUpPage: React.FC = () => {
           </div>
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
 
-          {/* 저축률 설정
-          <div className="mt-4">
+          {/* 저축률 설정 */}
+          {/* <div className="mt-4">
             <label className="text-gray-700 text-sm block mb-2">
               저축률 설정
             </label>
@@ -374,7 +331,7 @@ const SignUpPage: React.FC = () => {
                 step="0.1"
                 value={savingRate}
                 onChange={handleSavingRateChange}
-                className="w-full"
+                className="w-4/5"
               /> */}
           {/* 저축률 인풋 */}
           {/* <input
@@ -384,7 +341,7 @@ const SignUpPage: React.FC = () => {
                 step="0.1"
                 value={savingRate}
                 onChange={handleSavingRateChange}
-                className="w-7 p-1 text-right border-none border-gray-300 rounded"
+                className="w-1/5 p-1 text-right border-none border-gray-300 rounded"
                 disabled
               />
               <span className="!ml-0">%</span>
@@ -405,26 +362,21 @@ const SignUpPage: React.FC = () => {
         </form>
       </div>
 
-      {/* 성공 모달 */}
-      {showSuccessModal && (
-        <SuccessModal
-          setShowModal={setShowSuccessModal}
-          title={successMessage}
-          buttonText="확인"
-          buttonColor="bg-customAqua"
-          buttonHoverColor="hover:bg-[#7ee9ce]"
-        />
-      )}
-
-      {/* 실패 모달 */}
-      {showFailModal && (
-        <FailModal
-          setShowModal={setShowFailModal}
-          title={failMessage}
-          buttonText="다시 시도"
-          buttonColor="bg-customRed"
-          buttonHoverColor="hover:bg-[#FF2414]"
-        />
+      {/* 인증번호 전송 모달 */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-xl font-bold mt-5 mb-10">
+              인증번호가 전송되었습니다.
+            </h2>
+            <button
+              onClick={() => setShowModal(false)}
+              className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              확인
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
