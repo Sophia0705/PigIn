@@ -9,7 +9,7 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
     networks:
-      - pigin-network
+      - myapp_pigin-network
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8089 || exit 1"]
@@ -19,5 +19,5 @@ services:
       start_period: 40s
 
 networks:
-  pigin-network:
+  myapp_pigin-network:
     external: true
