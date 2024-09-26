@@ -73,6 +73,7 @@ public class MemberServiceImpl implements MemberService {
     public void singUp(Members members) throws NoSuchAlgorithmException {
         Boolean isExist = membersRepository.existsByEmail(members.getEmail());
 
+//        대중현
         //해당 이메일로 회원가입한 사람이 있으면 return
         if (isExist) {
             throw new EmailConflictException();
