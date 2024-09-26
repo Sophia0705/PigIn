@@ -26,6 +26,11 @@ const CryptoDetailPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
 
+  const toggleLoginStatus = () => {
+    setIsLoggedIn((prev) => !prev);
+    alert(isLoggedIn ? '로그아웃되었습니다.' : '로그인되었습니다.');
+  };
+
   const handleActionForLoggedInUsers = (action: () => void) => {
     if (isLoggedIn) {
       action();
@@ -112,7 +117,10 @@ const CryptoDetailPage: React.FC = () => {
         <div onClick={handleBackClick} className="text-white">
           <CgChevronLeft size={24} />
         </div>
-        <h1 className="text-xl font-bold text-center text-white">
+        <h1
+          className="text-xl font-bold text-center text-white"
+          onClick={toggleLoginStatus}
+        >
           {cryptoData.name}
         </h1>
         <div className="flex items-center space-x-4 text-white">

@@ -26,6 +26,11 @@ const StockDetailPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
 
+  const toggleLoginStatus = () => {
+    setIsLoggedIn((prev) => !prev);
+    alert(isLoggedIn ? '로그아웃되었습니다.' : '로그인되었습니다.');
+  };
+
   const handleActionForLoggedInUsers = (action: () => void) => {
     if (isLoggedIn) {
       action();
@@ -112,7 +117,10 @@ const StockDetailPage: React.FC = () => {
         <div onClick={handleBackClick} className="text-white">
           <CgChevronLeft size={24} />
         </div>
-        <h1 className="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold text-white">
+        <h1
+          className="text-xl font-bold text-center text-white"
+          onClick={toggleLoginStatus}
+        >
           {stockData.hts_kor_isnm}
         </h1>
         <div className="flex items-center space-x-4 text-white">
