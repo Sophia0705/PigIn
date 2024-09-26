@@ -28,3 +28,8 @@ upbit:
 #  ACCESSKEY: QauB92cfsThPbex33yRgUltQKMyPs3IDLrxL8cbE
 #  SECRETKEY: PixamNeEMqTYxJ0lDVg89UDvxJO2BuKbD8eW7CjU
   codes: KRW-BTC,KRW-ETH
+
+server:
+  port: 8089
+  servlet:
+    context-path:

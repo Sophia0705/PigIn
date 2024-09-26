@@ -2,6 +2,7 @@ package com.ssafy.myssafydata.controller;
 
 import com.ssafy.myssafydata.dto.AccountCreateDTO;
 import com.ssafy.myssafydata.dto.UserApiRequestDTO;
+import com.ssafy.myssafydata.dto.response.UserAddResponse;
 import com.ssafy.myssafydata.dto.request.AccountMakeRequest;
 import com.ssafy.myssafydata.entity.UserEntity;
 import com.ssafy.myssafydata.service.AccountService;
@@ -36,10 +37,14 @@ public class RestController {
 
         UserEntity result = userService.userAdd(user);
 
+        UserAddResponse response = new UserAddResponse();
+
         if (result!= null) {
             AccountCreateDTO dto = accountService.makeAccount(result.getUserKey());
             accountService.deposit(user.getUserKey(), dto.getAccountNo(), "1000000", "기본 입금");
-            return ResponseEntity.ok().body(dto.getAccountNo());
+            response.setAccountNo(dto.getAccountNo());
+            response.setUserKey(result.getUserKey());
+            return ResponseEntity.ok().body(response);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to add user");
     }

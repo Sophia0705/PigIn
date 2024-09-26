@@ -1,6 +1,5 @@
-package com.ssafy.securities.stock.entity;
+package com.ssafy.c203.domain.stock.entity.mongo;
 
-import com.ssafy.securities.stock.dto.StockDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockMinute {
+public class MongoStockMinute {
 
     @Id
     private String id; // [code + date + minute]
@@ -27,15 +26,4 @@ public class StockMinute {
     private String volume;
     private String change;
 
-    public StockMinute(StockDTO dto) {
-        this.stockCode = dto.getStockCode();
-        this.date = dto.getDate();
-        this.time = dto.getTime();
-        this.close = dto.getClose();
-        this.open = dto.getOpen();
-        this.high = dto.getHigh();
-        this.low = dto.getLow();
-        this.volume = dto.getVolume();
-        this.change = dto.getChange();
-    }
 }
