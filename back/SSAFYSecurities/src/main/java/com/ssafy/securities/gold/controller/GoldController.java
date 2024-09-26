@@ -1,8 +1,11 @@
 package com.ssafy.securities.gold.controller;
 
+import com.ssafy.securities.gold.service.GoldService;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("/api/gold")
 public class GoldController {
+    private final GoldService goldService;
 
-    @PostMapping("/get-today")
-    public ResponseEntity<?> getToday(){
-        return null;
+    @GetMapping("/get-today")
+    public ResponseEntity<?> getToday() throws IOException {
+        goldService.saveGold();
+        return ResponseEntity.ok().build();
     }
 }
