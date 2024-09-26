@@ -1,8 +1,8 @@
-import React from "react";
-import DetailHeader from "../../components/DetailHeader";
-import DetailPageGraph from "../../components/DetailPageGraph";
-import BTCData from "../../../data/BTCData.json";
-import CryptoItemsContainer from "../components/CryptoItemsContainer";
+import React from 'react';
+import DetailHeader from '../../components/DetailHeader';
+import DetailPageGraph from '../../components/DetailPageGraph';
+import BTCData from '../../../data/BTCData.json';
+import CryptoItemsContainer from '../components/CryptoItemsContainer';
 
 const CryptoMainPage: React.FC = () => {
   const latestValue = BTCData[BTCData.length - 1].value;
@@ -17,7 +17,7 @@ const CryptoMainPage: React.FC = () => {
       : `${percentageChange}%`;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start">
+    <div className="min-h-screen flex flex-col items-center justify-center">
       <DetailHeader title="가상화폐" />
       <div className="p-4 w-full max-w-md">
         <DetailPageGraph
