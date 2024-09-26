@@ -154,9 +154,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean MMSCompare(MMSCompareDto mmsCompareDto) {
-        MMSAuthentication authentication = authenticationRepository.findFirstByPhoneNumberAndAuthenticationNumberAndDeadlineBeforeOrderByCreateTimeDesc(
-            mmsCompareDto.getPhoneNumber(), mmsCompareDto.getAuthenticationNumber(),
-            LocalDateTime.now()).orElseThrow(AuthenticationNotFoundException::new);
+        log.info(mmsCompareDto.toString());
+        MMSAuthentication authentication = authenticationRepository.findLatestValidAuthentication(
+                mmsCompareDto.getAuthenticationNumber(), mmsCompareDto.getPhoneNumber())
+            .orElseThrow(AuthenticationNotFoundException::new);
+        log.info(authentication.toString());
         if (mmsCompareDto.getAuthenticationNumber()
             .equals(authentication.getAuthenticationNumber())) {
             return true;
