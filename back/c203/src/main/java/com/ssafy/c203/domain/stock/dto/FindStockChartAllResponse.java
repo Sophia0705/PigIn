@@ -2,10 +2,14 @@ package com.ssafy.c203.domain.stock.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
 import lombok.Data;
 
 @Data
 public class FindStockChartAllResponse {
+
+    private String stockCode;
+
     @JsonProperty("stck_bsop_date")
     private String stockBusinessDate; // 날짜
 
@@ -52,6 +56,7 @@ public class FindStockChartAllResponse {
         this.highPrice = mongoStockHistory.getHigh();
         this.lowPrice = mongoStockHistory.getLow();
         this.accumulatedVolume = mongoStockHistory.getVolume();
+        this.stockCode = mongoStockHistory.getStockCode();
 //        this.accumulatedTradeAmount = "";
 //        this.flagCode = "";
 //        this.dividendRate = "";
@@ -59,5 +64,15 @@ public class FindStockChartAllResponse {
 //        this.previousDayChangeSign = "";
 //        this.previousDayChange = "";
 //        this.reason = "";
+    }
+
+    public FindStockChartAllResponse (MongoStockMinute mongoStockMinute) {
+        this.stockBusinessDate = mongoStockMinute.getDate();
+        this.closePrice = mongoStockMinute.getClose();
+        this.openPrice = mongoStockMinute.getOpen();
+        this.highPrice = mongoStockMinute.getHigh();
+        this.lowPrice = mongoStockMinute.getLow();
+        this.accumulatedVolume = mongoStockMinute.getVolume();
+        this.stockCode = mongoStockMinute.getStockCode();
     }
 }

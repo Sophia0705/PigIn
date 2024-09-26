@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.stock.service;
 
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockDetailRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockHistoryRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockMinuteRepository;
@@ -29,7 +30,7 @@ public class StockServiceImpl implements StockService {
     public List<MongoStockDetail> findAllStock() {
         try {
             // 연결 테스트
-            mongoStockDetailRepository.count();
+//            mongoStockDetailRepository.count();
             return mongoStockDetailRepository.findAll();
         } catch (Exception e) {
             log.error("Error fetching all stocks: ", e);
@@ -51,9 +52,12 @@ public class StockServiceImpl implements StockService {
     public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count) {
         Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
         List<MongoStockHistory> tmp = mongoStockHistoryRepository.findByStockCodeAndIntervalOrderByDateDesc(stockCode, interval, pageable);
-//        return mongoStockHistoryRepository.findByStockCodeAndIntervalOrderByDateDesc(stockCode, interval);
-//        List<MongoStockHistory> tmp = mongoStockHistoryRepository.findAll();
-        log.info("tmp = {}", tmp);
+//        log.info("tmp = {}", tmp);
         return tmp;
+    }
+
+    @Override
+    public List<MongoStockMinute> findStockMinute() {
+        return mongoStockMinuteRepository.findLatestStockMinuteForEachStock();
     }
 }
