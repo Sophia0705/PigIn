@@ -1,52 +1,58 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
+  const [dimensions, setDimensions] = useState({ width: '0px', height: '0px' });
+
   useEffect(() => {
-    const updateWidth = () => {
-      // 412:915 비율 유지
+    const updateDimensions = () => {
       const ratio = 412 / 915;
-      const calculatedWidth = window.innerHeight * ratio;
-      document.documentElement.style.setProperty(
-        '--app-width',
-        `${calculatedWidth}px`
-      );
+      const windowHeight = window.innerHeight;
+      const calculatedWidth = windowHeight * ratio;
+      const limitedWidth = Math.min(calculatedWidth, window.innerWidth);
+      setDimensions({
+        width: `${limitedWidth}px`,
+        height: `${windowHeight}px`,
+      });
     };
 
-    // 초기 설정
-    updateWidth();
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
 
-    // resize 이벤트 리스너 추가
-    window.addEventListener('resize', updateWidth);
-
-    document.body.classList.add(
-      'm-0',
-      'p-0',
-      'bg-white',
-      'flex',
-      'justify-center',
-      'min-h-screen'
-    );
+    document.body.style.overflow = 'hidden';
+    document.body.style.display = 'flex';
+    document.body.style.justifyContent = 'center';
+    document.body.style.alignItems = 'center';
+    document.body.style.height = '100vh';
+    document.body.style.margin = '0';
+    document.body.style.backgroundColor = 'white';
 
     return () => {
-      window.removeEventListener('resize', updateWidth);
-      document.body.classList.remove(
-        'm-0',
-        'p-0',
-        'bg-white',
-        'flex',
-        'justify-center',
-        'min-h-screen'
-      );
+      window.removeEventListener('resize', updateDimensions);
+      document.body.style.overflow = '';
+      document.body.style.display = '';
+      document.body.style.justifyContent = '';
+      document.body.style.alignItems = '';
+      document.body.style.height = '';
+      document.body.style.margin = '';
+      document.body.style.backgroundColor = '';
     };
   }, []);
 
   return (
-    <div className="bg-[#1f3f42] min-h-screen shadow-lg overflow-y-auto app-container">
-      {children}
+    <div
+      style={{
+        width: dimensions.width,
+        height: dimensions.height,
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+      className="bg-[#1f3f42] shadow-lg"
+    >
+      <div style={{ height: '100%', overflowY: 'auto' }}>{children}</div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MemberInfo } from '../components/MemberInfo'; // 회원 정보를 보여주는 컴포넌트
 import AccountSlider from '../components/AccountSlider'; // 계좌 정보를 보여주는 슬라이더 컴포넌트
-import { FaUserMinus } from 'react-icons/fa'; // 탈퇴 버튼에 사용할 아이콘
+// import { FaUserMinus } from 'react-icons/fa'; // 탈퇴 버튼에 사용할 아이콘
 import UpdateProfileModal from '../components/modals/UpdateProfileModal'; // 회원 정보 수정 모달 컴포넌트
 import WithdrawalModal from '../components/modals/WithDrawalModal'; // 회원 탈퇴 모달 컴포넌트
 
@@ -12,7 +12,7 @@ const MyPage: React.FC = () => {
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
 
   // 회원 탈퇴 모달 열기
-  const openWithdrawalModal = () => setIsWithdrawalModalOpen(true);
+  // const openWithdrawalModal = () => setIsWithdrawalModalOpen(true);
   // 회원 탈퇴 모달 닫기
   const closeWithdrawalModal = () => setIsWithdrawalModalOpen(false);
 
@@ -24,17 +24,17 @@ const MyPage: React.FC = () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center">
       {/* MyPage 타이틀 및 회원 탈퇴 버튼 */}
-      <div className="flex justify-between items-center w-screen p-4 bg-customDarkGreen text-white rounded-b-lg">
+      <div className="w-full flex justify-center items-center p-4 bg-customDarkGreen text-white rounded-b-lg relative">
         {/* 페이지 타이틀 */}
         <h1 className="text-2xl font-bold text-white">My Page</h1>
         {/* 회원 탈퇴 버튼: 클릭 시 회원 탈퇴 모달을 여는 함수 호출 */}
-        <button
+        {/* <button
           onClick={openWithdrawalModal}
           className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center"
         >
-          <FaUserMinus className="mr-1" /> {/* 회원 탈퇴 아이콘 */}
+          <FaUserMinus className="mr-1" /> 
           탈퇴
-        </button>
+        </button> */}
       </div>
 
       {/* 회원 정보 컴포넌트 */}

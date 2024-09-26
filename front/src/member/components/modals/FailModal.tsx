@@ -19,9 +19,9 @@ const FailModal: React.FC<FailModalProps> = ({
 }) => {
   return (
     // 모달의 배경 (화면 전체를 덮는 검은 반투명 배경)
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       {/* 모달 본체: 흰색 배경에 그림자와 패딩, 둥근 모서리 스타일 */}
-      <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+      <div className="modal-content bg-white p-6 rounded-lg shadow-lg w-80">
         {/* 모달의 제목을 표시, 줄바꿈을 허용하는 스타일 적용 */}
         <h2
           className="text-xl font-bold mt-5 mb-10 text-center"
