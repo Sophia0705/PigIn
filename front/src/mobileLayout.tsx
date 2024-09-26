@@ -9,7 +9,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     const updateDimensions = () => {
-      const ratio = 412 / 915;
+      const ratio = 9 / 20;
       const windowHeight = window.innerHeight;
       const calculatedWidth = windowHeight * ratio;
       const limitedWidth = Math.min(calculatedWidth, window.innerWidth);
