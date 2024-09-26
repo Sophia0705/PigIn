@@ -48,6 +48,9 @@ dependencies {
 //	mongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+	// https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
 }
 
 tasks.named('test') {
