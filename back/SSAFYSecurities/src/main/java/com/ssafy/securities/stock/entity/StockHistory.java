@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
-@Document(collation = "stockhistory")
+@Document(collection = "stockHistory")
 @Getter
 @Builder
 @NoArgsConstructor
