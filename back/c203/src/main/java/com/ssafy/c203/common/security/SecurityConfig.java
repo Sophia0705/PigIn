@@ -64,7 +64,7 @@ public class SecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
                         //프론트엔드 주소 넣을 것
                         configuration.setAllowedOrigins(
-                            Arrays.asList("http://localhost:3000", "https://j11c203.p.ssafy.io"));
+                            Arrays.asList("http://localhost:5173", "https://j11c203.p.ssafy.io"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
