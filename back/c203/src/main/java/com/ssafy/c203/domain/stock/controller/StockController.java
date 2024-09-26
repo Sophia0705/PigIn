@@ -61,12 +61,12 @@ public class StockController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/{stockId}/sse")
-    public SseEmitter findStockSse(@PathVariable String stockId) {
-        SseEmitter sseEmitter = new SseEmitter();
-
-
-        return sseEmitter;
-    }
+//    @GetMapping("/{stockId}/sse")
+//    public SseEmitter findStockSse(@PathVariable String stockId) {
+//        SseEmitter sseEmitter = new SseEmitter();
+//
+//
+//        return sseEmitter;
+//    }
 
 }

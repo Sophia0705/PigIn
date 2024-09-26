@@ -3,6 +3,7 @@ package com.ssafy.myssafydata.controller;
 import com.ssafy.myssafydata.dto.AccountCreateDTO;
 import com.ssafy.myssafydata.dto.UserApiRequestDTO;
 import com.ssafy.myssafydata.dto.response.UserAddResponse;
+import com.ssafy.myssafydata.dto.request.AccountMakeRequest;
 import com.ssafy.myssafydata.entity.UserEntity;
 import com.ssafy.myssafydata.service.AccountService;
 import com.ssafy.myssafydata.service.UserService;
@@ -13,9 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@org.springframework.web.bind.annotation.RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/user")
