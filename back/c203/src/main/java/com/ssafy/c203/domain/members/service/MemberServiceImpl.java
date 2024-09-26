@@ -337,4 +337,9 @@ public class MemberServiceImpl implements MemberService {
             .member(member)
             .build());
     }
+
+    @Override
+    public boolean emailCheck(String email) {
+        return membersRepository.existsByEmail(email);
+    }
 }
