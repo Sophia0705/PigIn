@@ -7,7 +7,7 @@ import Dashboard from '../components/Dashboard';
 import { useState, useMemo } from 'react';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 import { useNavigate } from 'react-router-dom';
-import { Edit } from 'lucide-react';
+import { Edit, ChevronLeft, XCircle } from 'lucide-react';
 
 const CATEGORIES = ['주식', '가상화폐', '금'];
 
@@ -107,8 +107,11 @@ const AutoInvestment: React.FC = () => {
   return (
     <div className="bg-customDarkGreen w-full text-white p-4">
       <div className="flex justify-between items-center mb-6">
-        <button onClick={() => nav(-1)} className="text-xl">
-          &lt;
+        <button
+          onClick={() => nav(-1)}
+          className="text-xl text-white bg-customDarkGreen p-2"
+        >
+          <ChevronLeft className="w-8 h-8" />
         </button>
         <div className="flex items-center">
           <span className="mr-2 text-lg">자동화 투자</span>
@@ -170,7 +173,7 @@ const AutoInvestment: React.FC = () => {
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={`
-                  flex-1 py-2 px-4 text-sm font-medium rounded-full
+                  flex-1 py-2 px-4 text-base font-medium rounded-full
                   ${
                     activeCategory === category
                       ? 'bg-customDarkGreen text-white'
@@ -210,9 +213,9 @@ const AutoInvestment: React.FC = () => {
                   </span>
                   <button
                     onClick={() => handleRemoveAllocation(allocation.symbol)}
-                    className="ml-2 text-red-500"
+                    className="ml-2 text-red-500 bg-customDarkGreen p-1"
                   >
-                    X
+                    <XCircle className="w-5 h-5" />
                   </button>
                 </div>
               </div>
