@@ -57,6 +57,7 @@ public class MemberServiceImpl implements MemberService {
     private final MMSAuthenticationRepository authenticationRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberAccountRepository memberAccountRepository;
+    private final MMSService mmsService;
     //Todo : application.properties에 추가
     @Value("${ssafy.api.key}")
     private String apiKey;
@@ -129,8 +130,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean MMSGenerate(MMSDto mmsDto) throws Exception {
-        MMSService mmsService = new MMSService(restTemplate);
-
         //6자리 인증번호 만들기
         Random generator = new Random();
         generator.setSeed(System.currentTimeMillis());
@@ -191,8 +190,6 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(MemberNotFoundException::new);
         //멤버 존재
         //휴대전화 인증
-        MMSService mmsService = new MMSService(restTemplate);
-
         //6자리 인증번호 만들기
         Random generator = new Random();
         generator.setSeed(System.currentTimeMillis());
