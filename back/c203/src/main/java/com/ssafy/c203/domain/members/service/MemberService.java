@@ -22,8 +22,6 @@ public interface MemberService {
 
     void withDrawalUser(Long userId);
 
-    void testSignUp(Members member);
-
     String findEmail(FindIdDto findIdDto);
 
     boolean findPassoword(FindPasswordDto findPasswordDto) throws Exception;

@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @org.springframework.web.bind.annotation.RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/user")
-public class UserRestController {
+@RequestMapping("/api")
+public class RestController {
     private final UserService userService;
     private final AccountService accountService;
 
-    @PostMapping("/add")
+    @PostMapping("/user/add")
     public ResponseEntity<?> addUser(@RequestBody UserApiRequestDTO userApiRequestDTO) {
 
         log.info("add user {}", userApiRequestDTO.getEmail());
@@ -47,6 +47,17 @@ public class UserRestController {
             return ResponseEntity.ok().body(response);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to add user");
+    }
+    
+    // 투자계좌 생성
+    @PostMapping("/account/add")
+    public ResponseEntity<?> addAccount(@RequestBody AccountMakeRequest request) {
+        log.info("add account {}", request.getEmail());
+        AccountCreateDTO account = accountService.makeAccount(request.getUserKey());
+        if (account != null) {
+            return ResponseEntity.ok().body(account.getAccountNo());
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to add account");
     }
 
 }

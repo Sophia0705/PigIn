@@ -1,4 +1,4 @@
-package com.ssafy.c203.healthcheck;
+package com.ssafy.myssafydata.healthcheck;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ public class HealthCheckController {
 
     @GetMapping
     public ResponseEntity<String> healthCheck() {
-        log.info("Main Health Check!!");
-        return ResponseEntity.ok("Main Pong!");
+        log.info("Wallet Health Check!!");
+        return ResponseEntity.ok("Wallet Pong!");
     }
 }

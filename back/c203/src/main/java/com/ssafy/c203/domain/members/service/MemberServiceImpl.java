@@ -13,7 +13,6 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
-import com.ssafy.c203.domain.members.dto.ResponseDto.AccountNoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
@@ -63,7 +62,9 @@ public class MemberServiceImpl implements MemberService {
     private String apiKey;
 
     private static final String MMS_MESSAGE_TAIL = " PigIn 본인인증번호입니다. 정확히 입력하세요.";
-    private final String MY_SSAFYDATA_BASE_URL = "${ssafy.ssafydata.url}";
+
+    @Value("${ssafy.ssafydata.url}")
+    private String MY_SSAFYDATA_BASE_URL;
 
     //Todo : 이메일 중복확인 구현 필요
 
@@ -94,7 +95,7 @@ public class MemberServiceImpl implements MemberService {
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<UserKeyDto> UserKeyResponse = restTemplate.exchange(
-            MY_SSAFYDATA_BASE_URL,
+            MY_SSAFYDATA_BASE_URL + "/api/user/add",
             HttpMethod.POST,
             entity,
             UserKeyDto.class
@@ -105,36 +106,18 @@ public class MemberServiceImpl implements MemberService {
         members.updateUserKey(userKey);
         Members member = membersRepository.save(members);
 
-        //계좌 개설
+        //거래계좌 개설
         requestBody = new HashMap<>();
         requestBody.put("userKey", userKey);
-
-        //Todo : 등록용 계좌개설을 해야함
+        requestBody.put("email", members.getEmail());
         entity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<AccountNoDto> AccountNoResponse = restTemplate.exchange(
-            MY_SSAFYDATA_BASE_URL,
+        ResponseEntity<String> AccountNoResponse = restTemplate.exchange(
+            MY_SSAFYDATA_BASE_URL + "/api/account/add",
             HttpMethod.POST,
             entity,
-            AccountNoDto.class
+            String.class
         );
-
-        String accountNo = AccountNoResponse.getBody().getAccountNo();
-
-        //계좌 개설
-        requestBody = new HashMap<>();
-        requestBody.put("userKey", userKey);
-
-        //Todo : 등록용 계좌개설을 해야함
-        entity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<AccountNoDto> AccountNoResponse2 = restTemplate.exchange(
-            MY_SSAFYDATA_BASE_URL,
-            HttpMethod.POST,
-            entity,
-            AccountNoDto.class
-        );
-
+        String accountNo = AccountNoResponse.getBody();
         //Todo : accountNo가 Null일때 처리 필요
         savingsAccountRepository.save(SavingsAccount
             .builder()
@@ -188,12 +171,6 @@ public class MemberServiceImpl implements MemberService {
         Members member = membersRepository.findByIdAndStatus(userId, WithDrawalStatus.ACTIVE)
             .orElseThrow(MemberNotFoundException::new);
         member.withDrawal();
-    }
-
-    @Override
-    public void testSignUp(Members member) {
-        member.updatePassword(bCryptPasswordEncoder.encode(member.getPassword()));
-        membersRepository.save(member);
     }
 
     @Override
