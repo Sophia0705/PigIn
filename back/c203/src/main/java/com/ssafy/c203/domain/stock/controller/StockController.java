@@ -46,7 +46,7 @@ public class StockController {
     @GetMapping("/{stockId}/chart/{interval}")
     public ResponseEntity<?> findStockChart(@PathVariable String stockId, @PathVariable String interval, @RequestParam Integer count) {
         log.info("findStockChart: stockId = {}, interval = {} count = {}", stockId, interval, count);
-        List<MongoStockHistory> stockHistories = stockService.findStockChart(stockId, interval, count);
+        List<MongoStockHistory> stockHistories = stockService.findStockChart(stockId, interval, count > 100 ? 100 : count);
         List<FindStockChartAllResponse> responses = stockHistories.stream()
                 .map(FindStockChartAllResponse::new)
                 .toList();

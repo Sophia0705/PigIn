@@ -52,6 +52,7 @@ public class StockServiceImpl implements StockService {
         Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
         List<MongoStockHistory> tmp = mongoStockHistoryRepository.findByStockCodeAndIntervalOrderByDateDesc(stockCode, interval, pageable);
 //        return mongoStockHistoryRepository.findByStockCodeAndIntervalOrderByDateDesc(stockCode, interval);
+//        List<MongoStockHistory> tmp = mongoStockHistoryRepository.findAll();
         log.info("tmp = {}", tmp);
         return tmp;
     }
