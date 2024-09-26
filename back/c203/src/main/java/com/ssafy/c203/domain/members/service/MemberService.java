@@ -37,4 +37,6 @@ public interface MemberService {
     String oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
 
     void addAccount(MemberAccountDto memberAccountDto, Long userId);
+
+    boolean emailCheck(String email);
 }

@@ -300,6 +300,20 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "이메일 중복확인", description = "<big>이메일 중복 확인</big> 합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = ""),
+        @ApiResponse(responseCode = "409", description = "이메일이 이미 존재합니다.")
+    })
+    @PostMapping("/email-check")
+    public ResponseEntity<?> emailCheck(String email) {
+        boolean isExist = memberService.emailCheck(email);
+        if (isExist) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일이 이미 존재합니다.");
+        }
+        return ResponseEntity.ok().build();
+    }
+
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
@@ -310,4 +324,6 @@ public class MemberController {
 
         return cookie;
     }
+
+
 }
