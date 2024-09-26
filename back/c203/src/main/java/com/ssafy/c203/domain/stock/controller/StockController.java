@@ -5,9 +5,11 @@ import com.ssafy.c203.domain.stock.dto.FindStockChartAllResponse;
 import com.ssafy.c203.domain.stock.dto.FindStockDetailResponse;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
+import com.ssafy.c203.domain.stock.service.StockEmitterService;
 import com.ssafy.c203.domain.stock.service.StockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class StockController {
 
     private final StockService stockService;
+    private final StockEmitterService stockEmitterService;
 
     @GetMapping
     public ResponseEntity<?> findAllStock() {
@@ -61,12 +64,11 @@ public class StockController {
         return ResponseEntity.ok().body(response);
     }
 
-//    @GetMapping("/{stockId}/sse")
-//    public SseEmitter findStockSse(@PathVariable String stockId) {
-//        SseEmitter sseEmitter = new SseEmitter();
-//
-//
-//        return sseEmitter;
-//    }
+    @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamStocks() {
+        // 클라이언트의 SSE 연결 요청을 처리하고 새로운 SseEmitter를 생성하여 반환
+        log.info("streamStocks");
+        return stockEmitterService.addEmitter();
+    }
 
 }
