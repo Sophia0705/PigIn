@@ -88,8 +88,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(HttpStatus.OK.value());
         log.info("{} ", response.getHeader("access"));
         log.info("{} ", response.getStatus());
-        response.getWriter().write(access);
-        response.getWriter().flush(); // 버퍼 비우기
+        try {
+            response.getWriter().write(access);
+            response.getWriter().flush(); // 버퍼 비우기
+        } catch (Exception e) {
+            
+        }
     }
 
     //로그인 실패시 실행하는 메소드
