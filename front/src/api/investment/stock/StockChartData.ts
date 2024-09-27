@@ -1,14 +1,6 @@
 import axios from 'axios';
 import axiosInstance from '../../axiosInstance';
-
-interface StockChartDataResponse {
-  stck_bsop_date: string; // 날짜
-  stck_clpr: string; // 종가
-  stck_oprc: string; // 시가
-  stck_hgpr: string; // 최고가
-  stck_lwpr: string; // 최저가
-  acml_vol: string; // 거래량
-}
+import { StockChartDataResponse } from '../../../investment/interfaces/StockInterface';
 
 export const getStockChartData = async (
   stockId: string,

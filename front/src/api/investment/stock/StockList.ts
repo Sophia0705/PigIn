@@ -1,12 +1,6 @@
 import axios from 'axios';
 import axiosInstance from '../../axiosInstance';
-
-interface StockListResponse {
-  stockName: string; // 종목명 (한국어)
-  stockCode: string; // 종목 코드
-  price: string; // 현재가
-  priceChange: number; // 가격 변동률
-}
+import { StockListResponse } from '../../../investment/interfaces/StockInterface';
 
 export const getStockList = async (): Promise<StockListResponse> => {
   try {
