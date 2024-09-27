@@ -1,5 +1,5 @@
 // 페이지 확인 위해서 임시로 만든 store -> api 따라 수정 예정
-import { create } from "zustand";
+import { create } from 'zustand';
 
 type Allocation = {
   symbol: string;
@@ -23,12 +23,13 @@ type AutoInvestmentState = {
 
 export const useAutoInvestmentStore = create<AutoInvestmentState>((set) => ({
   investmentAmount: 0,
+  // 대충 만든 데이터
   allocations: {
-    주식: [{ symbol: "AAPL", percentage: 50 }],
+    주식: [{ symbol: 'AAPL', percentage: 50 }],
     가상화폐: [],
     금: [],
   },
-  activeCategory: "주식",
+  activeCategory: '주식',
   setInvestmentAmount: (amount) => set({ investmentAmount: amount }),
   setAllocations: (newAllocations) => set({ allocations: newAllocations }),
   setActiveCategory: (category) => set({ activeCategory: category }),
