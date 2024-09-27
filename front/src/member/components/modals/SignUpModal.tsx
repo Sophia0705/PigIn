@@ -258,7 +258,7 @@ const SignUpModal: React.FC = () => {
   };
 
   // 폼 제출 시 호출되는 핸들러 함수
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
 
     const { phoneNumber, name, email, birth, password } = formData;
