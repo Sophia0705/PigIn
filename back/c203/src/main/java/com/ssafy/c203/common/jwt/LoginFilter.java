@@ -8,8 +8,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.Collection;
 import java.util.Iterator;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +30,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
-        MembersRepository membersRepository) {
+                       MembersRepository membersRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.membersRepository = membersRepository;
@@ -37,7 +39,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
-        HttpServletResponse response) throws AuthenticationException {
+                                                HttpServletResponse response) throws AuthenticationException {
 
         //클라이언트 요청에서 username, password 추출
         String username = obtainUsername(request);
@@ -45,7 +47,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야함
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-            username, password, null);
+                username, password, null);
 
         return authenticationManager.authenticate(authToken);
     }
@@ -54,8 +56,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Transactional
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authentication) {
-
+                                            HttpServletResponse response, FilterChain chain, Authentication authentication) {
+        log.info("===Successful authentication======");
+        log.info("Username: {}", authentication.getName());
+        log.info("Password: {}", authentication.getCredentials());
+        log.info("success   uri: {}, queryString: {} ",request.getRequestURI(), request.getQueryString());
         //유저 정보
         String username = authentication.getName();
 
@@ -65,14 +70,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         Members member = membersRepository.findByEmailAndStatus(username, WithDrawalStatus.ACTIVE)
-            .orElseThrow(
-                MemberNotFoundException::new);
+                .orElseThrow(
+                        MemberNotFoundException::new);
 
         //토큰 생성
         String access = jwtUtil.createJwt("access", username, role, 600000L, member.getUserKey(),
-            member.getId());
+                member.getId());
         String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L,
-            member.getUserKey(), member.getId());
+                member.getUserKey(), member.getId());
 
         member.updateRefreshToken(refresh);
         membersRepository.save(member);
@@ -81,21 +86,27 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
+        log.info("{} ", response.getHeader("access"));
+        log.info("{} ", response.getStatus());
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, AuthenticationException failed) {
+                                              HttpServletResponse response, AuthenticationException failed) {
+        log.info("===Unsuccessful authentication======");
+        log.info("fail   uri: {}, queryString: {} ",request.getRequestURI(), request.getQueryString());
+
         response.setStatus(401);
     }
 
     private Cookie createCookie(String key, String value) {
-
+        log.info("===Create cookie======");
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
         cookie.setSecure(true);
         cookie.setPath("/");
+        cookie.setAttribute("SameSite", "None"); // 이 속성 추가
         cookie.setHttpOnly(true);
 
         return cookie;
