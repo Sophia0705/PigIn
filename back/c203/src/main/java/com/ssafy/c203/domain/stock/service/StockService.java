@@ -12,4 +12,5 @@ public interface StockService {
     public MongoStockDetail findStock(String stockCode);
     public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count);
     public List<MongoStockMinute> findStockMinute();
+    public List<MongoStockMinute> findStockMinuteChart(String stockCode, Integer count);
 }
