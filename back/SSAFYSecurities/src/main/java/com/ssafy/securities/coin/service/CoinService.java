@@ -41,17 +41,32 @@ public class CoinService {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     @PostConstruct
-    public void init() {
+    public void init() throws InterruptedException {
         coinHistoryRepository.deleteAll();
         coinMinuteRepository.deleteAll();
         scheduler.scheduleAtFixedRate(this::startMonthData, 0, 24 * 28, TimeUnit.HOURS);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         scheduler.scheduleAtFixedRate(this::startWeekData, 0, 24 * 7, TimeUnit.HOURS);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         scheduler.scheduleAtFixedRate(this::startDayData, 0, 23, TimeUnit.HOURS);
     }
 
     // 월봉
     private void startMonthData() {
         for (String code : codes) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             getBar(code, "months", "100");
         }
     }
@@ -59,6 +74,11 @@ public class CoinService {
     // 주봉
     private void startWeekData() {
         for (String code : codes) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             getBar(code, "weeks", "100");
         }
     }
@@ -66,6 +86,11 @@ public class CoinService {
     // 일봉
     private void startDayData() {
         for (String code : codes) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             getBar(code, "days", "100");
         }
     }
@@ -82,8 +107,6 @@ public class CoinService {
         headers.add("accept", "application/json");
         HttpEntity<Object> request = new HttpEntity(headers);
 
-
-
         try {
             HttpEntity<List<CoinRestDTO>> response = restTemplate.exchange(
                     builder.toUriString(),
@@ -98,6 +121,7 @@ public class CoinService {
             coinHistoryRepository.insert(coinHistories);
             return response.getBody();
         } catch (Exception e) {
+            log.info("market:{}", market, e);
             e.printStackTrace();
         }
         return null;
