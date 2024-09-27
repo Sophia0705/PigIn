@@ -30,8 +30,8 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div
       style={{
-        width: '45.02732240437158vh',
-        height: '100vh',
+        width: '412px',
+        height: '915px',
         overflow: 'hidden',
         position: 'relative',
       }}
