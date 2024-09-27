@@ -1,5 +1,5 @@
 import axios from 'axios';
-import axiosInstance from '@/api/axiosInstance';
+import axiosInstance from '../../axiosInstance';
 
 interface StockChartDataResponse {
   stck_bsop_date: string; // 날짜
