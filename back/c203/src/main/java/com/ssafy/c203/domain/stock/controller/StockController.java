@@ -5,6 +5,7 @@ import com.ssafy.c203.domain.stock.dto.FindStockChartAllResponse;
 import com.ssafy.c203.domain.stock.dto.FindStockDetailResponse;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
 import com.ssafy.c203.domain.stock.service.StockEmitterService;
 import com.ssafy.c203.domain.stock.service.StockService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -50,10 +52,18 @@ public class StockController {
     @GetMapping("/{stockId}/chart/{interval}")
     public ResponseEntity<?> findStockChart(@PathVariable String stockId, @PathVariable String interval, @RequestParam Integer count) {
         log.info("findStockChart: stockId = {}, interval = {} count = {}", stockId, interval, count);
-        List<MongoStockHistory> stockHistories = stockService.findStockChart(stockId, interval, count > 100 ? 100 : count);
-        List<FindStockChartAllResponse> responses = stockHistories.stream()
-                .map(FindStockChartAllResponse::new)
-                .toList();
+        List<FindStockChartAllResponse> responses;
+        if (interval.equals("minute")) {
+            List<MongoStockMinute> stockChart = stockService.findStockMinuteChart(stockId, count > 100 ? 100 : count);
+            responses = stockChart.stream()
+                    .map(FindStockChartAllResponse::new)
+                    .toList();
+        } else {
+            List<MongoStockHistory> stockChart = stockService.findStockChart(stockId, interval, count > 100 ? 100 : count);
+            responses = stockChart.stream()
+                    .map(FindStockChartAllResponse::new)
+                    .toList();
+        }
         return ResponseEntity.ok().body(responses);
     }
 

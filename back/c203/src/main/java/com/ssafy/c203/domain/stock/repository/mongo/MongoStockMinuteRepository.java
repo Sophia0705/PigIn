@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.stock.repository.mongo;
 
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -13,4 +14,6 @@ public interface MongoStockMinuteRepository extends MongoRepository<MongoStockMi
             "{ $replaceRoot: { newRoot: '$latestDocument' } }"
     })
     List<MongoStockMinute> findLatestStockMinuteForEachStock();
+
+    List<MongoStockMinute> findByStockCodeOrderByDateDescTimeDesc(String stockCode, Pageable pageable);
 }
