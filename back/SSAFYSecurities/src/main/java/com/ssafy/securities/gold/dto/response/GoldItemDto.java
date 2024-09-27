@@ -1,7 +1,11 @@
 package com.ssafy.securities.gold.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
 
+@Data
+@Builder
 public class GoldItemDto {
 
     @JsonProperty("basDt")

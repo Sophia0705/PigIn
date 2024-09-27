@@ -1,5 +1,6 @@
 package com.ssafy.securities.gold.controller;
 
+import com.ssafy.securities.gold.dto.response.GoldItemDto;
 import com.ssafy.securities.gold.service.GoldService;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class GoldController {
 
     @GetMapping("/get-today")
     public ResponseEntity<?> getToday() throws IOException {
-        goldService.saveGold();
-        return ResponseEntity.ok().build();
+        GoldItemDto goldItemDto = goldService.saveGold();
+        return ResponseEntity.ok(goldItemDto);
     }
 }

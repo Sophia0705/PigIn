@@ -1,25 +1,18 @@
 package com.ssafy.securities.gold.service;
 
-import com.ssafy.securities.gold.dto.response.GoldResponseDto;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.securities.gold.dto.response.GoldItemDto;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,7 +29,7 @@ public class GoldServiceImpl implements GoldService {
     }
 
     @Override
-    public void saveGold() throws IOException {
+    public GoldItemDto saveGold() throws IOException {
         LocalDate yesterday = LocalDate.now().minusDays(2);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String yesterdayDate = yesterday.format(formatter);
@@ -73,5 +66,34 @@ public class GoldServiceImpl implements GoldService {
         conn.disconnect();
         // 11. 전달받은 데이터 확인.
         System.out.println(sb.toString());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(sb.toString());
+
+        JsonNode itemNode = rootNode.path("response").path("body").path("items").path("item")
+            .get(0);
+
+        LocalDate today = LocalDate.now();
+        formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String todayDate = today.format(formatter);
+
+        GoldItemDto item = GoldItemDto
+            .builder()
+            .date(todayDate)
+            .srtnCd(itemNode.path("srtnCd").asText())
+            .isin(itemNode.path("isinCd").asText())
+            .itemName(itemNode.path("itmsNm").asText())
+            .close(itemNode.path("clpr").asText())
+            .vsYesterday(itemNode.path("vs").asText())
+            .upDownRate(itemNode.path("fltRt").asText())
+            .open(itemNode.path("mkp").asText())
+            .high(itemNode.path("hipr").asText())
+            .low(itemNode.path("lopr").asText())
+            .tradeAmount(itemNode.path("trqu").asText())
+            .tradePrice(itemNode.path("trPrc").asText())
+            .build();
+
+        return item;
+
     }
 }
