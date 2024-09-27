@@ -19,6 +19,5 @@ public class StockDataService {
     public void saveStockData(StockDTO stockData) {
         StockMinute stockMinute = new StockMinute(stockData);
         stockMinuteRepository.save(stockMinute);
-        log.info("saved: stockData:[{}]", stockData);
     }
 }

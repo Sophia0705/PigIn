@@ -1,5 +1,6 @@
 package com.ssafy.securities.gold.service;
 
+import com.ssafy.securities.gold.dto.response.GoldResponseDto;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,22 +11,33 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
 public class GoldServiceImpl implements GoldService {
 
+    private final RestTemplate restTemplate;
     @Value("${gold.APIKEY}")
     private String APIKEY;
 
+    public GoldServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Override
     public void saveGold() throws IOException {
-        System.out.println(APIKEY);
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate yesterday = LocalDate.now().minusDays(2);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String yesterdayDate = yesterday.format(formatter);
 
@@ -38,8 +50,6 @@ public class GoldServiceImpl implements GoldService {
         urlBuilder.append(
             "&" + URLEncoder.encode("likeItmsNm", "UTF-8") + "=" + URLEncoder.encode("금 99.99_1Kg",
                 "UTF-8"));
-
-        System.out.println(urlBuilder.toString());
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
