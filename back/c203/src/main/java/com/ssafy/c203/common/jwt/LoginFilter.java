@@ -59,8 +59,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response, FilterChain chain, Authentication authentication) {
         log.info("===Successful authentication======");
         log.info("Username: {}", authentication.getName());
-        log.info("Password: {}", authentication.getCredentials());
-        log.info("success   uri: {}, queryString: {} ",request.getRequestURI(), request.getQueryString());
+        log.info("URI: {}",request.getRequestURI());
         //유저 정보
         String username = authentication.getName();
 
@@ -85,15 +84,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //응답 생성
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
-        response.setStatus(HttpStatus.OK.value());
-        log.info("{} ", response.getHeader("access"));
-        log.info("{} ", response.getStatus());
-        try {
-            response.getWriter().write(access);
-            response.getWriter().flush(); // 버퍼 비우기
-        } catch (Exception e) {
-            
-        }
+        log.info("access: {} ", response.getHeader("access"));
     }
 
     //로그인 실패시 실행하는 메소드
@@ -101,7 +92,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, AuthenticationException failed) {
         log.info("===Unsuccessful authentication======");
-        log.info("fail   uri: {}, queryString: {} ",request.getRequestURI(), request.getQueryString());
+        log.info("Fail   uri: {}",request.getRequestURI());
 
         response.setStatus(401);
     }
@@ -114,7 +105,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "None"); // 이 속성 추가
         cookie.setHttpOnly(true);
-
+        log.info("Cookie: {}", key);
         return cookie;
     }
 
