@@ -1,0 +1,15 @@
+services:
+  backend-news:
+    image: zzun73/pigin-be-news:latest
+    container_name: pigin-be-news
+    ports:
+      - "3000:3000"
+    environment:
+      - MongoDBUrl=${MongoDBUrl}
+    networks:
+      - myapp_pigin-network
+    restart: unless-stopped
+
+networks:
+  myapp_pigin-network:
+    external: true

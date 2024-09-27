@@ -3,14 +3,14 @@ from crawling import crawlingNews,getStockNews  # crawling 모듈에서 crawling
 
 app = FastAPI()
 
-@app.get("/api/news")
+@app.get("/news/health-check")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "news Pong"}
 
-@app.get("/api/news/crawling")
+@app.get("/news/crawling")
 async def crawl_news():  # 함수 이름을 변경
     return crawlingNews()
 
-@app.get("/api/news/{stockId}")
+@app.get("/news/{stockId}")
 async def stock_news(stockId):
     return getStockNews(stockId)
