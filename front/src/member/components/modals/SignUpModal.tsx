@@ -1,28 +1,90 @@
-import { useState } from 'react';
-import { useStore } from '../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
+import React, { useState } from 'react';
+import { AxiosError } from 'axios'; // AxiosError를 임포트
+import { useStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
+import axios from 'axios';
+import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
+import FailModal from './FailModal'; // 실패 모달 컴포넌트
 
-const SignUpPage: React.FC = () => {
-  // Zustand 스토어에서 상태와 상태 변경 함수를 가져옴
-  const { formData, setFormData } = useStore();
+const SignUpModal: React.FC = () => {
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
+  const {
+    openLoginModal,
+    isSignUpModalOpen,
+    closeSignUpModal,
+    formData,
+    setFormData,
+  } = useStore();
 
   // 상태 관리 훅: 인증번호 전송 여부, 비밀번호 확인, 이메일 및 생년월일 유효성 상태 등
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
   const [authenticationNumber, setAuthenticationNumber] = useState(''); // 인증번호
-  const [showModal, setShowModal] = useState(false); // 인증번호 전송 모달 표시 여부
+  const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState(false); // 인증번호 확인 여부 상태 추가
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // 성공 모달
+  const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
+  const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
+  const [failMessage, setFailMessage] = useState(''); // 실패 메시지
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 가리기/보이기 상태
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // 비밀번호 확인 가리기/보이기 상태
   const [passwordConfirm, setPasswordConfirm] = useState(''); // 비밀번호 확인
   const [isPasswordMatch, setIsPasswordMatch] = useState(false); // 비밀번호 일치 여부
   const [isEmailValid, setIsEmailValid] = useState(true); // 이메일 유효성 상태
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false); // 이메일 사용 가능 여부 (중복)
   const [isBirthValid, setIsBirthValid] = useState(true); // 생년월일 유효성 상태
+
+  // 모달이 닫혀있으면 렌더링하지 않음
+  if (!isSignUpModalOpen) return null;
   // const [savingRate, setSavingRate] = useState(0); // 저축률 상태
 
   // 이메일 유효성 검사 함수
   const isEmailFormatValid = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 간단한 이메일 정규식
     return regex.test(email); // 유효성 검사 결과 반환
+  };
+
+  // 이메일 중복 확인 요청 핸들러
+  const checkEmailDuplication = async () => {
+    try {
+      const requestData = {
+        email: formData.email, // 요청 바디에 이메일을 포함
+      };
+
+      // 전송할 데이터 콘솔 출력
+      console.log('이메일 중복 확인 요청 데이터:', requestData);
+
+      const response = await axios.post(
+        `${BASE_URL}member/email-check`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // 응답 처리
+      if (response.status === 200) {
+        // 이메일이 사용 가능한 경우
+        setIsEmailAvailable(true);
+        setSuccessMessage('사용 가능한 이메일입니다.');
+        setShowSuccessModal(true); // 성공 모달 열기
+      }
+    } catch (error) {
+      // error를 AxiosError로 타입 단언하여 처리
+      const axiosError = error as AxiosError;
+
+      if (axiosError.response && axiosError.response.status === 409) {
+        console.log('중복된 이메일입니다.');
+        setFailMessage('이미 사용 중인 이메일입니다.');
+        setShowFailModal(true); // 실패 모달 열기
+      } else {
+        console.error('알 수 없는 오류 발생', error);
+        setFailMessage('알 수 없는 오류가 발생했습니다.');
+        setShowFailModal(true); // 기타 오류 처리
+      }
+    }
   };
 
   // 비밀번호 유효성 검사 함수: 최소 8자 이상, 영문자와 숫자 포함
@@ -101,29 +163,92 @@ const SignUpPage: React.FC = () => {
     setIsPasswordMatch(formData.password === value); // 비밀번호 일치 여부 설정
   };
 
+  // 전화번호에서 하이픈 제거하는 함수
+  const removeHyphenFromPhoneNumber = (phoneNumber: string): string => {
+    return phoneNumber.replace(/-/g, ''); // 하이픈(-)을 제거
+  };
+
   // SMS 인증 요청 핸들러: 서버에 전화번호 전송하여 인증번호 요청
   const requestVerificationCode = async () => {
     try {
-      const response = await fetch(
-        'http://localhost:8080/api/member/mms-number-compare',
+      // 하이픈 제거한 전화번호
+      const sanitizedPhoneNumber = removeHyphenFromPhoneNumber(
+        formData.phoneNumber
+      );
+
+      const requestData = {
+        name: formData.name, // 요청 바디에 이름 추가
+        phoneNumber: sanitizedPhoneNumber, // 하이픈 제거한 전화번호 추가
+      };
+
+      // 전송할 데이터 콘솔 출력
+      console.log('SMS 인증 요청 데이터:', requestData);
+
+      const response = await axios.post(
+        `${BASE_URL}member/mms-number-generate`, // https://j11c203.p.ssafy.io/api/
+        requestData,
         {
-          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ phoneNumber: formData.phoneNumber }),
         }
       );
 
-      if (response.ok) {
+      // 응답 처리
+      if (response.status === 200) {
         setIsCodeSent(true); // 인증번호 요청 성공 시 상태 변경
-        setShowModal(true); // 인증번호 전송 모달 표시
+        setIsPhoneNumberVerified(false);
+        setSuccessMessage('인증번호 요청이 성공하였습니다.');
+        setShowSuccessModal(true); // 인증번호 전송 성공 모달 표시
       } else {
-        alert('인증번호 전송에 실패했습니다.');
+        setFailMessage('인증번호 요청이 실패하였습니다.');
+        setShowFailModal(false); // 실패 시 성공 모달 숨김
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('서버 오류가 발생했습니다.');
+      setFailMessage('인증번호 요청이 실패하였습니다.');
+      setShowFailModal(false); // 실패 시 실패 모달 표시
+    }
+  };
+
+  // SMS 인증번호 검증 핸들러: 서버에 전화번호와 인증번호 전송
+  const verifyAuthenticationCode = async () => {
+    try {
+      // 하이픈 제거한 전화번호
+      const sanitizedPhoneNumber = removeHyphenFromPhoneNumber(
+        formData.phoneNumber
+      );
+
+      const requestData = {
+        phoneNumber: sanitizedPhoneNumber, // 하이픈 제거한 전화번호 추가
+        authenticationNumber: authenticationNumber, // 요청 바디에 인증번호 추가
+      };
+
+      // 전송할 데이터 콘솔 출력
+      console.log('인증번호 검증 요청 데이터:', requestData);
+
+      const response = await axios.post(
+        `${BASE_URL}member/mms-number-compare`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // 응답 처리
+      if (response.status === 200) {
+        // 인증 성공 처리
+        console.log('인증 성공:', response.data);
+        setIsPhoneNumberVerified(true);
+      } else {
+        // 인증 실패 처리
+        console.log('인증 실패');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // 실패 처리
     }
   };
 
@@ -135,7 +260,49 @@ const SignUpPage: React.FC = () => {
   // 폼 제출 시 호출되는 핸들러 함수
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
-    console.log('Submitted Data:', formData); // 제출된 데이터 콘솔 출력
+
+    const { phoneNumber, name, email, birth, password } = formData;
+    // 필요한 데이터만 처리
+    const sanitizedFormData = {
+      phoneNumber: phoneNumber.replace(/-/g, ''),
+      name,
+      email,
+      birth,
+      password,
+    };
+    console.log('Submitted Data:', sanitizedFormData); // 하이픈 제거된 데이터 출력
+
+    // 서버로 POST 요청 보내기
+    try {
+      const response = await axios.post(
+        `${BASE_URL}member/sign-up`,
+        sanitizedFormData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // 성공 시 처리
+      console.log('회원가입 성공:', response.data);
+      setSuccessMessage('회원가입이 완료되었습니다.');
+      setShowSuccessModal(true); // 성공 모달 열기
+      closeSignUpModal();
+      openLoginModal();
+    } catch (error) {
+      // 오류가 발생한 경우, error를 string으로 변환하여 처리
+      if (axios.isAxiosError(error)) {
+        // AxiosError 타입으로 오류를 처리
+        console.error('회원가입 실패:', error);
+        setFailMessage('회원가입에 실패했습니다. 다시 시도해주세요.');
+        setShowFailModal(true); // 실패 모달 열기
+      } else {
+        console.error('알 수 없는 오류(전화번호 중복 포함):', error);
+        setFailMessage('알 수 없는 오류가 발생했습니다.');
+        setShowFailModal(true); // 실패 모달 열기
+      }
+    }
   };
 
   // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
@@ -143,10 +310,12 @@ const SignUpPage: React.FC = () => {
     return (
       formData.name &&
       isEmailValid &&
+      isEmailAvailable &&
       formData.birth &&
       isBirthValid &&
       formData.phoneNumber.length === 13 &&
       authenticationNumber.length === 6 &&
+      isPhoneNumberVerified &&
       isPasswordValid(formData.password) &&
       isPasswordMatch
     );
@@ -154,12 +323,18 @@ const SignUpPage: React.FC = () => {
 
   return (
     // 모달 배경
-    <div className="modal-content fixed inset-0 flex items-center justify-center bg-[#0e2b2f]">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       {/* 모달 본체 */}
-      <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
+      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
           회원가입
         </h2>
+        <button
+          onClick={closeSignUpModal}
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+        >
+          X
+        </button>
         {/* 회원가입 폼 */}
         <form
           onSubmit={handleSubmit}
@@ -175,21 +350,36 @@ const SignUpPage: React.FC = () => {
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           />
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-          {/* 이메일 입력 필드 */}
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="이메일"
-            className={`w-full p-2 border-none rounded focus:outline-none focus:ring-2 ${
-              isEmailValid
-                ? 'border-gray-300 focus:ring-green-300'
-                : 'border-red-500 focus:ring-red-500'
-            } mb-1`}
-            required
-          />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+          <div className="flex space-x-2 items-center">
+            {/* 이메일 입력 필드 */}
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="이메일 (예: example@example.com)"
+              className={`flex-1 p-2 border-none rounded focus:outline-none focus:ring-2 ${
+                isEmailValid ? 'focus:ring-green-300' : 'focus:ring-red-500'
+              }`}
+              disabled={isEmailAvailable} // 이메일 중복 확인이 완료되면 필드 비활성화
+            />
+            {/* 중복 확인 / 확인 완료 버튼 */}
+            <button
+              type="button"
+              onClick={checkEmailDuplication}
+              className={`p-2 rounded ${
+                formData.email && isEmailValid && !isEmailAvailable
+                  ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              disabled={!formData.email || !isEmailValid || isEmailAvailable} // 중복 확인 완료 시 버튼 비활성화
+            >
+              {isEmailAvailable ? '확인 완료' : '중복 확인'}
+            </button>
+          </div>
+          <hr className="w-[240px] ml-0 border-t border-gray-300 relative top-[-12px]" />
+
+          {/* 이메일 유효성 오류 메시지 */}
           {!isEmailValid && (
             <p className="text-xs text-red-500 mt-1">
               유효한 이메일 주소를 입력해주세요.
@@ -224,7 +414,7 @@ const SignUpPage: React.FC = () => {
               onChange={handleChange}
               placeholder="전화번호 (예: 01012345678)"
               className="flex-1 p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              maxLength={14} // 하이픈 포함 길이, 수정 가능
+              maxLength={13} // 하이픈 포함 길이, 수정 가능
             />
             <button
               type="button"
@@ -243,15 +433,32 @@ const SignUpPage: React.FC = () => {
 
           {/* 인증번호 입력 필드 */}
           {isCodeSent && (
-            <input
-              type="text"
-              value={authenticationNumber}
-              onChange={handleAuthNumberChange}
-              placeholder="인증번호 입력"
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              maxLength={6}
-            />
+            <>
+              <input
+                type="text"
+                value={authenticationNumber} // authenticationNumber 상태를 사용
+                onChange={handleAuthNumberChange} // 입력 변경 시 상태 업데이트
+                placeholder="인증번호 입력"
+                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+                maxLength={6} // 인증번호는 6자리로 제한
+              />
+              {/* 인증 버튼 */}
+              <button
+                type="button"
+                onClick={verifyAuthenticationCode} // 인증번호 검증 핸들러 호출
+                className={`w-full mt-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-300 ${
+                  isPhoneNumberVerified
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' // 인증 완료 시 비활성화
+                    : 'bg-green-500 text-white hover:bg-green-600'
+                }`}
+                disabled={isPhoneNumberVerified} // 인증 완료 시 버튼 비활성화
+              >
+                {isPhoneNumberVerified ? '인증 완료' : '인증 확인'}{' '}
+                {/* 인증 완료 여부에 따라 텍스트 변경 */}
+              </button>
+            </>
           )}
+
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
             <input
@@ -362,24 +569,29 @@ const SignUpPage: React.FC = () => {
         </form>
       </div>
 
-      {/* 인증번호 전송 모달 */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-            <h2 className="text-xl font-bold mt-5 mb-10">
-              인증번호가 전송되었습니다.
-            </h2>
-            <button
-              onClick={() => setShowModal(false)}
-              className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              확인
-            </button>
-          </div>
-        </div>
+      {/* 성공 모달 */}
+      {showSuccessModal && (
+        <SuccessModal
+          setShowModal={setShowSuccessModal}
+          title={successMessage}
+          buttonText="확인"
+          buttonColor="bg-customAqua"
+          buttonHoverColor="hover:bg-[#7ee9ce]"
+        />
+      )}
+
+      {/* 실패 모달 */}
+      {showFailModal && (
+        <FailModal
+          setShowModal={setShowFailModal}
+          title={failMessage}
+          buttonText="확인"
+          buttonColor="bg-customRed"
+          buttonHoverColor="hover:bg-[#FF2414]"
+        />
       )}
     </div>
   );
 };
 
-export default SignUpPage;
+export default SignUpModal;

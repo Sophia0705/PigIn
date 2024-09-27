@@ -32,7 +32,9 @@ const FailModal: React.FC<FailModalProps> = ({
 
         {/* 모달을 닫는 버튼 */}
         <button
-          onClick={() => setShowModal(false)} // 버튼을 클릭하면 모달을 닫음
+          onClick={() => {
+            setShowModal(false);
+          }} // 버튼을 클릭하면 모달을 닫음
           className={`w-full py-2 text-black rounded ${buttonColor} ${buttonHoverColor}`} // 버튼 스타일 (배경색과 hover 색상은 props로 설정)
         >
           {buttonText} {/* 부모로부터 전달받은 버튼 텍스트 */}

@@ -104,7 +104,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ closeModal }) => {
           onClick={(e) => e.stopPropagation()} // 모달 본체 클릭 시 이벤트 전파 차단
         >
           <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
-            회원 탈퇴
+            회원 탈퇴(보유 주식 x, 투자 계좌 잔고 0일 때 가능)
           </h2>
 
           <form
@@ -123,7 +123,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ closeModal }) => {
                   ? 'border-gray-300 focus:ring-green-300'
                   : 'border-red-500 focus:ring-red-500'
               } mb-1`}
-              required
+              disabled
             />
             {!isEmailValid && (
               <p className="text-xs text-red-500 mt-1">

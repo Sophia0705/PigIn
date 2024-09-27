@@ -7,7 +7,7 @@ interface SpendingAccountFormData {
   bankName: string;
   accountNumber: string;
   password: string;
-  verificationCode: string; // 인증번호 필드 추가
+  verificationCode: string;
 }
 
 // Zustand 스토어의 타입 정의
