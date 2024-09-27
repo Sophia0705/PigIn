@@ -43,9 +43,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = obtainUsername(request);
         String password = obtainPassword(request);
 
-        log.info("username : {}", username);
-        log.info("password : {}", password);
-
         //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야함
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
             username, password, null);
@@ -61,7 +58,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //유저 정보
         String username = authentication.getName();
-        log.info("userName = {}", username);
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();

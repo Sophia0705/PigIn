@@ -72,11 +72,11 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void singUp(Members members) throws NoSuchAlgorithmException {
-        Boolean isExist = membersRepository.existsByEmail(members.getEmail());
+        Members findMember = membersRepository.findByEmail(members.getEmail());
 
 //        대중현
         //해당 이메일로 회원가입한 사람이 있으면 return
-        if (isExist) {
+        if (findMember != null) {
             throw new EmailConflictException();
         }
 
@@ -154,7 +154,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean MMSCompare(MMSCompareDto mmsCompareDto) {
-        log.info(mmsCompareDto.toString());
         MMSAuthentication authentication = authenticationRepository.findLatestValidAuthentication(
                 mmsCompareDto.getAuthenticationNumber(), mmsCompareDto.getPhoneNumber())
             .orElseThrow(AuthenticationNotFoundException::new);
@@ -339,6 +338,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean emailCheck(String email) {
-        return membersRepository.existsByEmail(email);
+        Members member = membersRepository.findByEmail(email);
+        return member != null;
     }
 }

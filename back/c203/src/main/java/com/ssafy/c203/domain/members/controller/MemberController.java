@@ -3,6 +3,7 @@ package com.ssafy.c203.domain.members.controller;
 import com.ssafy.c203.common.jwt.JWTUtil;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.EmailCheckDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MMSCompareDto;
@@ -306,8 +307,8 @@ public class MemberController {
         @ApiResponse(responseCode = "409", description = "이메일이 이미 존재합니다.")
     })
     @PostMapping("/email-check")
-    public ResponseEntity<?> emailCheck(String email) {
-        boolean isExist = memberService.emailCheck(email);
+    public ResponseEntity<?> emailCheck(@RequestBody EmailCheckDto email) {
+        boolean isExist = memberService.emailCheck(email.getEmail());
         if (isExist) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일이 이미 존재합니다.");
         }
