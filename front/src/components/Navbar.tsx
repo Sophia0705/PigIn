@@ -10,7 +10,7 @@ import { NavLink } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   return (
-    <div className="fixed bottom-4 left-4 right-4 w-auto flex justify-center">
+    <div className="absolute bottom-4 left-4 right-4 w-auto flex justify-center z-10">
       <div className="flex items-center justify-around w-full max-w-md h-[75px] bg-green-100 rounded-full shadow-md px-4">
         {/* 홈 */}
         <NavLink

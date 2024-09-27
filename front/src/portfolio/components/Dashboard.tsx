@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
   const totalProfit = totalValue * totalProfitRate;
 
   return (
-    <div className="bg-white h-full rounded-lg shadow-md p-4">
+    <div className="bg-white h-full rounded-lg p-4">
       <h2 className="text-3xl font-bold mb-2">My Portfolio</h2>
       <p className="text-sm text-gray-500 mb-1">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
