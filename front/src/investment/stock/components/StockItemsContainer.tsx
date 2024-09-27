@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StockItem from './StockItem';
-import KoreanStocksData from '../../../data/KoreanStocksData.json';
 import { getStockList } from '../../../api/investment/stock/StockList';
 import { StockItemData } from '../../interfaces/StockInterface';
+import { getIndividualStockData } from '../../../api/investment/stock/IndividualStockData';
+import { getStockChartData } from '../../../api/investment/stock/StockChartData';
 
 interface StockItemsContainerProps {
   title: string;
@@ -16,18 +17,57 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
 
   const fetchStockList = async () => {
     try {
-      const response = await getStockList();
-      console.log('Fetched Stock List:', response); // Log the response data
+      // 주식 목록 가져오기
+      const stockList = await getStockList();
+      console.log('주식 전체 목록:', stockList);
+
+      // 주식별 상세정보
+      const combinedStockData = await Promise.all(
+        stockList.map(async (stock) => {
+          // 단일 주식 상세정보
+          const stockData = await getIndividualStockData(stock.stockCode);
+
+          const weeklyPrices = await getStockChartData(stock.stockCode, 'week');
+          const monthlyPrices = await getStockChartData(
+            stock.stockCode,
+            'month'
+          );
+
+          const weeklyClosingPrices = weeklyPrices.map((data) =>
+            Number(data.stck_clpr)
+          );
+          const monthlyClosingPrices = monthlyPrices.map((data) =>
+            Number(data.stck_clpr)
+          );
+
+          return {
+            ...stockData,
+            weeklyPrices: weeklyClosingPrices,
+            monthlyPrices: monthlyClosingPrices,
+          };
+        })
+      );
+
+      console.log('최종 주식 데이터:', combinedStockData);
+      setSortedData(combinedStockData);
+      sortStockData(combinedStockData, selectedOption);
+      return combinedStockData;
     } catch (error) {
-      console.error('Error fetching stock list:', error); // Handle error if request fails
+      console.error('주식 정보나 차트 데이터 문제:', error);
     }
   };
 
   useEffect(() => {
     fetchStockList();
+  }, [selectedOption]);
 
-    const sortedStocks = [...KoreanStocksData].sort((a, b) => {
-      switch (selectedOption) {
+  const handleOptionChange = (option: string) => {
+    setSelectedOption(option);
+  };
+
+  const sortStockData = (data: StockItemData[], option: string) => {
+    const sorted = [...data].sort((a, b) => {
+      switch (option) {
         case '시가총액':
           return parseInt(b.marketCap) - parseInt(a.marketCap);
         case '거래량':
@@ -43,11 +83,7 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
           return 0;
       }
     });
-    setSortedData(sortedStocks);
-  }, [selectedOption]);
-
-  const handleOptionChange = (option: string) => {
-    setSelectedOption(option);
+    setSortedData(sorted);
   };
 
   const handleItemClick = (item: StockItemData) => {

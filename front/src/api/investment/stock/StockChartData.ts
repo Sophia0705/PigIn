@@ -4,11 +4,13 @@ import { StockChartDataResponse } from '../../../investment/interfaces/StockInte
 
 export const getStockChartData = async (
   stockId: string,
-  interval: string
+  interval: string,
+  count: number = 10
 ): Promise<StockChartDataResponse[]> => {
   try {
     const response = await axiosInstance.get<StockChartDataResponse[]>(
-      `api/stock/${stockId}/chart/${interval}`
+      `api/stock/${stockId}/chart/${interval}`,
+      { params: { count } }
     );
     return response.data;
   } catch (error: unknown) {

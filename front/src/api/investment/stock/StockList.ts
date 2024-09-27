@@ -2,9 +2,9 @@ import axios from 'axios';
 import axiosInstance from '../../axiosInstance';
 import { StockListResponse } from '../../../investment/interfaces/StockInterface';
 
-export const getStockList = async (): Promise<StockListResponse> => {
+export const getStockList = async (): Promise<StockListResponse[]> => {
   try {
-    const response = await axiosInstance.get<StockListResponse>('api/stock');
+    const response = await axiosInstance.get<StockListResponse[]>('api/stock');
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
