@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-// import axiosInstance from '../../../api/axiosinstance'; // axiosInstance 가져오기
+import { LoginAPI } from '../../../api/member/LoginAPI';
+import axiosInstance from '../../../api/axiosinstance'; // axiosInstance 가져오기
 // import { useAuthStore } from '../../../store/AuthStore';
 import { useStore } from '../../../store/memberStore';
+import { setAccessToken } from '../../../utils/localUtils';
 
 // LoginModal 컴포넌트 정의
 const LoginModal: React.FC = () => {
@@ -12,7 +14,7 @@ const LoginModal: React.FC = () => {
     openSignUpModal,
     openFindEmailModal,
     openFindPasswordModal,
-    // checkLoginStatus,
+    checkLoginStatus,
   } = useStore();
 
   const [email, setEmail] = useState('');
@@ -38,34 +40,26 @@ const LoginModal: React.FC = () => {
     openFindPasswordModal(); // 비밀번호 찾기 모달을 연다
   };
 
+  // 로그인 폼 제출 처리 함수
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('password', password);
+    try {
+      // 로그인 API 호출
+      console.log('Login모달 : ', email, password);
+      const response = await LoginAPI({ username: email, password });
 
-    // try {
-    //   // axiosInstance를 사용하여 로그인 API 요청 (FormData 전송)
-    //   const response = await axiosInstance.post('/member/login', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data', // FormData 전송을 위한 헤더 설정
-    //     },
-    //   });
+      // 로그인 성공 시 access token을 로컬 스토리지에 저장
+      setAccessToken(response.accessToken); // 유틸리티 함수 사용
 
-    //   // 로그인 성공 시 access token을 로컬 스토리지에 저장
-    //   const { accessToken } = response.data;
-    //   localStorage.setItem('accessToken', accessToken);
-
-    //   // 로그인 상태를 업데이트하고 모달을 닫음
-    //   checkLoginStatus();
-    //   console.log('로그인 성공!');
-    //   alert('로그인 성공!');
-    //   closeLoginModal();
-    // } catch (error) {
-    //   console.error('로그인 에러:', error);
-    //   alert('로그인에 실패했습니다. 다시 시도해주세요.');
-    // }
+      // 로그인 상태를 업데이트하고 모달을 닫음
+      checkLoginStatus(); // 로그인 상태 확인
+      alert('로그인 성공!');
+      closeLoginModal(); // 로그인 모달 닫기
+    } catch (error) {
+      console.error('로그인 에러:', error);
+      alert('로그인에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   if (!isLoginModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음

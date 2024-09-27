@@ -37,8 +37,8 @@ const MyPage: React.FC = () => {
       {isLoginModalOpen && <LoginModal />}
       {isSignUpModalOpen && <SignUpModal />}
       {isFindEmailModalOpen && <FindEmailModal />}
-      {/* {isFindPasswordModalOpen && <FindPasswordModal />}
-      {isUpdateProfileModalOpen && <UpdateProfileModal />}
+      {/* {isFindPasswordModalOpen && <FindPasswordModal />} */}
+      {/* {isUpdateProfileModalOpen && <UpdateProfileModal />}
       {isWithdrawlModalOpen && <WithdrawalModal />}
       {isSpendingAccountRegisterModalOpen && <SpendingAccountRegisterModal />} */}
 
