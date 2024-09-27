@@ -18,11 +18,11 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
   const [savingRate, setSavingRate] = useState(0);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // SuccessModal 상태 추가
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   useEffect(() => {
-    loadUserData(); // 사용자 정보를 불러옴
-    setSavingRate(formData.savingRate); // 사용자 정보에서 저장된 저축률 설정
+    loadUserData();
+    setSavingRate(formData.savingRate);
   }, [loadUserData, formData.savingRate]);
 
   const isPasswordValid = (password: string) => {
@@ -66,9 +66,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Updated Data:', formData);
-
-    // 정보 수정 완료 후 SuccessModal 띄우기
-    setIsSuccessModalOpen(true); // 모달을 띄우기 위한 상태 변경
+    setIsSuccessModalOpen(true);
   };
 
   const isFormValid = () => {
@@ -79,158 +77,139 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
 
   return (
     <>
-      <div
-        className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-        onClick={closeModal} // 모달 바깥을 클릭 시 닫힘
-      >
-        <div
-          className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center animate-slide-up"
-          onClick={(e) => e.stopPropagation()} // 모달 본체 클릭 시 이벤트 전파 차단
-        >
-          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
-            회원 정보 수정
-          </h2>
+      <div className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-sm">
+          <div className="p-6">
+            <h2 className="text-xl font-bold mb-4 text-center">
+              회원 정보 수정
+            </h2>
 
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col space-y-3 w-full"
-          >
-            {/* 이름 입력 필드 */}
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="이름"
-              className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              disabled
-            />
-
-            {/* 비밀번호 입력 필드 */}
-            <div className="relative flex items-center">
+            <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
               <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handlePasswordChange}
-                placeholder="새 비밀번호"
-                className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="이름"
+                className="w-full p-2 border border-gray-300 rounded"
+                disabled
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-8 text-gray-500 bg-transparent"
-              >
-                {showPassword ? (
-                  <AiOutlineEyeInvisible className="bg-transparent" />
-                ) : (
-                  <AiOutlineEye className="bg-transparent" />
-                )}
-              </button>
-              {formData.password &&
-                (isPasswordValid(formData.password) ? (
-                  <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
-                ) : (
-                  <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
-                ))}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              8자 이상, 영문, 숫자 포함
-            </p>
 
-            {/* 비밀번호 확인 입력 필드 */}
-            <div className="relative flex items-center">
-              <input
-                type={showPasswordConfirm ? 'text' : 'password'}
-                value={passwordConfirm}
-                onChange={handlePasswordConfirmChange}
-                placeholder="새 비밀번호 확인"
-                className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                className="absolute right-8 text-gray-500 bg-transparent"
-              >
-                {showPasswordConfirm ? (
-                  <AiOutlineEyeInvisible className="bg-transparent" />
-                ) : (
-                  <AiOutlineEye className="bg-transparent" />
-                )}
-              </button>
-              {passwordConfirm &&
-                (isPasswordMatch ? (
-                  <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
-                ) : (
-                  <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
-                ))}
-            </div>
-
-            {/* 저축률 설정 */}
-            <div className="mt-4">
-              <label className="text-gray-700 text-sm block mb-2">
-                저축률 설정
-              </label>
-              <div className="flex items-center space-x-4 mt-2">
+              <div className="relative">
                 <input
-                  type="range"
-                  min="0"
-                  max="10"
-                  step="0.1"
-                  value={savingRate}
-                  onChange={handleSavingRateChange}
-                  className="w-full"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handlePasswordChange}
+                  placeholder="새 비밀번호"
+                  className="w-full p-2 border border-gray-300 rounded"
                 />
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  step="0.1"
-                  value={savingRate}
-                  onChange={handleSavingRateChange}
-                  className="w-12 p-1 text-right border-none border-gray-300 rounded"
-                />
-                <span>%</span>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-2 text-gray-500"
+                >
+                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                </button>
+                {formData.password &&
+                  (isPasswordValid(formData.password) ? (
+                    <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
+                  ) : (
+                    <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
+                  ))}
               </div>
-            </div>
+              <p className="text-xs text-gray-500">8자 이상, 영문, 숫자 포함</p>
 
-            {/* SuccessModal을 수정 완료 후 표시 */}
-            {isSuccessModalOpen && (
-              <SuccessModal
-                setShowModal={() => {
-                  setIsSuccessModalOpen(false);
-                  closeModal(); // 모달을 닫음
-                }}
-                title={'회원 정보 수정\n완료되었습니다.'}
-                buttonText="확인"
-              />
-            )}
-            {/* 정보 수정 버튼 */}
-            <div className="flex space-x-4 mt-4">
-              <button
-                type="submit"
-                className={`w-full py-2 rounded ${
-                  isFormValid()
-                    ? 'bg-[#9CF8E1] text-gray-900 font-semibold hover:bg-[#7ee9ce]'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-                disabled={!isFormValid()}
-              >
-                정보 수정
-              </button>
+              <div className="relative">
+                <input
+                  type={showPasswordConfirm ? 'text' : 'password'}
+                  value={passwordConfirm}
+                  onChange={handlePasswordConfirmChange}
+                  placeholder="새 비밀번호 확인"
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                  className="absolute right-2 top-2 text-gray-500"
+                >
+                  {showPasswordConfirm ? (
+                    <AiOutlineEyeInvisible />
+                  ) : (
+                    <AiOutlineEye />
+                  )}
+                </button>
+                {passwordConfirm &&
+                  (isPasswordMatch ? (
+                    <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
+                  ) : (
+                    <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
+                  ))}
+              </div>
 
-              {/* 취소 버튼 */}
-              <button
-                type="button"
-                className="w-full py-2 rounded bg-gray-500 text-white hover:bg-gray-600"
-                onClick={closeModal}
-              >
-                취소
-              </button>
-            </div>
-          </form>
+              <div>
+                <label className="text-sm text-gray-700 block mb-2">
+                  저축률 설정
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    value={savingRate}
+                    onChange={handleSavingRateChange}
+                    className="w-4/5"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    value={savingRate}
+                    onChange={handleSavingRateChange}
+                    className="w-1/5 p-1 text-right border border-gray-300 rounded"
+                  />
+                  <span>%</span>
+                </div>
+              </div>
+
+              <div className="flex space-x-2">
+                <button
+                  type="submit"
+                  className={`w-1/2 py-2 rounded ${
+                    isFormValid()
+                      ? 'bg-[#9CF8E1] text-gray-900 font-semibold hover:bg-[#7ee9ce]'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                  disabled={!isFormValid()}
+                >
+                  정보 수정
+                </button>
+
+                <button
+                  type="button"
+                  className="w-1/2 py-2 rounded bg-gray-500 text-white hover:bg-gray-600"
+                  onClick={closeModal}
+                >
+                  취소
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
+
+      {isSuccessModalOpen && (
+        <SuccessModal
+          setShowModal={() => {
+            setIsSuccessModalOpen(false);
+            closeModal();
+          }}
+          title={'회원 정보 수정\n완료되었습니다.'}
+          buttonText="확인"
+        />
+      )}
     </>
   );
 };
