@@ -131,7 +131,7 @@ const StockDetailPage: React.FC = () => {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white text-left ml-4">
-            {stockData.stck_prpr.toLocaleString()}
+            {Number(stockData.stck_prpr).toLocaleString()}
           </h1>
           <span
             className={`mr-2 mt-2 text-md font-normal px-2 py-1 rounded-full ${
