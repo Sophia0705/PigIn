@@ -118,7 +118,7 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
           >
             <StockItem
               name={item.hts_kor_isnm}
-              price={item.stck_prpr}
+              price={Number(item.stck_prpr)}
               percentageChange={item.prdy_ctrt}
               weeklyPrices={item.weeklyPrices}
             />

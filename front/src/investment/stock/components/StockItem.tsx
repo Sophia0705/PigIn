@@ -15,7 +15,12 @@ const StockItem: React.FC<StockItemProps> = ({
   percentageChange,
   weeklyPrices,
 }) => {
-  const isPositiveChange = percentageChange.startsWith('+');
+  const countZeros = (str: string): number => {
+    return (str.match(/0/g) || []).length;
+  };
+
+  const isNegativeChange = percentageChange.startsWith('-');
+  const isZeroChange = countZeros(percentageChange) === 3;
   const chartData = weeklyPrices.map((value, index) => ({
     name: `Day ${index + 1}`,
     value,
@@ -31,13 +36,21 @@ const StockItem: React.FC<StockItemProps> = ({
         <h3 className="text-white font-bold text-lg">{name}</h3>
         <span
           className={`flex items-center justify-center text-xs rounded-full px-2 py-1 ${
-            isPositiveChange
-              ? 'bg-green-900 text-white'
-              : 'bg-green-100 text-customDarkGreen'
+            isNegativeChange
+              ? 'bg-green-100 text-customDarkGreen'
+              : isZeroChange
+                ? 'bg-gray-300 text-gray-700'
+                : 'bg-green-900 text-white'
           }`}
         >
-          {isPositiveChange ? <MdArrowDropUp /> : <MdArrowDropDown />}
-          {percentageChange}
+          {isZeroChange ? (
+            <span></span>
+          ) : isNegativeChange ? (
+            <MdArrowDropDown />
+          ) : (
+            <MdArrowDropUp />
+          )}
+          {percentageChange} %
         </span>
       </div>
       <div className="text-white font-bold text-2xl mb-2">
