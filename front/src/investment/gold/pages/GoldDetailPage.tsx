@@ -8,7 +8,6 @@ import GoldSellModal from '../components/modals/GoldSellModal';
 import GoldDetailGraph from '../components/GoldDetailGraph';
 import GoldDetailInfo from '../components/GoldDetailInfo';
 import GoldNews from '../components/GoldNews';
-import IsLoginModal from '../../../member/components/modals/IsLoginModal';
 
 const GoldDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -33,7 +32,6 @@ const GoldDetailPage: React.FC = () => {
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState<string>('00');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
 
   const toggleLoginStatus = () => {
     setIsLoggedIn((prev) => !prev);
@@ -44,7 +42,7 @@ const GoldDetailPage: React.FC = () => {
     if (isLoggedIn) {
       action();
     } else {
-      setIsLoginModalVisible(true);
+      console.log('로그인 하세욧');
     }
   };
 
@@ -89,10 +87,6 @@ const GoldDetailPage: React.FC = () => {
   const handleSellModalClose = () => {
     setIsSellModalVisible(false);
     setSellInputValue('00');
-  };
-
-  const handleLoginModalClose = () => {
-    setIsLoginModalVisible(false);
   };
 
   const selectedData =
@@ -238,14 +232,6 @@ const GoldDetailPage: React.FC = () => {
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
           goldPrice={latestValue}
-        />
-      )}
-
-      {/* 로그인 모달 */}
-      {isLoginModalVisible && (
-        <IsLoginModal
-          isOpen={isLoginModalVisible}
-          onClose={handleLoginModalClose}
         />
       )}
     </div>
