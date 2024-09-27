@@ -56,7 +56,7 @@ public class StockServiceImpl implements StockService{
     public void init() {
         // MongoDB 싹다 지우기 일봉, 주봉, 월봉 데이터를 MongoDB에 저장
         stockHistoryRepository.deleteAll();
-        stockMinuteRepository.deleteAll();
+//        stockMinuteRepository.deleteAll();
         stockDetailRepository.deleteAll();
         scheduler.scheduleAtFixedRate(this::getToken, 0, 23, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getMonthlyBar, 0, 24 * 28, TimeUnit.HOURS);
@@ -68,6 +68,11 @@ public class StockServiceImpl implements StockService{
     public void getMonthlyBar() {
         stockCodes.forEach(stockCode -> {
             StockResponse response = getBar("M", stockCode);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -75,6 +80,11 @@ public class StockServiceImpl implements StockService{
     public void getWeeklyBar() {
         stockCodes.forEach(stockCode -> {
             StockResponse response = getBar("W", stockCode);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -82,6 +92,11 @@ public class StockServiceImpl implements StockService{
     public void getDailyBar() {
         stockCodes.forEach(stockCode -> {
             StockResponse response = getBar("D", stockCode);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

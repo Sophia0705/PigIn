@@ -37,10 +37,6 @@ public class StockWebSocketService {
     private final StockWebSocketClient webSocketClient;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-//    public StockWebSocketService(StockWebSocketClient webSocketClient) {
-//        this.webSocketClient = webSocketClient;
-//    }
-
     @PostConstruct
     public void init() {
         try {

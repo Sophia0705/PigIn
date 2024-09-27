@@ -1,79 +1,115 @@
 package com.ssafy.securities.coin.service.coinWebSocket;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.securities.coin.dto.CoinWebSocketBarDTO;
+import com.ssafy.securities.coin.dto.CoinMinuteDTO;
+import com.ssafy.securities.stock.service.stockWebSocket.MultiStockDataProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Slf4j
 @Component
-public class CoinWebSocketClient extends TextWebSocketHandler {
+@Slf4j
+public class CoinWebSocketClient extends AbstractWebSocketHandler {
 
+    private WebSocketSession webSocketSession;
     private final AtomicReference<WebSocketSession> sessionRef = new AtomicReference<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final MultiCoinDataProcessor dataProcessor;
 
-    public void connect(String url) throws Exception {
-        WebSocketClient client = new StandardWebSocketClient();
-
-        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-//        headers.add(HttpHeaders.AUTHORIZATION, token);
-
-        sessionRef.set(client.doHandshake(this, headers, URI.create(url)).get());
+    public CoinWebSocketClient(MultiCoinDataProcessor dataProcessor) {
+        this.dataProcessor = dataProcessor;
     }
 
-    public void subscribeStock(List<String> stockCodes) throws Exception {
-        WebSocketSession session = sessionRef.get();
-//        if (session != null && session.isOpen()) {
-        String subscriptionMessage = createSubscriptionMessage(stockCodes);
-        session.sendMessage(new TextMessage(subscriptionMessage));
-//        } else {
-//            log.error("WebSocket session is not open");
-//        }
+
+    // WebSocket 서버에 연결
+    public void connect(String url, List<String> coinCodes) throws Exception {
+        StandardWebSocketClient client = new StandardWebSocketClient();
+        client.doHandshake(this, url).addCallback(
+                session -> {
+                    log.info("WebSocket 연결 성공: {}", url);
+                    this.webSocketSession = session;
+                    try {
+                        // 연결 성공 후 구독 메시지 전송
+                        subscribeStock(coinCodes);
+                    } catch (Exception e) {
+                        log.error("구독 요청 중 오류 발생", e);
+                    }
+                },
+                throwable -> log.error("WebSocket 연결 실패", throwable)
+        );
     }
 
+    // 코인 종목 구독
+    public void subscribeStock(List<String> coinCodes) throws Exception {
+        if (webSocketSession == null || !webSocketSession.isOpen()) {
+//            log.error("WebSocket 연결이 열려 있지 않습니다.");
+            return;
+        }
+
+        // 업비트 WebSocket API 구독 메시지 작성 (JSON 형식)
+        String subscribeMessage = createSubscribeMessage(coinCodes);
+//        log.info("구독 메시지 전송: {}", subscribeMessage);
+
+        log.info(subscribeMessage);
+        // 텍스트 메시지로 구독 요청
+        webSocketSession.sendMessage(new TextMessage(subscribeMessage));
+    }
+
+    // 업비트 WebSocket API에서 받은 이진 메시지 처리
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
+        ByteBuffer payload = message.getPayload();
+        String jsonData = new String(payload.array());
+
+//        log.info("수신한 JSON 데이터: {}", jsonData);
+
         try {
-            String payload = message.getPayload();
-            CoinWebSocketBarDTO stockData = parseCoinData(payload);
-            // Here you can process the stock data further, e.g., save to database or notify clients
+            // 메시지 처리 속도 조절
+//            if (canProcessMessage()) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                CoinMinuteDTO coinMinuteDTO = objectMapper.readValue(jsonData, CoinMinuteDTO.class);
+                dataProcessor.handleMessage(coinMinuteDTO.getCode(), coinMinuteDTO);
+//            } else {
+//                log.warn("메시지 처리 속도를 초과했습니다.");
+                // 필요 시 적절한 대기 로직 추가
+//            }
         } catch (Exception e) {
-            log.error("Error handling message", e);
+            log.error("Failed to parse JSON to CoinMinuteDTO", e);
         }
     }
 
 
+    // 구독 메시지를 JSON 형식으로 생성
+    private String createSubscribeMessage(List<String> coinCodes) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[{\"ticket\":\"UNIQUE_TICKET\"},");
+        sb.append("{\"type\":\"ticker\",\"codes\":[");
 
-    private String createSubscriptionMessage(List<String> stockCodes) throws JsonProcessingException {
-        String subMessage = objectMapper.writeValueAsString(List.of(
-                Map.of("ticket", UUID.randomUUID().toString()),
-                Map.of("type", "ticker", "codes", stockCodes),
-                Map.of("format", "DEFAULT")
-        ));
-        return subMessage;
+        for (int i = 0; i < coinCodes.size(); i++) {
+            sb.append("\"").append(coinCodes.get(i)).append("\"");
+            if (i < coinCodes.size() - 1) {
+                sb.append(",");
+            }
+        }
+
+        sb.append("]}]");
+        return sb.toString();
     }
 
-    private CoinWebSocketBarDTO parseCoinData(String payload) throws JsonProcessingException {
-        // This is a simplified parsing. Adjust according to the actual data structure.
-        Map<String, Object> data = objectMapper.readValue(payload, Map.class);
-        return CoinWebSocketBarDTO.builder()
-                .code((String) data.get("code"))
-                .tradePrice((Double) data.get("trade_price"))
-                .tradeVolume((Double) data.get("trade_volume"))
-                .timestamp((Long) data.get("timestamp"))
-                .build();
+    // WebSocket 연결 종료
+    public void close() throws Exception {
+        if (webSocketSession != null && webSocketSession.isOpen()) {
+            webSocketSession.close();
+            log.info("WebSocket 연결 종료");
+        }
     }
 }

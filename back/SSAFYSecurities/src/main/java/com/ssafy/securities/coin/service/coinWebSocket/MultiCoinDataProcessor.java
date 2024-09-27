@@ -1,11 +1,10 @@
-package com.ssafy.securities.stock.service.stockWebSocket;
+package com.ssafy.securities.coin.service.coinWebSocket;
 
+import com.ssafy.securities.coin.dto.CoinMinuteDTO;
 import com.ssafy.securities.stock.dto.StockDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,19 +12,19 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public class MultiStockDataProcessor {
+public class MultiCoinDataProcessor {
 
-    private final ConcurrentHashMap<String, StockDTO> latestDataMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, CoinMinuteDTO> latestDataMap = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final StockDataService stockDataService;
+    private final CoinDataService coinDataService;
 
-    public MultiStockDataProcessor(StockDataService stockDataService) {
-        this.stockDataService = stockDataService;
+    public MultiCoinDataProcessor(CoinDataService coinDataService) {
+        this.coinDataService = coinDataService;
         startScheduler();
     }
 
-    public void handleMessage(String stockCode, StockDTO stockData) {
-        latestDataMap.put(stockCode, stockData);
+    public void handleMessage(String coinCode, CoinMinuteDTO coinMinuteDTO) {
+        latestDataMap.put(coinCode, coinMinuteDTO);
     }
 
     private void startScheduler() {
@@ -33,9 +32,8 @@ public class MultiStockDataProcessor {
     }
 
     private void processAndSaveData() {
-        latestDataMap.forEach((stockCode, stockData) -> {
-//            System.out.println("Processed and saved data for stock: " + stockCode);
-            stockDataService.saveStockData(stockData);
+        latestDataMap.forEach((coinCode, coinMinuteDTO) -> {
+            coinDataService.saveCoinData(coinMinuteDTO);
 
         });
         latestDataMap.clear();

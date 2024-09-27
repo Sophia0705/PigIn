@@ -23,30 +23,12 @@ public class CoinWebSocketService {
     @PostConstruct
     public void init() {
         try {
-//            coinWebSocketClient.connect(upbitProd, generateToken());\
-            coinWebSocketClient.connect(upbitProd);
-            subscribeToCoins();
+            log.info("Connecting to upbit...");
+            coinWebSocketClient.connect(upbitProd, coinCodes);
 
         } catch (Exception e) {
             log.error("Failed to initialize WebSocket connection", e);
         }
     }
 
-    private void subscribeToCoins() {
-        try {
-            coinWebSocketClient.subscribeStock(coinCodes);
-        } catch (Exception e) {
-            log.error("Failed to subscribe to stock: {}", coinCodes, e);
-        }
-    }
-
-//    private String generateToken() {
-//        long epochNow = System.currentTimeMillis() / 1000;
-//        String jwtToken = Jwts.builder()
-//                .claim("access_key", upbitAccessKey)
-//                .claim("nonce", UUID.randomUUID().toString())
-//                .signWith(SignatureAlgorithm.HS256, upbitSecretKey.getBytes())
-//                .compact();
-//        return "Bearer " + jwtToken;
-//    }
 }
