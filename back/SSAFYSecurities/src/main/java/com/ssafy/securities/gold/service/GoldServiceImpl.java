@@ -3,6 +3,8 @@ package com.ssafy.securities.gold.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.securities.gold.dto.response.GoldItemDto;
+import com.ssafy.securities.gold.entity.Gold;
+import com.ssafy.securities.gold.repository.GoldRepository;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +13,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,18 +21,15 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class GoldServiceImpl implements GoldService {
 
-    private final RestTemplate restTemplate;
     @Value("${gold.APIKEY}")
     private String APIKEY;
-
-    public GoldServiceImpl(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private final GoldRepository goldRepository;
 
     @Override
-    public GoldItemDto saveGold() throws IOException {
+    public GoldItemDto getGold() throws IOException {
         LocalDate yesterday = LocalDate.now().minusDays(2);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String yesterdayDate = yesterday.format(formatter);
@@ -94,6 +94,24 @@ public class GoldServiceImpl implements GoldService {
             .build();
 
         return item;
+    }
 
+    @Override
+    public void saveGold(GoldItemDto gold) throws IOException {
+        goldRepository.save(Gold
+            .builder()
+            .close(gold.getClose())
+            .date(gold.getDate())
+            .high(gold.getHigh())
+            .isin(gold.getIsin())
+            .itemName(gold.getItemName())
+            .low(gold.getLow())
+            .open(gold.getOpen())
+            .srtnCd(gold.getSrtnCd())
+            .tradeAmount(gold.getTradeAmount())
+            .tradePrice(gold.getTradePrice())
+            .upDownRate(gold.getUpDownRate())
+            .vsYesterday(gold.getVsYesterday())
+            .build());
     }
 }

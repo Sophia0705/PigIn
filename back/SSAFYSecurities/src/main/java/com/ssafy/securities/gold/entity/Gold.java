@@ -11,11 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collation = "Gold")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Gold {
 
-    @Id
-    private Long id;
     private String date;
     private String srtnCd;
     private String isin;
