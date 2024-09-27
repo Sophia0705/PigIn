@@ -12,21 +12,6 @@ const PortfolioDetails: React.FC = () => {
     [categories, activeIndex]
   );
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        // 리스트 높이를 동적으로 조정 -> 타입 에러로 주석 처리
-        // const height = containerRef.current.clientHeight - 80;
-        // console.log('컨테이너 높이:', containerRef.current.clientHeight - 80);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    handleResize(); // 초기 실행
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   if (isLoading)
     return <div className="text-center py-4">Loading details...</div>;
   if (error)
