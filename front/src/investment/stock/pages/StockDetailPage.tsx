@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { format } from 'date-fns';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
 import { StockItemData } from '../../interfaces/StockInterface';
@@ -91,12 +92,28 @@ const StockDetailPage: React.FC = () => {
   const selectedData =
     selectedTimeRange === '7일'
       ? stockData.weeklyPrices
-      : stockData.monthlyPrices;
+      : selectedTimeRange === '1개월'
+        ? stockData.monthlyPrices
+        : selectedTimeRange === '1년'
+          ? stockData.yearlyPrices
+          : stockData.weeklyPrices;
 
-  const chartData = selectedData.map((price, index) => ({
-    name: `Day ${index + 1}`,
-    value: price,
-  }));
+  const chartData = selectedData
+    .slice()
+    .reverse()
+    .map((price, index) => {
+      const currentDate = new Date();
+      const reverseIndex = selectedData.length - 1 - index;
+      const pastDate = new Date(
+        currentDate.setDate(currentDate.getDate() - reverseIndex)
+      );
+      const formattedDate = format(pastDate, 'yyyy-MM-dd');
+
+      return {
+        name: formattedDate,
+        value: price,
+      };
+    });
 
   const minPrice = Math.min(...stockData.weeklyPrices);
   const maxPrice = Math.max(...stockData.weeklyPrices);

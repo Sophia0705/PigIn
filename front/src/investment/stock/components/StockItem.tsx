@@ -1,6 +1,7 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
+import { format } from 'date-fns';
 
 interface StockItemProps {
   name: string;
@@ -23,10 +24,22 @@ const StockItem: React.FC<StockItemProps> = ({
 
   const isNegativeChange = percentageChange.startsWith('-');
   const isZeroChange = countZeros(percentageChange) === 3;
-  const chartData = weeklyPrices.map((value, index) => ({
-    name: `Day ${index + 1}`,
-    value,
-  }));
+  const chartData = weeklyPrices
+    .slice()
+    .reverse()
+    .map((price, index) => {
+      const currentDate = new Date();
+      const reverseIndex = weeklyPrices.length - 1 - index;
+      const pastDate = new Date(
+        currentDate.setDate(currentDate.getDate() - reverseIndex)
+      );
+      const formattedDate = format(pastDate, 'yyyy-MM-dd');
+
+      return {
+        name: formattedDate,
+        value: price,
+      };
+    });
 
   const minValue = Math.min(...weeklyPrices);
   const maxValue = Math.max(...weeklyPrices);
