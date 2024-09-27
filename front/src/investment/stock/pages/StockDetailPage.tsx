@@ -13,7 +13,7 @@ const StockDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const stockData = location.state?.item as StockItemData;
-  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('1일');
   const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
 
   const [isLiked, setIsLiked] = useState(false);
@@ -132,6 +132,7 @@ const StockDetailPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white text-left ml-4">
             {Number(stockData.stck_prpr).toLocaleString()}
+            <span className="text-lg"> 원</span>
           </h1>
           <span
             className={`mr-2 mt-2 text-md font-normal px-2 py-1 rounded-full ${
@@ -147,7 +148,7 @@ const StockDetailPage: React.FC = () => {
 
       {/* 시간 범위 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
-        {['7일', '1개월', '3개월', '1년'].map((option) => (
+        {['1일', '7일', '3개월', '1년'].map((option) => (
           <button
             key={option}
             onClick={() => handleTimeRangeChange(option)}
