@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { LoginAPI } from '../../../api/member/LoginAPI';
-import axiosInstance from '../../../api/axiosinstance'; // axiosInstance 가져오기
 // import { useAuthStore } from '../../../store/AuthStore';
 import { useStore } from '../../../store/memberStore';
 import { setAccessToken } from '../../../utils/localUtils';

@@ -26,6 +26,7 @@ import FavoritePage from './member/pages/FavoritePage';
 import StockFavoritesPage from './member/pages/StockFavoritesPage';
 import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
 import TestPage from './member/pages/TestPage';
+import ProtectedRoute from './member/components/ProtectedRoute';
 
 const App: React.FC = () => {
   return (
@@ -53,7 +54,15 @@ const App: React.FC = () => {
           <Route path="/auto-invest" element={<AutoInvestment />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/favorite" element={<FavoritePage />} />
+          {/* 로그인된 사용자만 접근 가능한 경로 */}
+          <Route
+            path="/favorite"
+            element={
+              <ProtectedRoute>
+                <FavoritePage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/stock-favorites" element={<StockFavoritesPage />} />
           <Route path="/crypto-favorites" element={<CryptoFavoritesPage />} />
           <Route path="test" element={<TestPage />} />

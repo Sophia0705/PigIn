@@ -1,43 +1,27 @@
 import React, { useEffect } from 'react';
 import { MemberInfo } from '../components/MemberInfo';
 import AccountSlider from '../components/AccountSlider';
-import IsLoginModal from '../components/modals/IsLoginModal';
-import LoginModal from '../components/modals/LoginModal';
-import SignUpModal from '../components/modals/SignUpModal';
-import FindEmailModal from '../components/modals/FindEmailModal';
-// import FindPasswordModal from '../components/modals/FindPasswordModal';
 import { useStore } from '../../store/memberStore';
+import LoginModalManager from '../components/LoginModalManager';
 // import UpdateProfileModal from '../components/modals/UpdateProfileModal';
 // import WithdrawalModal from '../components/modals/WithDrawalModal';
 // import SpendingAccountRegisterModal from '../components/modals/SpendingAccountRegisterModal';
 
 const MyPage: React.FC = () => {
-  const {
-    isLoggedIn,
-    isIsLoginModalOpen,
-    isLoginModalOpen,
-    isSignUpModalOpen,
-    isFindEmailModalOpen,
-    // isFindPasswordModalOpen,
-    openIsLoginModal,
-    checkLoginStatus,
-  } = useStore();
+  const { checkLoginStatus, isLoggedIn, openLoginModal } = useStore();
 
   useEffect(() => {
-    checkLoginStatus();
+    checkLoginStatus(); // 컴포넌트가 마운트될 때 로그인 상태를 확인
     if (!isLoggedIn) {
-      openIsLoginModal(); // 로그인 여부 모달을 띄움
+      openLoginModal(); // 로그인되지 않은 경우 로그인 모달을 열기
     }
-  }, [checkLoginStatus, isLoggedIn, openIsLoginModal]);
+  }, [checkLoginStatus, isLoggedIn, openLoginModal]); // 의존성 배열에 로그인 상태 추가
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center">
       {/* 상태에 따라 모달 렌더링 */}
-      {isIsLoginModalOpen && <IsLoginModal />}
-      {isLoginModalOpen && <LoginModal />}
-      {isSignUpModalOpen && <SignUpModal />}
-      {isFindEmailModalOpen && <FindEmailModal />}
-      {/* {isFindPasswordModalOpen && <FindPasswordModal />} */}
+      {/* ModalManager를 통해 모달 관리 */}
+      <LoginModalManager />
       {/* {isUpdateProfileModalOpen && <UpdateProfileModal />}
       {isWithdrawlModalOpen && <WithdrawalModal />}
       {isSpendingAccountRegisterModalOpen && <SpendingAccountRegisterModal />} */}
