@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
+import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 import { StockItemData } from '../../interfaces/StockInterface';
 import StockDetailGraph from '../components/StockDetailGraph';
 import StockDetailInfo from '../components/StockDetailInfo';
@@ -24,6 +25,13 @@ const StockDetailPage: React.FC = () => {
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState('00');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  const countZeros = (str: string): number => {
+    return (str.match(/0/g) || []).length;
+  };
+
+  const isNegativeChange = stockData.prdy_ctrt.startsWith('-');
+  const isZeroChange = countZeros(stockData.prdy_ctrt) === 3;
 
   const toggleLoginStatus = () => {
     setIsLoggedIn((prev) => !prev);
@@ -104,10 +112,24 @@ const StockDetailPage: React.FC = () => {
     .map((price, index) => {
       const currentDate = new Date();
       const reverseIndex = selectedData.length - 1 - index;
-      const pastDate = new Date(
-        currentDate.setDate(currentDate.getDate() - reverseIndex)
-      );
-      const formattedDate = format(pastDate, 'yyyy-MM-dd');
+
+      let pastDate: Date;
+      if (selectedTimeRange === '1년') {
+        // 년단위일 경우, 달에서 뺌
+        pastDate = new Date(
+          currentDate.setMonth(currentDate.getMonth() - reverseIndex)
+        );
+      } else {
+        // 월, 일 단위일 경우 일에서 뺌
+        pastDate = new Date(
+          currentDate.setDate(currentDate.getDate() - reverseIndex)
+        );
+      }
+
+      const formattedDate =
+        selectedTimeRange === '1년'
+          ? format(pastDate, 'yyyy-MM')
+          : format(pastDate, 'yyyy-MM-dd');
 
       return {
         name: formattedDate,
@@ -152,13 +174,22 @@ const StockDetailPage: React.FC = () => {
             <span className="text-lg"> 원</span>
           </h1>
           <span
-            className={`mr-2 mt-2 text-md font-normal px-2 py-1 rounded-full ${
-              stockData.prdy_ctrt.startsWith('+')
-                ? 'bg-green-900 text-white'
-                : 'bg-green-100 text-black'
+            className={`mr-2 mt-2 text-md font-normal px-2 py-1 rounded-full flex items-center ${
+              isNegativeChange
+                ? 'bg-green-100 text-customDarkGreen'
+                : isZeroChange
+                  ? 'bg-gray-300 text-gray-700'
+                  : 'bg-green-900 text-white'
             }`}
           >
-            {stockData.prdy_ctrt}
+            {isZeroChange ? (
+              <span></span>
+            ) : isNegativeChange ? (
+              <MdArrowDropDown />
+            ) : (
+              <MdArrowDropUp />
+            )}
+            {stockData.prdy_ctrt}%
           </span>
         </div>
       </div>

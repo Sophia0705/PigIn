@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   AreaChart,
   XAxis,
@@ -6,7 +6,7 @@ import {
   Area,
   ResponsiveContainer,
   Tooltip,
-} from "recharts";
+} from 'recharts';
 
 interface StockDetailGraphProps {
   chartData: { name: string; value: number }[];
@@ -35,12 +35,12 @@ const StockDetailGraph: React.FC<StockDetailGraphProps> = ({
             <Tooltip
               cursor={false}
               contentStyle={{
-                backgroundColor: "#ffffff",
-                borderRadius: "10px",
-                border: "none",
+                backgroundColor: '#ffffff',
+                borderRadius: '10px',
+                border: 'none',
               }}
-              labelStyle={{ color: "#333" }}
-              itemStyle={{ color: "#333" }}
+              labelStyle={{ color: '#333' }}
+              itemStyle={{ color: '#333' }}
             />
             <Area
               type="monotone"
