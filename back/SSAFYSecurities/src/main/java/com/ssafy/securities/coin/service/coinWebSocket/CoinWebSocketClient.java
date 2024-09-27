@@ -32,7 +32,6 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
 //        headers.add(HttpHeaders.AUTHORIZATION, token);
 
         sessionRef.set(client.doHandshake(this, headers, URI.create(url)).get());
-        log.info("Coin WebSocket connected successfully");
     }
 
     public void subscribeStock(List<String> stockCodes) throws Exception {
@@ -40,7 +39,6 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
 //        if (session != null && session.isOpen()) {
         String subscriptionMessage = createSubscriptionMessage(stockCodes);
         session.sendMessage(new TextMessage(subscriptionMessage));
-        log.info("Subscribed to stock: {}", stockCodes);
 //        } else {
 //            log.error("WebSocket session is not open");
 //        }
@@ -51,7 +49,6 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
         try {
             String payload = message.getPayload();
             CoinWebSocketBarDTO stockData = parseCoinData(payload);
-            log.info("Received Coin data: {}", stockData);
             // Here you can process the stock data further, e.g., save to database or notify clients
         } catch (Exception e) {
             log.error("Error handling message", e);
@@ -66,7 +63,6 @@ public class CoinWebSocketClient extends TextWebSocketHandler {
                 Map.of("type", "ticker", "codes", stockCodes),
                 Map.of("format", "DEFAULT")
         ));
-        log.info("Subscription message: {}", subMessage);
         return subMessage;
     }
 

@@ -68,7 +68,6 @@ public class StockServiceImpl implements StockService{
     public void getMonthlyBar() {
         stockCodes.forEach(stockCode -> {
             StockResponse response = getBar("M", stockCode);
-//            log.info("Stock[{}] = {}", stockCode, response.toString());
         });
     }
 
@@ -76,7 +75,6 @@ public class StockServiceImpl implements StockService{
     public void getWeeklyBar() {
         stockCodes.forEach(stockCode -> {
             StockResponse response = getBar("W", stockCode);
-//            log.info("Stock[{}] = {}", stockCode, response.toString());
         });
     }
 
@@ -84,7 +82,6 @@ public class StockServiceImpl implements StockService{
     public void getDailyBar() {
         stockCodes.forEach(stockCode -> {
             StockResponse response = getBar("D", stockCode);
-//            log.info("Stock[{}] = {}", stockCode, response.toString());
         });
     }
 

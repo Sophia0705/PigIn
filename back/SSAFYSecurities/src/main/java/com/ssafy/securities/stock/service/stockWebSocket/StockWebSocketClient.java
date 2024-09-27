@@ -34,7 +34,6 @@ public class StockWebSocketClient extends TextWebSocketHandler {
     public void connect(String url) throws Exception {
         WebSocketClient client = new StandardWebSocketClient();
         sessionRef.set(client.doHandshake(this, url).get());
-        log.info("WebSocket connected successfully");
     }
 
     public void subscribeStock(String stockCode, String approvalKey) {
@@ -43,7 +42,6 @@ public class StockWebSocketClient extends TextWebSocketHandler {
             try {
                 String subscriptionMessage = createSubscriptionMessage(stockCode, approvalKey);
                 session.sendMessage(new TextMessage(subscriptionMessage));
-                log.info("Subscription request sent for stock: {} = {}", stockCode, subscriptionMessage);
             } catch (Exception e) {
                 log.error("Failed to send subscription request for stock: {}", stockCode, e);
             }
@@ -55,14 +53,12 @@ public class StockWebSocketClient extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         String payload = message.getPayload();
-//        log.info("Received message:{} - {}",message, message.getPayload());
         try {
             // 메시지 처리 로직 (종목 코드 추출 및 데이터 처리)
             StockDTO stockData = parseStockData(payload);
             String stockCode = extractStockCode(payload); // 이 메서드는 구현 필요
             dataProcessor.handleMessage(stockCode, stockData);
         } catch (Exception e) {
-            log.info("Other: {}", message.getPayload());
             //log.error("Error processing message: ", e);
         }
     }

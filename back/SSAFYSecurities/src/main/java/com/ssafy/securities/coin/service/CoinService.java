@@ -82,8 +82,6 @@ public class CoinService {
         headers.add("accept", "application/json");
         HttpEntity<Object> request = new HttpEntity(headers);
 
-        log.info(request.toString());
-        log.info("uri: {}", builder.toUriString());
 
 
         try {
@@ -93,7 +91,6 @@ public class CoinService {
                     request,
                     new ParameterizedTypeReference<>() {}
             );
-            log.info(response.getBody().toString());
 
             List<CoinHistory> coinHistories = response.getBody().stream()
                     .map(dto -> new CoinHistory(dto, candle))

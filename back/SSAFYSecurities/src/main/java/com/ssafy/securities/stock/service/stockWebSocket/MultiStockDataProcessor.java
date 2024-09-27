@@ -30,19 +30,15 @@ public class MultiStockDataProcessor {
 
     private void startScheduler() {
         scheduler.scheduleAtFixedRate(this::processAndSaveData, 0, 10, TimeUnit.SECONDS);
-        log.info("Scheduler started");
     }
 
     private void processAndSaveData() {
-        log.info("Processing date:{}[{}]", LocalDate.now(), LocalTime.now());
-        log.info("====================================================================");
         latestDataMap.forEach((stockCode, stockData) -> {
             System.out.println("Processed and saved data for stock: " + stockCode);
             stockDataService.saveStockData(stockData);
 
         });
         latestDataMap.clear();
-        log.info("====================================================================");
     }
 
     public void shutdown() {

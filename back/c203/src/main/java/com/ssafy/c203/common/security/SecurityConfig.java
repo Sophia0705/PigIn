@@ -98,7 +98,8 @@ public class SecurityConfig {
                     "/member/mms-number-generate", "/member/find-id",
                     "/member/find-pwd", "/member/refresh-pwd",
                     "/member/account-authentication", "/member/account",
-                    "/member/account-authentication-compare", "/swagger-ui/**", "/api-docs/**", "/stock/**")
+                    "/member/account-authentication-compare", "/swagger-ui/**", "/api-docs/**",
+                    "/stock/**", "/member/email-check")
                 .permitAll()
                 .anyRequest().authenticated());
 
