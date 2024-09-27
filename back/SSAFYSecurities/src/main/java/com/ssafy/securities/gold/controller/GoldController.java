@@ -16,11 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("/api/gold")
 public class GoldController {
+
     private final GoldService goldService;
 
     @GetMapping("/get-today")
     public ResponseEntity<?> getToday() throws IOException {
-        GoldItemDto goldItemDto = goldService.saveGold();
+        GoldItemDto goldItemDto = goldService.getGold();
         return ResponseEntity.ok(goldItemDto);
+    }
+
+    @GetMapping("/save-today-gold")
+    public ResponseEntity<?> saveTodayGold() throws IOException {
+        goldService.saveGold(goldService.getGold());
+        return ResponseEntity.ok().build();
     }
 }

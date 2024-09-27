@@ -6,6 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 
 public interface GoldService {
-    GoldItemDto saveGold() throws IOException;
-
+    GoldItemDto getGold() throws IOException;
+    void saveGold(GoldItemDto gold) throws IOException;
 }
