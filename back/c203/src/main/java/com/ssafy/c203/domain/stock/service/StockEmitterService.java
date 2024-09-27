@@ -32,7 +32,6 @@ public class StockEmitterService {
         emitters.forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event().name("stock-update").data(stockData));
-//                log.info(emitter.toString());
             } catch (Exception e) {
                 deadEmitters.add(emitter);
             }

@@ -40,8 +40,6 @@ public class MMSService {
     }
 
     public boolean sendMMS(String text, String phoneNumber) throws Exception {
-        log.info("SECRETKEY: {}", SECRETKEY);
-        log.info("APIKEY: {}", APIKEY);
         String targetUrl = "http://api.coolsms.co.kr/messages/v4/send";
         Map<String, Object> params = new HashMap<>();
         Map<String, String> message = new HashMap<>();
