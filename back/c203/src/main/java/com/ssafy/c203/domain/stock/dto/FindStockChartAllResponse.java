@@ -13,6 +13,9 @@ public class FindStockChartAllResponse {
     @JsonProperty("stck_bsop_date")
     private String stockBusinessDate; // 날짜
 
+    @JsonProperty("stock_bsop_time")
+    private String stockBusinessTime;
+
     @JsonProperty("stck_clpr")
     private String closePrice; // 종가
 
@@ -57,6 +60,7 @@ public class FindStockChartAllResponse {
         this.lowPrice = mongoStockHistory.getLow();
         this.accumulatedVolume = mongoStockHistory.getVolume();
         this.stockCode = mongoStockHistory.getStockCode();
+        this.stockBusinessTime = "";
 //        this.accumulatedTradeAmount = "";
 //        this.flagCode = "";
 //        this.dividendRate = "";
@@ -74,5 +78,6 @@ public class FindStockChartAllResponse {
         this.lowPrice = mongoStockMinute.getLow();
         this.accumulatedVolume = mongoStockMinute.getVolume();
         this.stockCode = mongoStockMinute.getStockCode();
+        this.stockBusinessTime = mongoStockMinute.getTime();
     }
 }
