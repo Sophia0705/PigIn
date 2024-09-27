@@ -1,27 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
-  const [dimensions, setDimensions] = useState({ width: '0px', height: '0px' });
-
   useEffect(() => {
-    const updateDimensions = () => {
-      const ratio = 9 / 20;
-      const windowHeight = window.innerHeight;
-      const calculatedWidth = windowHeight * ratio;
-      const limitedWidth = Math.min(calculatedWidth, window.innerWidth);
-      setDimensions({
-        width: `${limitedWidth}px`,
-        height: `${windowHeight}px`,
-      });
-    };
-
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-
+    // Set body styles
     document.body.style.overflow = 'hidden';
     document.body.style.display = 'flex';
     document.body.style.justifyContent = 'center';
@@ -30,8 +15,8 @@ const Layout = ({ children }: LayoutProps) => {
     document.body.style.margin = '0';
     document.body.style.backgroundColor = 'white';
 
+    // Cleanup function
     return () => {
-      window.removeEventListener('resize', updateDimensions);
       document.body.style.overflow = '';
       document.body.style.display = '';
       document.body.style.justifyContent = '';
@@ -45,8 +30,8 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div
       style={{
-        width: dimensions.width,
-        height: dimensions.height,
+        width: '45.02732240437158vh',
+        height: '100vh',
         overflow: 'hidden',
         position: 'relative',
       }}

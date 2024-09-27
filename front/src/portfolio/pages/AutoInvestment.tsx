@@ -14,7 +14,6 @@ const CATEGORIES = ['주식', '가상화폐', '금'];
 const AutoInvestment: React.FC = () => {
   const nav = useNavigate();
   const {
-    investmentAmount,
     setInvestmentAmount,
     allocations,
     setAllocations,
@@ -26,13 +25,24 @@ const AutoInvestment: React.FC = () => {
 
   const [localAllocations, setLocalAllocations] = useState(allocations);
   const [showInput, setShowInput] = useState(false);
+
   const [localInvestmentAmount, setLocalInvestmentAmount] =
-    useState(investmentAmount);
+    useState<string>('');
+  const [error, setError] = useState<string>('');
 
   const handleInvestmentAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setLocalInvestmentAmount(Number(e.target.value));
+    const value = e.target.value;
+
+    // 입력값이 비어있거나 숫자로만 구성되어 있는지 확인
+    if (value === '' || /^\d+$/.test(value)) {
+      setLocalInvestmentAmount(value);
+      setError('');
+    } else {
+      // 숫자가 아닌 값이 입력된 경우 에러 메시지 설정
+      setError('숫자만 입력해주세요.');
+    }
   };
 
   const handleAllocationChange = (symbol: string, value: number) => {
@@ -58,7 +68,8 @@ const AutoInvestment: React.FC = () => {
   const handleSubmit = async () => {
     try {
       // 로컬 상태를 전역 상태로 업데이트
-      setInvestmentAmount(localInvestmentAmount);
+      const numericAmount = Number(localInvestmentAmount);
+      setInvestmentAmount(numericAmount);
       setAllocations(localAllocations);
 
       // 임시로 콘솔에 로그 출력
@@ -98,9 +109,10 @@ const AutoInvestment: React.FC = () => {
   };
 
   const memoizedAllocations = useMemo(() => {
+    const numericAmount = Number(localInvestmentAmount) || 0;
     return localAllocations[activeCategory].map((allocation) => ({
       ...allocation,
-      value: (allocation.percentage / 100) * localInvestmentAmount,
+      value: (allocation.percentage / 100) * numericAmount,
     }));
   }, [localAllocations, activeCategory, localInvestmentAmount]);
 
@@ -137,20 +149,32 @@ const AutoInvestment: React.FC = () => {
       {isAutoInvestmentEnabled && (
         <>
           {showInput ? (
-            <div className="flex justify-center mb-6 bg-white rounded-lg">
-              <input
-                type="text"
-                value={localInvestmentAmount}
-                onChange={handleInvestmentAmountChange}
-                className="w-full bg-transparent border-b border-customAqua py-2 text-black placeholder-gray-400 focus:outline-none"
-                placeholder="자동 투자하실 금액을 입력해주세요"
-              />
-              <button
-                onClick={() => setShowInput(false)}
-                className="mt-2 bg-customAqua text-customDarkGreen py-4 px-4 rounded"
-              >
-                확인
-              </button>
+            <div className="flex flex-col mb-6 bg-white rounded-lg p-3">
+              <div className="flex items-center">
+                <div className="flex-grow mr-4">
+                  <p className="p-2 text-black text-lg">
+                    투자가능금액 : xxxx원
+                  </p>
+                  <input
+                    type="text"
+                    value={localInvestmentAmount}
+                    onChange={handleInvestmentAmountChange}
+                    className={`w-full bg-transparent border-b ${
+                      error ? 'border-red-500' : 'border-customAqua'
+                    } p-2 text-xl text-black placeholder-gray-500 placeholder:text-base focus:outline-none`}
+                    placeholder="자동 투자하실 금액을 입력해주세요"
+                  />
+                </div>
+                <button
+                  onClick={() => setShowInput(false)}
+                  className="bg-customAqua text-customDarkGreen p-3 rounded text-lg whitespace-nowrap self-start"
+                >
+                  투자
+                </button>
+              </div>
+              {error && (
+                <p className="text-red-500 text-sm mt-1 ml-2">{error}</p>
+              )}
             </div>
           ) : (
             <div className="mb-6 text-center">
@@ -173,7 +197,7 @@ const AutoInvestment: React.FC = () => {
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={`
-                  flex-1 py-2 px-4 text-base font-medium rounded-full
+                  flex-1 py-2 px-4 text-lg font-medium rounded-full
                   ${
                     activeCategory === category
                       ? 'bg-customDarkGreen text-white'
@@ -187,36 +211,44 @@ const AutoInvestment: React.FC = () => {
               ))}
             </div>
 
+            {/* 나중에 여기 내부 스크롤되게 만들어야 함 */}
             {memoizedAllocations.map((allocation) => (
-              <div
-                key={allocation.symbol}
-                className="flex items-center justify-between mb-4"
-              >
-                <span>{allocation.symbol}</span>
-                <div className="flex items-center">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={allocation.percentage}
-                    onChange={(e) =>
-                      handleAllocationChange(
-                        allocation.symbol,
-                        Number(e.target.value)
-                      )
-                    }
-                    className="mr-2 accent-customAqua"
-                  />
-                  <span>
-                    {allocation.percentage}% (
-                    {allocation.value.toLocaleString()}원)
-                  </span>
-                  <button
-                    onClick={() => handleRemoveAllocation(allocation.symbol)}
-                    className="ml-2 text-red-500 bg-customDarkGreen p-1"
-                  >
-                    <XCircle className="w-5 h-5" />
-                  </button>
+              <div className="p-4 rounded-lg bg-white mb-4">
+                <div key={allocation.symbol} className="flex items-center">
+                  <div className="w-3/4 mr-4">
+                    <span className="text-black text-lg mb-2 block">
+                      {allocation.symbol}
+                    </span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={allocation.percentage}
+                      onChange={(e) =>
+                        handleAllocationChange(
+                          allocation.symbol,
+                          Number(e.target.value)
+                        )
+                      }
+                      className="w-full accent-customAqua"
+                    />
+                  </div>
+                  <div className="flex items-center w-1/4">
+                    <div className="flex flex-col items-end mr-2">
+                      <span className="text-black text-base">
+                        {allocation.percentage}%
+                      </span>
+                      <span className="text-black text-base">
+                        {allocation.value.toLocaleString()}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveAllocation(allocation.symbol)}
+                      className="text-red-500 justify-end p-4 self-center"
+                    >
+                      <XCircle className="w-6 h-6" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

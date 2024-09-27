@@ -9,9 +9,9 @@ const CryptoFavoritesPage: React.FC = () => {
 
   return (
     // 전체 페이지 레이아웃을 설정, 화면 높이와 배경색 설정
-    <div className="p-0 dark:bg-gray-900 w-full h-[915px]">
+    <div className="p-0 dark:bg-gray-900 w-full h-full">
       {/* 페이지의 가로 너비를 고정하고 중앙에 배치 */}
-      <div className="flex justify-between items-center w-full p-2 bg-customDarkGreen">
+      <div className="flex justify-between items-center w-full p-7 bg-customDarkGreen">
         {/* 뒤로 가기 버튼을 배치 */}
         <button
           onClick={() => navigate(-1)} // 버튼 클릭 시 이전 페이지로 이동

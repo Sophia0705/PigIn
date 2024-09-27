@@ -3,26 +3,21 @@ import { usePortfolioStore } from '../../store/portfolioStore';
 
 const COLORS = ['#BBF5E2', '#6183EE', '#ECCD4A', '#FF6B6B'];
 
-interface viewBoxType {
-  cx: number;
-  cy: number;
-}
-
 interface CustomLabelProps {
-  viewBox?: viewBoxType;
+  viewBox?: { cx: number; cy: number };
   totalValue: number;
   totalProfit: number;
   totalProfitRate: number;
 }
 
 const CustomLabel: React.FC<CustomLabelProps> = ({
-  viewBox = { cx: 0, cy: 0 }, // 기본값으로
+  viewBox = { cx: 0, cy: 0 },
   totalValue,
   totalProfit,
   totalProfitRate,
 }) => {
   const { cx, cy } = viewBox;
-
+  // console.log('대시보드', totalProfit);
   return (
     <g>
       <text
@@ -51,7 +46,7 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
         dominantBaseline="central"
         className={`text-sm font-semibold ${totalProfit >= 0 ? 'fill-green-500' : 'fill-red-500'}`}
       >
-        ({(totalProfitRate * 100).toFixed(2)}%{totalProfit >= 0 ? '▲' : '▼'})
+        ({totalProfitRate.toFixed(2)}%{totalProfit >= 0 ? '▲' : '▼'})
       </text>
     </g>
   );
@@ -61,6 +56,8 @@ const Dashboard: React.FC = () => {
   const {
     categories,
     totalValue,
+    totalProfit,
+    totalProfitRate,
     activeIndex,
     setActiveIndex,
     isLoading,
@@ -69,16 +66,6 @@ const Dashboard: React.FC = () => {
 
   if (isLoading) return <div>Loading dashboard...</div>;
   if (error) return <div>Error loading dashboard: {error}</div>;
-
-  const totalProfitRate =
-    categories.reduce(
-      (sum, category) =>
-        sum +
-        category.items.reduce((catSum, item) => catSum + item.profitRate, 0),
-      0
-    ) / categories.reduce((sum, category) => sum + category.items.length, 0);
-
-  const totalProfit = totalValue * totalProfitRate;
 
   return (
     <div className="bg-white h-full rounded-lg p-4">
@@ -124,36 +111,27 @@ const Dashboard: React.FC = () => {
           </ResponsiveContainer>
         </div>
         <div className="w-1/2 pl-8">
-          {categories.map((category, index) => {
-            // const categoryProfitRate =
-            //   category.items.reduce((sum, item) => sum + item.profitRate, 0) /
-            //   category.items.length;
-            return (
-              <div
-                key={category.name}
-                className="mb-2" // 각 카테고리 항목 사이의 간격
-              >
-                <div className="flex items-center mb-1">
-                  {/* 색상 원과 카테고리 이름을 포함하는 상단 줄 */}
-                  <div
-                    className="w-3 h-3 rounded-full mr-2"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  ></div>
-                  <span className="text-gray-700 text-sm font-medium">
-                    {category.name}
-                  </span>{' '}
-                </div>
-                <div className="pl-5 text-sm">
-                  <span className="">
-                    {((category.totalValue / totalValue) * 100).toFixed(1)}%{' '}
-                  </span>
-                  <span className="ml-2">
-                    ({category.totalValue.toLocaleString()}원)
-                  </span>
-                </div>
+          {categories.map((category, index) => (
+            <div key={category.name} className="mb-2">
+              <div className="flex items-center mb-1">
+                <div
+                  className="w-3 h-3 rounded-full mr-2"
+                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                ></div>
+                <span className="text-gray-700 text-sm font-medium">
+                  {category.name}
+                </span>
               </div>
-            );
-          })}
+              <div className="pl-5 text-sm">
+                <span className="">
+                  {((category.totalValue / totalValue) * 100).toFixed(1)}%{' '}
+                </span>
+                <span className="ml-2">
+                  ({category.totalValue.toLocaleString()}원)
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
