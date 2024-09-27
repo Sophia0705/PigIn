@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../../store/memberStore';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaUserMinus } from 'react-icons/fa'; // 탈퇴 아이콘 추가
 import SuccessModal from './SuccessModal';
+import WithdrawalModal from './WithDrawalModal'; // 회원 탈퇴 모달 추가
 
 interface UpdateProfileModalProps {
   closeModal: () => void;
@@ -19,6 +20,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
   const [savingRate, setSavingRate] = useState(0);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // SuccessModal 상태 추가
+  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false); // 회원 탈퇴 모달 상태 추가
 
   useEffect(() => {
     loadUserData(); // 사용자 정보를 불러옴
@@ -77,6 +79,16 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
     );
   };
 
+  // 탈퇴 모달을 여는 함수: 회원 정보 수정 모달을 닫고, 탈퇴 모달을 열도록 설정
+  const openWithdrawalModal = () => {
+    setIsWithdrawalModalOpen(true); // 탈퇴 모달만 열림
+  };
+
+  // 탈퇴 모달을 닫는 함수
+  const closeWithdrawalModal = () => {
+    setIsWithdrawalModalOpen(false);
+  };
+
   return (
     <>
       <div
@@ -95,13 +107,13 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
             onSubmit={handleSubmit}
             className="flex flex-col space-y-3 w-full"
           >
-            {/* 이름 입력 필드 */}
+            {/* 이메일 입력 필드 */}
             <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="이름"
+              type="email" // 이메일 입력 필드로 변경
+              name="email" // 이메일 입력 필드에 맞는 name 속성으로 변경
+              value={formData.email} // 이메일 값을 formData에서 가져옴
+              onChange={handleChange} // 변경된 값을 상태로 업데이트
+              placeholder="이메일"
               className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
               disabled
             />
@@ -174,18 +186,18 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
               <div className="flex items-center space-x-4 mt-2">
                 <input
                   type="range"
-                  min="0"
+                  min="1"
                   max="10"
-                  step="0.1"
+                  step="1"
                   value={savingRate}
                   onChange={handleSavingRateChange}
                   className="w-full"
                 />
                 <input
                   type="number"
-                  min="0"
+                  min="1"
                   max="10"
-                  step="0.1"
+                  step="1"
                   value={savingRate}
                   onChange={handleSavingRateChange}
                   className="w-12 p-1 text-right border-none border-gray-300 rounded"
@@ -228,9 +240,23 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
                 취소
               </button>
             </div>
+
+            {/* 회원 탈퇴 버튼: 클릭 시 회원 탈퇴 모달을 여는 함수 호출 */}
+            <button
+              onClick={openWithdrawalModal}
+              className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center"
+            >
+              <FaUserMinus className="mr-1" /> {/* 회원 탈퇴 아이콘 */}
+              탈퇴
+            </button>
           </form>
         </div>
       </div>
+
+      {/* WithdrawalModal을 표시 */}
+      {isWithdrawalModalOpen && (
+        <WithdrawalModal closeModal={closeWithdrawalModal} />
+      )}
     </>
   );
 };

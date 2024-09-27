@@ -1,14 +1,10 @@
 import React from 'react';
 import { CiEdit } from 'react-icons/ci';
+import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
 
-// MemberInfo 컴포넌트에서 openUpdateProfileModal props를 받음
-interface MemberInfoProps {
-  openUpdateProfileModal: () => void; // 모달을 열기 위한 함수 (부모 컴포넌트에서 전달받음)
-}
+export const MemberInfo: React.FC = () => {
+  const { openUpdateProfileModal } = useStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
 
-export const MemberInfo: React.FC<MemberInfoProps> = ({
-  openUpdateProfileModal,
-}) => {
   // 회원 정보 데이터를 배열로 정의 (이름, 생년월일, 비밀번호 등)
   const userInfo = [
     { label: '이름', value: '홍길동', editable: false },

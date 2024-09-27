@@ -1,47 +1,38 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useStore } from '../../../store/memberStore'; // zustand 스토어 가져오기
 
-// 모달 컴포넌트에 전달되는 props의 타입 정의
-interface IsLoginModalProps {
-  isOpen: boolean; // 모달이 열려있는지 여부를 나타내는 상태값
-  onClose: () => void; // 모달을 닫기 위한 함수
-}
+const IsLoginModal: React.FC = () => {
+  const navigate = useNavigate();
+  const { isIsLoginModalOpen, closeIsLoginModal, openLoginModal } = useStore();
 
-// 로그인 모달 컴포넌트
-const LoginModal: React.FC<IsLoginModalProps> = ({ isOpen, onClose }) => {
-  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅 사용
+  if (!isIsLoginModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
 
-  // 로그인 버튼 클릭 시 호출되는 함수
   const handleLoginClick = () => {
-    onClose(); // 모달을 닫음
-    navigate('/login'); // 로그인 페이지로 이동
+    closeIsLoginModal(); // 현재 모달을 닫고
+    openLoginModal(); // 로그인 모달을 열기
   };
 
-  // 모달이 열려있지 않으면 null을 반환해 렌더링하지 않음
-  if (!isOpen) return null;
+  const handleCancelClick = () => {
+    closeIsLoginModal();
+    navigate(-1); // 이전 페이지로 이동
+  };
 
   return (
-    // 모달의 배경 (화면 전체를 덮는 반투명 검정 배경)
-    <div className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      {/* 모달 본체: 흰색 배경, 둥근 모서리, 그림자 효과 */}
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        {/* 모달의 제목 */}
         <h2 className="text-lg font-semibold mb-4">로그인이 필요합니다</h2>
-        {/* 모달의 내용 */}
         <p className="mb-6">로그인 페이지로 이동하시겠습니까?</p>
-        {/* 버튼들 (취소 및 로그인) */}
         <div className="flex justify-end">
-          {/* 취소 버튼 */}
           <button
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
-            onClick={onClose} // 취소 버튼 클릭 시 모달을 닫음
+            onClick={handleCancelClick}
           >
             취소
           </button>
-          {/* 로그인 버튼 */}
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-            onClick={handleLoginClick} // 로그인 버튼 클릭 시 로그인 페이지로 이동
+            onClick={handleLoginClick}
           >
             로그인
           </button>
@@ -51,4 +42,4 @@ const LoginModal: React.FC<IsLoginModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default LoginModal;
+export default IsLoginModal;

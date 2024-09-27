@@ -22,13 +22,10 @@ import AutoInvestment from './portfolio/pages/AutoInvestment';
 import Quiz from './quiz/Quiz';
 import LandingPage from './member/pages/LandingPage';
 import MyPage from './member/pages/MyPage';
-import SignUpPage from './member/pages/SignUpPage';
-import LoginPage from './member/pages/LoginPage';
 import FavoritePage from './member/pages/FavoritePage';
 import StockFavoritesPage from './member/pages/StockFavoritesPage';
 import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
-import SpendingAccountRegister from './member/pages/SpendingAccountRegister';
-// import { Layer } from 'recharts';
+import TestPage from './member/pages/TestPage';
 
 const App: React.FC = () => {
   return (
@@ -56,15 +53,10 @@ const App: React.FC = () => {
           <Route path="/auto-invest" element={<AutoInvestment />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/mypage" element={<MyPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/favorite" element={<FavoritePage />} />
           <Route path="/stock-favorites" element={<StockFavoritesPage />} />
           <Route path="/crypto-favorites" element={<CryptoFavoritesPage />} />
-          <Route
-            path="/spending-account-register"
-            element={<SpendingAccountRegister />}
-          />
+          <Route path="test" element={<TestPage />} />
         </Routes>
         <Navbar />
       </Layout>
