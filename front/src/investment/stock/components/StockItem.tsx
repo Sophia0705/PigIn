@@ -7,6 +7,8 @@ interface StockItemProps {
   price: number;
   percentageChange: string;
   weeklyPrices: number[];
+  monthlyPrices: number[];
+  yearlyPrices: number[];
 }
 
 const StockItem: React.FC<StockItemProps> = ({

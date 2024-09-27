@@ -4,7 +4,11 @@ import StockItem from './StockItem';
 import { getStockList } from '../../../api/investment/stock/StockList';
 import { StockItemData } from '../../interfaces/StockInterface';
 import { getIndividualStockData } from '../../../api/investment/stock/IndividualStockData';
-import { getStockChartData } from '../../../api/investment/stock/StockChartData';
+import {
+  getWeeklyStockChartData,
+  getMonthlyStockChartData,
+  getYearlyStockChartData,
+} from '../../../api/investment/stock/StockChartData';
 
 interface StockItemsContainerProps {
   title: string;
@@ -27,8 +31,15 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
           // 단일 주식 상세정보
           const stockData = await getIndividualStockData(stock.stockCode);
 
-          const weeklyPrices = await getStockChartData(stock.stockCode, 'week');
-          const monthlyPrices = await getStockChartData(
+          const weeklyPrices = await getWeeklyStockChartData(
+            stock.stockCode,
+            'day'
+          );
+          const monthlyPrices = await getMonthlyStockChartData(
+            stock.stockCode,
+            'day'
+          );
+          const yearlyPrices = await getYearlyStockChartData(
             stock.stockCode,
             'month'
           );
@@ -39,11 +50,15 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
           const monthlyClosingPrices = monthlyPrices.map((data) =>
             Number(data.stck_clpr)
           );
+          const yearlyClosingPrices = yearlyPrices.map((data) =>
+            Number(data.stck_clpr)
+          );
 
           return {
             ...stockData,
             weeklyPrices: weeklyClosingPrices,
             monthlyPrices: monthlyClosingPrices,
+            yearlyPrices: yearlyClosingPrices,
           };
         })
       );
@@ -121,6 +136,8 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
               price={Number(item.stck_prpr)}
               percentageChange={item.prdy_ctrt}
               weeklyPrices={item.weeklyPrices}
+              monthlyPrices={item.monthlyPrices}
+              yearlyPrices={item.yearlyPrices}
             />
           </div>
         ))}

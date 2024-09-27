@@ -6,6 +6,7 @@ export interface StockItemData {
   prdy_ctrt: string; // 전일 대비 등락률
   weeklyPrices: number[]; // 주간 가격 데이터
   monthlyPrices: number[]; // 월간 가격 데이터
+  yearlyPrices: number[]; // 년간 가격 데이터
   stck_oprc: number; // 시가 (당일 시작가)
   stck_prdy_clpr: number; // 전일 종가
   stck_hgpr: number; // 당일 최고가
