@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AxiosError } from 'axios'; // AxiosError를 임포트
 import { useStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
@@ -9,8 +10,13 @@ import FailModal from './FailModal'; // 실패 모달 컴포넌트
 const SignUpModal: React.FC = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
-  const { isSignUpModalOpen, closeSignUpModal, formData, setFormData } =
-    useStore();
+  const {
+    openLoginModal,
+    isSignUpModalOpen,
+    closeSignUpModal,
+    formData,
+    setFormData,
+  } = useStore();
 
   // 상태 관리 훅: 인증번호 전송 여부, 비밀번호 확인, 이메일 및 생년월일 유효성 상태 등
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
@@ -64,19 +70,20 @@ const SignUpModal: React.FC = () => {
         setIsEmailAvailable(true);
         setSuccessMessage('사용 가능한 이메일입니다.');
         setShowSuccessModal(true); // 성공 모달 열기
-      } else if (response.status === 409) {
-        // 중복된 이메일인 경우
+      }
+    } catch (error) {
+      // error를 AxiosError로 타입 단언하여 처리
+      const axiosError = error as AxiosError;
+
+      if (axiosError.response && axiosError.response.status === 409) {
         console.log('중복된 이메일입니다.');
         setFailMessage('이미 사용 중인 이메일입니다.');
         setShowFailModal(true); // 실패 모달 열기
       } else {
-        setFailMessage('이메일 중복 확인 중 오류가 발생했습니다.');
+        console.error('알 수 없는 오류 발생', error);
+        setFailMessage('알 수 없는 오류가 발생했습니다.');
         setShowFailModal(true); // 기타 오류 처리
       }
-    } catch (error) {
-      console.error('Error checking email duplication:', error);
-      setFailMessage('이메일 중복 확인 중 오류가 발생했습니다.');
-      setShowFailModal(true); // 네트워크 오류 또는 기타 오류 처리
     }
   };
 
@@ -254,40 +261,44 @@ const SignUpModal: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
 
-    // formData를 새로운 객체로 복사
-    const sanitizedFormData = { ...formData };
-
-    // 하이픈을 제거한 전화번호로 변환
-    sanitizedFormData.phoneNumber = formData.phoneNumber.replace(/-/g, '');
-
-    // passwordConfirm 필드를 삭제 (타입 단언 사용)
-    delete (sanitizedFormData as any).passwordConfirm;
-
+    const { phoneNumber, name, email, birth, password } = formData;
+    // 필요한 데이터만 처리
+    const sanitizedFormData = {
+      phoneNumber: phoneNumber.replace(/-/g, ''),
+      name,
+      email,
+      birth,
+      password,
+    };
     console.log('Submitted Data:', sanitizedFormData); // 하이픈 제거된 데이터 출력
 
     // 서버로 POST 요청 보내기
     try {
       const response = await axios.post(
         `${BASE_URL}member/sign-up`,
-        sanitizedFormData
+        sanitizedFormData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
 
       // 성공 시 처리
       console.log('회원가입 성공:', response.data);
       setSuccessMessage('회원가입이 완료되었습니다.');
       setShowSuccessModal(true); // 성공 모달 열기
+      closeSignUpModal();
+      openLoginModal();
     } catch (error) {
       // 오류가 발생한 경우, error를 string으로 변환하여 처리
       if (axios.isAxiosError(error)) {
         // AxiosError 타입으로 오류를 처리
-        console.error(
-          '회원가입 실패:',
-          error.response ? error.response.data : error.message
-        );
+        console.error('회원가입 실패:', error);
         setFailMessage('회원가입에 실패했습니다. 다시 시도해주세요.');
         setShowFailModal(true); // 실패 모달 열기
       } else {
-        console.error('알 수 없는 오류:', error);
+        console.error('알 수 없는 오류(전화번호 중복 포함):', error);
         setFailMessage('알 수 없는 오류가 발생했습니다.');
         setShowFailModal(true); // 실패 모달 열기
       }

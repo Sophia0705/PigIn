@@ -8,7 +8,7 @@ import { FaPiggyBank, FaPlusCircle } from 'react-icons/fa';
 import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
 
 const AccountSlider: React.FC = () => {
-  const { openSpendingAccountModal } = useStore(); // 소비 계좌 등록 모달 열기 함수 가져오기
+  const { openSpendingAccountRegisterModal } = useStore(); // 소비 계좌 등록 모달 열기 함수 가져오기
 
   return (
     <div className="w-[400px] h-[350px] mx-auto mt-0 relative">
@@ -42,7 +42,7 @@ const AccountSlider: React.FC = () => {
         <SwiperSlide>
           <div
             className="p-8 bg-red-100 rounded-lg shadow-md w-[80vw] h-[28vh] flex flex-col items-center justify-center"
-            onClick={openSpendingAccountModal} // Zustand의 전역 상태로 모달을 여는 함수 호출
+            onClick={openSpendingAccountRegisterModal} // Zustand의 전역 상태로 모달을 여는 함수 호출
           >
             <FaPlusCircle className="text-red-600 text-5xl mb-4" />
             <h2 className="text-xl font-bold text-red-800">소비 계좌 등록</h2>

@@ -5,11 +5,11 @@ import IsLoginModal from '../components/modals/IsLoginModal';
 import LoginModal from '../components/modals/LoginModal';
 import SignUpModal from '../components/modals/SignUpModal';
 import FindEmailModal from '../components/modals/FindEmailModal';
-import FindPasswordModal from '../components/modals/FindPasswordModal';
+// import FindPasswordModal from '../components/modals/FindPasswordModal';
 import { useStore } from '../../store/memberStore';
-import UpdateProfileModal from '../components/modals/UpdateProfileModal';
-import WithdrawalModal from '../components/modals/WithDrawalModal';
-import SpendingAccountRegisterModal from '../components/modals/SpendingAccountRegisterModal';
+// import UpdateProfileModal from '../components/modals/UpdateProfileModal';
+// import WithdrawalModal from '../components/modals/WithDrawalModal';
+// import SpendingAccountRegisterModal from '../components/modals/SpendingAccountRegisterModal';
 
 const MyPage: React.FC = () => {
   const {
@@ -18,7 +18,7 @@ const MyPage: React.FC = () => {
     isLoginModalOpen,
     isSignUpModalOpen,
     isFindEmailModalOpen,
-    isFindPasswordModalOpen,
+    // isFindPasswordModalOpen,
     openIsLoginModal,
     checkLoginStatus,
   } = useStore();
@@ -37,10 +37,10 @@ const MyPage: React.FC = () => {
       {isLoginModalOpen && <LoginModal />}
       {isSignUpModalOpen && <SignUpModal />}
       {isFindEmailModalOpen && <FindEmailModal />}
-      {isFindPasswordModalOpen && <FindPasswordModal />}
+      {/* {isFindPasswordModalOpen && <FindPasswordModal />}
       {isUpdateProfileModalOpen && <UpdateProfileModal />}
       {isWithdrawlModalOpen && <WithdrawalModal />}
-      {isSpendingAccountRegisterModalOpen && <SpendingAccountRegisterModal />}
+      {isSpendingAccountRegisterModalOpen && <SpendingAccountRegisterModal />} */}
 
       {/* MyPage 타이틀 및 회원 탈퇴 버튼 */}
       <div className="flex justify-between items-center w-screen p-4 bg-customDarkGreen text-white rounded-b-lg">

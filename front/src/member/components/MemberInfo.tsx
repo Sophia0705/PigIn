@@ -3,7 +3,7 @@ import { CiEdit } from 'react-icons/ci';
 import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
 
 export const MemberInfo: React.FC = () => {
-  const { openUpdateModal } = useStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
+  const { openUpdateProfileModal } = useStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
 
   // 회원 정보 데이터를 배열로 정의 (이름, 생년월일, 비밀번호 등)
   const userInfo = [
@@ -32,7 +32,7 @@ export const MemberInfo: React.FC = () => {
           {info.editable && (
             <CiEdit
               className="text-gray-500 cursor-pointer text-4xl"
-              onClick={openUpdateModal} // 수정 아이콘 클릭 시 회원정보수정 모달을 열기
+              onClick={openUpdateProfileModal} // 수정 아이콘 클릭 시 회원정보수정 모달을 열기
             />
           )}
         </div>
