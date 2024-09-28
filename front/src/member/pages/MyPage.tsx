@@ -1,46 +1,46 @@
-import React, { useEffect } from 'react';
+// import React, { useEffect, useState } from 'react';
 import { MemberInfo } from '../components/MemberInfo';
 import AccountSlider from '../components/AccountSlider';
-import { useStore } from '../../store/memberStore';
-import LoginModalManager from '../components/LoginModalManager';
+// import { useStore } from '../../store/memberStore';
+// import LoginModalManager from '../components/LoginModalManager';
+// import { getAccessToken } from '../../utils/localUtils';
 // import UpdateProfileModal from '../components/modals/UpdateProfileModal';
 // import WithdrawalModal from '../components/modals/WithDrawalModal';
 // import SpendingAccountRegisterModal from '../components/modals/SpendingAccountRegisterModal';
+import AuthGuard from '../components/AuthGuard';
+import { FiLogOut } from 'react-icons/fi'; // 로그아웃 아이콘 임포트
+import { LogoutAPI } from '../../api/member/LogoutAPI';
 
 const MyPage: React.FC = () => {
-  const { checkLoginStatus, isLoggedIn, openLoginModal } = useStore();
-
-  useEffect(() => {
-    checkLoginStatus(); // 컴포넌트가 마운트될 때 로그인 상태를 확인
-    if (!isLoggedIn) {
-      openLoginModal(); // 로그인되지 않은 경우 로그인 모달을 열기
-    }
-  }, [checkLoginStatus, isLoggedIn, openLoginModal]); // 의존성 배열에 로그인 상태 추가
-
   return (
-    <div className="min-h-screen w-full flex flex-col items-center">
-      {/* 상태에 따라 모달 렌더링 */}
-      {/* ModalManager를 통해 모달 관리 */}
-      <LoginModalManager />
-      {/* {isUpdateProfileModalOpen && <UpdateProfileModal />}
-      {isWithdrawlModalOpen && <WithdrawalModal />}
-      {isSpendingAccountRegisterModalOpen && <SpendingAccountRegisterModal />} */}
+    <AuthGuard>
+      <div className="min-h-screen w-full flex flex-col items-center">
+        {/* MyPage 타이틀 및 회원 탈퇴 버튼 */}
+        <div className="relative w-full flex items-center justify-end p-4 bg-customDarkGreen">
+          <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-white">
+            MyPage
+          </h1>
+          {/* 로그아웃 버튼 */}
+          <button
+            onClick={LogoutAPI}
+            className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+          >
+            <FiLogOut className="text-xl" />
+            <span>Logout</span>
+          </button>
+        </div>
 
-      {/* MyPage 타이틀 및 회원 탈퇴 버튼 */}
-      <div className="flex justify-between items-center w-screen p-4 bg-customDarkGreen text-white rounded-b-lg">
-        <h1 className="text-2xl font-bold text-white">My Page</h1>
-      </div>
+        {/* 회원 정보 컴포넌트 */}
+        <div className="mt-8 w-full flex justify-center relative">
+          <MemberInfo />
+        </div>
 
-      {/* 회원 정보 컴포넌트 */}
-      <div className="mt-4 w-full flex justify-center relative">
-        <MemberInfo />
+        {/* 계좌 정보 슬라이더 컴포넌트 */}
+        <div className="mt-8 w-full flex justify-center">
+          <AccountSlider />
+        </div>
       </div>
-
-      {/* 계좌 정보 슬라이더 컴포넌트 */}
-      <div className="mt-8 w-full flex justify-center">
-        <AccountSlider />
-      </div>
-    </div>
+    </AuthGuard>
   );
 };
 

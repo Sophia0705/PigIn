@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosInstance';
 
 const TestPage: React.FC = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL; // 환경 변수에서 BASE_URL 가져오기
@@ -9,7 +9,7 @@ const TestPage: React.FC = () => {
     // API 호출을 위한 함수
     const checkHealth = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}health-check`);
+        const response = await axiosInstance.get('health-check');
         setHealthStatus(response.data); // 성공 시 서버에서 받은 데이터 저장
       } catch (error) {
         console.error('Error fetching health check:', error);

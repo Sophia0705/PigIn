@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { LoginAPI } from '../../../api/member/LoginAPI';
 // import { useAuthStore } from '../../../store/AuthStore';
 import { useStore } from '../../../store/memberStore';
-import { setAccessToken } from '../../../utils/localUtils';
 
 // LoginModal 컴포넌트 정의
 const LoginModal: React.FC = () => {
@@ -18,6 +17,7 @@ const LoginModal: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   // 회원가입 버튼 클릭 시 호출되는 함수
   const handleSignUpClick = () => {
@@ -46,15 +46,14 @@ const LoginModal: React.FC = () => {
     try {
       // 로그인 API 호출
       console.log('Login모달 : ', email, password);
-      const response = await LoginAPI({ username: email, password });
-
-      // 로그인 성공 시 access token을 로컬 스토리지에 저장
-      setAccessToken(response.accessToken); // 유틸리티 함수 사용
+      await LoginAPI({ username: email, password });
 
       // 로그인 상태를 업데이트하고 모달을 닫음
       checkLoginStatus(); // 로그인 상태 확인
-      alert('로그인 성공!');
       closeLoginModal(); // 로그인 모달 닫기
+
+      // 현재 페이지 새로고침
+      window.location.reload();
     } catch (error) {
       console.error('로그인 에러:', error);
       alert('로그인에 실패했습니다. 다시 시도해주세요.');

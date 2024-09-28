@@ -16,12 +16,12 @@ interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
 }
 
 // 환경 변수에서 API 기본 URL 가져오기
-const baseURL = 'https://j11c203.p.ssafy.io/';
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 // Axios 인스턴스 생성
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: baseURL,
-  timeout: 1000000,
+  timeout: 10000, // timeout 10초 설정,
   headers: {
     'Content-Type': 'application/json',
     // 'Origin': 'https://i11c205.p.ssafy.io', // 여기에 Origin 헤더 추가
