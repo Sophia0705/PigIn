@@ -8,7 +8,7 @@ import java.util.List;
 public interface CoinService {
 
     public List<FindCoinAllResponse> findAllCoins();
-    public List<MongoCoinHistory> searchCoins(String keyword);
+    public List<FindCoinAllResponse> searchCoins(String keyword);
     public List<MongoCoinHistory> searchCoins(String keyword, int page);
     public List<MongoCoinHistory> findCoinChart(String stockCode, String interval, Integer count);
 }

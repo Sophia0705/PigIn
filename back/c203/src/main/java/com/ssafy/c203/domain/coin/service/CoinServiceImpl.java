@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,8 +45,27 @@ public class CoinServiceImpl implements CoinService {
     }
 
     @Override
-    public List<MongoCoinHistory> searchCoins(String keyword) {
-        return List.of();
+    public List<FindCoinAllResponse> searchCoins(String keyword) {
+        List<CoinItem> coinItems = coinItemRepository.findAll();
+        HashMap<String, String> coinItemMap = new HashMap<>();
+        for (CoinItem coinItem : coinItems) {
+            coinItemMap.put(coinItem.getId(), coinItem.getName());
+        }
+
+        // 정규표현식 패턴 생성 (대소문자 구분 없이)
+        Pattern pattern = Pattern.compile(keyword, Pattern.CASE_INSENSITIVE);
+
+        List<FindCoinAllResponse> responses = mongoCoinMinuteRepository.findLatestDataForEachCoin().stream()
+                .filter(mongoCoin -> {
+                    String coinName = coinItemMap.get(mongoCoin.getCoin());
+                    return coinName != null && pattern.matcher(coinName).find();
+                })
+                .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
+                .toList();
+
+        log.info("Search results for '{}': {}", keyword, responses);
+
+        return responses;
     }
 
     @Override
