@@ -12,14 +12,12 @@ const FavoritePage: React.FC = () => {
         </h1>
       </div>
       <AuthGuard>
-        {/* 주식 목록을 5개만 렌더링, 더보기 버튼 추가 */}
+        {/* 주식 목록을 5개만 렌더링*/}
         <div className="mt-6">
-          {/* 주식 목록 위로 간격 추가 */}
           <StockList limit={5} showTitle={true} />
         </div>
-        {/* 가상화폐 목록을 5개만 렌더링, 더보기 버튼 추가 */}
+        {/* 가상화폐 목록을 5개만 렌더링*/}
         <div className="mt-7">
-          {/* 가상화폐 목록 위로 더 큰 간격 추가 */}
           <CryptoList limit={5} showTitle={true} />
         </div>
       </AuthGuard>
