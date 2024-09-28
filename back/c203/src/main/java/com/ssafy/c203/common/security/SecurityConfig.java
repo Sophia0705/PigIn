@@ -99,7 +99,7 @@ public class SecurityConfig {
                     "/member/find-pwd", "/member/refresh-pwd",
                     "/member/account-authentication", "/member/account",
                     "/member/account-authentication-compare", "/swagger-ui/**", "/api-docs/**",
-                    "/stock/**", "/member/email-check")
+                    "/stock/**", "/coin", "/member/email-check")
                 .permitAll()
                 .anyRequest().authenticated());
 
