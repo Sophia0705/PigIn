@@ -103,6 +103,16 @@ public class CoinServiceImpl implements CoinService {
         }
     }
 
+    @Override
+    public List<MongoCoinMinute> findCoinMinute() {
+        try {
+            return mongoCoinMinuteRepository.findLatestDataForEachCoin();
+        } catch (Exception e) {
+            log.error("Error fetching coin minute: ", e);
+            throw new RuntimeException("Failed to fetch coin minute", e);
+        }
+    }
+
     //    //쿼리문으로 넣기 귀찮아서 그냥 여기 작정했어요..ㅋ
 //    @PostConstruct
 //    private void init() {

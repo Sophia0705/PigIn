@@ -76,8 +76,7 @@ public class StockController {
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamStocks() {
-        // 클라이언트의 SSE 연결 요청을 처리하고 새로운 SseEmitter를 생성하여 반환
-        log.info("streamStocks");
+//        log.info("streamStocks");
         return stockEmitterService.addEmitter();
     }
 

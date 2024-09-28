@@ -5,6 +5,7 @@ import com.ssafy.c203.domain.coin.dto.FindCoinChartAllResponse;
 import com.ssafy.c203.domain.coin.dto.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
+import com.ssafy.c203.domain.coin.service.CoinEmitterService;
 import com.ssafy.c203.domain.coin.service.CoinService;
 import com.ssafy.c203.domain.stock.dto.FindStockChartAllResponse;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
@@ -26,6 +27,7 @@ import java.util.List;
 public class CoinController {
 
     private final CoinService coinService;
+    private final CoinEmitterService coinEmitterService;
 
     // 코인 리스트 조회
     @GetMapping()
@@ -69,8 +71,8 @@ public class CoinController {
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamCoins() {
-
-        return null;
+//        log.info("streamStocks");
+        return coinEmitterService.addEmitter();
     }
 
 

@@ -12,5 +12,6 @@ public interface CoinService {
     public List<FindCoinAllResponse> searchCoins(String keyword);
     public MongoCoinMinute findCoin(String coinCode);
     public List<MongoCoinHistory> findCoinChart(String stockCode, String interval, Integer count);
+    public List<MongoCoinMinute> findCoinMinute();
     public List<MongoCoinMinute> findCoinMinuteChart(String stockCode, Integer count);
 }
