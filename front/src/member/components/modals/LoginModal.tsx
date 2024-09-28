@@ -17,7 +17,6 @@ const LoginModal: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState<string | null>(null);
 
   // 회원가입 버튼 클릭 시 호출되는 함수
   const handleSignUpClick = () => {
