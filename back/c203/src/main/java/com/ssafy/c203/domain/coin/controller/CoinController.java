@@ -1,6 +1,8 @@
 package com.ssafy.c203.domain.coin.controller;
 
 import com.ssafy.c203.domain.coin.dto.FindCoinAllResponse;
+import com.ssafy.c203.domain.coin.dto.FindCoinResponse;
+import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
 import com.ssafy.c203.domain.coin.service.CoinService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +36,10 @@ public class CoinController {
     }
 
     // 코인 상세 조회
-    @GetMapping("/{coinId}")
-    public ResponseEntity<?> findCoinById(@PathVariable Long coinId) {
-
-        return null;
+    @GetMapping("/{coinCode}")
+    public ResponseEntity<?> findCoinById(@PathVariable String coinCode) {
+        FindCoinResponse response = new FindCoinResponse(coinService.findCoin(coinCode));
+        return ResponseEntity.ok().body(response);
     }
 
     // 코인 차트 조회

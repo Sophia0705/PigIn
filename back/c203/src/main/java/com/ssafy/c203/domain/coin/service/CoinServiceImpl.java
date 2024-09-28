@@ -69,8 +69,9 @@ public class CoinServiceImpl implements CoinService {
     }
 
     @Override
-    public List<MongoCoinHistory> searchCoins(String keyword, int page) {
-        return List.of();
+    public MongoCoinMinute findCoin(String coinCode) {
+        // Exception 처리 필요
+        return mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode).orElseThrow();
     }
 
     @Override
