@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getAccessToken, removeAccessToken } from '../utils/localUtils';
 
 // formData의 타입 정의
 interface FormData {
@@ -20,7 +21,7 @@ interface ModalState {
   isFindPasswordModalOpen: boolean; // 비밀번호 찾기 모달 열림 여부
   isIsLoginModalOpen: boolean; // 로그인 여부 모달 열림 여부
   isUpdateProfileModalOpen: boolean; // 회원 정보 수정 모달 열림 여부
-  isWithdrawalModalOpen: boolean; // 회원 탈퇴 모달 열림 여부
+  isSignOutModalOpen: boolean; // 회원 탈퇴 모달 열림 여부
   isSpendingAccountRegisterModalOpen: boolean; // 소비 계좌 등록 모달 열림 여부
 }
 
@@ -46,8 +47,8 @@ interface MemberStore extends ModalState {
   closeIsLoginModal: () => void; // 로그인 여부 모달 닫기 함수
   openUpdateProfileModal: () => void; // 회원 정보 수정 모달 열기 함수
   closeUpdateProfileModal: () => void; // 회원 정보 수정 모달 닫기 함수
-  openWithdrawalModal: () => void; // 회원 탈퇴 모달 열기 함수
-  closeWithdrawalModal: () => void; // 회원 탈퇴 모달 닫기 함수
+  openSignOutModal: () => void; // 회원 탈퇴 모달 열기 함수
+  closeSignOutModal: () => void; // 회원 탈퇴 모달 닫기 함수
   openSpendingAccountRegisterModal: () => void; // 소비 계좌 등록 모달 열기 함수
   closeSpendingAccountRegisterModal: () => void; // 소비 계좌 등록 모달 닫기 함수
 }
@@ -74,7 +75,7 @@ export const useStore = create<MemberStore>((set) => ({
   isFindPasswordModalOpen: false, // 비밀번호 찾기 모달 초기 상태
 
   isUpdateProfileModalOpen: false, // 회원 정보 수정 모달 초기 상태
-  isWithdrawalModalOpen: false, // 회원 탈퇴 모달 초기 상태
+  isSignOutModalOpen: false, // 회원 탈퇴 모달 초기 상태
   isSpendingAccountRegisterModalOpen: false, // 소비 계좌 등록 모달 초기 상태
 
   // 로그인 여부 초기 상태
@@ -104,13 +105,13 @@ export const useStore = create<MemberStore>((set) => ({
 
   // 로그인 상태 확인 함수 (토큰이 있으면 로그인 상태로 변경)
   checkLoginStatus: () => {
-    const token = localStorage.getItem('accessToken');
+    const token = getAccessToken();
     set({ isLoggedIn: !!token }); // 토큰이 존재하면 로그인 상태로 설정
   },
 
   // 로그아웃 함수 (토큰 삭제 후 로그아웃 상태로 변경)
   logout: () => {
-    localStorage.removeItem('accessToken'); // 로컬 스토리지에서 토큰 삭제
+    removeAccessToken();
     set({ isLoggedIn: false }); // 로그아웃 상태로 변경
   },
 
@@ -133,8 +134,8 @@ export const useStore = create<MemberStore>((set) => ({
   openUpdateProfileModal: () => set({ isUpdateProfileModalOpen: true }), // 회원 정보 수정 모달 열기
   closeUpdateProfileModal: () => set({ isUpdateProfileModalOpen: false }), // 회원 정보 수정 모달 닫기
 
-  openWithdrawalModal: () => set({ isWithdrawalModalOpen: true }), // 회원 탈퇴 모달 열기
-  closeWithdrawalModal: () => set({ isWithdrawalModalOpen: false }), // 회원 탈퇴 모달 닫기
+  openSignOutModal: () => set({ isSignOutModalOpen: true }), // 회원 탈퇴 모달 열기
+  closeSignOutModal: () => set({ isSignOutModalOpen: false }), // 회원 탈퇴 모달 닫기
 
   openSpendingAccountRegisterModal: () =>
     set({ isSpendingAccountRegisterModalOpen: true }), // 소비 계좌 등록 모달 열기

@@ -46,6 +46,7 @@ const LoginModal: React.FC = () => {
       // 로그인 API 호출
       console.log('Login모달 : ', email, password);
       await LoginAPI({ username: email, password });
+      alert('로그인 성공했습니다!');
 
       // 로그인 상태를 업데이트하고 모달을 닫음
       checkLoginStatus(); // 로그인 상태 확인

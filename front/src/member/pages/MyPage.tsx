@@ -3,11 +3,10 @@ import { MemberInfo } from '../components/MemberInfo';
 import AccountSlider from '../components/AccountSlider';
 import { useEffect } from 'react';
 import { useStore } from '../../store/memberStore';
-// import { useStore } from '../../store/memberStore';
 // import LoginModalManager from '../components/LoginModalManager';
 // import { getAccessToken } from '../../utils/localUtils';
 // import UpdateProfileModal from '../components/modals/UpdateProfileModal';
-// import WithdrawalModal from '../components/modals/WithDrawalModal';
+// import SignOutModal from '../components/modals/SignOutModal';
 // import SpendingAccountRegisterModal from '../components/modals/SpendingAccountRegisterModal';
 import AuthGuard from '../components/AuthGuard';
 import { FiLogOut } from 'react-icons/fi'; // 로그아웃 아이콘 임포트

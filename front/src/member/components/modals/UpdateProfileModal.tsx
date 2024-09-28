@@ -3,7 +3,7 @@ import { useStore } from '../../../store/memberStore';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle, FaTimesCircle, FaUserMinus } from 'react-icons/fa'; // 탈퇴 아이콘 추가
 import SuccessModal from './SuccessModal';
-import WithdrawalModal from './WithDrawalModal'; // 회원 탈퇴 모달 추가
+// import SignOutModal from './SignOutModal'; // 회원 탈퇴 모달 추가
 
 interface UpdateProfileModalProps {
   closeModal: () => void;
@@ -20,7 +20,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
   const [savingRate, setSavingRate] = useState(0);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // SuccessModal 상태 추가
-  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false); // 회원 탈퇴 모달 상태 추가
+  // const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false); // 회원 탈퇴 모달 상태 추가
 
   useEffect(() => {
     loadUserData(); // 사용자 정보를 불러옴
@@ -77,16 +77,6 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
     return (
       formData.name && isPasswordValid(formData.password) && isPasswordMatch
     );
-  };
-
-  // 탈퇴 모달을 여는 함수: 회원 정보 수정 모달을 닫고, 탈퇴 모달을 열도록 설정
-  const openWithdrawalModal = () => {
-    setIsWithdrawalModalOpen(true); // 탈퇴 모달만 열림
-  };
-
-  // 탈퇴 모달을 닫는 함수
-  const closeWithdrawalModal = () => {
-    setIsWithdrawalModalOpen(false);
   };
 
   return (
@@ -242,21 +232,13 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
             </div>
 
             {/* 회원 탈퇴 버튼: 클릭 시 회원 탈퇴 모달을 여는 함수 호출 */}
-            <button
-              onClick={openWithdrawalModal}
-              className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center"
-            >
+            <button className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center">
               <FaUserMinus className="mr-1" /> {/* 회원 탈퇴 아이콘 */}
               탈퇴
             </button>
           </form>
         </div>
       </div>
-
-      {/* WithdrawalModal을 표시 */}
-      {isWithdrawalModalOpen && (
-        <WithdrawalModal closeModal={closeWithdrawalModal} />
-      )}
     </>
   );
 };
