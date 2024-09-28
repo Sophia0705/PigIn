@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.coin.repository.mongo;
 
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -17,4 +18,6 @@ public interface MongoCoinMinuteRepository extends MongoRepository<MongoCoinMinu
     List<MongoCoinMinute> findLatestDataForEachCoin();
 
     Optional<MongoCoinMinute> findTopByCoinOrderByDateDescTimeDesc(String coin);
+
+    List<MongoCoinMinute> findByCoinOrderByDateDescTimeDesc(String coin, Pageable pageable);
 }

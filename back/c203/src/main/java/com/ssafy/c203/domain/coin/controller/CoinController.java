@@ -1,9 +1,15 @@
 package com.ssafy.c203.domain.coin.controller;
 
 import com.ssafy.c203.domain.coin.dto.FindCoinAllResponse;
+import com.ssafy.c203.domain.coin.dto.FindCoinChartAllResponse;
 import com.ssafy.c203.domain.coin.dto.FindCoinResponse;
+import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
 import com.ssafy.c203.domain.coin.service.CoinService;
+import com.ssafy.c203.domain.stock.dto.FindStockChartAllResponse;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -43,10 +49,22 @@ public class CoinController {
     }
 
     // 코인 차트 조회
-    @GetMapping("/{coinId}/chart/{interval}")
-    public ResponseEntity<?> findCoinChart(@PathVariable Long coinId, @PathVariable Integer interval) {
+    @GetMapping("/{coinCode}/chart/{interval}")
+    public ResponseEntity<?> findCoinChart(@PathVariable String coinCode, @PathVariable String interval, @RequestParam Integer count) {
 
-        return null;
+        List<FindCoinChartAllResponse> responses;
+        if (interval.equals("minute")) {
+            List<MongoCoinMinute> coinChart = coinService.findCoinMinuteChart(coinCode, count > 100 ? 100 : count);
+            responses = coinChart.stream()
+                    .map(FindCoinChartAllResponse::new)
+                    .toList();
+        } else {
+            List<MongoCoinHistory> stockChart = coinService.findCoinChart(coinCode, interval + "s", count > 100 ? 100 : count);
+            responses = stockChart.stream()
+                    .map(FindCoinChartAllResponse::new)
+                    .toList();
+        }
+        return ResponseEntity.ok().body(responses);
     }
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

@@ -10,6 +10,9 @@ import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinMinuteRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +48,7 @@ public class CoinServiceImpl implements CoinService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FindCoinAllResponse> searchCoins(String keyword) {
         List<CoinItem> coinItems = coinItemRepository.findAll();
         HashMap<String, String> coinItemMap = new HashMap<>();
@@ -69,18 +73,37 @@ public class CoinServiceImpl implements CoinService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MongoCoinMinute findCoin(String coinCode) {
         // Exception 처리 필요
         return mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode).orElseThrow();
     }
 
     @Override
-    public List<MongoCoinHistory> findCoinChart(String stockCode, String interval, Integer count) {
-        return List.of();
+    @Transactional(readOnly = true)
+    public List<MongoCoinHistory> findCoinChart(String coinCode, String interval, Integer count) {
+        Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
+        try {
+            return mongoCoinHistoryRepository.findByCoinAndIntervalOrderByDateDesc(coinCode, interval, pageable);
+        } catch (Exception e) {
+            log.error("Error fetching coin chart: ", e);
+            throw new RuntimeException("Failed to fetch coin chart", e);
+        }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<MongoCoinMinute> findCoinMinuteChart(String coinCode, Integer count) {
+        Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date", "time"));
+        try {
+            return mongoCoinMinuteRepository.findByCoinOrderByDateDescTimeDesc(coinCode, pageable);
+        } catch (Exception e) {
+            log.error("Error fetching coin minute chart: ", e);
+            throw new RuntimeException("Failed to fetch coin minute chart", e);
+        }
+    }
 
-//    //쿼리문으로 넣기 귀찮아서 그냥 여기 작정했어요..ㅋ
+    //    //쿼리문으로 넣기 귀찮아서 그냥 여기 작정했어요..ㅋ
 //    @PostConstruct
 //    private void init() {
 //        initializeCoinItems();
