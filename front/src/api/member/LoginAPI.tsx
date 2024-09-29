@@ -1,6 +1,7 @@
 // import axiosInstance from '../axiosInstance';
 import axios from 'axios';
 import { setAccessToken } from '../../utils/localUtils'; // 유틸리티 함수 가져오기
+
 // 로그인 요청에 필요한 데이터 타입 정의
 interface LoginRequest {
   username: string; // 이메일(username)로 전달

@@ -30,7 +30,6 @@ interface MemberStore extends ModalState {
   formData: FormData; // 사용자 폼 데이터
   isLoggedIn: boolean; // 로그인 상태 여부
   setFormData: (newFormData: Partial<FormData>) => void; // 폼 데이터 업데이트 함수
-  loadUserData: () => void; // 사용자 데이터를 로드하는 함수 (더미 데이터 사용)
   checkLoginStatus: () => void; // 로그인 상태 확인 함수
   logout: () => void; // 로그아웃 함수
 
@@ -86,22 +85,6 @@ export const useStore = create<MemberStore>((set) => ({
     set((state) => ({
       formData: { ...state.formData, ...newFormData }, // 기존 상태를 유지하면서 새로운 데이터 병합
     })),
-
-  // 사용자 데이터를 로드하는 함수 (더미 데이터로 설정)
-  loadUserData: () => {
-    set({
-      formData: {
-        name: '홍길동',
-        phoneNumber: '010-1234-5678',
-        birth: '900101',
-        email: 'hong@example.com',
-        password: '',
-        passwordConfirm: '',
-        authNumber: '',
-        savingRate: 5,
-      },
-    });
-  },
 
   // 로그인 상태 확인 함수 (토큰이 있으면 로그인 상태로 변경)
   checkLoginStatus: () => {

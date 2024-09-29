@@ -1,40 +1,74 @@
-import React from 'react';
-import { CiEdit } from 'react-icons/ci';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
+import { getMemberInfo } from '../../api/member/getMemberInfoAPI';
+import { FiEdit } from 'react-icons/fi';
 
 export const MemberInfo: React.FC = () => {
   const { openUpdateProfileModal } = useStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
 
-  // 회원 정보 데이터를 배열로 정의 (이름, 생년월일, 비밀번호 등)
-  const userInfo = [
-    { label: '이름', value: '홍길동', editable: false },
-    { label: '생년월일', value: '950502', editable: false },
-    { label: '비밀번호', value: '********', editable: true }, // 비밀번호만 수정 가능
-    { label: '이메일', value: 'example@example.com', editable: false },
-    { label: '전화번호', value: '010-1234-5678', editable: false },
-  ];
+  const [memberInfo, setMemberInfo] = useState<
+    {
+      label: string;
+      value: string | number;
+    }[]
+  >([
+    { label: '이름', value: '홍길동' },
+    { label: '생년월일', value: '950502' },
+    { label: '이메일', value: 'example@example.com' },
+    { label: '전화번호', value: '010-1234-5678' },
+    { label: '저축률', value: 0 },
+  ]);
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 회원 정보를 불러옴
+    const fetchMemberInfo = async () => {
+      try {
+        const data = await getMemberInfo(); // API 호출하여 회원 정보 가져오기
+        // 가져온 데이터로 userInfo 상태 업데이트
+        console.log('MemberInfo data: ', data);
+        setMemberInfo([
+          { label: '이름', value: data.name },
+          { label: '생년월일', value: data.birth },
+          { label: '이메일', value: data.email },
+          {
+            label: '전화번호',
+            value: `${data.phoneNumber.slice(0, 3)}-${data.phoneNumber.slice(3, 7)}-${data.phoneNumber.slice(7)}`,
+          },
+          { label: '저축률', value: `${data.savingRate}%` },
+        ]);
+      } catch (error) {
+        console.error('회원 정보 불러오기 실패:', error);
+      }
+    };
+
+    fetchMemberInfo();
+  }, []);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 w-[340px] text-center mb-0">
-      <h2 className="text-xl font-bold mb-4">회원 정보</h2>
-
+      {/* 제목과 버튼을 같은 줄에 배치 */}
+      <div className="relative flex items-center mb-4">
+        <h2 className="text-xl font-bold text-center flex-grow">회원 정보</h2>
+        <button
+          onClick={openUpdateProfileModal}
+          className="absolute right-0 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded flex items-center space-x-2"
+        >
+          <FiEdit className="text-s" />
+          <span className="text-xs">수정</span>
+        </button>
+      </div>
       {/* 반복문을 사용하여 회원 정보 출력 */}
-      {userInfo.map((info, index) => (
+      {memberInfo.map((info) => (
         <div
-          key={index} // 배열을 순회할 때 고유한 key 필요
+          key={info.label} // 배열을 순회할 때 고유한 key 필요
           className="flex justify-between items-center mb-2 border-b border-gray-300 pb-2"
         >
           <div className="flex flex-col text-left">
             <label className="text-sm">{info.label}:</label> {/* 항목 이름 */}
-            <span className="text-sm">{info.value}</span> {/* 항목 값 */}
+            <span className="text-sm">
+              {info.value !== undefined ? info.value : '정보 없음'}
+            </span>{' '}
+            {/* 항목 값 */}
           </div>
-          {/* 비밀번호만 수정 가능 */}
-          {info.editable && (
-            <CiEdit
-              className="text-gray-500 cursor-pointer text-4xl"
-              onClick={openUpdateProfileModal} // 수정 아이콘 클릭 시 회원정보수정 모달을 열기
-            />
-          )}
         </div>
       ))}
     </div>

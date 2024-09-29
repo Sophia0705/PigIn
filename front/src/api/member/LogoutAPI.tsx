@@ -23,10 +23,10 @@ export const LogoutAPI = async (): Promise<void> => {
     console.log('response: ', response);
 
     // 응답 상태 코드 확인
-    if (response.status === 200) {
+    if (response.status == 200) {
       // 요청이 성공하면 액세스 토큰 제거
       removeAccessToken();
-      
+
       alert('로그아웃 성공!');
       // 랜딩 페이지로 이동
       window.location.href = '/';

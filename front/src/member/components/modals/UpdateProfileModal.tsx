@@ -12,7 +12,7 @@ interface UpdateProfileModalProps {
 const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   closeModal,
 }) => {
-  const { formData, setFormData, loadUserData } = useStore();
+  const { formData, setFormData } = useStore();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -23,9 +23,8 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   // const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false); // 회원 탈퇴 모달 상태 추가
 
   useEffect(() => {
-    loadUserData(); // 사용자 정보를 불러옴
     setSavingRate(formData.savingRate); // 사용자 정보에서 저장된 저축률 설정
-  }, [loadUserData, formData.savingRate]);
+  }, [formData.savingRate]);
 
   const isPasswordValid = (password: string) => {
     const regex =
