@@ -123,11 +123,13 @@ public class GoldServiceImpl implements GoldService {
     @Override
     public void saveAllGold()
         throws IOException {
+        goldRepository.deleteAll();
+
         //날짜 생성
         GetDateRange getDateRange = new GetDateRange();
 
         LocalDate startDate = LocalDate.of(2020, 1, 1);
-        LocalDate endDate = LocalDate.now().minusDays(2);
+        LocalDate endDate = LocalDate.of(2022, 4, 30);
 
         List<String> dateList = getDateRange.generateMonthlyStartEndDates(startDate, endDate);
 
@@ -141,6 +143,71 @@ public class GoldServiceImpl implements GoldService {
             urlBuilder.append("&endBasDt=");
             urlBuilder.append(dateList.get(i + 1));
             urlBuilder.append("&itmsNm=%EA%B8%88%2099.99K");
+
+            System.out.println(urlBuilder.toString());
+            URL url = new URL(urlBuilder.toString());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Content-type", "application/json");
+
+            BufferedReader rd;
+            if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {
+                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            }
+            // 9. 저장된 데이터를 라인별로 읽어 StringBuilder 객체로 저장.
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = rd.readLine()) != null) {
+                sb.append(line);
+            }
+            // 10. 객체 해제.
+            rd.close();
+            conn.disconnect();
+            // 11. 전달받은 데이터 확인.
+            System.out.println(sb.toString());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(sb.toString());
+            JsonNode itemNode = rootNode.path("response").path("body").path("items").path("item");
+
+            if (itemNode.isArray()) {
+                for (JsonNode jsonNode : itemNode) {
+                    GoldParsingDto item = objectMapper.treeToValue(jsonNode, GoldParsingDto.class);
+                    goldRepository.save(Gold
+                        .builder()
+                        .close(item.getClpr())
+                        .date(item.getBasDt())
+                        .high(item.getHipr())
+                        .low(item.getLopr())
+                        .vsYesterday(item.getVs())
+                        .isin(item.getIsinCd())
+                        .itemName(item.getItmsNm())
+                        .tradePrice(item.getTrPrc())
+                        .tradeAmount(item.getTrqu())
+                        .upDownRate(item.getFltRt())
+                        .srtnCd(item.getSrtnCd())
+                        .open(item.getMkp())
+                        .build());
+                }
+            }
+        }
+        startDate = LocalDate.of(2022, 5, 1);
+        endDate = LocalDate.now().minusDays(2);
+
+        dateList = getDateRange.generateMonthlyStartEndDates(startDate, endDate);
+
+        for (int i = 0; i < dateList.size(); i += 2) {
+            StringBuilder urlBuilder = new StringBuilder(
+                "https://apis.data.go.kr/1160100/service/GetGeneralProductInfoService/getGoldPriceInfo");
+            urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + APIKEY);
+            urlBuilder.append(
+                "&numOfRows=100&resultType=json&beginBasDt=");
+            urlBuilder.append(dateList.get(i));
+            urlBuilder.append("&endBasDt=");
+            urlBuilder.append(dateList.get(i + 1));
+            urlBuilder.append("&itmsNm=%EA%B8%88%2099.99_1Kg");
 
             System.out.println(urlBuilder.toString());
             URL url = new URL(urlBuilder.toString());
