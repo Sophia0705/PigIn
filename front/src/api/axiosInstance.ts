@@ -50,7 +50,7 @@ axiosInstance.interceptors.request.use(
 
 // 응답 인터셉터 설정
 axiosInstance.interceptors.response.use(
-  (response: AxiosResponse): AxiosResponse['data'] => response.data, // 정상 응답에서 데이터만 추출
+  (response: AxiosResponse): AxiosResponse => response, // 정상 응답에서 데이터만 추출
 
   // 토큰이 만료되거나 오류가 발생한 경우 동작하는 코드
   async (error: AxiosError): Promise<never> => {

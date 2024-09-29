@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LoginAPI } from '../../../api/member/LoginAPI';
+import { loginAPI } from '@/api/member/LoginAPI';
 // import { useAuthStore } from '../../../store/AuthStore';
 import { useStore } from '../../../store/memberStore';
 
@@ -45,7 +45,7 @@ const LoginModal: React.FC = () => {
     try {
       // 로그인 API 호출
       console.log('Login모달 : ', email, password);
-      await LoginAPI({ username: email, password });
+      await loginAPI({ username: email, password });
       alert('로그인 성공했습니다!');
 
       // 로그인 상태를 업데이트하고 모달을 닫음

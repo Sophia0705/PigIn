@@ -14,7 +14,7 @@ interface LoginResponse {
 }
 
 // 로그인 API 호출 함수
-export const LoginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
+export const loginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
   try {
     // 환경 변수에서 API 기본 URL 가져오기
     const baseURL = import.meta.env.VITE_BASE_URL; // VITE_BASE_URL 가져오기
@@ -35,7 +35,7 @@ export const LoginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
     // 응답 헤더에서 모든 헤더 값 출력 (디버깅용)
     console.log('응답 헤더:', response.headers);
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       // 응답 헤더에서 accessToken 추출
       const accessToken = response.headers['access']; // 헤더에서 'access' 추출
       console.log('access: ', accessToken);

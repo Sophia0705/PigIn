@@ -193,6 +193,7 @@ const SignUpModal: React.FC = () => {
           },
         }
       );
+      console.log('회원가입 시 핸드폰 인증 요청 response :', response);
 
       // 응답 처리
       if (response.status === 200) {
@@ -323,7 +324,7 @@ const SignUpModal: React.FC = () => {
 
   return (
     // 모달 배경
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       {/* 모달 본체 */}
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">

@@ -10,7 +10,7 @@ import { useStore } from '../../store/memberStore';
 // import SpendingAccountRegisterModal from '../components/modals/SpendingAccountRegisterModal';
 import AuthGuard from '../components/AuthGuard';
 import { FiLogOut } from 'react-icons/fi'; // 로그아웃 아이콘 임포트
-import { LogoutAPI } from '../../api/member/LogoutAPI';
+import { logoutAPI } from '../../api/member/logoutAPI';
 
 const MyPage: React.FC = () => {
   const { checkLoginStatus, isLoggedIn } = useStore();
@@ -29,7 +29,7 @@ const MyPage: React.FC = () => {
         {/* 로그아웃 버튼: 로그인 상태일 때만 렌더링 */}
         {isLoggedIn && (
           <button
-            onClick={LogoutAPI}
+            onClick={logoutAPI}
             className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
           >
             <FiLogOut className="text-xl" />

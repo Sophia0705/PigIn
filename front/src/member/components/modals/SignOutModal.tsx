@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../../store/memberStore';
-import { SignOutAPI } from '../../../api/member/SignOutAPI'; // 회원 탈퇴 API 함수
+import { signOutAPI } from '../../../api/member/signOutAPI'; // 회원 탈퇴 API 함수
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
 
@@ -43,7 +43,7 @@ const SignOutModal: React.FC = () => {
 
     try {
       // SignOutAPI 호출, 회원 탈퇴 요청
-      await SignOutAPI({ username: formData.email });
+      await signOutAPI({ username: formData.email });
 
       // 성공 시 성공 모달 표시
       setSuccessMessage('회원 탈퇴가 완료되었습니다.');

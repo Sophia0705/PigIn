@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
 import { getMemberInfo } from '../../api/member/getMemberInfoAPI';
 import { FiEdit } from 'react-icons/fi';
+import UpdateProfileModal from './modals/UpdateProfileModal';
 
 export const MemberInfo: React.FC = () => {
-  const { openUpdateProfileModal } = useStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
+  const { openUpdateProfileModal, isUpdateProfileModalOpen, setFormData } =
+    useStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
 
   const [memberInfo, setMemberInfo] = useState<
     {
@@ -18,6 +20,7 @@ export const MemberInfo: React.FC = () => {
     { label: '전화번호', value: '010-1234-5678' },
     { label: '저축률', value: 0 },
   ]);
+
   useEffect(() => {
     // 컴포넌트가 마운트될 때 회원 정보를 불러옴
     const fetchMemberInfo = async () => {
@@ -25,6 +28,16 @@ export const MemberInfo: React.FC = () => {
         const data = await getMemberInfo(); // API 호출하여 회원 정보 가져오기
         // 가져온 데이터로 userInfo 상태 업데이트
         console.log('MemberInfo data: ', data);
+
+        // 가져온 데이터를 zustand의 formData로 업데이트
+        setFormData({
+          name: data.name,
+          birth: data.birth,
+          email: data.email,
+          phoneNumber: `${data.phoneNumber.slice(0, 3)}-${data.phoneNumber.slice(3, 7)}-${data.phoneNumber.slice(7)}`,
+          savingRate: data.savingRate,
+        });
+
         setMemberInfo([
           { label: '이름', value: data.name },
           { label: '생년월일', value: data.birth },
@@ -41,7 +54,7 @@ export const MemberInfo: React.FC = () => {
     };
 
     fetchMemberInfo();
-  }, []);
+  }, [setFormData]);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 w-[340px] text-center mb-0">
@@ -71,6 +84,9 @@ export const MemberInfo: React.FC = () => {
           </div>
         </div>
       ))}
+
+      {/* UpdateProfileModal 조건부 렌더링 */}
+      {isUpdateProfileModalOpen && <UpdateProfileModal />}
     </div>
   );
 };

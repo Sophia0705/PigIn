@@ -13,9 +13,8 @@ interface Data {
 // 회원 정보를 불러오는 API 함수
 export const getMemberInfo = async (): Promise<Data> => {
   try {
-    const response = await axiosInstance.get('member/userInfo'); // 회원 정보 GET 요청
-    console.log(response);
-    return response.data; // 현재 response가 status, data 등을 가져야하는데 data 자체로 나와서 오류남.
+    const response = await axiosInstance.get<Data>('member/userInfo'); // 회원 정보 GET 요청
+    return response.data; // 소문자 response의 data를 반환
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error('에러 정보(axios 오류): ', error.response?.data);

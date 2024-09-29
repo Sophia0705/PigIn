@@ -1,29 +1,26 @@
-import axios from 'axios';
-import { getAccessToken, removeAccessToken } from '../../utils/localUtils'; // 유틸리티 함수 가져오기
+import axios from 'axios'; // axios 직접 사용
+import { removeAccessToken } from '../../utils/localUtils';
 
 // 로그아웃 API 호출 함수
-export const LogoutAPI = async (): Promise<void> => {
+export const logoutAPI = async (): Promise<void> => {
   try {
     // 환경 변수에서 API 기본 URL 가져오기
-    const baseURL = import.meta.env.VITE_BASE_URL; // VITE_BASE_URL 가져오기
-    const token = getAccessToken(); // 액세스 토큰 가져오기
-
-    console.log(`LogoutAPIURL : ${baseURL}member/logout`);
-    console.log('accessToken : ', token);
-    // 로그아웃 요청 (POST 방식)
+    const baseURL = import.meta.env.VITE_BASE_URL; 
+    // 로그아웃 요청 (POST 방식, application/json)
     const response = await axios.post(
       `${baseURL}member/logout`,
-      {},
+      {}, 
       {
         headers: {
-          access: `${token}`, // 액세스 토큰을 헤더에 포함
+          'Content-Type': 'application/json', // JSON 형식으로 설정
         },
       }
     );
+
     console.log('response: ', response);
 
     // 응답 상태 코드 확인
-    if (response.status == 200) {
+    if (response.status === 200) {
       // 요청이 성공하면 액세스 토큰 제거
       removeAccessToken();
 
