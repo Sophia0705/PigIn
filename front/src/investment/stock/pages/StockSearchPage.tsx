@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaSearch } from 'react-icons/fa';
 import { CgChevronLeft } from 'react-icons/cg';
 import StockSearchResults from '../components/StockSearchResults';
-import KoreanStocksData from '../../../data/KoreanStocksData.json';
+// import KoreanStocksData from '../../../data/KoreanStocksData.json';
+import { searchStocks } from '../../../api/investment/stock/StockSearch';
+import { StockListResponse } from '../../interfaces/StockInterface';
 
 const StockSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
+  const [filteredStocks, setFilteredStocks] = useState<StockListResponse[]>([]); // For search results
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -23,11 +27,19 @@ const StockSearchPage: React.FC = () => {
     navigate(-1);
   };
 
-  // 검색기록 추가하는 함수
-  const handleSearch = () => {
+  // 검색기록 추가 및 검색 api 호출하는 함수
+  const handleSearch = async () => {
     if (searchQuery && !searchHistory.includes(searchQuery)) {
       setSearchHistory([...searchHistory, searchQuery]);
       setIsSearchTriggered(true);
+
+      try {
+        const results = await searchStocks(searchQuery);
+        setFilteredStocks(results);
+        setError(null);
+      } catch (error: any) {
+        setError(error.message);
+      }
     }
   };
 
@@ -39,11 +51,11 @@ const StockSearchPage: React.FC = () => {
   };
 
   // 검색결과 반환하는 함수
-  const filteredStocks = searchQuery
-    ? KoreanStocksData.filter((stock) =>
-        stock.hts_kor_isnm.includes(searchQuery)
-      )
-    : [];
+  // const filteredStocks = searchQuery
+  //   ? KoreanStocksData.filter((stock) =>
+  //       stock.hts_kor_isnm.includes(searchQuery)
+  //     )
+  //   : [];
 
   return (
     <div className="min-h-screen flex flex-col items-start justify-start p-4 w-full">

@@ -18,28 +18,19 @@ const StockItem: React.FC<StockItemProps> = ({
   percentageChange,
   weeklyPrices,
 }) => {
-  const countZeros = (str: string): number => {
-    return (str.match(/0/g) || []).length;
-  };
-
   const isNegativeChange = percentageChange.startsWith('-');
-  const isZeroChange = countZeros(percentageChange) === 3;
-  const chartData = weeklyPrices
-    .slice()
-    .reverse()
-    .map((price, index) => {
-      const currentDate = new Date();
-      const reverseIndex = weeklyPrices.length - 1 - index;
-      const pastDate = new Date(
-        currentDate.setDate(currentDate.getDate() - reverseIndex)
-      );
-      const formattedDate = format(pastDate, 'yyyy-MM-dd');
+  const isZeroChange = parseFloat(percentageChange) === 0;
 
+  const chartData = weeklyPrices
+    .map((price, index) => {
+      const pastDate = new Date();
+      pastDate.setDate(pastDate.getDate() - index);
       return {
-        name: formattedDate,
+        name: format(pastDate, 'yyyy-MM-dd'),
         value: price,
       };
-    });
+    })
+    .reverse();
 
   const minValue = Math.min(...weeklyPrices);
   const maxValue = Math.max(...weeklyPrices);
