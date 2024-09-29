@@ -35,6 +35,7 @@ public class GoldServiceImpl implements GoldService {
     private String MY_SECURITES_BASE_URL;
 
 
+    //Todo : 내 통장에서 돈빼기 해야함
     @Override
     public void buyGoldInTime(BuyGoldDto buyGoldDto, Long userId) {
         Members member = membersRepository.findById(userId)
@@ -70,7 +71,32 @@ public class GoldServiceImpl implements GoldService {
             .build());
     }
 
-    private int getGoldPrice(){
+    @Override
+    public void sellGoldInTime(BuyGoldDto buyGoldDto, Long userId) {
+        Members member = membersRepository.findById(userId)
+            .orElseThrow(MemberNotFoundException::new);
+
+        //Todo : 현재갖은 금보다 거래금액이 더 많으면 안됨
+
+        // 금 현재가격 가져오기
+        int goldPrice = getGoldPrice();
+        int tradePrice = buyGoldDto.getTradePrice();
+
+        //count 수 세기
+        double count = getGoldCount(tradePrice, goldPrice);
+
+        goldTradeRepository.save(GoldTrade
+            .builder()
+            .member(member)
+            .method(TradeMethod.SELL)
+            .goldPrice(goldPrice)
+            .count(count)
+            .tradePrice(tradePrice)
+            .build());
+
+    }
+
+    private int getGoldPrice() {
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(new HashMap<>(),
             new HttpHeaders());
 

@@ -6,4 +6,5 @@ public interface GoldService {
 
     void buyGoldInTime(BuyGoldDto buyGoldDto, Long userId);
     void buyGoldOutTime(BuyGoldDto buyGoldDto, Long userId);
+    void sellGoldInTime(BuyGoldDto buyGoldDto, Long userId);
 }

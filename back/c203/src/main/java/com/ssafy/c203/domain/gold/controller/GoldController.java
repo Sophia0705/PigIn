@@ -25,7 +25,7 @@ public class GoldController {
 
     @PostMapping("/buy")
     public ResponseEntity<?> buyGold(@RequestBody BuyGoldDto buyGoldDto, @AuthenticationPrincipal
-        CustomUserDetails customUserDetails) {
+    CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         LocalTime now = LocalTime.now();
 
@@ -38,4 +38,15 @@ public class GoldController {
 
         return ResponseEntity.ok("거래 완료");
     }
+
+    @PostMapping("/sell")
+    public ResponseEntity<?> sellGold(@RequestBody BuyGoldDto buyGoldDto,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long userId = customUserDetails.getUserId();
+        goldService.sellGoldInTime(buyGoldDto, userId);
+
+        return ResponseEntity.ok("판매완료");
+    }
+
 }
