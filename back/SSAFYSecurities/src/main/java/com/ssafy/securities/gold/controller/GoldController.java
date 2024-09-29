@@ -30,4 +30,10 @@ public class GoldController {
         goldService.saveGold(goldService.getGold());
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/save-before-gold")
+    public ResponseEntity<?> saveBeforeGold() throws IOException {
+        goldService.saveAllGold();
+        return ResponseEntity.ok().build();
+    }
 }
