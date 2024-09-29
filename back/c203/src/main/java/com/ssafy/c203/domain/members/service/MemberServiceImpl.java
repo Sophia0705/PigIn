@@ -107,6 +107,7 @@ public class MemberServiceImpl implements MemberService {
         //Todo : getUserKey가 NULL일때 처리 필요
         members.updateUserKey(userKey);
         Members member = membersRepository.save(members);
+        String accountNo = UserKeyResponse.getBody().getAccountNo();
 
         //거래계좌 개설
         requestBody = new HashMap<>();
@@ -119,7 +120,6 @@ public class MemberServiceImpl implements MemberService {
             entity,
             String.class
         );
-        String accountNo = AccountNoResponse.getBody();
         //Todo : accountNo가 Null일때 처리 필요
         savingsAccountRepository.save(SavingsAccount
             .builder()
