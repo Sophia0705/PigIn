@@ -36,7 +36,7 @@ public class StockEmitterService {
             } catch (Exception e) {
                 deadEmitters.add(emitter);
             }
-        })
+        });
 
         emitters.removeAll(deadEmitters);
     }
