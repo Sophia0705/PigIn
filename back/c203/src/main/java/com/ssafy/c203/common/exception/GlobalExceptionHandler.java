@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.io.IOException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -35,5 +37,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationNotFoundException.class)
     public ResponseEntity<String> handleAuthenticationNotFoundException(AuthenticationNotFoundException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handleIOException(IOException ex) {
+        // 로그 출력을 막거나 커스텀 로깅 처리
+        return ResponseEntity.ok("IOException occurred but suppressed");
     }
 }
