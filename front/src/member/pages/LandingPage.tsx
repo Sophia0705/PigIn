@@ -1,36 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const [containerSize, setContainerSize] = useState({
-    width: '0px',
-    height: '0px',
-  });
 
   useEffect(() => {
-    const updateContainerSize = () => {
-      const ratio = 412 / 915;
-      const containerHeight = window.innerHeight;
-      const calculatedWidth = containerHeight * ratio;
-      setContainerSize({
-        width: `${calculatedWidth}px`,
-        height: `${containerHeight}px`,
-      });
-    };
-
-    updateContainerSize();
-    window.addEventListener('resize', updateContainerSize);
-
-    // 2초 후 자동으로 메인 페이지로 이동
     const timer = setTimeout(() => {
       navigate('/main');
     }, 2000);
 
-    return () => {
-      window.removeEventListener('resize', updateContainerSize);
-      clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
-    };
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   const handleTouch = () => {
@@ -40,18 +19,16 @@ const LandingPage = () => {
   return (
     <div
       onClick={handleTouch}
-      className="relative flex justify-center items-center h-screen bg-gray-100 overflow-hidden"
+      className="relative flex flex-col justify-center items-center min-h-screen bg-gray-100 overflow-hidden"
     >
-      <div
-        style={{ width: containerSize.width, height: containerSize.height }}
-        className="relative flex flex-col items-center justify-center bg-gray-100 overflow-hidden"
-      >
+      <div className="relative flex flex-col items-center justify-center w-full min-h-screen bg-gray-100 overflow-hidden">
         {/* 비디오 배경 */}
         <video
           autoPlay
           loop
           muted
           className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          style={{ minHeight: '100vh' }}
         >
           <source src="coin_rain.mp4" type="video/mp4" />
         </video>
