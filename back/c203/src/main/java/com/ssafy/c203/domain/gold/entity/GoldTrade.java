@@ -4,6 +4,8 @@ import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.members.entity.Members;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +29,7 @@ public class GoldTrade {
     private Long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TradeMethod method;
 
     @Column(nullable = false)

@@ -20,22 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class GoldController {
 
     private final GoldService goldService;
-    private final LocalTime GOLD_END_TIME = LocalTime.of(18, 0);
-    private final LocalTime GOLD_START_TIME = LocalTime.of(9, 0);
+
 
     @PostMapping("/buy")
     public ResponseEntity<?> buyGold(@RequestBody BuyGoldDto buyGoldDto, @AuthenticationPrincipal
     CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        LocalTime now = LocalTime.now();
-
-        //장시간 내인지 확인
-        if (now.isAfter(GOLD_END_TIME) || now.isBefore(GOLD_START_TIME)) {
-            goldService.buyGoldOutTime(buyGoldDto, userId);
-            return ResponseEntity.ok("거래 대기 완료");
-        }
-        goldService.buyGoldInTime(buyGoldDto, userId);
-
+        goldService.buyGoldRequest(buyGoldDto, userId);
         return ResponseEntity.ok("거래 완료");
     }
 
