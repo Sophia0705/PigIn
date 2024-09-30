@@ -10,7 +10,7 @@ export const searchStocks = async (
       'api/stock/search',
       {
         params: {
-          query: searchQuery,
+          keyword: searchQuery,
         },
       }
     );

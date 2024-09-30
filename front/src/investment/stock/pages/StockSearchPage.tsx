@@ -4,15 +4,22 @@ import { FaTimes, FaSearch } from 'react-icons/fa';
 import { CgChevronLeft } from 'react-icons/cg';
 import StockSearchResults from '../components/StockSearchResults';
 // import KoreanStocksData from '../../../data/KoreanStocksData.json';
+import {
+  getWeeklyStockChartData,
+  getMonthlyStockChartData,
+  getYearlyStockChartData,
+} from '../../../api/investment/stock/StockChartData';
 import { searchStocks } from '../../../api/investment/stock/StockSearch';
-import { StockListResponse } from '../../interfaces/StockInterface';
+import {
+  StockItemData,
+  StockListResponse,
+} from '../../interfaces/StockInterface';
 
 const StockSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
-  const [filteredStocks, setFilteredStocks] = useState<StockListResponse[]>([]); // For search results
-  const [error, setError] = useState<string | null>(null);
+  const [filteredStocks, setFilteredStocks] = useState<StockItemData[]>([]);
 
   const navigate = useNavigate();
 
@@ -35,10 +42,48 @@ const StockSearchPage: React.FC = () => {
 
       try {
         const results = await searchStocks(searchQuery);
-        setFilteredStocks(results);
-        setError(null);
-      } catch (error: any) {
-        setError(error.message);
+        console.log(results);
+
+        const enrichedResults = await Promise.all(
+          results.map(async (stock: StockListResponse) => {
+            try {
+              const [weeklyData, monthlyData, yearlyData] = await Promise.all([
+                getWeeklyStockChartData(stock.stockCode, 'day'),
+                getMonthlyStockChartData(stock.stockCode, 'day'),
+                getYearlyStockChartData(stock.stockCode, 'month'),
+              ]);
+
+              return {
+                hts_kor_isnm: stock.stockName,
+                stck_shrn_iscd: stock.stockCode,
+                stck_prpr: parseInt(stock.price),
+                prdy_ctrt: stock.priceChange.toString(),
+                weeklyPrices: weeklyData.map((data: { stck_clpr: string }) =>
+                  parseFloat(data.stck_clpr)
+                ),
+                monthlyPrices: monthlyData.map((data: { stck_clpr: string }) =>
+                  parseFloat(data.stck_clpr)
+                ),
+                yearlyPrices: yearlyData.map((data: { stck_clpr: string }) =>
+                  parseFloat(data.stck_clpr)
+                ),
+              };
+            } catch (error) {
+              console.error(
+                `Error fetching chart data for stock ${stock.stockCode}:`,
+                error
+              );
+              return null;
+            }
+          })
+        );
+        const validResults = enrichedResults.filter(
+          (result) => result !== null
+        ) as StockItemData[];
+
+        setFilteredStocks(validResults);
+      } catch (error) {
+        console.error('주식 데이터 불러오는 중 오류 발생:', error);
       }
     }
   };

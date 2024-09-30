@@ -1,7 +1,8 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import StockItem from "../../stock/components/StockItem";
-import { StockItemData } from "../../interfaces/StockInterface";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import StockItem from '../../stock/components/StockItem';
+import { StockItemData } from '../../interfaces/StockInterface';
+import { getIndividualStockData } from '../../../api/investment/stock/IndividualStockData';
 
 interface StockSearchResultsProps {
   filteredStocks: StockItemData[];
@@ -12,10 +13,30 @@ const StockSearchResults: React.FC<StockSearchResultsProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleItemClick = (stock: StockItemData) => {
-    navigate(`/investment/stock/${stock.stck_shrn_iscd}`, {
-      state: { item: stock },
-    });
+  const handleItemClick = async (stock: StockItemData) => {
+    try {
+      // 주식 상세정보 가져오기
+      const detailedStockData = await getIndividualStockData(
+        stock.stck_shrn_iscd
+      );
+
+      const enrichedStockData = {
+        ...detailedStockData,
+        weeklyPrices: stock.weeklyPrices,
+        monthlyPrices: stock.monthlyPrices,
+        yearlyPrices: stock.yearlyPrices,
+      };
+
+      console.log('주식 상세정보:', enrichedStockData);
+
+      navigate(`/investment/stock/${stock.stck_shrn_iscd}`, {
+        state: {
+          item: enrichedStockData,
+        },
+      });
+    } catch (error) {
+      console.error('주식 상세정보 가져오는 중 에러 발생:', error);
+    }
   };
 
   return (
@@ -34,6 +55,8 @@ const StockSearchResults: React.FC<StockSearchResultsProps> = ({
               price={stock.stck_prpr}
               percentageChange={stock.prdy_ctrt}
               weeklyPrices={stock.weeklyPrices}
+              monthlyPrices={stock.monthlyPrices}
+              yearlyPrices={stock.yearlyPrices}
             />
           </div>
         ))
