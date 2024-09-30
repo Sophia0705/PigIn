@@ -8,7 +8,6 @@ import StockDetailInfo from '../components/StockDetailInfo';
 import StockPurchaseModal from '../components/modals/StockPurchaseModal';
 import StockNews from '../components/StockNews';
 import StockSellModal from '../components/modals/StockSellModal';
-import IsLoginModal from '../../../member/components/modals/IsLoginModal';
 
 const StockDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +23,6 @@ const StockDetailPage: React.FC = () => {
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState('00');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
 
   const toggleLoginStatus = () => {
     setIsLoggedIn((prev) => !prev);
@@ -35,7 +33,7 @@ const StockDetailPage: React.FC = () => {
     if (isLoggedIn) {
       action();
     } else {
-      setIsLoginModalVisible(true);
+      console.log('로그인 하세욧');
     }
   };
 
@@ -84,10 +82,6 @@ const StockDetailPage: React.FC = () => {
   const handleSellModalClose = () => {
     setIsSellModalVisible(false);
     setSellInputValue('00');
-  };
-
-  const handleLoginModalClose = () => {
-    setIsLoginModalVisible(false);
   };
 
   if (!stockData) {
@@ -235,14 +229,6 @@ const StockDetailPage: React.FC = () => {
           onClose={handleSellModalClose}
           stockName={stockData.hts_kor_isnm}
           stockPrice={stockData.stck_prpr}
-        />
-      )}
-
-      {/* 로그인 모달 */}
-      {isLoginModalVisible && (
-        <IsLoginModal
-          isOpen={isLoginModalVisible}
-          onClose={handleLoginModalClose}
         />
       )}
     </div>

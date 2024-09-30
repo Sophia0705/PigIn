@@ -70,14 +70,14 @@ const LandingPage = () => {
 
           {/* 돼지 저금통 이미지 */}
           <img
-            src="../../../public/pig.png"
+            src="/pig.png"
             alt="Piggy Bank"
             className="w-7/8 h-auto z-20 block mx-auto"
           />
 
           {/* 동전 이미지 */}
           <img
-            src="../../../public/coin.png"
+            src="/coin.png"
             alt="Coin"
             className="absolute top-1/4 left-2/4 w-20 h-20 z-30 animate-dropCoin"
           />

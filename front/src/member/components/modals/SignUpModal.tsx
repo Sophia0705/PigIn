@@ -38,10 +38,9 @@ const SignUpModal: React.FC = () => {
   if (!isSignUpModalOpen) return null;
   // const [savingRate, setSavingRate] = useState(0); // 저축률 상태
 
-  // 이메일 유효성 검사 함수
   const isEmailFormatValid = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 간단한 이메일 정규식
-    return regex.test(email); // 유효성 검사 결과 반환
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   };
 
   // 이메일 중복 확인 요청 핸들러
@@ -91,76 +90,49 @@ const SignUpModal: React.FC = () => {
   const isPasswordValid = (password: string) => {
     const regex =
       /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+[\]{};':"\\|,.<>/?-]{8,}$/;
-    return regex.test(password); // 유효성 검사 결과 반환
+    return regex.test(password);
   };
 
-  // 생년월일 유효성 검사 함수
   const isBirthFormatValid = (birth: string): boolean => {
     const regex = /^(?:[0-9]{2})(?:0[1-9]|1[0-2])(?:0[1-9]|[12][0-9]|3[01])$/;
-    return regex.test(birth); // 유효성 검사 결과 반환
+    return regex.test(birth);
   };
 
-  // // 저축률 입력 핸들러: 입력 값이 유효한 범위(0~10)인지 확인 후 상태 업데이트
-  // const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   let value = e.target.value;
-
-  //   // 소수점 앞에 '0'이 있는 경우 소수점을 포함한 값은 그대로 유지
-  //   if (value.startsWith('0') && value.length > 1 && !value.includes('.')) {
-  //     value = value.slice(1); // 소수점이 없을 때만 앞의 0을 제거
-  //   }
-
-  //   // 숫자 값으로 변환하여 범위 검증 후 상태 업데이트
-  //   const parsedValue = parseFloat(value);
-  //   if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 10) {
-  //     setSavingRate(parsedValue); // 숫자 값으로 상태 업데이트
-  //   } else if (value === '') {
-  //     // 값이 빈 문자열일 때 0으로 설정
-  //     setSavingRate(0);
-  //   }
-  // };
-
-  // 입력 필드가 변경될 때 호출되는 핸들러 함수
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // 이메일 유효성 검사
     if (name === 'email') {
       setIsEmailValid(isEmailFormatValid(value));
     }
 
-    // 생년월일 유효성 검사
     if (name === 'birth') {
       setIsBirthValid(isBirthFormatValid(value));
     }
 
-    // 전화번호 입력 시 하이픈 자동 추가
     if (name === 'phoneNumber') {
       const formattedValue = value
-        .replace(/[^0-9]/g, '') // 숫자만 입력받기
-        .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3'); // 하이픈 추가
+        .replace(/[^0-9]/g, '')
+        .replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
       setFormData({ ...formData, phoneNumber: formattedValue });
     } else {
       setFormData({ ...formData, [name]: value });
     }
 
-    // 비밀번호와 비밀번호 확인이 일치하는지 확인
     if (name === 'password' || name === 'passwordConfirm') {
       setIsPasswordMatch(formData.password === passwordConfirm);
     }
   };
 
-  // 비밀번호 필드 변경 핸들러
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, password: e.target.value });
   };
 
-  // 비밀번호 확인 필드 입력 핸들러
   const handlePasswordConfirmChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { value } = e.target;
     setPasswordConfirm(value);
-    setIsPasswordMatch(formData.password === value); // 비밀번호 일치 여부 설정
+    setIsPasswordMatch(formData.password === value);
   };
 
   // 전화번호에서 하이픈 제거하는 함수
@@ -253,7 +225,6 @@ const SignUpModal: React.FC = () => {
     }
   };
 
-  // 인증번호 입력 변경 핸들러
   const handleAuthNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAuthenticationNumber(e.target.value);
   };
@@ -306,7 +277,6 @@ const SignUpModal: React.FC = () => {
     }
   };
 
-  // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
   const isFormValid = () => {
     return (
       formData.name &&
@@ -348,7 +318,7 @@ const SignUpModal: React.FC = () => {
             value={formData.name}
             onChange={handleChange}
             placeholder="이름"
-            className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="w-full p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
           />
           <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
           <div className="flex space-x-2 items-center">
@@ -387,35 +357,52 @@ const SignUpModal: React.FC = () => {
             </p>
           )}
 
-          {/* 생년월일 입력 필드 */}
-          <input
-            type="text"
-            name="birth"
-            value={formData.birth}
-            onChange={handleChange}
-            placeholder="생년월일 (예: 000101)"
-            className={`w-full p-2 border-none rounded focus:outline-none focus:ring-2 ${
-              isBirthValid
-                ? 'border-gray-300 focus:ring-green-300'
-                : 'border-red-500 focus:ring-red-500'
-            }`}
-          />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-          {!isBirthValid && (
-            <p className="text-xs text-red-500 mt-1">
-              유효한 생년월일을 입력해주세요.
-            </p>
-          )}
-          {/* 전화번호 입력 필드와 인증 버튼 */}
-          <div className="flex md:flex-row space-x-2 items-center">
+          <div className="relative">
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="이메일"
+              className={`w-full p-2 border-b ${
+                isEmailValid ? 'border-gray-300' : 'border-red-500'
+              } focus:outline-none focus:border-green-300`}
+              required
+            />
+            {!isEmailValid && (
+              <p className="text-xs text-red-500 mt-1">
+                유효한 이메일 주소를 입력해주세요.
+              </p>
+            )}
+          </div>
+
+          <div className="relative">
+            <input
+              type="text"
+              name="birth"
+              value={formData.birth}
+              onChange={handleChange}
+              placeholder="생년월일 (예: 000101)"
+              className={`w-full p-2 border-b ${
+                isBirthValid ? 'border-gray-300' : 'border-red-500'
+              } focus:outline-none focus:border-green-300`}
+            />
+            {!isBirthValid && (
+              <p className="text-xs text-red-500 mt-1">
+                유효한 생년월일을 입력해주세요.
+              </p>
+            )}
+          </div>
+
+          <div className="flex space-x-2 items-center">
             <input
               type="text"
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="전화번호 (예: 01012345678)"
-              className="flex-1 p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              maxLength={13} // 하이픈 포함 길이, 수정 가능
+              className="flex-1 p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
+              maxLength={13}
             />
             <button
               type="button"
@@ -430,9 +417,7 @@ const SignUpModal: React.FC = () => {
               인증 요청
             </button>
           </div>
-          <hr className="w-[240px] ml-0 border-t border-gray-300 relative top-[-12px]" />
 
-          {/* 인증번호 입력 필드 */}
           {isCodeSent && (
             <>
               <input
@@ -468,99 +453,58 @@ const SignUpModal: React.FC = () => {
               value={formData.password}
               onChange={handlePasswordChange}
               placeholder="비밀번호"
-              className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="w-full p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-8 text-gray-500 bg-transparent"
+              className="absolute right-2 top-2 text-gray-500"
             >
-              {showPassword ? (
-                <AiOutlineEyeInvisible className="bg-transparent" />
-              ) : (
-                <AiOutlineEye className="bg-transparent" />
-              )}
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
             </button>
-            {/* 비밀번호 유효성 체크 아이콘 */}
             {formData.password &&
               (isPasswordValid(formData.password) ? (
-                <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
+                <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
               ) : (
-                <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
+                <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
               ))}
           </div>
-          <div>
-            <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
-            <p className="text-xs text-gray-500 mt-0 mb-0">
-              8자 이상, 영문, 숫자 포함
-            </p>
-          </div>
-          {/* 비밀번호 확인 입력 필드 */}
-          <div className="relative flex items-center">
+          <p className="text-xs text-gray-500 mt-1">
+            8자 이상, 영문, 숫자 포함
+          </p>
+
+          <div className="relative">
             <input
               type={showPasswordConfirm ? 'text' : 'password'}
               value={passwordConfirm}
               onChange={handlePasswordConfirmChange}
               placeholder="비밀번호 확인"
-              className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="w-full p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
             />
             <button
               type="button"
               onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-              className="absolute right-8 text-gray-500 bg-transparent"
+              className="absolute right-2 top-2 text-gray-500"
             >
               {showPasswordConfirm ? (
-                <AiOutlineEyeInvisible className="bg-transparent" />
+                <AiOutlineEyeInvisible />
               ) : (
-                <AiOutlineEye className="bg-transparent" />
+                <AiOutlineEye />
               )}
             </button>
-            {/* 비밀번호 일치 여부에 따른 아이콘 표시 */}
             {passwordConfirm &&
               (isPasswordMatch ? (
-                <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
+                <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
               ) : (
-                <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
+                <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
               ))}
           </div>
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
 
-          {/* 저축률 설정 */}
-          {/* <div className="mt-4">
-            <label className="text-gray-700 text-sm block mb-2">
-              저축률 설정
-            </label>
-            <div className="flex items-center space-x-4 mt-2"> */}
-          {/* 저축률 레인지 */}
-          {/* <input
-                type="range"
-                min="0"
-                max="10"
-                step="0.1"
-                value={savingRate}
-                onChange={handleSavingRateChange}
-                className="w-4/5"
-              /> */}
-          {/* 저축률 인풋 */}
-          {/* <input
-                type="number"
-                min="0"
-                max="10"
-                step="0.1"
-                value={savingRate}
-                onChange={handleSavingRateChange}
-                className="w-1/5 p-1 text-right border-none border-gray-300 rounded"
-                disabled
-              />
-              <span className="!ml-0">%</span>
-            </div>
-          </div> */}
-          {/* 회원가입 버튼 */}
           <button
             type="submit"
             className={`w-full py-2 rounded ${
               isFormValid()
-                ? 'bg-[#9CF8E1] text-gray-900 font-semibold hover:bg-[#9CF8E1]'
+                ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             disabled={!isFormValid()}

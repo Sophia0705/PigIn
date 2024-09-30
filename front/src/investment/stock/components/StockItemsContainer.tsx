@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StockItem from './StockItem';
 import KoreanStocksData from '../../../data/KoreanStocksData.json';
+import { getStockList } from '../../../api/investment/stock/StockList';
 import { StockItemData } from '../../interfaces/StockInterface';
 
 interface StockItemsContainerProps {
@@ -13,7 +14,18 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
   const [sortedData, setSortedData] = useState<StockItemData[]>([]);
   const navigate = useNavigate();
 
+  const fetchStockList = async () => {
+    try {
+      const response = await getStockList();
+      console.log('Fetched Stock List:', response); // Log the response data
+    } catch (error) {
+      console.error('Error fetching stock list:', error); // Handle error if request fails
+    }
+  };
+
   useEffect(() => {
+    fetchStockList();
+
     const sortedStocks = [...KoreanStocksData].sort((a, b) => {
       switch (selectedOption) {
         case '시가총액':
