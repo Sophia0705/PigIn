@@ -4,11 +4,11 @@ public class NoMoneyException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return GoldException.NO_MONEY.getMessage();
+        return GoldException.NO_MONEY_EXCEPTION.getMessage();
     }
 
     public int getStatus() {
-        return GoldException.NO_MONEY.getStatus();
+        return GoldException.NO_MONEY_EXCEPTION.getStatus();
     }
 
 }

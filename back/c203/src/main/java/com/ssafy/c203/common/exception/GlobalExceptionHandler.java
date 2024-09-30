@@ -1,5 +1,7 @@
 package com.ssafy.c203.common.exception;
 
+import com.ssafy.c203.domain.gold.exception.MoreSellException;
+import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
@@ -36,6 +38,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationNotFoundException.class)
     public ResponseEntity<String> handleAuthenticationNotFoundException(AuthenticationNotFoundException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NoMoneyException.class)
+    public ResponseEntity<String> handleNoMoneyException(NoMoneyException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(MoreSellException.class)
+    public ResponseEntity<String> handleMoreSellException(MoreSellException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 
