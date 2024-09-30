@@ -5,8 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173/**",
-    "https://j11c203.p.ssafy.io/**"
+    "http://localhost:5173",
+    "https://j11c203.p.ssafy.io"
 ]
 
 app.add_middleware(
