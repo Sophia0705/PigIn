@@ -11,10 +11,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoldWaitingQueue {
 
@@ -32,4 +35,10 @@ public class GoldWaitingQueue {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
     private Members member;
+
+    @Builder
+    public GoldWaitingQueue(int tradePrice, Members member) {
+        this.tradePrice = tradePrice;
+        this.member = member;
+    }
 }

@@ -9,15 +9,11 @@ import com.ssafy.securities.gold.repository.GoldRepository;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -194,7 +190,7 @@ public class GoldServiceImpl implements GoldService {
             }
         }
         startDate = LocalDate.of(2022, 5, 1);
-        endDate = LocalDate.now().minusDays(2);
+        endDate = LocalDate.now();
 
         dateList = getDateRange.generateMonthlyStartEndDates(startDate, endDate);
 
@@ -258,5 +254,14 @@ public class GoldServiceImpl implements GoldService {
                 }
             }
         }
+    }
+
+    @Override
+    public int getGoldPrice() {
+        LocalDate today = LocalDate.now();
+        String date = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        Gold gold = goldRepository.findByDate(date);
+
+        return Integer.parseInt(gold.getClose());
     }
 }
