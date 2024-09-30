@@ -111,8 +111,11 @@ public class MemberServiceImpl implements MemberService {
 
         //거래계좌 개설
         requestBody = new HashMap<>();
-        requestBody.put("userKey", userKey);
         requestBody.put("email", members.getEmail());
+        requestBody.put("name", members.getName());
+        requestBody.put("phoneNumber", members.getPhoneNumber());
+        requestBody.put("birth", members.getBirth());
+
         entity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> AccountNoResponse = restTemplate.exchange(
             MY_SSAFYDATA_BASE_URL + "/api/account/add",

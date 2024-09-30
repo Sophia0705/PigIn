@@ -190,7 +190,7 @@ public class GoldServiceImpl implements GoldService {
             }
         }
         startDate = LocalDate.of(2022, 5, 1);
-        endDate = LocalDate.now().minusDays(2);
+        endDate = LocalDate.now();
 
         dateList = getDateRange.generateMonthlyStartEndDates(startDate, endDate);
 

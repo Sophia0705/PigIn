@@ -113,4 +113,14 @@ public class GoldServiceImpl implements GoldService {
     private double getGoldCount(int tradePrice, int goldPrice) {
         return (double) goldPrice / tradePrice;
     }
+
+    //사용자 잔고 확인
+    private boolean checkAccoung(Members member) {
+        return true;
+    }
+
+    //보유 개수 비교
+    private boolean compareGold(Members member) {
+        return true;
+    }
 }
