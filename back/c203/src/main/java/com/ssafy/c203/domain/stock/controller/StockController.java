@@ -76,7 +76,7 @@ public class StockController {
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamStocks() {
-//        log.info("streamStocks");
+        log.info("streamStocks insert");
         return stockEmitterService.addEmitter();
     }
 

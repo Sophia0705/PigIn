@@ -31,6 +31,7 @@ public class StockEmitterService {
         // 모든 emitter 대해 반복
         emitters.forEach(emitter -> {
             try {
+                log.info("send stock emitter : {}", emitter);
                 emitter.send(SseEmitter.event().name("stock-update").data(stockData));
             } catch (Exception e) {
                 deadEmitters.add(emitter);
