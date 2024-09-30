@@ -65,16 +65,93 @@ public class AccountServiceImpl implements AccountService{
                 entity,
                 FindBalanceResponse.class
         );
+        log.info(requestBody.toString());
         return Long.valueOf(response.getBody().getRec().getAccountBalance());
     }
 
+    // 임금
     @Override
-    public Boolean DepositAccount(Long memberId, Double amount) {
-        return null;
+    @Transactional(readOnly = true)
+    public Boolean depositAccount(Long memberId, Long price) {
+        // 1. 계좌번호 가져오기
+        SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
+                .orElseThrow(RuntimeException::new);
+        String accountNo = account.getAccountNo();
+
+        // 2. userKey 가져오기
+        Members member = memberService.findMemberById(memberId);
+        String userKey = member.getUserKey();
+
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/updateDemandDepositAccountDeposit";
+
+        UserHeader header = new UserHeader("updateDemandDepositAccountDeposit", apiKey, userKey);
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("Header", header);
+        requestBody.put("accountNo", accountNo);
+        requestBody.put("transactionBalance", price);
+        requestBody.put("transactionSummary", "입금");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 
+    // 출금
     @Override
-    public Boolean WithdrawAccount(Long memberId, Double amount) {
-        return null;
+    public Boolean withdrawAccount(Long memberId, Long price) {
+        // 1. 계좌번호 가져오기
+        SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
+                .orElseThrow(RuntimeException::new);
+        String accountNo = account.getAccountNo();
+
+        // 2. userKey 가져오기
+        Members member = memberService.findMemberById(memberId);
+        String userKey = member.getUserKey();
+
+        // 3. Message 생성
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/updateDemandDepositAccountWithdrawal";
+
+        UserHeader header = new UserHeader("updateDemandDepositAccountWithdrawal", apiKey, userKey);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("Header", header);
+        requestBody.put("accountNo", accountNo);
+        requestBody.put("transactionBalance", price);
+        requestBody.put("transactionSummary", "출금");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
+//        log.info(response.getBody());
+
     }
 }

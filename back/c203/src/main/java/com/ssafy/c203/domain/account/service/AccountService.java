@@ -4,7 +4,7 @@ public interface AccountService {
     // 잔고 확인
     public Long findDAccountBalanceByMemberId(Long memberId);
     // 입금
-    public Boolean DepositAccount(Long memberId, Double amount);
+    public Boolean depositAccount(Long memberId, Long price);
     // 출금
-    public Boolean WithdrawAccount(Long memberId, Double amount);
+    public Boolean withdrawAccount(Long memberId, Long price);
 }
