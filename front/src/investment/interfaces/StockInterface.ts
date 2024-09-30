@@ -43,3 +43,10 @@ export interface StockListResponse {
   price: string; // 현재가
   priceChange: number; // 가격 변동률
 }
+
+export interface StockNews {
+  Date: string;
+  NewsCompany: string;
+  NewsTitle: string;
+  Link: string;
+}

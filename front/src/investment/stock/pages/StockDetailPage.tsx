@@ -10,6 +10,7 @@ import StockDetailInfo from '../components/StockDetailInfo';
 import StockPurchaseModal from '../components/modals/StockPurchaseModal';
 import StockNews from '../components/StockNews';
 import StockSellModal from '../components/modals/StockSellModal';
+import StockLiveStream from '../components/StockLiveStream';
 
 const StockDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -194,6 +195,8 @@ const StockDetailPage: React.FC = () => {
         </div>
       </div>
 
+      {selectedTimeRange === '실시간' && <StockLiveStream />}
+
       {/* 시간 범위 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
         {['실시간', '7일', '1개월', '1년'].map((option) => (
@@ -241,7 +244,9 @@ const StockDetailPage: React.FC = () => {
       )}
 
       {/* 뉴스 */}
-      {selectedInfoType === '뉴스' && <StockNews />}
+      {selectedInfoType === '뉴스' && (
+        <StockNews stockId={stockData.stck_shrn_iscd} />
+      )}
 
       {/* 매수, 매도 버튼 */}
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
