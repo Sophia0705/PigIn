@@ -39,4 +39,6 @@ public interface MemberService {
     void addAccount(MemberAccountDto memberAccountDto, Long userId);
 
     boolean emailCheck(String email);
+
+    Members findMemberById(Long id);
 }

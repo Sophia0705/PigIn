@@ -344,4 +344,10 @@ public class MemberServiceImpl implements MemberService {
         Members member = membersRepository.findByEmail(email);
         return member != null;
     }
+
+    @Override
+    public Members findMemberById(Long id) {
+        return membersRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
+    }
 }
