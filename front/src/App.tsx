@@ -33,36 +33,48 @@ const App: React.FC = () => {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/main" element={<MainPage />} />
-          {/* LandingPage를 기본 경로로 설정 */}
+          {/* LandingPage는 Navbar 없이 렌더링 */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/investment" element={<InvestmentLayout />}>
-            <Route index element={<InvestmentPage />} />
-            <Route path="stock" element={<StockDetailLayout />}>
-              <Route index element={<StockMainPage />} />
-              <Route path="search" element={<StockSearchPage />} />
-              <Route path=":symbol" element={<StockDetailPage />} />
+
+          {/* 나머지 모든 라우트는 Navbar와 함께 렌더링 */}
+          <Route element={<NavbarWrapper />}>
+            <Route path="/main" element={<MainPage />} />
+            <Route path="/investment" element={<InvestmentLayout />}>
+              <Route index element={<InvestmentPage />} />
+              <Route path="stock" element={<StockDetailLayout />}>
+                <Route index element={<StockMainPage />} />
+                <Route path="search" element={<StockSearchPage />} />
+                <Route path=":symbol" element={<StockDetailPage />} />
+              </Route>
+              <Route path="cryptocurrency" element={<CryptoDetailLayout />}>
+                <Route index element={<CryptoMainPage />} />
+                <Route path="search" element={<CryptoSearchPage />} />
+                <Route path=":symbol" element={<CryptoDetailPage />} />
+              </Route>
+              <Route path="gold" element={<GoldDetailPage />} />
             </Route>
-            <Route path="cryptocurrency" element={<CryptoDetailLayout />}>
-              <Route index element={<CryptoMainPage />} />
-              <Route path="search" element={<CryptoSearchPage />} />
-              <Route path=":symbol" element={<CryptoDetailPage />} />
-            </Route>
-            <Route path="gold" element={<GoldDetailPage />} />
+            <Route path="/myportfolio" element={<MyPortfolio />} />
+            <Route path="/auto-invest" element={<AutoInvestment />} />
+            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/favorite" element={<FavoritePage />} />
+            <Route path="/stock-favorites" element={<StockFavoritesPage />} />
+            <Route path="/crypto-favorites" element={<CryptoFavoritesPage />} />
+            <Route path="test" element={<TestPage />} />
           </Route>
-          <Route path="/myportfolio" element={<MyPortfolio />} />
-          <Route path="/auto-invest" element={<AutoInvestment />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/mypage" element={<MyPage />} />
-          {/* 로그인된 사용자만 접근 가능한 경로 */}
-          <Route path="/favorite" element={<FavoritePage />} />
-          <Route path="/stock-favorites" element={<StockFavoritesPage />} />
-          <Route path="/crypto-favorites" element={<CryptoFavoritesPage />} />
-          <Route path="test" element={<TestPage />} />
         </Routes>
-        <Navbar />
       </Layout>
     </Router>
+  );
+};
+
+// Navbar를 포함하는 새로운 컴포넌트
+const NavbarWrapper: React.FC = () => {
+  return (
+    <>
+      <Outlet />
+      <Navbar />
+    </>
   );
 };
 
