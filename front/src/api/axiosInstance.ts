@@ -9,10 +9,16 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // CORS 관련 설정
 });
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    // 회원가입 요청인 경우 토큰을 포함하지 않음
+    if (config.url === '/member/sign-up') {
+      return config;
+    }
+
     const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -22,11 +28,9 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// response 인터셉터는 제거, 다른 용도로 사용 --> 일반적인 에러 찾는 용도
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // 여기서는 인증 관련 처리X --> authGuard 에서 쓰는걸로!
     console.error('API 요청 오류:', error);
     return Promise.reject(error);
   }

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useStore } from '../../../store/memberStore';
+import { useMemberStore } from '../../../store/memberStore';
 import { signOutAPI } from '../../../api/member/signOutAPI'; // 회원 탈퇴 API 함수
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
 
 const SignOutModal: React.FC = () => {
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
-  const { isSignOutModalOpen, closeSignOutModal, formData } = useStore();
+  const { isSignOutModalOpen, closeSignOutModal, formData } = useMemberStore();
 
   // 상태 관리 훅: 성공 및 실패 모달, 이메일 유효성 상태
   const [showSuccessModal, setShowSuccessModal] = useState(false);

@@ -5,10 +5,10 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Pagination, Navigation } from 'swiper/modules';
 import { FaPiggyBank, FaPlusCircle } from 'react-icons/fa';
-import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
+import { useMemberStore } from '../../store/memberStore'; // Zustand store 가져오기
 
 const AccountSlider: React.FC = () => {
-  const { openSpendingAccountRegisterModal } = useStore(); // 소비 계좌 등록 모달 열기 함수 가져오기
+  const { openSpendingAccountRegisterModal } = useMemberStore(); // 소비 계좌 등록 모달 열기 함수 가져오기
 
   return (
     <div className="w-[400px] h-[350px] mx-auto mt-0 relative">

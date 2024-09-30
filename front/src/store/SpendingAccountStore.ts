@@ -17,7 +17,7 @@ interface SpendingAccountStore {
 }
 
 // Zustand 스토어 생성: 상태와 상태 변경 함수를 정의
-export const useStore = create<SpendingAccountStore>((set) => ({
+export const useSpendingAccountStore = create<SpendingAccountStore>((set) => ({
   formData: {
     name: '',
     bankName: '',

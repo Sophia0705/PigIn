@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStore } from '../../../store/SpendingAccountStore'; // Zustand로 관리되는 상태를 가져옴
+import { useSpendingAccountStore } from '../../../store/SpendingAccountStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 import { AiOutlineClose } from 'react-icons/ai'; // X 아이콘
@@ -26,7 +26,7 @@ const SpendingAccountRegisterModal: React.FC<
   SpendingAccountRegisterModalProps
 > = ({ closeModal }) => {
   // Zustand 스토어에서 상태와 상태 변경 함수를 가져옵니다.
-  const { formData, setFormData } = useStore();
+  const { formData, setFormData } = useSpendingAccountStore();
 
   // 상태 관리
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 가리기/보이기 상태

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
+import { useMemberStore } from '../../store/memberStore'; // Zustand store 가져오기
 import { getMemberInfo } from '../../api/member/getMemberInfoAPI';
 import { FiEdit } from 'react-icons/fi';
 import UpdateProfileModal from './modals/UpdateProfileModal';
 
 export const MemberInfo: React.FC = () => {
   const { openUpdateProfileModal, isUpdateProfileModalOpen, setFormData } =
-    useStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
+    useMemberStore(); // 전역적으로 관리되는 상태에서 모달 열기 함수 가져오기
 
   const [memberInfo, setMemberInfo] = useState<
     {

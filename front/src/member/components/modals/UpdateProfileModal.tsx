@@ -7,10 +7,10 @@ import NewPasswordConfirmInput from '../inputs/NewPasswordConfirmInput';
 import SavingRateInput from '../inputs/SavingRateInput';
 import { updateMemberInfoAPI } from '../../../api/member/updateMemberInfoAPI';
 import { getMemberInfo } from '../../../api/member/getMemberInfoAPI';
-import { useStore } from '../../../store/memberStore'; // 상태 관리
+import { useMemberStore } from '../../../store/memberStore'; // 상태 관리
 
 const UpdateProfileModal: React.FC = () => {
-  const { closeUpdateProfileModal, formData } = useStore();
+  const { closeUpdateProfileModal, formData } = useMemberStore();
 
   const [phoneNumber, setPhoneNumber] = useState(''); // 전화번호
   const [currentPassword, setCurrentPassword] = useState(''); // 기존 비밀번호

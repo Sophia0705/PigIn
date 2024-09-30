@@ -57,7 +57,7 @@ interface MemberStore extends ModalState {
 }
 
 // Zustand 스토어 생성
-export const useStore = create<MemberStore>((set) => ({
+export const useMemberStore = create<MemberStore>((set) => ({
   // 초기 formData 상태
   formData: {
     name: '', // 이름 초기값

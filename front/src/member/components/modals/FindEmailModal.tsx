@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
+import { useMemberStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import axios from 'axios';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
@@ -12,7 +12,7 @@ const FindEmailModal: React.FC = () => {
     closeFindEmailModal,
     formData,
     setFormData,
-  } = useStore();
+  } = useMemberStore();
 
   // 상태 관리
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
