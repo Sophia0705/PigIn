@@ -3,18 +3,15 @@ import axios from 'axios';
 import axiosInstance from '../axiosInstance';
 import { setAccessToken } from '../../utils/localUtils'; // 유틸리티 함수 가져오기
 
-// 로그인 요청에 필요한 데이터 타입 정의
 interface LoginRequest {
-  username: string; // 이메일(username)로 전달
+  username: string;
   password: string;
 }
 
-// 로그인 응답에 대한 타입 정의 (accessToken만 사용)
 interface LoginResponse {
   accessToken: string;
 }
 
-// 로그인 API 호출 함수
 export const loginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
   try {
     // FormData 객체 생성
@@ -32,26 +29,22 @@ export const loginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
     });
 
     console.log('response : ', response);
-    // 응답 헤더에서 모든 헤더 값 출력 (디버깅용)
     console.log('응답 헤더:', response.headers);
 
     if (response.status === 200) {
-      // 응답 헤더에서 accessToken 추출
-      const accessToken = response.headers['access']; // 헤더에서 'access' 추출
+      const accessToken = response.headers['access'];
       console.log('access: ', accessToken);
-      // 액세스 토큰을 로컬 스토리지에 저장
-      setAccessToken(accessToken);
 
       if (!accessToken) {
         throw new Error('Access Token이 응답에 없습니다.');
       }
 
-      // 추출한 accessToken을 반환
+      setAccessToken(accessToken);
+
       console.log('액세스 토큰 발행 성공!');
       console.log('로그인 성공!');
       return { accessToken };
     } else {
-      // 상태 코드가 200이 아닌 경우 로그 출력 및 오류 처리
       console.error(
         '로그인 실패, 상태 코드:',
         response.status,
@@ -61,7 +54,6 @@ export const loginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
       throw new Error(`로그인 실패, 상태 코드: ${response.status}`);
     }
   } catch (error) {
-    // 오류 발생 시 처리
     if (axios.isAxiosError(error)) {
       console.error('로그인 요청 실패:', error.response?.data);
     } else {

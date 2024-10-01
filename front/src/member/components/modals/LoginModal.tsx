@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { loginAPI } from '../../../api/member/loginAPI';
 // import { useAuthStore } from '../../../store/AuthStore';
 import { useMemberStore } from '../../../store/memberStore';
+import { X } from 'lucide-react';
 
 // LoginModal 컴포넌트 정의
 const LoginModal: React.FC = () => {
@@ -64,18 +65,16 @@ const LoginModal: React.FC = () => {
   return (
     <div>
       {/* 모달 배경 */}
-      <div className="fixed inset-0 bg-gray-800 bg-opacity-50 z-50"></div>
+      <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 z-50"></div>
 
       {/* 모달 본체 */}
       <div className="modal-content fixed inset-0 flex items-center justify-center z-50">
         <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
           {/* 닫기 버튼 */}
-          <button
+          <X
             onClick={closeLoginModal}
             className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-white"
-          >
-            X
-          </button>
+          />
 
           {/* 모달 제목 */}
           <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">

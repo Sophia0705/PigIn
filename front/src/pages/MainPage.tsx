@@ -121,7 +121,10 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
     <div className="bg-blue-600 text-white pt-2 rounded-xl mb-4">
       <div className="flex justify-between items-center mb-4 px-2">
         <h2 className="text-lg font-semibold">{subject}</h2>
-        <ChevronRight className="w-6 h-6" />
+        <NavLink to="/myportfolio">
+          {' '}
+          <ChevronRight className="w-6 h-6" />
+        </NavLink>
       </div>
       <div className="bg-white text-black p-4 rounded-xl mb-4">
         <p className="text-xl text-right font-bold mb-4">

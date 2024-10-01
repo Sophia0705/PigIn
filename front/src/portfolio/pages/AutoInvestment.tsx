@@ -1,19 +1,16 @@
-// 1. 자동투자금 or 금액 설정 input
-// 2. Dashboard 재사용
-import Dashboard from '../components/Dashboard';
-// 3. 메뉴바(주식, 가상화페, 금) 설정하게
-// 4. 메뉴바 누른 것에 따라서 밑에 나올 결과값 & %나 금액 설정, 삭제할 곳
-
 import { useState, useMemo } from 'react';
-import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 import { useNavigate } from 'react-router-dom';
 import { Edit, ChevronLeft, XCircle } from 'lucide-react';
+import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
+// import { saveAutoInvestment } from '../../api/portfolio/autoInvestment';
+import Dashboard from '../components/Dashboard';
 
 const CATEGORIES = ['주식', '가상화폐', '금'];
 
 const AutoInvestment: React.FC = () => {
   const nav = useNavigate();
   const {
+    investmentAmount,
     setInvestmentAmount,
     allocations,
     setAllocations,
@@ -25,9 +22,9 @@ const AutoInvestment: React.FC = () => {
 
   const [localAllocations, setLocalAllocations] = useState(allocations);
   const [showInput, setShowInput] = useState(false);
-
-  const [localInvestmentAmount, setLocalInvestmentAmount] =
-    useState<string>('');
+  const [localInvestmentAmount, setLocalInvestmentAmount] = useState(
+    investmentAmount.toString()
+  );
   const [error, setError] = useState<string>('');
 
   const handleInvestmentAmountChange = (
@@ -72,36 +69,15 @@ const AutoInvestment: React.FC = () => {
       setInvestmentAmount(numericAmount);
       setAllocations(localAllocations);
 
-      // 임시로 콘솔에 로그 출력
-      console.log('설정이 저장되었습니다:', {
-        investmentAmount: localInvestmentAmount,
-        allocations: localAllocations,
-        isEnabled: isAutoInvestmentEnabled,
-      });
+      // API를 통한 설정 저장
+      // await saveAutoInvestmentSettings({
+      //   investmentAmount: numericAmount,
+      //   allocations: localAllocations,
+      //   isEnabled: isAutoInvestmentEnabled,
+      // });
 
-      // 임시 성공 메시지 표시
+      // 성공 메시지 표시
       alert('설정이 성공적으로 저장되었습니다.');
-
-      //       // API 호출을 통한 DB 저장
-      //       const response = await fetch('api주소', {
-      //         method: 'POST',
-      //         headers: {
-      //             // 아마도...?
-      //           'Content-Type': 'application/json',
-      //         },
-      //         body: JSON.stringify({
-      //           investmentAmount: localInvestmentAmount,
-      //           allocations: localAllocations,
-      //           isEnabled: isAutoInvestmentEnabled,
-      //         }),
-      //       });
-
-      //       if (!response.ok) {
-      //         throw new Error('자동 투자 설정 저장에 실패했습니다');
-      //       }
-
-      //       // 성공 메시지 표시
-      //       alert('설정이 성공적으로 저장되었습니다.');
     } catch (error) {
       console.error('자동 투자 설정 저장 중 오류:', error);
       alert('설정 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -181,7 +157,7 @@ const AutoInvestment: React.FC = () => {
               <p className="text-lg mb-2">자동 투자금액 설정금액</p>
               <div className="flex items-center justify-center">
                 <p className="text-3xl font-bold mr-2">
-                  {localInvestmentAmount.toLocaleString()}원
+                  {Number(localInvestmentAmount).toLocaleString()}원
                 </p>
                 <Edit onClick={() => setShowInput(true)} />
               </div>
@@ -213,8 +189,11 @@ const AutoInvestment: React.FC = () => {
 
             {/* 나중에 여기 내부 스크롤되게 만들어야 함 */}
             {memoizedAllocations.map((allocation) => (
-              <div className="p-4 rounded-lg bg-white mb-4">
-                <div key={allocation.symbol} className="flex items-center">
+              <div
+                key={allocation.symbol}
+                className="p-4 rounded-lg bg-white mb-4"
+              >
+                <div className="flex items-center">
                   <div className="w-3/4 mr-4">
                     <span className="text-black text-lg mb-2 block">
                       {allocation.symbol}

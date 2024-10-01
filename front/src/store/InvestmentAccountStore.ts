@@ -16,15 +16,17 @@ interface InvestmentAccountStore {
 }
 
 // Zustand 스토어 생성: 상태와 상태 변경 함수를 정의
-export const useStore = create<InvestmentAccountStore>((set) => ({
-  formData: {
-    name: '',
-    phoneNumber: '',
-    savingRate: 0,
-    password: '',
-  },
-  setFormData: (newFormData) =>
-    set((state) => ({
-      formData: { ...state.formData, ...newFormData },
-    })),
-}));
+export const useInvestmentAccountStore = create<InvestmentAccountStore>(
+  (set) => ({
+    formData: {
+      name: '',
+      phoneNumber: '',
+      savingRate: 0,
+      password: '',
+    },
+    setFormData: (newFormData) =>
+      set((state) => ({
+        formData: { ...state.formData, ...newFormData },
+      })),
+  })
+);
