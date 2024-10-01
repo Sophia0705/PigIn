@@ -1,20 +1,12 @@
 import axios from 'axios'; // axios 직접 사용
+import axiosInstance from '../axiosInstance';
 import { removeAccessToken } from '../../utils/localUtils';
 
 // 로그아웃 API 호출 함수
 export const logoutAPI = async (): Promise<void> => {
   try {
-    // 환경 변수에서 API 기본 URL 가져오기
-    const baseURL = import.meta.env.VITE_BASE_URL; 
     // 로그아웃 요청 (POST 방식, application/json)
-    const response = await axios.post(
-      `${baseURL}member/logout`,
-      {
-        headers: {
-          'Content-Type': 'application/json', // JSON 형식으로 설정
-        },
-      }
-    );
+    const response = await axiosInstance.post('member/logout');
 
     console.log('response: ', response);
 

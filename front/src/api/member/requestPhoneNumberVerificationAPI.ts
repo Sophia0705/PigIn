@@ -17,12 +17,7 @@ export const requestPhoneNumberVerificationAPI = async (
     // POST 요청으로 전화번호 전송하여 인증번호 요청
     const response = await axiosInstance.post<AxiosResponse>(
       'member/mms-number-generate',
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      data
     );
 
     // 응답이 성공적일 경우

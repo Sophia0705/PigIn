@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMemberStore } from '../../store/memberStore'; // Zustand store 가져오기
-import { getMemberInfo } from '../../api/member/getMemberInfoAPI';
+import { getMemberInfoAPI } from '../../api/member/getMemberInfoAPI';
 import { FiEdit } from 'react-icons/fi';
 import UpdateProfileModal from './modals/UpdateProfileModal';
 
@@ -25,7 +25,7 @@ export const MemberInfo: React.FC = () => {
     // 컴포넌트가 마운트될 때 회원 정보를 불러옴
     const fetchMemberInfo = async () => {
       try {
-        const data = await getMemberInfo(); // API 호출하여 회원 정보 가져오기
+        const data = await getMemberInfoAPI(); // API 호출하여 회원 정보 가져오기
         // 가져온 데이터로 userInfo 상태 업데이트
         console.log('MemberInfo data: ', data);
 

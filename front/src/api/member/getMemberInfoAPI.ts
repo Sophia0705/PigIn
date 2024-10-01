@@ -11,7 +11,7 @@ interface Data {
 }
 
 // 회원 정보를 불러오는 API 함수
-export const getMemberInfo = async (): Promise<Data> => {
+export const getMemberInfoAPI = async (): Promise<Data> => {
   try {
     const response = await axiosInstance.get<Data>('member/userInfo'); // 회원 정보 GET 요청
     return response.data; // 소문자 response의 data를 반환

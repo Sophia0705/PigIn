@@ -137,18 +137,17 @@ const SpendingAccountRegisterModal: React.FC = () => {
   return (
     <div className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       {/* 모달 본체 */}
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up">
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
+          소비 계좌 등록
+        </h2>
         {/* X 버튼 추가 */}
         <button
           onClick={closeSpendingAccountRegisterModal}
           className="absolute top-4 right-4 text-gray-600 text-2xl hover:text-gray-900"
         >
-          X
+          <AiOutlineClose />
         </button>
-        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
-          소비 계좌 등록
-        </h2>
-
         <form
           onSubmit={handleSubmit}
           className="flex flex-col space-y-3 w-full"

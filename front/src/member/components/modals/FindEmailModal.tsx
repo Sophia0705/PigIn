@@ -130,11 +130,13 @@ const FindEmailModal: React.FC = () => {
         formData.phoneNumber
       );
 
-      // 쿼리 파라미터로 전달할 데이터 설정
+      // 전달할 데이터 설정
       const data = {
         name: formData.name,
         phoneNumber: sanitizedPhoneNumber,
       };
+
+      console.log('제출 데이터 : ', data);
 
       // POST 요청 시, 데이터는 쿼리 파라미터로 전달
       const response = await axiosInstance.post(
@@ -143,11 +145,14 @@ const FindEmailModal: React.FC = () => {
       );
       if (response.status === 200) {
         setSuccessMessage('이메일 찾기가 성공적으로 완료되었습니다.');
-        console.log('');
+        alert(`찾은 이메일 : ${response.data}`);
+        console.log(response.data);
+        formData.email = response.data;
         setShowSuccessModal(true);
         closeFindEmailModal();
         openLoginModal();
       } else {
+        console.log('이메일 찾기 실패!');
         setFailMessage('이메일을 찾을 수 없습니다.');
         setShowFailModal(true);
       }
@@ -175,7 +180,7 @@ const FindEmailModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       {/* 모달 본체 */}
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">

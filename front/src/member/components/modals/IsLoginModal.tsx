@@ -4,7 +4,8 @@ import { useMemberStore } from '../../../store/memberStore'; // zustand 스토�
 
 const IsLoginModal: React.FC = () => {
   const navigate = useNavigate();
-  const { isIsLoginModalOpen, closeIsLoginModal, openLoginModal } = useMemberStore();
+  const { isIsLoginModalOpen, closeIsLoginModal, openLoginModal } =
+    useMemberStore();
 
   if (!isIsLoginModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
 
@@ -19,7 +20,7 @@ const IsLoginModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-lg font-semibold mb-4">로그인이 필요합니다</h2>
         <p className="mb-6">로그인 페이지로 이동하시겠습니까?</p>

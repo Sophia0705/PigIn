@@ -1,5 +1,6 @@
 // import axiosInstance from '../axiosInstance';
 import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import { setAccessToken } from '../../utils/localUtils'; // 유틸리티 함수 가져오기
 
 // 로그인 요청에 필요한 데이터 타입 정의
@@ -16,21 +17,20 @@ interface LoginResponse {
 // 로그인 API 호출 함수
 export const loginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
   try {
-    // 환경 변수에서 API 기본 URL 가져오기
-    const baseURL = import.meta.env.VITE_BASE_URL; // VITE_BASE_URL 가져오기
     // FormData 객체 생성
     const formData = new FormData();
     formData.append('username', data.username); // username을 FormData에 추가
     formData.append('password', data.password); // password를 FormData에 추가
-    console.log('LoginAPI : ', data.username, data.password);
+    console.log('LoginAPI data : ', data);
 
     // 서버에 로그인 요청 (FormData 전송)
-    const response = await axios.post(`${baseURL}member/login`, formData, {
+    const response = await axiosInstance.post('member/login', formData, {
       headers: {
         'Content-Type': 'multipart/form-data', // FormData 전송을 위한 Content-Type 설정
       },
       withCredentials: true, // 쿠키나 세션 정보를 전송하기 위한 설정
     });
+
     console.log('response : ', response);
     // 응답 헤더에서 모든 헤더 값 출력 (디버깅용)
     console.log('응답 헤더:', response.headers);

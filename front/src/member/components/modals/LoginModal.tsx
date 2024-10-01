@@ -67,7 +67,7 @@ const LoginModal: React.FC = () => {
       <div className="fixed inset-0 bg-gray-800 bg-opacity-50 z-50"></div>
 
       {/* 모달 본체 */}
-      <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="modal-content fixed inset-0 flex items-center justify-center z-50">
         <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
           {/* 닫기 버튼 */}
           <button

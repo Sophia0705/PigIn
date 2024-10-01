@@ -6,7 +6,7 @@ import NewPasswordInput from '../inputs/NewPasswordInput';
 import NewPasswordConfirmInput from '../inputs/NewPasswordConfirmInput';
 import SavingRateInput from '../inputs/SavingRateInput';
 import { updateMemberInfoAPI } from '../../../api/member/updateMemberInfoAPI';
-import { getMemberInfo } from '../../../api/member/getMemberInfoAPI';
+import { getMemberInfoAPI } from '../../../api/member/getMemberInfoAPI';
 import { useMemberStore } from '../../../store/memberStore'; // 상태 관리
 import SignOutModal from './SignOutModal';
 
@@ -26,7 +26,7 @@ const UpdateProfileModal: React.FC = () => {
   useEffect(() => {
     const fetchMemberInfo = async () => {
       try {
-        const memberInfo = await getMemberInfo();
+        const memberInfo = await getMemberInfoAPI();
         setPhoneNumber(memberInfo.phoneNumber); // 초기 전화번호 설정
       } catch (error) {
         console.error('회원 정보 불러오기 실패:', error);
