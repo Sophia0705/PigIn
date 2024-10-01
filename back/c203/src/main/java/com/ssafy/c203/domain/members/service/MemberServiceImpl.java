@@ -93,7 +93,7 @@ public class MemberServiceImpl implements MemberService {
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<UserKeyDto> UserKeyResponse = restTemplate.exchange(
-            MY_SSAFYDATA_BASE_URL + "/api/users/add",
+            MY_SSAFYDATA_BASE_URL + "/api/user/add",
             HttpMethod.POST,
             entity,
             UserKeyDto.class
@@ -114,7 +114,7 @@ public class MemberServiceImpl implements MemberService {
 
         entity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> AccountNoResponse = restTemplate.exchange(
-            MY_SSAFYDATA_BASE_URL + "/api/accounts/add",
+            MY_SSAFYDATA_BASE_URL + "/api/account/add",
             HttpMethod.POST,
             entity,
             String.class
