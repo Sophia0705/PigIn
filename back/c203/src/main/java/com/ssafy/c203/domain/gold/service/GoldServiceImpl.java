@@ -110,6 +110,22 @@ public class GoldServiceImpl implements GoldService {
         return response.getBody();
     }
 
+    @Override
+    public List<GoldYearDto> goldMonthList() {
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(new HashMap<>(),
+            new HttpHeaders());
+
+        ResponseEntity<List<GoldYearDto>> response = restTemplate.exchange(
+            MY_SECURITES_BASE_URL + "/api/gold/months",
+            HttpMethod.GET,
+            entity,
+            new ParameterizedTypeReference<List<GoldYearDto>>() {
+            }
+        );
+
+        return response.getBody();
+    }
+
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
         int goldPrice = getGoldPrice();
         int tradePrice = goldTradeDto.getTradePrice();
