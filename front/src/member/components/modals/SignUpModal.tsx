@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AxiosError } from 'axios'; // AxiosError를 임포트
-import { useStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
+import { useMemberStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 import axios from 'axios';
@@ -16,7 +16,7 @@ const SignUpModal: React.FC = () => {
     closeSignUpModal,
     formData,
     setFormData,
-  } = useStore();
+  } = useMemberStore();
 
   // 상태 관리 훅: 인증번호 전송 여부, 비밀번호 확인, 이메일 및 생년월일 유효성 상태 등
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
@@ -356,25 +356,6 @@ const SignUpModal: React.FC = () => {
               유효한 이메일 주소를 입력해주세요.
             </p>
           )}
-
-          <div className="relative">
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="이메일"
-              className={`w-full p-2 border-b ${
-                isEmailValid ? 'border-gray-300' : 'border-red-500'
-              } focus:outline-none focus:border-green-300`}
-              required
-            />
-            {!isEmailValid && (
-              <p className="text-xs text-red-500 mt-1">
-                유효한 이메일 주소를 입력해주세요.
-              </p>
-            )}
-          </div>
 
           <div className="relative">
             <input

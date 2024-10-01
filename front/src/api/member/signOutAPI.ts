@@ -1,21 +1,12 @@
 import { AxiosResponse } from 'axios';
 import axiosInstance from '../axiosInstance';
 
-// 로그인 요청에 필요한 데이터 타입 정의
-interface SignOutRequest {
-  username: string; // 이메일(username)로 전달
-}
-
 // 회원 탈퇴 API 함수
-export const signOutAPI = async (data: SignOutRequest): Promise<boolean> => {
+export const signOutAPI = async (): Promise<boolean> => {
   try {
     // 회원 탈퇴 요청 (DELETE 방식)
-    const response: AxiosResponse = await axiosInstance.delete(
-      'member/withdrawal',
-      {
-        data,
-      }
-    );
+    const response: AxiosResponse =
+      await axiosInstance.delete('member/withdrawal');
 
     // 성공적인 응답 처리
     if (response.status === 200) {

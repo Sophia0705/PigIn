@@ -1,8 +1,8 @@
 import React from 'react';
-import { useStore } from '../../../store/memberStore'; // Zustand 스토어 가져오기
+import { useMemberStore } from '../../../store/memberStore'; // Zustand 스토어 가져오기
 
 const SavingRateInput: React.FC = () => {
-  const { formData, setFormData } = useStore(); // Zustand에서 저축률 상태 및 함수 가져오기
+  const { formData, setFormData } = useMemberStore(); // Zustand에서 저축률 상태 및 함수 가져오기
   const savingRate = formData.savingRate; // 저축률 상태 가져오기
 
   const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {

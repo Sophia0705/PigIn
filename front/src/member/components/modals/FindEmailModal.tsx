@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
+import { useMemberStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import axios from 'axios';
+import axiosInstance from '../../../api/axiosInstance';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
 
@@ -12,7 +13,7 @@ const FindEmailModal: React.FC = () => {
     closeFindEmailModal,
     formData,
     setFormData,
-  } = useStore();
+  } = useMemberStore();
 
   // 상태 관리
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
@@ -130,16 +131,16 @@ const FindEmailModal: React.FC = () => {
       );
 
       // 쿼리 파라미터로 전달할 데이터 설정
-      const params = {
+      const data = {
         name: formData.name,
         phoneNumber: sanitizedPhoneNumber,
       };
 
-      // GET 요청 시, 데이터는 쿼리 파라미터로 전달
-      const response = await axios.get(`${BASE_URL}member/find-id`, {
-        params, // 데이터를 쿼리 파라미터로 전송
-      });
-
+      // POST 요청 시, 데이터는 쿼리 파라미터로 전달
+      const response = await axiosInstance.post(
+        'member/find-id',
+        data // 데이터를 request body로 전송
+      );
       if (response.status === 200) {
         setSuccessMessage('이메일 찾기가 성공적으로 완료되었습니다.');
         console.log('');

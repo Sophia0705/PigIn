@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import LoginModalManager from '../components/LoginModalManager'; // 모달 관리자
 import { getAccessToken } from '../../utils/localUtils';
-import { useStore } from '../../store/memberStore';
+import { useMemberStore } from '../../store/memberStore';
 
 interface AuthGuardProps {
   children: React.ReactNode; // 보호할 컴포넌트 (MyPage 등의 콘텐츠)
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-  const { openLoginModal } = useStore();
+  const { openLoginModal } = useMemberStore();
   const [isTokenValid, setIsTokenValid] = useState<boolean>(false);
 
   useEffect(() => {

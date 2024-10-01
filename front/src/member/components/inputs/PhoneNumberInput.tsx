@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useStore } from '../../../store/memberStore'; // Zustand 스토어 가져오기
+import { useMemberStore } from '../../../store/memberStore'; // Zustand 스토어 가져오기
 import { requestPhoneNumberVerificationAPI } from '../../../api/member/requestPhoneNumberVerificationAPI'; // 인증 요청 API
-import { compareVerificationCode } from '../../../api/member/compareVerificationCode'; // 인증 확인 API
+import { compareVerificationCodeAPI } from '../../../api/member/compareVerificationCodeAPI'; // 인증 확인 API
 
 const PhoneNumberInput: React.FC = () => {
-  const { formData, setFormData } = useStore(); // formData와 setFormData 가져오기
+  const { formData, setFormData } = useMemberStore(); // formData와 setFormData 가져오기
   const phoneNumber = formData.phoneNumber; // Zustand에서 전화번호 가져오기
 
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증 코드 전송 여부
@@ -62,7 +62,7 @@ const PhoneNumberInput: React.FC = () => {
   const verifyAuthenticationCode = async () => {
     const sanitizedPhoneNumber = phoneNumber.replace(/-/g, ''); // 하이픈 제거
 
-    const success = await compareVerificationCode({
+    const success = await compareVerificationCodeAPI({
       phoneNumber: sanitizedPhoneNumber,
       authenticationNumber,
     });

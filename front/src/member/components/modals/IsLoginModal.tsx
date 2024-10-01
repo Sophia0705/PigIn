@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '../../../store/memberStore'; // zustand 스토어 가져오기
+import { useMemberStore } from '../../../store/memberStore'; // zustand 스토어 가져오기
 
 const IsLoginModal: React.FC = () => {
   const navigate = useNavigate();
-  const { isIsLoginModalOpen, closeIsLoginModal, openLoginModal } = useStore();
+  const { isIsLoginModalOpen, closeIsLoginModal, openLoginModal } = useMemberStore();
 
   if (!isIsLoginModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
 

@@ -1,11 +1,11 @@
 // ModalManager.tsx
 import React from 'react';
-import IsLoginModal from './modals/IsLoginModal';
+import IsLoginModal from './modals/isLoginModal';
 import LoginModal from './modals/LoginModal';
 import SignUpModal from './modals/SignUpModal';
 import FindEmailModal from './modals/FindEmailModal';
 // import FindPasswordModal from './modals/FindPasswordModal';
-import { useStore } from '../../store/memberStore';
+import { useMemberStore } from '../../store/memberStore';
 
 const LoginModalManager: React.FC = () => {
   const {
@@ -14,7 +14,7 @@ const LoginModalManager: React.FC = () => {
     isSignUpModalOpen,
     isFindEmailModalOpen,
     // isFindPasswordModalOpen,
-  } = useStore();
+  } = useMemberStore();
 
   return (
     <>

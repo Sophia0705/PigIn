@@ -25,7 +25,6 @@ interface ModalState {
   isIsLoginModalOpen: boolean; // 로그인 여부 모달 열림 여부
   isUpdateProfileModalOpen: boolean; // 회원 정보 수정 모달 열림 여부
   isSignOutModalOpen: boolean; // 회원 탈퇴 모달 열림 여부
-  isSpendingAccountRegisterModalOpen: boolean; // 소비 계좌 등록 모달 열림 여부
 }
 
 // Zustand 스토어의 타입 정의
@@ -52,12 +51,10 @@ interface MemberStore extends ModalState {
   closeUpdateProfileModal: () => void; // 회원 정보 수정 모달 닫기 함수
   openSignOutModal: () => void; // 회원 탈퇴 모달 열기 함수
   closeSignOutModal: () => void; // 회원 탈퇴 모달 닫기 함수
-  openSpendingAccountRegisterModal: () => void; // 소비 계좌 등록 모달 열기 함수
-  closeSpendingAccountRegisterModal: () => void; // 소비 계좌 등록 모달 닫기 함수
 }
 
 // Zustand 스토어 생성
-export const useStore = create<MemberStore>((set) => ({
+export const useMemberStore = create<MemberStore>((set) => ({
   // 초기 formData 상태
   formData: {
     name: '', // 이름 초기값
@@ -81,7 +78,6 @@ export const useStore = create<MemberStore>((set) => ({
   isFindPasswordModalOpen: false, // 비밀번호 찾기 모달 초기 상태
   isUpdateProfileModalOpen: false, // 회원 정보 수정 모달 초기 상태
   isSignOutModalOpen: false, // 회원 탈퇴 모달 초기 상태
-  isSpendingAccountRegisterModalOpen: false, // 소비 계좌 등록 모달 초기 상태
 
   // 로그인 여부 초기 상태
   isLoggedIn: false,
@@ -125,8 +121,4 @@ export const useStore = create<MemberStore>((set) => ({
   closeUpdateProfileModal: () => set({ isUpdateProfileModalOpen: false }), // 회원 정보 수정 모달 닫기
   openSignOutModal: () => set({ isSignOutModalOpen: true }), // 회원 탈퇴 모달 열기
   closeSignOutModal: () => set({ isSignOutModalOpen: false }), // 회원 탈퇴 모달 닫기
-  openSpendingAccountRegisterModal: () =>
-    set({ isSpendingAccountRegisterModalOpen: true }), // 소비 계좌 등록 모달 열기
-  closeSpendingAccountRegisterModal: () =>
-    set({ isSpendingAccountRegisterModalOpen: false }), // 소비 계좌 등록 모달 닫기
 }));

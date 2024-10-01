@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { loginAPI } from '@/api/member/LoginAPI';
+import { loginAPI } from '../../../api/member/loginAPI';
 // import { useAuthStore } from '../../../store/AuthStore';
-import { useStore } from '../../../store/memberStore';
+import { useMemberStore } from '../../../store/memberStore';
 
 // LoginModal 컴포넌트 정의
 const LoginModal: React.FC = () => {
@@ -13,7 +13,7 @@ const LoginModal: React.FC = () => {
     openFindEmailModal,
     openFindPasswordModal,
     checkLoginStatus,
-  } = useStore();
+  } = useMemberStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

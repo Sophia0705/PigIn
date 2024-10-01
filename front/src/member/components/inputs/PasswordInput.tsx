@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useStore } from '../../../store/memberStore'; // Zustand 스토어 가져오기
+import { useMemberStore } from '../../../store/memberStore'; // Zustand 스토어 가져오기
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const PasswordInput: React.FC = () => {
-  const { formData, setFormData } = useStore(); // Zustand에서 비밀번호 상태 및 함수 가져오기
+  const { formData, setFormData } = useMemberStore(); // Zustand에서 비밀번호 상태 및 함수 가져오기
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 표시 여부
   const password = formData.password; // Zustand에서 비밀번호 가져오기
 

@@ -8,7 +8,7 @@ interface CompareVerificationRequest {
 }
 
 // 인증번호 비교 API 함수
-export const compareVerificationCode = async (
+export const compareVerificationCodeAPI = async (
   data: CompareVerificationRequest
 ): Promise<AxiosResponse> => {
   try {

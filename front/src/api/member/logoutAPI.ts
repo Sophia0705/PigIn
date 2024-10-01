@@ -9,7 +9,6 @@ export const logoutAPI = async (): Promise<void> => {
     // 로그아웃 요청 (POST 방식, application/json)
     const response = await axios.post(
       `${baseURL}member/logout`,
-      {}, 
       {
         headers: {
           'Content-Type': 'application/json', // JSON 형식으로 설정

@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { useStore } from '../../../store/SpendingAccountStore'; // Zustand로 관리되는 상태를 가져옴
+import { useSpendingAccountStore } from '../../../store/SpendingAccountStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 import { AiOutlineClose } from 'react-icons/ai'; // X 아이콘
-
-interface SpendingAccountRegisterModalProps {
-  closeModal: () => void;
-}
 
 const bankOptions = [
   '싸피뱅크',
@@ -22,11 +18,10 @@ const bankOptions = [
   '케이뱅크',
 ];
 
-const SpendingAccountRegisterModal: React.FC<
-  SpendingAccountRegisterModalProps
-> = ({ closeModal }) => {
+const SpendingAccountRegisterModal: React.FC = () => {
   // Zustand 스토어에서 상태와 상태 변경 함수를 가져옵니다.
-  const { formData, setFormData } = useStore();
+  const { formData, setFormData, closeSpendingAccountRegisterModal } =
+    useSpendingAccountStore();
 
   // 상태 관리
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 가리기/보이기 상태
@@ -140,15 +135,15 @@ const SpendingAccountRegisterModal: React.FC<
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#0e2b2f] w-full">
+    <div className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       {/* 모달 본체 */}
-      <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg w-[95%] max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-full flex flex-col items-center">
+      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         {/* X 버튼 추가 */}
         <button
-          onClick={closeModal}
+          onClick={closeSpendingAccountRegisterModal}
           className="absolute top-4 right-4 text-gray-600 text-2xl hover:text-gray-900"
         >
-          <AiOutlineClose />
+          X
         </button>
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
           소비 계좌 등록

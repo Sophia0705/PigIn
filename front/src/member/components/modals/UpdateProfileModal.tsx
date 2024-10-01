@@ -7,10 +7,16 @@ import NewPasswordConfirmInput from '../inputs/NewPasswordConfirmInput';
 import SavingRateInput from '../inputs/SavingRateInput';
 import { updateMemberInfoAPI } from '../../../api/member/updateMemberInfoAPI';
 import { getMemberInfo } from '../../../api/member/getMemberInfoAPI';
-import { useStore } from '../../../store/memberStore'; // 상태 관리
+import { useMemberStore } from '../../../store/memberStore'; // 상태 관리
+import SignOutModal from './SignOutModal';
 
 const UpdateProfileModal: React.FC = () => {
-  const { closeUpdateProfileModal, formData } = useStore();
+  const {
+    closeUpdateProfileModal,
+    openSignOutModal,
+    isSignOutModalOpen,
+    formData,
+  } = useMemberStore();
 
   const [phoneNumber, setPhoneNumber] = useState(''); // 전화번호
   const [currentPassword, setCurrentPassword] = useState(''); // 기존 비밀번호
@@ -43,12 +49,12 @@ const UpdateProfileModal: React.FC = () => {
       phoneNumber: string;
       oldPassword: string;
       newPassword?: string;
-      change: boolean;
+      isChange: boolean;
     } = {
       savingRate: formData.savingRate, // Zustand에서 가져온 저축률 사용
       phoneNumber,
       oldPassword: currentPassword,
-      change: isPasswordEditEnabled ? true : false, // 비밀번호 수정 여부를 결정
+      isChange: isPasswordEditEnabled ? true : false, // 비밀번호 수정 여부를 결정
     };
 
     if (isPasswordEditEnabled) {
@@ -124,7 +130,7 @@ const UpdateProfileModal: React.FC = () => {
             회원 정보 수정
           </h2>
           <button
-            onClick={() => console.log('openSignOutModal() 호출 필요')}
+            onClick={openSignOutModal}
             className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center"
           >
             <FaUserMinus className="mr-1" /> {/* 탈퇴 아이콘 */}
@@ -222,6 +228,7 @@ const UpdateProfileModal: React.FC = () => {
             </button>
           </div>
         </form>
+        {isSignOutModalOpen && <SignOutModal />}
       </div>
     </div>
   );

@@ -26,7 +26,6 @@ import FavoritePage from './member/pages/FavoritePage';
 import StockFavoritesPage from './member/pages/StockFavoritesPage';
 import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
 import TestPage from './member/pages/TestPage';
-// import ProtectedRoute from './member/components/ProtectedRoute';
 
 const App: React.FC = () => {
   return (

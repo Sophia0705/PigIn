@@ -7,7 +7,7 @@ interface UpdateMemberInfoRequest {
   phoneNumber: string;
   oldPassword: string;
   newPassword?: string; // 비밀번호 변경 시 새로운 비밀번호 포함
-  change: boolean; // 비밀번호 변경 여부
+  isChange: boolean; // 비밀번호 변경 여부
 }
 
 // 회원 정보 수정 API 함수

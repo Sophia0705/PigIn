@@ -2,7 +2,7 @@
 import { MemberInfo } from '../components/MemberInfo';
 import AccountSlider from '../components/AccountSlider';
 import { useEffect } from 'react';
-import { useStore } from '../../store/memberStore';
+import { useMemberStore } from '../../store/memberStore';
 // import LoginModalManager from '../components/LoginModalManager';
 // import { getAccessToken } from '../../utils/localUtils';
 // import UpdateProfileModal from '../components/modals/UpdateProfileModal';
@@ -13,7 +13,7 @@ import { FiLogOut } from 'react-icons/fi'; // 로그아웃 아이콘 임포트
 import { logoutAPI } from '../../api/member/logoutAPI';
 
 const MyPage: React.FC = () => {
-  const { checkLoginStatus, isLoggedIn } = useStore();
+  const { checkLoginStatus, isLoggedIn } = useMemberStore();
 
   useEffect(() => {
     checkLoginStatus(); // 페이지 로드 시 로그인 상태 확인
