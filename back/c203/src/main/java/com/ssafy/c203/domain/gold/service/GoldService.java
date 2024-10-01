@@ -7,5 +7,8 @@ import java.util.List;
 public interface GoldService {
 
     void goldTradeRequest(GoldTradeDto buyGoldDto, Long userId);
+
     List<GoldYearDto> goldYearList();
+
+    List<GoldYearDto> goldDayList();
 }

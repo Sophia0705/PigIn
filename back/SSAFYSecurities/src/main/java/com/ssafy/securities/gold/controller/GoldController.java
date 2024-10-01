@@ -42,8 +42,13 @@ public class GoldController {
         return ResponseEntity.ok(goldService.getGoldPrice());
     }
 
-    @GetMapping("/")
+    @GetMapping("/years")
     public ResponseEntity<?> getGold() throws IOException {
         return ResponseEntity.ok(goldService.getGoldList());
+    }
+
+    @GetMapping("/weeks")
+    public ResponseEntity<?> getGoldWeeks(){
+        return ResponseEntity.ok(goldService.getGoldDaysList());
     }
 }
