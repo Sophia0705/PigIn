@@ -1,204 +1,237 @@
-// import React, { useState, useEffect } from 'react';
-// import { useStore } from '../../../store/memberStore';
-// import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-// import { FaCheckCircle, FaTimesCircle, FaUserMinus } from 'react-icons/fa'; // 탈퇴 아이콘 추가
-// // import SuccessModal from './SuccessModal';
-// import WithdrawalModal from './WithDrawalModal'; // 회원 탈퇴 모달 추가
+import React, { useState, useEffect } from 'react';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { FaCheckCircle, FaTimesCircle, FaUserMinus } from 'react-icons/fa';
+import PhoneNumberInput from '../inputs/PhoneNumberInput';
+import NewPasswordInput from '../inputs/NewPasswordInput';
+import NewPasswordConfirmInput from '../inputs/NewPasswordConfirmInput';
+import SavingRateInput from '../inputs/SavingRateInput';
+import { updateMemberInfoAPI } from '../../../api/member/updateMemberInfoAPI';
+import { getMemberInfoAPI } from '../../../api/member/getMemberInfoAPI';
+import { useMemberStore } from '../../../store/memberStore'; // 상태 관리
+import SignOutModal from './SignOutModal';
 
-// interface UpdateProfileModalProps {
-//   closeModal: () => void;
-// }
+const UpdateProfileModal: React.FC = () => {
+  const {
+    closeUpdateProfileModal,
+    openSignOutModal,
+    isSignOutModalOpen,
+    formData,
+  } = useMemberStore();
 
-// const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
-//   closeModal,
-// }) => {
-//   const { formData, setFormData, loadUserData } = useStore();
+  const [phoneNumber, setPhoneNumber] = useState(''); // 전화번호
+  const [currentPassword, setCurrentPassword] = useState(''); // 기존 비밀번호
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false); // 기존 비밀번호 표시 여부
+  const [isPasswordEditEnabled, setIsPasswordEditEnabled] = useState(false); // 비밀번호 수정 여부
 
-//   // const [showPassword, setShowPassword] = useState(false);
-//   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-//   const [passwordConfirm, setPasswordConfirm] = useState('');
-//   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
-//   const [savingRate, setSavingRate] = useState(0);
-//   // const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // SuccessModal 상태 추가
-//   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false); // 회원 탈퇴 모달 상태 추가
+  useEffect(() => {
+    const fetchMemberInfo = async () => {
+      try {
+        const memberInfo = await getMemberInfoAPI();
+        setPhoneNumber(memberInfo.phoneNumber); // 초기 전화번호 설정
+      } catch (error) {
+        console.error('회원 정보 불러오기 실패:', error);
+      }
+    };
 
-//   useEffect(() => {
-//     loadUserData();
-//     setSavingRate(formData.savingRate);
-//   }, [loadUserData, formData.savingRate]);
+    fetchMemberInfo();
+  }, []);
 
-//   // const isPasswordValid = (password: string) => {
-//   //   const regex =
-//   //     /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+[\]{};':"\\|,.<>/?-]{8,}$/;
-//   //   return regex.test(password);
-//   // };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-//   const handleSavingRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const value = e.target.value;
-//     const parsedValue = parseFloat(value);
+    if (!formIsValid()) {
+      alert('입력한 정보를 확인해 주세요.');
+      return;
+    }
 
-//     if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 10) {
-//       setSavingRate(parsedValue);
-//     } else if (value === '') {
-//       setSavingRate(0);
-//     }
-//   };
+    const updateData: {
+      savingRate: number;
+      phoneNumber: string;
+      oldPassword: string;
+      newPassword?: string;
+      isChange: boolean;
+    } = {
+      savingRate: formData.savingRate, // Zustand에서 가져온 저축률 사용
+      phoneNumber,
+      oldPassword: currentPassword,
+      isChange: isPasswordEditEnabled ? true : false, // 비밀번호 수정 여부를 결정
+    };
 
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = e.target;
-//     setFormData({ ...formData, [name]: value });
+    if (isPasswordEditEnabled) {
+      updateData.newPassword = formData.newPassword; // 새 비밀번호 포함
+    }
 
-//     if (name === 'password' || name === 'passwordConfirm') {
-//       setIsPasswordMatch(formData.password === passwordConfirm);
-//     }
-//   };
+    try {
+      const response = await updateMemberInfoAPI(updateData);
+      if (response) {
+        alert('회원 정보 수정 완료!');
+      }
+    } catch (error) {
+      console.error('회원 정보 수정 실패:', error);
+      alert('회원 정보 수정 중 오류가 발생했습니다.');
+    }
+  };
 
-//   // const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//   //   setFormData({ ...formData, password: e.target.value });
-//   // };
+  // 영어와 숫자가 섞여 있는지 확인하는 함수
+  const hasNumberAndLetter = (password: string) => {
+    const hasNumber = /[0-9]/.test(password);
+    const hasLetter = /[a-zA-Z]/.test(password);
+    return hasNumber && hasLetter;
+  };
 
-//   const handlePasswordConfirmChange = (
-//     e: React.ChangeEvent<HTMLInputElement>
-//   ) => {
-//     const { value } = e.target;
-//     setPasswordConfirm(value);
-//     setIsPasswordMatch(formData.password === value);
-//   };
+  const formIsValid = () => {
+    // 핸드폰 인증 여부 확인
+    if (!formData.isPhoneVerified) return false;
+    console.log(1);
 
-//   // const handleSubmit = (e: React.FormEvent) => {
-//   //   e.preventDefault();
-//   //   console.log('Updated Data:', formData);
-//   //   setIsSuccessModalOpen(true);
-//   // };
+    // 기존 비밀번호 8자 이상, 영어와 숫자 섞임 여부 확인
+    if (currentPassword.length < 8 || !hasNumberAndLetter(currentPassword)) {
+      return false;
+    }
+    console.log(2);
 
-//   // const isFormValid = () => {
-//   //   return (
-//   //     formData.name && isPasswordValid(formData.password) && isPasswordMatch
-//   //   );
-//   // };
+    // 비밀번호 변경이 체크된 경우에만 새로운 비밀번호 검증
+    if (isPasswordEditEnabled) {
+      // 새 비밀번호가 8자 이상이며, 영어와 숫자가 섞여 있는지 확인
+      console.log('newPassword:', formData.newPassword); // 새 비밀번호가 제대로 설정되었는지 확인
+      console.log('confirmNewPassword:', formData.newPasswordConfirm); // 새 비밀번호 확인 값이 올바른지 확인
+      if (
+        !formData.newPassword ||
+        formData.newPassword.length < 8 ||
+        !hasNumberAndLetter(formData.newPassword)
+      ) {
+        console.log('새 비밀번호 검증 실패');
+        return false;
+      }
+      console.log(3);
+      // 새 비밀번호와 확인 비밀번호 일치 여부 확인
+      if (formData.newPassword !== formData.newPasswordConfirm) {
+        console.log('새 비밀번호와 확인 비밀번호가 일치하지 않음');
+        return false;
+      }
+    }
+    console.log(4);
 
-//   // 탈퇴 모달을 여는 함수: 회원 정보 수정 모달을 닫고, 탈퇴 모달을 열도록 설정
-//   const openWithdrawalModal = () => {
-//     setIsWithdrawalModalOpen(true); // 탈퇴 모달만 열림
-//   };
+    return true; // 모든 검증을 통과한 경우 true 반환
+  };
 
-//   // 탈퇴 모달을 닫는 함수
-//   const closeWithdrawalModal = () => {
-//     setIsWithdrawalModalOpen(false);
-//   };
+  return (
+    <div
+      className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      onClick={() => console.log('closeUpdateProfileModal() 호출 필요')}
+    >
+      <div
+        className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 회원 정보 수정 제목 및 회원 탈퇴 버튼 */}
+        <div className="relative flex items-center justify-between">
+          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
+            회원 정보 수정
+          </h2>
+          <button
+            onClick={openSignOutModal}
+            className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center"
+          >
+            <FaUserMinus className="mr-1" /> {/* 탈퇴 아이콘 */}
+            탈퇴
+          </button>
+        </div>
 
-//   return (
-//     <>
-//       <div className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-//         <div className="bg-white rounded-lg shadow-lg w-full max-w-sm">
-//           <div className="p-6">
-//             <h2 className="text-xl font-bold mb-4 text-center">
-//               회원 정보 수정
-//             </h2>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col space-y-3 w-full"
+        >
+          {/* 기존 비밀번호 확인 필드 */}
+          <div className="relative flex flex-col">
+            <div className="relative flex items-center">
+              <input
+                type={showCurrentPassword ? 'text' : 'password'}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="기존 비밀번호 입력"
+                className="w-full p-2 text-base border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="absolute right-8 text-gray-500 bg-transparent"
+              >
+                {showCurrentPassword ? (
+                  <AiOutlineEyeInvisible className="bg-transparent" />
+                ) : (
+                  <AiOutlineEye className="bg-transparent" />
+                )}
+              </button>
+              {currentPassword &&
+                (currentPassword.length >= 8 ? (
+                  <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
+                ) : (
+                  <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
+                ))}
+            </div>
+            <hr className="w-full border-t border-gray-300" />
+            <p className="text-xs text-gray-500 mt-2">
+              8자 이상, 영문, 숫자 포함
+            </p>
+          </div>
 
-//             <form onSubmit={handleSubmit} className="flex flex-col space-y-3 w-full">
-//               {/* 이메일 입력 필드 */}
-//               <input
-//                 type="email" // 이메일 입력 필드로 변경
-//                 name="email" // 이메일 입력 필드에 맞는 name 속성으로 변경
-//                 value={formData.email} // 이메일 값을 formData에서 가져옴
-//                 onChange={handleChange} // 변경된 값을 상태로 업데이트
-//                 placeholder="이메일"
-//                 className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-//                 disabled
-//               />
+          <PhoneNumberInput />
 
-//               {/* 이름 입력 필드 */}
-//               <div className="relative flex items-center">
-//                 <input
-//                   type="text"
-//                   name="name"
-//                   value={formData.name}
-//                   onChange={handleChange}
-//                   placeholder="이름"
-//                   className="w-full p-2 border border-gray-300 rounded"
-//                   disabled
-//                 />
-//               </div>
+          {/* 비밀번호 변경 여부 체크박스 */}
+          <div className="flex items-center mt-3">
+            <input
+              type="checkbox"
+              id="editPassword"
+              checked={isPasswordEditEnabled}
+              onChange={() => {
+                console.log('Current state:', isPasswordEditEnabled); // 상태 확인
+                setIsPasswordEditEnabled(!isPasswordEditEnabled);
+              }}
+              className="mr-2"
+            />
+            <label htmlFor="editPassword" className="text-sm">
+              비밀번호 변경
+            </label>
+          </div>
 
-//               {/* Saving rate */}
-//               <div className="relative">
-//                 <input
-//                   type="range"
-//                   min="1"
-//                   max="10"
-//                   step="1"
-//                   value={savingRate}
-//                   onChange={handleSavingRateChange}
-//                   className="w-full"
-//                 />
-//                 <input
-//                   type="number"
-//                   min="1"
-//                   max="10"
-//                   step="1"
-//                   value={savingRate}
-//                   onChange={handleSavingRateChange}
-//                   className="w-12 p-1 text-right border-none border-gray-300 rounded"
-//                 />
-//                 <span>%</span>
-//               </div>
-//               <p className="text-xs text-gray-500">8자 이상, 영문, 숫자 포함</p>
+          {/* 새 비밀번호 및 확인 필드 */}
+          {isPasswordEditEnabled && (
+            <>
+              <NewPasswordInput />
+              <NewPasswordConfirmInput />
+            </>
+          )}
 
-//               {/* 비밀번호 확인 입력 필드 */}
-//               <div className="relative">
-//                 <input
-//                   type={showPasswordConfirm ? 'text' : 'password'}
-//                   value={passwordConfirm}
-//                   onChange={handlePasswordConfirmChange}
-//                   placeholder="새 비밀번호 확인"
-//                   className="w-full p-2 border border-gray-300 rounded"
-//                 />
-//                 <button
-//                   type="button"
-//                   onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-//                   className="absolute right-2 top-2 text-gray-500"
-//                 >
-//                   {showPasswordConfirm ? (
-//                     <AiOutlineEyeInvisible />
-//                   ) : (
-//                     <AiOutlineEye />
-//                   )}
-//                 </button>
-//                 {passwordConfirm &&
-//                   (isPasswordMatch ? (
-//                     <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
-//                   ) : (
-//                     <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
-//                   ))}
-//               </div>
+          {/* 저축률 인풋 */}
+          <SavingRateInput />
 
-//               {/* 취소 버튼 */}
-//               <button
-//                 type="button"
-//                 className="w-full py-2 rounded bg-gray-500 text-white hover:bg-gray-600"
-//                 onClick={closeModal}
-//               >
-//                 취소
-//               </button>
-//             </form>
+          {/* 정보 수정 버튼 */}
+          <div className="flex space-x-4 mt-4">
+            <button
+              type="submit"
+              className={`w-full py-2 rounded ${
+                formIsValid()
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              disabled={!formIsValid()}
+            >
+              정보 수정
+            </button>
+            <button
+              type="button"
+              className="w-full py-2 rounded bg-gray-500 text-white"
+              onClick={closeUpdateProfileModal}
+            >
+              취소
+            </button>
+          </div>
+        </form>
+        {isSignOutModalOpen && <SignOutModal />}
+      </div>
+    </div>
+  );
+};
 
-//             {/* 회원 탈퇴 버튼: 클릭 시 회원 탈퇴 모달을 여는 함수 호출 */}
-//             <button
-//               onClick={openWithdrawalModal}
-//               className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center"
-//             >
-//               <FaUserMinus className="mr-1" /> {/* 회원 탈퇴 아이콘 */}
-//               탈퇴
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* WithdrawalModal을 표시 */}
-//       {isWithdrawalModalOpen && <WithdrawalModal closeModal={closeWithdrawalModal} />}
-//     </>
-//   );
-// }
-
-// export default UpdateProfileModal;
+export default UpdateProfileModal;

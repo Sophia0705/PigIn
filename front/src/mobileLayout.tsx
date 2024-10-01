@@ -6,7 +6,6 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   useEffect(() => {
-    // Set body styles
     document.body.style.overflow = 'hidden';
     document.body.style.display = 'flex';
     document.body.style.justifyContent = 'center';
@@ -15,7 +14,6 @@ const Layout = ({ children }: LayoutProps) => {
     document.body.style.margin = '0';
     document.body.style.backgroundColor = 'white';
 
-    // Cleanup function
     return () => {
       document.body.style.overflow = '';
       document.body.style.display = '';
@@ -30,8 +28,8 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div
       style={{
-        width: '45.02732240437158vh',
-        height: '100vh',
+        width: '412px',
+        height: '915px',
         overflow: 'hidden',
         position: 'relative',
       }}

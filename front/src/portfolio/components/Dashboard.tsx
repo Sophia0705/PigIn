@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, Label, ResponsiveContainer } from 'recharts';
 import { usePortfolioStore } from '../../store/portfolioStore';
 
@@ -17,7 +18,6 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
   totalProfitRate,
 }) => {
   const { cx, cy } = viewBox;
-  // console.log('대시보드', totalProfit);
   return (
     <g>
       <text
@@ -56,16 +56,36 @@ const Dashboard: React.FC = () => {
   const {
     categories,
     totalValue,
-    totalProfit,
-    totalProfitRate,
     activeIndex,
     setActiveIndex,
     isLoading,
     error,
   } = usePortfolioStore();
 
+  const calculatePortfolioMetrics = useMemo(() => {
+    const calculateCategoryInitialInvestment = (items: any[]) =>
+      items.reduce((sum, item) => {
+        const currentValue = item.quantity * item.price;
+        const initialInvestment = currentValue / (1 + item.profitRate);
+        return sum + initialInvestment;
+      }, 0);
+
+    const totalInitialInvestment = categories.reduce(
+      (sum, category) =>
+        sum + calculateCategoryInitialInvestment(category.items),
+      0
+    );
+
+    const totalProfit = totalValue - totalInitialInvestment;
+    const totalProfitRate = (totalProfit / totalInitialInvestment) * 100;
+
+    return { totalProfit, totalProfitRate };
+  }, [categories, totalValue]);
+
   if (isLoading) return <div>Loading dashboard...</div>;
   if (error) return <div>Error loading dashboard: {error}</div>;
+
+  const { totalProfit, totalProfitRate } = calculatePortfolioMetrics;
 
   return (
     <div className="bg-white h-full rounded-lg p-4">

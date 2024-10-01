@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-// import axiosInstance from '../../../api/axiosinstance'; // axiosInstance 가져오기
+import { loginAPI } from '../../../api/member/loginAPI';
 // import { useAuthStore } from '../../../store/AuthStore';
-import { useStore } from '../../../store/memberStore';
+import { useMemberStore } from '../../../store/memberStore';
+import { X } from 'lucide-react';
 
 // LoginModal 컴포넌트 정의
 const LoginModal: React.FC = () => {
@@ -12,8 +13,8 @@ const LoginModal: React.FC = () => {
     openSignUpModal,
     openFindEmailModal,
     openFindPasswordModal,
-    // checkLoginStatus,
-  } = useStore();
+    checkLoginStatus,
+  } = useMemberStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,52 +39,42 @@ const LoginModal: React.FC = () => {
     openFindPasswordModal(); // 비밀번호 찾기 모달을 연다
   };
 
+  // 로그인 폼 제출 처리 함수
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('password', password);
+    try {
+      // 로그인 API 호출
+      console.log('Login모달 : ', email, password);
+      await loginAPI({ username: email, password });
+      alert('로그인 성공했습니다!');
 
-    // try {
-    //   // axiosInstance를 사용하여 로그인 API 요청 (FormData 전송)
-    //   const response = await axiosInstance.post('/member/login', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data', // FormData 전송을 위한 헤더 설정
-    //     },
-    //   });
+      // 로그인 상태를 업데이트하고 모달을 닫음
+      checkLoginStatus(); // 로그인 상태 확인
+      closeLoginModal(); // 로그인 모달 닫기
 
-    //   // 로그인 성공 시 access token을 로컬 스토리지에 저장
-    //   const { accessToken } = response.data;
-    //   localStorage.setItem('accessToken', accessToken);
-
-    //   // 로그인 상태를 업데이트하고 모달을 닫음
-    //   checkLoginStatus();
-    //   console.log('로그인 성공!');
-    //   alert('로그인 성공!');
-    //   closeLoginModal();
-    // } catch (error) {
-    //   console.error('로그인 에러:', error);
-    //   alert('로그인에 실패했습니다. 다시 시도해주세요.');
-    // }
+      // 현재 페이지 새로고침
+      window.location.reload();
+    } catch (error) {
+      console.error('로그인 에러:', error);
+      alert('로그인에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   if (!isLoginModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
   return (
     <div>
       {/* 모달 배경 */}
-      <div className="fixed inset-0 bg-gray-800 bg-opacity-50 z-50"></div>
+      <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 z-50"></div>
 
       {/* 모달 본체 */}
-      <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="modal-content fixed inset-0 flex items-center justify-center z-50">
         <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
           {/* 닫기 버튼 */}
-          <button
+          <X
             onClick={closeLoginModal}
             className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-white"
-          >
-            X
-          </button>
+          />
 
           {/* 모달 제목 */}
           <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">

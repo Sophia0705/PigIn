@@ -3,13 +3,13 @@ import { useMemberStore } from '../../../store/memberStore'; // Zustand 스토�
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
-const PasswordInput: React.FC = () => {
-  const { formData, setFormData } = useMemberStore(); // Zustand에서 비밀번호 상태 및 함수 가져오기
+const NewPasswordInput: React.FC = () => {
+  const { formData, setFormData } = useMemberStore(); // Zustand에서 새 비밀번호 상태 및 함수 가져오기
   const [showPassword, setShowPassword] = useState(false); // 비밀번호 표시 여부
-  const password = formData.password; // Zustand에서 비밀번호 가져오기
+  const newPassword = formData.newPassword; // Zustand에서 새 비밀번호 가져오기
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ password: e.target.value }); // 비밀번호 상태 변경
+    setFormData({ newPassword: e.target.value }); // 비밀번호 상태 변경
   };
 
   const isPasswordValid = (password: string) => {
@@ -23,7 +23,7 @@ const PasswordInput: React.FC = () => {
       <div className="relative flex items-center">
         <input
           type={showPassword ? 'text' : 'password'}
-          value={password}
+          value={newPassword}
           onChange={handlePasswordChange}
           placeholder="새 비밀번호"
           className="w-full p-2 text-base border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
@@ -41,8 +41,8 @@ const PasswordInput: React.FC = () => {
         </button>
 
         {/* 비밀번호 유효성 체크 아이콘 */}
-        {password &&
-          (isPasswordValid(password) ? (
+        {newPassword &&
+          (isPasswordValid(newPassword) ? (
             <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
           ) : (
             <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
@@ -55,4 +55,4 @@ const PasswordInput: React.FC = () => {
   );
 };
 
-export default PasswordInput;
+export default NewPasswordInput;

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { AxiosError } from 'axios'; // AxiosError를 임포트
-import { useStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
+import { useMemberStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 import axios from 'axios';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
+import axiosInstance from '../../../api/axiosInstance';
 
 const SignUpModal: React.FC = () => {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
   const {
     openLoginModal,
@@ -16,7 +16,7 @@ const SignUpModal: React.FC = () => {
     closeSignUpModal,
     formData,
     setFormData,
-  } = useStore();
+  } = useMemberStore();
 
   // 상태 관리 훅: 인증번호 전송 여부, 비밀번호 확인, 이메일 및 생년월일 유효성 상태 등
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증번호 전송 상태
@@ -53,14 +53,9 @@ const SignUpModal: React.FC = () => {
       // 전송할 데이터 콘솔 출력
       console.log('이메일 중복 확인 요청 데이터:', requestData);
 
-      const response = await axios.post(
-        `${BASE_URL}member/email-check`,
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        `api/member/email-check`,
+        requestData
       );
 
       // 응답 처리
@@ -156,15 +151,11 @@ const SignUpModal: React.FC = () => {
       // 전송할 데이터 콘솔 출력
       console.log('SMS 인증 요청 데이터:', requestData);
 
-      const response = await axios.post(
-        `${BASE_URL}member/mms-number-generate`, // https://j11c203.p.ssafy.io/api/
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        'api/member/mms-number-generate', // https://j11c203.p.ssafy.io/
+        requestData
       );
+      console.log('회원가입 시 핸드폰 인증 요청 response :', response);
 
       // 응답 처리
       if (response.status === 200) {
@@ -199,14 +190,9 @@ const SignUpModal: React.FC = () => {
       // 전송할 데이터 콘솔 출력
       console.log('인증번호 검증 요청 데이터:', requestData);
 
-      const response = await axios.post(
-        `${BASE_URL}member/mms-number-compare`,
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        `api/member/mms-number-compare`,
+        requestData
       );
 
       // 응답 처리
@@ -245,14 +231,9 @@ const SignUpModal: React.FC = () => {
 
     // 서버로 POST 요청 보내기
     try {
-      const response = await axios.post(
-        `${BASE_URL}member/sign-up`,
-        sanitizedFormData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        'api/member/sign-up',
+        sanitizedFormData
       );
 
       // 성공 시 처리
@@ -293,7 +274,7 @@ const SignUpModal: React.FC = () => {
 
   return (
     // 모달 배경
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       {/* 모달 본체 */}
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
@@ -355,25 +336,6 @@ const SignUpModal: React.FC = () => {
               유효한 이메일 주소를 입력해주세요.
             </p>
           )}
-
-          <div className="relative">
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="이메일"
-              className={`w-full p-2 border-b ${
-                isEmailValid ? 'border-gray-300' : 'border-red-500'
-              } focus:outline-none focus:border-green-300`}
-              required
-            />
-            {!isEmailValid && (
-              <p className="text-xs text-red-500 mt-1">
-                유효한 이메일 주소를 입력해주세요.
-              </p>
-            )}
-          </div>
 
           <div className="relative">
             <input

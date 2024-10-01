@@ -5,17 +5,20 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Pagination, Navigation } from 'swiper/modules';
 import { FaPiggyBank, FaPlusCircle } from 'react-icons/fa';
-import { useStore } from '../../store/memberStore'; // Zustand store 가져오기
+import { useSpendingAccountStore } from '../../store/SpendingAccountStore';
+import SpendingAccountRegisterModal from './modals/SpendingAccountRegisterModal';
 
 const AccountSlider: React.FC = () => {
-  const { openSpendingAccountRegisterModal } = useStore(); // 소비 계좌 등록 모달 열기 함수 가져오기
+  const {
+    isSpendingAccountRegisterModalOpen,
+    openSpendingAccountRegisterModal,
+  } = useSpendingAccountStore();
 
   return (
     <div className="w-[400px] h-[350px] mx-auto mt-0 relative">
       <h2 className="text-2xl font-bold text-center mb-4 text-white">
         계좌 정보
       </h2>
-
       <Swiper
         spaceBetween={10}
         slidesPerView={1}
@@ -49,6 +52,7 @@ const AccountSlider: React.FC = () => {
           </div>
         </SwiperSlide>
       </Swiper>
+      {isSpendingAccountRegisterModalOpen && <SpendingAccountRegisterModal />}
     </div>
   );
 };
