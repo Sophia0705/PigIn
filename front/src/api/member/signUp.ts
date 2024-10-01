@@ -1,7 +1,9 @@
 import axiosInstance from '../axiosInstance';
 
 export const checkEmailDuplication = async (email: string) => {
-  const response = await axiosInstance.post('member/email-check', { email });
+  const response = await axiosInstance.post('api/member/email-check', {
+    email,
+  });
   return response.data;
 };
 
@@ -9,7 +11,7 @@ export const requestVerificationCode = async (
   name: string,
   phoneNumber: string
 ) => {
-  const response = await axiosInstance.post('member/mms-number-generate', {
+  const response = await axiosInstance.post('api/member/mms-number-generate', {
     name,
     phoneNumber,
   });
@@ -20,7 +22,7 @@ export const verifyAuthenticationCode = async (
   phoneNumber: string,
   authenticationNumber: string
 ) => {
-  const response = await axiosInstance.post('member/mms-number-compare', {
+  const response = await axiosInstance.post('api/member/mms-number-compare', {
     phoneNumber,
     authenticationNumber,
   });
@@ -34,6 +36,6 @@ export const signUp = async (userData: {
   birth: string;
   password: string;
 }) => {
-  const response = await axiosInstance.post('member/sign-up', userData);
+  const response = await axiosInstance.post('api/member/sign-up', userData);
   return response.data;
 };

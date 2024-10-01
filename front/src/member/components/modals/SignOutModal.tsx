@@ -6,7 +6,8 @@ import FailModal from './FailModal'; // 실패 모달 컴포넌트
 
 const SignOutModal: React.FC = () => {
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
-  const { isSignOutModalOpen, closeSignOutModal, formData } = useMemberStore();
+  const { checkLoginStatus, isSignOutModalOpen, closeSignOutModal, formData } =
+    useMemberStore();
 
   // 상태 관리 훅: 성공 및 실패 모달, 이메일 유효성 상태
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -47,6 +48,7 @@ const SignOutModal: React.FC = () => {
 
       // 성공 시 성공 모달 표시
       if (success) {
+        checkLoginStatus();
         setSuccessMessage('회원 탈퇴가 완료되었습니다.');
         setShowSuccessModal(true);
       } else {

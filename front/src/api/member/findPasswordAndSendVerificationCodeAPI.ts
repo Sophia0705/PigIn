@@ -1,26 +1,26 @@
 import axiosInstance from '../axiosInstance'; // axiosInstance 가져오기
 import axios from 'axios'; // AxiosError 타입을 가져오기
 
+// RequestData 인터페이스 정의
+interface RequestData {
+  name: string;
+  phoneNumber: string;
+  email: string;
+}
+
 // 비밀번호 찾기 및 핸드폰 인증번호 요청 API 함수
-export const findPasswordAndSendVerificationCode = async (
-  name: string,
-  phoneNumber: string,
-  email: string
+export const findPasswordAndSendVerificationCodeAPI = async (
+  requestData: RequestData
 ): Promise<boolean> => {
   try {
-    // 서버에 전송할 데이터 정의
-    const data = {
-      name,
-      phoneNumber,
-      email,
-    };
-
     // 비밀번호 찾기 API 호출
-    const response = await axiosInstance.post('member/find-pwd', data);
+    const response = await axiosInstance.post(
+      'api/member/find-pwd',
+      requestData
+    );
+    console.log(requestData);
 
     if (response.status === 200) {
-      // 200: 메시지 전송 성공
-      alert('인증번호가 핸드폰으로 전송되었습니다. 확인 후 입력하세요.');
       return true;
     }
     return false;

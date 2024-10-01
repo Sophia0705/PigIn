@@ -24,7 +24,7 @@ export const loginAPI = async (data: LoginRequest): Promise<LoginResponse> => {
     console.log('LoginAPI data : ', data);
 
     // 서버에 로그인 요청 (FormData 전송)
-    const response = await axiosInstance.post('member/login', formData, {
+    const response = await axiosInstance.post('api/member/login', formData, {
       headers: {
         'Content-Type': 'multipart/form-data', // FormData 전송을 위한 Content-Type 설정
       },

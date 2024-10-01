@@ -19,7 +19,7 @@ export const updateMemberInfoAPI = async (
 
     // PUT 요청으로 사용자 정보 수정 (AxiosResponse로 응답 받기)
     const response = await axiosInstance.put<AxiosResponse>(
-      'member/update-member', // 회원 정보 수정 API 엔드포인트
+      'api/member/update-member', // 회원 정보 수정 API 엔드포인트
       data
     );
 

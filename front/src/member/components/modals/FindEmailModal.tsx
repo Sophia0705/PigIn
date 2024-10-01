@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { useMemberStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
-import axios from 'axios';
 import axiosInstance from '../../../api/axiosInstance';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
 
 const FindEmailModal: React.FC = () => {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const {
     isFindEmailModalOpen,
     openLoginModal,
@@ -58,12 +56,9 @@ const FindEmailModal: React.FC = () => {
         phoneNumber: sanitizedPhoneNumber,
       };
 
-      const response = await axios.post(
-        `${BASE_URL}member/mms-number-generate`,
-        requestData,
-        {
-          headers: { 'Content-Type': 'application/json' },
-        }
+      const response = await axiosInstance.post(
+        `api/member/mms-number-generate`,
+        requestData
       );
 
       console.log('requestData: ', requestData);
@@ -95,12 +90,9 @@ const FindEmailModal: React.FC = () => {
         authenticationNumber: authenticationNumber,
       };
 
-      const response = await axios.post(
-        `${BASE_URL}member/mms-number-compare`,
-        requestData,
-        {
-          headers: { 'Content-Type': 'application/json' },
-        }
+      const response = await axiosInstance.post(
+        `api/member/mms-number-compare`,
+        requestData
       );
 
       if (response.status === 200) {
@@ -140,7 +132,7 @@ const FindEmailModal: React.FC = () => {
 
       // POST 요청 시, 데이터는 쿼리 파라미터로 전달
       const response = await axiosInstance.post(
-        'member/find-id',
+        'api/member/find-id',
         data // 데이터를 request body로 전송
       );
       if (response.status === 200) {

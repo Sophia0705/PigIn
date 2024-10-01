@@ -6,7 +6,7 @@ export const signOutAPI = async (): Promise<boolean> => {
   try {
     // 회원 탈퇴 요청 (DELETE 방식)
     const response: AxiosResponse =
-      await axiosInstance.delete('member/withdrawal');
+      await axiosInstance.delete('api/member/withdrawal');
 
     // 성공적인 응답 처리
     if (response.status === 200) {

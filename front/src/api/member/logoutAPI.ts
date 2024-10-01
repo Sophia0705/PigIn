@@ -6,7 +6,7 @@ import { removeAccessToken } from '../../utils/localUtils';
 export const logoutAPI = async (): Promise<void> => {
   try {
     // 로그아웃 요청 (POST 방식, application/json)
-    const response = await axiosInstance.post('member/logout');
+    const response = await axiosInstance.post('api/member/logout');
 
     console.log('response: ', response);
 

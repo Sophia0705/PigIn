@@ -6,9 +6,9 @@ import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이�
 import axios from 'axios';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
+import axiosInstance from '../../../api/axiosInstance';
 
 const SignUpModal: React.FC = () => {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
   const {
     openLoginModal,
@@ -53,14 +53,9 @@ const SignUpModal: React.FC = () => {
       // 전송할 데이터 콘솔 출력
       console.log('이메일 중복 확인 요청 데이터:', requestData);
 
-      const response = await axios.post(
-        `${BASE_URL}member/email-check`,
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        `api/member/email-check`,
+        requestData
       );
 
       // 응답 처리
@@ -156,14 +151,9 @@ const SignUpModal: React.FC = () => {
       // 전송할 데이터 콘솔 출력
       console.log('SMS 인증 요청 데이터:', requestData);
 
-      const response = await axios.post(
-        `${BASE_URL}member/mms-number-generate`, // https://j11c203.p.ssafy.io/api/
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        'api/member/mms-number-generate', // https://j11c203.p.ssafy.io/
+        requestData
       );
       console.log('회원가입 시 핸드폰 인증 요청 response :', response);
 
@@ -200,14 +190,9 @@ const SignUpModal: React.FC = () => {
       // 전송할 데이터 콘솔 출력
       console.log('인증번호 검증 요청 데이터:', requestData);
 
-      const response = await axios.post(
-        `${BASE_URL}member/mms-number-compare`,
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        `api/member/mms-number-compare`,
+        requestData
       );
 
       // 응답 처리
@@ -246,14 +231,9 @@ const SignUpModal: React.FC = () => {
 
     // 서버로 POST 요청 보내기
     try {
-      const response = await axios.post(
-        `${BASE_URL}member/sign-up`,
-        sanitizedFormData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await axiosInstance.post(
+        'api/member/sign-up',
+        sanitizedFormData
       );
 
       // 성공 시 처리

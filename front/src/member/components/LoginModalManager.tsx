@@ -4,7 +4,7 @@ import IsLoginModal from './modals/isLoginModal';
 import LoginModal from './modals/LoginModal';
 import SignUpModal from './modals/SignUpModal';
 import FindEmailModal from './modals/FindEmailModal';
-// import FindPasswordModal from './modals/FindPasswordModal';
+import FindPasswordModal from './modals/FindPasswordModal';
 import { useMemberStore } from '../../store/memberStore';
 
 const LoginModalManager: React.FC = () => {
@@ -13,7 +13,7 @@ const LoginModalManager: React.FC = () => {
     isLoginModalOpen,
     isSignUpModalOpen,
     isFindEmailModalOpen,
-    // isFindPasswordModalOpen,
+    isFindPasswordModalOpen,
   } = useMemberStore();
 
   return (
@@ -22,7 +22,7 @@ const LoginModalManager: React.FC = () => {
       {isLoginModalOpen && <LoginModal />}
       {isSignUpModalOpen && <SignUpModal />}
       {isFindEmailModalOpen && <FindEmailModal />}
-      {/* {isFindPasswordModalOpen && <FindPasswordModal />} */}
+      {isFindPasswordModalOpen && <FindPasswordModal />}
     </>
   );
 };

@@ -15,7 +15,7 @@ export const resetPasswordAPI = async (
     console.log('비밀번호 재설정 요청 데이터: ', data);
 
     // PUT 요청으로 비밀번호 재설정 (AxiosResponse로 응답 받기)
-    const response = await axiosInstance.put('member/refresh-pwd', data);
+    const response = await axiosInstance.put('api/member/refresh-pwd', data);
 
     // 응답이 성공적일 경우
     if (response.status === 200) {

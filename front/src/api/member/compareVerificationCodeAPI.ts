@@ -14,13 +14,8 @@ export const compareVerificationCodeAPI = async (
   try {
     // POST 요청으로 인증번호 비교
     const response = await axiosInstance.post<void>(
-      'member/mms-number-compare',
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      'api/member/mms-number-compare',
+      data
     );
     console.log(response);
 

@@ -15,15 +15,15 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // 로그인 요청 시 Content-Type을 multipart/form-data로 변경
-    if (config.url === 'member/login') {
+    if (config.url === 'api/member/login') {
       config.headers['Content-Type'] = 'multipart/form-data';
     }
 
     // 회원가입, 로그인, 로그아웃 요청인 경우 토큰을 포함하지 않음
     if (
-      config.url === 'member/sign-up' ||
-      config.url === 'member/login' ||
-      config.url === 'member/logout'
+      config.url === 'api/member/sign-up' ||
+      config.url === 'api/member/login' ||
+      config.url === 'api/member/logout'
     ) {
       return config;
     }
