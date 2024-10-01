@@ -9,14 +9,14 @@ import java.util.HashMap;
 public class FindCoinAllResponse {
 
     private String coinName;
-    private String coinCode;
+    private String coin;
     private String price;
     private Double priceChange;
 
     public FindCoinAllResponse(MongoCoinMinute mongoCoinMinute, HashMap<String, String> coinMap) {
-        this.coinCode = mongoCoinMinute.getCoin();
+        this.coin = mongoCoinMinute.getCoin();
         this.price = mongoCoinMinute.getClose().toString();
         this.priceChange = mongoCoinMinute.getChangePrice();
-        this.coinName = coinMap.get(this.coinCode);
+        this.coinName = coinMap.get(this.coin);
     }
 }
