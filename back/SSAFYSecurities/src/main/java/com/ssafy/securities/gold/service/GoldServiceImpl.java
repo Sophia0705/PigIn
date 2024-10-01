@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.securities.gold.dto.response.GoldItemDto;
 import com.ssafy.securities.gold.dto.response.GoldParsingDto;
+import com.ssafy.securities.gold.dto.response.GoldYearDto;
 import com.ssafy.securities.gold.entity.Gold;
 import com.ssafy.securities.gold.repository.GoldRepository;
 import java.io.BufferedReader;
@@ -15,9 +16,12 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -66,7 +70,6 @@ public class GoldServiceImpl implements GoldService {
         rd.close();
         conn.disconnect();
         // 11. 전달받은 데이터 확인.
-        System.out.println(sb.toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(sb.toString());
@@ -75,12 +78,10 @@ public class GoldServiceImpl implements GoldService {
             .get(0);
 
         LocalDate today = LocalDate.now();
-        formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String todayDate = today.format(formatter);
 
         GoldItemDto item = GoldItemDto
             .builder()
-            .date(todayDate)
+            .date(today)
             .srtnCd(itemNode.path("srtnCd").asText())
             .isin(itemNode.path("isinCd").asText())
             .itemName(itemNode.path("itmsNm").asText())
@@ -126,6 +127,7 @@ public class GoldServiceImpl implements GoldService {
 
         LocalDate startDate = LocalDate.of(2020, 1, 1);
         LocalDate endDate = LocalDate.of(2022, 4, 30);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         List<String> dateList = getDateRange.generateMonthlyStartEndDates(startDate, endDate);
 
@@ -140,7 +142,6 @@ public class GoldServiceImpl implements GoldService {
             urlBuilder.append(dateList.get(i + 1));
             urlBuilder.append("&itmsNm=%EA%B8%88%2099.99K");
 
-            System.out.println(urlBuilder.toString());
             URL url = new URL(urlBuilder.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -162,8 +163,6 @@ public class GoldServiceImpl implements GoldService {
             rd.close();
             conn.disconnect();
             // 11. 전달받은 데이터 확인.
-            System.out.println(sb.toString());
-
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(sb.toString());
             JsonNode itemNode = rootNode.path("response").path("body").path("items").path("item");
@@ -174,7 +173,7 @@ public class GoldServiceImpl implements GoldService {
                     goldRepository.save(Gold
                         .builder()
                         .close(item.getClpr())
-                        .date(item.getBasDt())
+                        .date(LocalDate.parse(item.getBasDt(), formatter))
                         .high(item.getHipr())
                         .low(item.getLopr())
                         .vsYesterday(item.getVs())
@@ -202,10 +201,8 @@ public class GoldServiceImpl implements GoldService {
                 "&numOfRows=100&resultType=json&beginBasDt=");
             urlBuilder.append(dateList.get(i));
             urlBuilder.append("&endBasDt=");
-            urlBuilder.append(dateList.get(i + 1));
-            urlBuilder.append("&itmsNm=%EA%B8%88%2099.99_1Kg");
+            urlBuilder.append(i + 1 < dateList.size() ? dateList.get(i + 1) : dateList.get(i));            urlBuilder.append("&itmsNm=%EA%B8%88%2099.99_1Kg");
 
-            System.out.println(urlBuilder.toString());
             URL url = new URL(urlBuilder.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -227,7 +224,6 @@ public class GoldServiceImpl implements GoldService {
             rd.close();
             conn.disconnect();
             // 11. 전달받은 데이터 확인.
-            System.out.println(sb.toString());
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(sb.toString());
@@ -239,7 +235,7 @@ public class GoldServiceImpl implements GoldService {
                     goldRepository.save(Gold
                         .builder()
                         .close(item.getClpr())
-                        .date(item.getBasDt())
+                        .date(LocalDate.parse(item.getBasDt(), formatter))
                         .high(item.getHipr())
                         .low(item.getLopr())
                         .vsYesterday(item.getVs())
@@ -263,5 +259,18 @@ public class GoldServiceImpl implements GoldService {
         Gold gold = goldRepository.findByDate(date);
 
         return Integer.parseInt(gold.getClose());
+    }
+
+    @Override
+    public List<GoldYearDto> getGoldList() {
+        LocalDate oneYearAgo = LocalDate.now().minusYears(1);
+
+        List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneYearAgo);
+        List<GoldYearDto> yearGoldList = goldList.stream()
+            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
+            .collect(Collectors.toList());
+
+        log.info("list : {}", yearGoldList.toString());
+        return yearGoldList;
     }
 }

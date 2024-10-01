@@ -41,4 +41,9 @@ public class GoldController {
     public ResponseEntity<?> getTodayPrice() throws IOException {
         return ResponseEntity.ok(goldService.getGoldPrice());
     }
+
+    @GetMapping("/")
+    public ResponseEntity<?> getGold() throws IOException {
+        return ResponseEntity.ok(goldService.getGoldList());
+    }
 }

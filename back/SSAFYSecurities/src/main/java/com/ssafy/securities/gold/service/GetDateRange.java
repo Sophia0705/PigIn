@@ -6,16 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GetDateRange {
-//    public static void main(String[] args) {
-//        LocalDate startDate = LocalDate.of(2020, 1, 1);
-//        LocalDate endDate = LocalDate.now().minusDays(2);
-//
-//        List<String> dateList = generateMonthlyStartEndDates(startDate, endDate);
-//
-//        for (int i = 0; i < dateList.size(); i += 2) {
-//            System.out.println(dateList.get(i) + " " + dateList.get(i + 1));
-//        }
-//    }
 
     public List<String> generateMonthlyStartEndDates(LocalDate startDate, LocalDate endDate) {
         List<String> dateList = new ArrayList<>();
