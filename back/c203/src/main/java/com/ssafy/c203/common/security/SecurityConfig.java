@@ -100,7 +100,7 @@ public class SecurityConfig {
                     "/member/account-authentication", "/member/account",
                     "/member/account-authentication-compare", "/swagger-ui/**", "/api-docs/**",
                     "/stock/**", "/coin/**", "/member/email-check", "/gold/gold-year",
-                    "/gold/gold-day")
+                    "/gold/gold-week")
                 .permitAll()
                 .anyRequest().authenticated());
 
