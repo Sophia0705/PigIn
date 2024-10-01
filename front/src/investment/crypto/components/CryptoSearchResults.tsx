@@ -1,7 +1,7 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import CryptoItem from "../../crypto/components/CryptoItem";
-import { CryptoItemData } from "../../interfaces/CryptoInterface";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import CryptoItem from '../../crypto/components/CryptoItem';
+import { CryptoItemData } from '../../interfaces/CryptoInterface';
 
 interface CryptoSearchResultsProps {
   filteredCryptos: CryptoItemData[];
@@ -13,7 +13,7 @@ const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({
   const navigate = useNavigate();
 
   const handleItemClick = (crypto: CryptoItemData) => {
-    navigate(`/investment/cryptocurrency/${crypto.symbol}`, {
+    navigate(`/investment/cryptocurrency/${crypto.coin}`, {
       state: { item: crypto },
     });
   };
@@ -25,15 +25,17 @@ const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({
       ) : (
         filteredCryptos.map((crypto) => (
           <div
-            key={crypto.symbol}
+            key={crypto.coin}
             className="cursor-pointer"
             onClick={() => handleItemClick(crypto)}
           >
             <CryptoItem
-              name={crypto.name}
+              name={crypto.coinName}
               price={crypto.price}
-              percentageChange={crypto.percentageChange}
+              priceChange={crypto.priceChange}
               weeklyPrices={crypto.weeklyPrices}
+              monthlyPrices={[]}
+              yearlyPrices={[]}
             />
           </div>
         ))
