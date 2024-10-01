@@ -17,7 +17,6 @@ const CryptoItem: React.FC<CryptoItemProps> = ({
   priceChange,
   weeklyPrices,
 }) => {
-  // console.log('priceChange:', priceChange, 'Type:', typeof priceChange);
   const isPositiveChange = priceChange > 0;
   const chartData = weeklyPrices.map((value, index) => ({
     name: `Day ${index + 1}`,
