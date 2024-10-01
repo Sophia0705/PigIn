@@ -25,7 +25,6 @@ const StockDetailPage: React.FC = () => {
   const [buyInputValue, setBuyInputValue] = useState('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState('00');
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const countZeros = (str: string): number => {
     return (str.match(/0/g) || []).length;
@@ -34,32 +33,17 @@ const StockDetailPage: React.FC = () => {
   const isNegativeChange = stockData.prdy_ctrt.startsWith('-');
   const isZeroChange = countZeros(stockData.prdy_ctrt) === 3;
 
-  const toggleLoginStatus = () => {
-    setIsLoggedIn((prev) => !prev);
-    alert(isLoggedIn ? '로그아웃되었습니다.' : '로그인되었습니다.');
-  };
-
-  const handleActionForLoggedInUsers = (action: () => void) => {
-    if (isLoggedIn) {
-      action();
-    } else {
-      console.log('로그인 하세욧');
-    }
-  };
-
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleAddToPortfolio = () => {
-    handleActionForLoggedInUsers(() => {
-      setIsAdded((prevAdded) => !prevAdded);
-      alert(
-        isAdded
-          ? `${stockData.hts_kor_isnm} 제거 완료!`
-          : `${stockData.hts_kor_isnm} 추가 완료!`
-      );
-    });
+    setIsAdded((prevAdded) => !prevAdded);
+    console.log(
+      isAdded
+        ? `${stockData.hts_kor_isnm} 제거 완료!`
+        : `${stockData.hts_kor_isnm} 추가 완료!`
+    );
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -71,9 +55,7 @@ const StockDetailPage: React.FC = () => {
   };
 
   const handleHeartClick = () => {
-    handleActionForLoggedInUsers(() => {
-      setIsLiked((prevLiked) => !prevLiked);
-    });
+    setIsLiked((prevLiked) => !prevLiked);
   };
 
   const handleBuyClick = () => {
@@ -151,10 +133,7 @@ const StockDetailPage: React.FC = () => {
         <div onClick={handleBackClick} className="text-white">
           <CgChevronLeft size={24} />
         </div>
-        <h1
-          className="text-xl font-bold text-center text-white"
-          onClick={toggleLoginStatus}
-        >
+        <h1 className="text-xl font-bold text-center text-white">
           {stockData.hts_kor_isnm}
         </h1>
         <div className="flex items-center space-x-4 text-white">
@@ -252,13 +231,13 @@ const StockDetailPage: React.FC = () => {
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
         <button
           className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
-          onClick={() => handleActionForLoggedInUsers(handleBuyClick)}
+          onClick={handleBuyClick}
         >
           매수
         </button>
         <button
           className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
-          onClick={() => handleActionForLoggedInUsers(handleSellClick)}
+          onClick={handleSellClick}
         >
           매도
         </button>

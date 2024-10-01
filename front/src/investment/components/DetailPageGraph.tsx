@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   AreaChart,
   XAxis,
@@ -6,8 +6,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   Area,
-} from "recharts";
-import { MdPlayArrow } from "react-icons/md";
+} from 'recharts';
+import { MdPlayArrow } from 'react-icons/md';
+import CustomTooltip from './CustomTooltip';
 
 interface DetailPageGraphProps {
   data: { name: string; value: number }[];
@@ -22,13 +23,13 @@ const DetailPageGraph: React.FC<DetailPageGraphProps> = ({
   value,
   percentageChange,
 }) => {
-  const strokeColor = "#32CD32";
+  const strokeColor = '#32CD32';
   const gradientId = `detailPageGradient-${subject}`;
 
-  const isPositiveChange = percentageChange.startsWith("+");
+  const isPositiveChange = percentageChange.startsWith('+');
 
-  const arrowRotation = isPositiveChange ? "-rotate-90" : "rotate-90";
-  const arrowColor = "text-green-600";
+  const arrowRotation = isPositiveChange ? '-rotate-90' : 'rotate-90';
+  const arrowColor = 'text-green-600';
 
   const values = data.map((entry) => entry.value);
   const minValue = Math.min(...values);
@@ -72,7 +73,7 @@ const DetailPageGraph: React.FC<DetailPageGraphProps> = ({
           </defs>
           <XAxis dataKey="name" hide />
           <YAxis hide domain={[domainMin, domainMax]} />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           {/* 그라데이션 */}
           <Area
             type="monotone"

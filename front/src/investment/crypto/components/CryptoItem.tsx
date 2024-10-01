@@ -14,11 +14,23 @@ interface CryptoItemProps {
 const CryptoItem: React.FC<CryptoItemProps> = ({
   name,
   price,
-  priceChange,
   weeklyPrices,
 }) => {
-  const isPositiveChange = priceChange > 0;
-  const chartData = weeklyPrices.map((value, index) => ({
+  const latestValue = weeklyPrices.length
+    ? weeklyPrices[weeklyPrices.length - 1]
+    : 0;
+  const previousValue =
+    weeklyPrices.length > 1 ? weeklyPrices[weeklyPrices.length - 2] || 0 : 0;
+  const percentageChange = previousValue
+    ? (((latestValue - previousValue) / previousValue) * 100).toFixed(2)
+    : '0.00';
+  const formattedPercentageChange =
+    Number(percentageChange) >= 0
+      ? `+${percentageChange}%`
+      : `${percentageChange}%`;
+
+  const isPositiveChange = Number(percentageChange) > 0;
+  const chartData = [...weeklyPrices].reverse().map((value, index) => ({
     name: `Day ${index + 1}`,
     value,
   }));
@@ -39,11 +51,11 @@ const CryptoItem: React.FC<CryptoItemProps> = ({
           }`}
         >
           {isPositiveChange ? <MdArrowDropUp /> : <MdArrowDropDown />}
-          {priceChange}
+          {formattedPercentageChange}
         </span>
       </div>
       <div className="text-white font-bold text-2xl mb-2">
-        {price.toLocaleString()}
+        {Number(price).toLocaleString()}
       </div>
 
       {/* 그래프 */}

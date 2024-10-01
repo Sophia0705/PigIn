@@ -7,18 +7,18 @@ import {
   CryptoChartData,
 } from '../../../investment/interfaces/CryptoInterface';
 import { getCryptoList } from '../../../api/investment/crypto/CryptoList';
-import { getYearlyCryptoChartData } from '../../../api/investment/crypto/CryptoChartData';
+import { getWeeklyCryptoChartData } from '../../../api/investment/crypto/CryptoChartData';
 
 const CryptoMainPage: React.FC = () => {
   const [, setCryptoData] = useState<CryptoListData[]>([]);
-  const [yearlyChartData, setYearlyChartData] = useState<CryptoChartData[]>([]);
+  const [weeklyChartData, setWeeklyChartData] = useState<CryptoChartData[]>([]);
 
   const fetchChartData = async (coinId: string) => {
     try {
       // 연봉 데이터 가져오기
-      const yearlyData = await getYearlyCryptoChartData(coinId, 'month');
-      console.log('Yearly Chart Data:', yearlyData);
-      setYearlyChartData(yearlyData.reverse());
+      const weeklyData = await getWeeklyCryptoChartData(coinId, 'day');
+      console.log('주간 차트 데이터:', weeklyData);
+      setWeeklyChartData(weeklyData.reverse());
     } catch (error) {
       console.error('차트 데이터 가져오는데 오류 발생:', error);
     }
@@ -39,17 +39,17 @@ const CryptoMainPage: React.FC = () => {
     fetchCryptoList();
   }, []);
 
-  const chartData = yearlyChartData.map((dataPoint) => ({
+  const chartData = weeklyChartData.map((dataPoint) => ({
     name: dataPoint.coin_bsop_date,
     value: dataPoint.coin_clpr,
   }));
 
-  const latestValue = yearlyChartData.length
-    ? yearlyChartData[yearlyChartData.length - 1].coin_clpr
+  const latestValue = weeklyChartData.length
+    ? weeklyChartData[weeklyChartData.length - 1].coin_clpr
     : 0;
   const previousValue =
-    yearlyChartData.length > 1
-      ? yearlyChartData[yearlyChartData.length - 2]?.coin_clpr || 0
+    weeklyChartData.length > 1
+      ? weeklyChartData[weeklyChartData.length - 2]?.coin_clpr || 0
       : 0;
   const percentageChange = previousValue
     ? (((latestValue - previousValue) / previousValue) * 100).toFixed(2)
