@@ -216,6 +216,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void refreshPassword(RefreshPassowrdDto refreshPassowrdDto) {
         Members member = membersRepository.findByEmailAndStatus(refreshPassowrdDto.getEmail(),
                 WithDrawalStatus.ACTIVE)
@@ -232,8 +233,7 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(MemberNotFoundException::new);
 
         //기존 패스워드 검증
-        if (!member.getPassword()
-            .equals(bCryptPasswordEncoder.encode(updateMemberDto.getOldPassword()))) {
+        if (!bCryptPasswordEncoder.matches(updateMemberDto.getOldPassword(), member.getPassword())) {
             throw new WrongPasswordException();
         }
 
