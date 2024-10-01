@@ -74,15 +74,11 @@ public class MemberServiceImpl implements MemberService {
     public void singUp(Members members) throws NoSuchAlgorithmException {
         Members findMember = membersRepository.findByEmail(members.getEmail());
 
-//        대중현
-        //해당 이메일로 회원가입한 사람이 있으면 return
-        if (findMember != null) {
-            throw new EmailConflictException();
-        }
-
         //패스워드 암호화
         String password = bCryptPasswordEncoder.encode(members.getPassword());
         members.updatePassword(password);
+
+        log.info("member : {}", members.toString());
 
         //userkey 지정
         Map<String, String> requestBody = new HashMap<>();
@@ -97,7 +93,7 @@ public class MemberServiceImpl implements MemberService {
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<UserKeyDto> UserKeyResponse = restTemplate.exchange(
-            MY_SSAFYDATA_BASE_URL + "/api/user/add",
+            MY_SSAFYDATA_BASE_URL + "/api/users/add",
             HttpMethod.POST,
             entity,
             UserKeyDto.class
@@ -118,11 +114,14 @@ public class MemberServiceImpl implements MemberService {
 
         entity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> AccountNoResponse = restTemplate.exchange(
-            MY_SSAFYDATA_BASE_URL + "/api/account/add",
+            MY_SSAFYDATA_BASE_URL + "/api/accounts/add",
             HttpMethod.POST,
             entity,
             String.class
         );
+
+        log.info("member : {}", members.toString());
+
         //Todo : accountNo가 Null일때 처리 필요
         savingsAccountRepository.save(SavingsAccount
             .builder()
