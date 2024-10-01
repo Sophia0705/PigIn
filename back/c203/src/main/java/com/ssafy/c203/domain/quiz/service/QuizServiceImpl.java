@@ -10,17 +10,16 @@ import com.ssafy.c203.domain.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
+    private static final Integer MAX_REWARD_PRICE = 100;
+    private static final Integer MIN_REWARD_PRICE = 10;
+
     private final QuizRepository quizRepository;
     private final AccountService accountService;
-
-    private final Integer MAX_PRICE = 100;
-    private final Integer MIN_PRICE = 10;
 
     // TODO: 일일 퀴즈로 조회 필요할 경우 -> Redis 등에 퀴즈 푼 내역을 저장해야함
     @Override
@@ -65,7 +64,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public Long generateRewardPrice() {
         Random random = new Random();
-        return (long) (random.nextInt((MAX_PRICE - MIN_PRICE) + 1) + MIN_PRICE);
+        return (long) (random.nextInt((MAX_REWARD_PRICE - MIN_REWARD_PRICE) + 1) + MIN_REWARD_PRICE);
     }
 
     @Override
