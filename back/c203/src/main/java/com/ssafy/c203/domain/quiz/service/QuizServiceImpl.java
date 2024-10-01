@@ -25,52 +25,37 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public Quiz provideQuiz() {
 
-        Quiz findQuiz = quizRepository.findRandomQuiz();
-
-        if (findQuiz == null) {
-            throw new QuizNotFoundException(QuizException.QUIZ_NOT_FOUND);
-        }
-
-        return findQuiz;
+        return quizRepository.findRandomQuiz()
+                .orElseThrow(() -> new QuizNotFoundException(QuizException.QUIZ_NOT_FOUND));
     }
 
     @Override
     public QuizResultDto submitQuizResult(MemberAnswerSubmitDto memberAnswerSubmitDto, Long memberId) {
-        QuizResultDto quizResultDto = new QuizResultDto();
-
-        boolean isCorrectAnswer = compareUserAnswer(memberAnswerSubmitDto);
-        String description = findDescription(memberAnswerSubmitDto.getId());
-
-        if (isCorrectAnswer) {
-            Long price = generateRewardPrice();
-            accountService.depositAccount(memberId, price);
-            quizResultDto.setReward(price);
-        }
-
-        quizResultDto.setResult(isCorrectAnswer);
-        quizResultDto.setDescription(description);
-
-        return quizResultDto;
-    }
-
-    @Override
-    public Boolean compareUserAnswer(MemberAnswerSubmitDto memberAnswerSubmitDto) {
+        // 정답 확인 및 퀴즈 조회
         Quiz quiz = quizRepository.findById(memberAnswerSubmitDto.getId())
                 .orElseThrow(() -> new QuizNotFoundException(QuizException.QUIZ_NOT_FOUND));
 
-        return quiz.getAnswer().getValue().equals(memberAnswerSubmitDto.getMemberAnswer().getValue());
+        Boolean isCorrectAnswer = quiz.getAnswer().getValue().equals(memberAnswerSubmitDto.getMemberAnswer().getValue());
+
+        QuizResultDto quizResultDto = new QuizResultDto();
+        quizResultDto.setResult(isCorrectAnswer);
+        quizResultDto.setDescription(quiz.getDescription());
+
+        // 정답
+        if (isCorrectAnswer) {
+            Long rewardPrice = generateRewardPrice();
+            accountService.depositAccount(memberId, rewardPrice);
+            quizResultDto.setReward(rewardPrice);
+        } else {
+            quizResultDto.setReward(0L); // 오답
+        }
+
+        return quizResultDto;
     }
 
     @Override
     public Long generateRewardPrice() {
         Random random = new Random();
         return (long) (random.nextInt((MAX_REWARD_PRICE - MIN_REWARD_PRICE) + 1) + MIN_REWARD_PRICE);
-    }
-
-    @Override
-    public String findDescription(Long quizId) {
-        Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new QuizNotFoundException(QuizException.QUIZ_NOT_FOUND));
-        return quiz.getDescription();
     }
 }
