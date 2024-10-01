@@ -283,4 +283,15 @@ public class GoldServiceImpl implements GoldService {
             .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
             .collect(Collectors.toList());
     }
+
+    @Override
+    public List<GoldYearDto> getGoldMonthsList() {
+        LocalDate oneWeeksAgo = LocalDate.now().minusMonths(1);
+
+        List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneWeeksAgo);
+
+        return goldList.stream()
+            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
+            .collect(Collectors.toList());
+    }
 }

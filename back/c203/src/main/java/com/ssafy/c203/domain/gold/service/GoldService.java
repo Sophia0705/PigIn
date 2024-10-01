@@ -11,4 +11,5 @@ public interface GoldService {
     List<GoldYearDto> goldYearList();
 
     List<GoldYearDto> goldDayList();
+    List<GoldYearDto> goldMonthList();
 }
