@@ -1,6 +1,7 @@
 package com.ssafy.securities.gold.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import lombok.Data;
 public class GoldItemDto {
 
     @JsonProperty("basDt")
-    private String date;
+    private LocalDate date;
     private String srtnCd;
     @JsonProperty("isinCd")
     private String isin;

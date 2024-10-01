@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
+import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
 import com.ssafy.c203.domain.gold.repository.GoldTradeRepository;
@@ -11,10 +12,12 @@ import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -71,6 +74,23 @@ public class GoldServiceImpl implements GoldService {
         }
 
         tradeGold(buyGoldDto, member);
+    }
+
+    @Override
+    public List<GoldYearDto> goldYearList() {
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(new HashMap<>(),
+            new HttpHeaders());
+
+        ResponseEntity<List<GoldYearDto>> response = restTemplate.exchange(
+            MY_SECURITES_BASE_URL + "/api/gold/",
+            HttpMethod.GET,
+            entity,
+            new ParameterizedTypeReference<List<GoldYearDto>>() {}
+        );
+
+        return response.getBody();
+
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
