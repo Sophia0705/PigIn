@@ -21,16 +21,14 @@ public class QuizServiceImpl implements QuizService {
     // TODO: 일일 퀴즈로 조회 필요할 경우 -> Redis 등에 퀴즈 푼 내역을 저장해야함
     @Override
     public Quiz provideQuiz() {
-        List<Quiz> quizList = quizRepository.findAll();
 
-        if (quizList.isEmpty()) {
+        Quiz findQuiz = quizRepository.findRandomQuiz();
+
+        if (findQuiz == null) {
             throw new QuizNotFoundException(QuizException.QUIZ_NOT_FOUND);
         }
 
-        Random random = new Random();
-        int randomIndex = random.nextInt(quizList.size());
-
-        return quizList.get(randomIndex);
+        return findQuiz;
     }
 
     @Override
