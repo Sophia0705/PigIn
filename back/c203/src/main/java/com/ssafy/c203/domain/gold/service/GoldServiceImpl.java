@@ -83,14 +83,31 @@ public class GoldServiceImpl implements GoldService {
             new HttpHeaders());
 
         ResponseEntity<List<GoldYearDto>> response = restTemplate.exchange(
-            MY_SECURITES_BASE_URL + "/api/gold/",
+            MY_SECURITES_BASE_URL + "/api/gold/years",
             HttpMethod.GET,
             entity,
-            new ParameterizedTypeReference<List<GoldYearDto>>() {}
+            new ParameterizedTypeReference<List<GoldYearDto>>() {
+            }
         );
 
         return response.getBody();
 
+    }
+
+    @Override
+    public List<GoldYearDto> goldDayList() {
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(new HashMap<>(),
+            new HttpHeaders());
+
+        ResponseEntity<List<GoldYearDto>> response = restTemplate.exchange(
+            MY_SECURITES_BASE_URL + "/api/gold/weeks",
+            HttpMethod.GET,
+            entity,
+            new ParameterizedTypeReference<List<GoldYearDto>>() {
+            }
+        );
+
+        return response.getBody();
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
@@ -102,7 +119,6 @@ public class GoldServiceImpl implements GoldService {
             //Todo : 거래 가능 검증
 
             //Todo : 통장에 돈 넣어주기
-
 
             tradeMethod = TradeMethod.SELL;
 
@@ -118,7 +134,6 @@ public class GoldServiceImpl implements GoldService {
             //Todo : 통장 돈 검증
 
             //Todo : 돈 빼기
-
 
             tradeMethod = TradeMethod.BUY;
 

@@ -201,7 +201,8 @@ public class GoldServiceImpl implements GoldService {
                 "&numOfRows=100&resultType=json&beginBasDt=");
             urlBuilder.append(dateList.get(i));
             urlBuilder.append("&endBasDt=");
-            urlBuilder.append(i + 1 < dateList.size() ? dateList.get(i + 1) : dateList.get(i));            urlBuilder.append("&itmsNm=%EA%B8%88%2099.99_1Kg");
+            urlBuilder.append(i + 1 < dateList.size() ? dateList.get(i + 1) : dateList.get(i));
+            urlBuilder.append("&itmsNm=%EA%B8%88%2099.99_1Kg");
 
             URL url = new URL(urlBuilder.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -266,11 +267,20 @@ public class GoldServiceImpl implements GoldService {
         LocalDate oneYearAgo = LocalDate.now().minusYears(1);
 
         List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneYearAgo);
-        List<GoldYearDto> yearGoldList = goldList.stream()
+
+        return goldList.stream()
             .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
             .collect(Collectors.toList());
+    }
 
-        log.info("list : {}", yearGoldList.toString());
-        return yearGoldList;
+    @Override
+    public List<GoldYearDto> getGoldDaysList() {
+        LocalDate oneWeeksAgo = LocalDate.now().minusWeeks(1);
+
+        List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneWeeksAgo);
+
+        return goldList.stream()
+            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
+            .collect(Collectors.toList());
     }
 }
