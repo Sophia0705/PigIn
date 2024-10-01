@@ -4,7 +4,7 @@ import { CryptoListData } from '../../../investment/interfaces/CryptoInterface';
 
 export const getCryptoList = async (): Promise<CryptoListData[]> => {
   try {
-    const response = await axiosInstance.get('/api/coin');
+    const response = await axiosInstance.get<CryptoListData[]>('/api/coin');
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

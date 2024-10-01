@@ -1,18 +1,24 @@
 export interface CryptoItemData {
   coin: string; // 암호화폐 코드 (예: KRW-BTC)
-  date: string; // 날짜 (예: "20240928", 문자열로 그대로 유지)
-  open: number; // 시가 (24시간 기준 시작가, 숫자형으로 처리)
-  close: number; // 종가 (24시간 기준 마감가, 숫자형으로 처리)
-  high: number; // 최고가 (24시간 기준, 숫자형으로 처리)
-  low: number; // 최저가 (24시간 기준, 숫자형으로 처리)
-  volume: number; // 거래량 (24시간 기준, 숫자형으로 처리)
+  coinName: string; // 한글 이름
+  date: string; // 날짜 (예: "20240928")
+  open: number; // 시가 (24시간 기준 시작가)
+  close: number; // 종가 (24시간 기준 마감가)
+  high: number; // 최고가 (24시간 기준)
+  low: number; // 최저가 (24시간 기준)
+  volume: number; // 거래량 (24시간 기준)
+  price: number; // 현재가 (CryptoListData에서 추가됨)
+  priceChange: number; // 전일 대비 증감액 (CryptoListData에서 추가됨)
+  weeklyPrices: number[]; // 주간 가격 데이터 (CryptoChartData에서 추가됨)
+  monthlyPrices: number[]; // 월간 데이터
+  yearlyPrices: number[]; // 연간 데이터
 }
 
 export interface CryptoListData {
   coinName: string;
   coinCode: string;
   price: string;
-  priceChange: string;
+  priceChange: number;
 }
 
 export interface CryptoChartData {

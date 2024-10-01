@@ -12,7 +12,7 @@ import CryptoSellModal from '../components/modals/CryptoSellModal';
 const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const cryptoData = location.state?.item as CryptoItemData;
+  const [cryptoData] = useState<CryptoItemData>(location.state?.item);
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
   const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
 
@@ -46,8 +46,8 @@ const CryptoDetailPage: React.FC = () => {
       setIsAdded((prevAdded) => !prevAdded);
       alert(
         isAdded
-          ? `${cryptoData.name} 제거 완료!`
-          : `${cryptoData.name} 추가 완료!`
+          ? `${cryptoData?.coinName} 제거 완료!`
+          : `${cryptoData?.coinName} 추가 완료!`
       );
     });
   };
@@ -91,15 +91,19 @@ const CryptoDetailPage: React.FC = () => {
   const selectedData =
     selectedTimeRange === '7일'
       ? cryptoData.weeklyPrices
-      : cryptoData.monthlyPrices;
+      : selectedTimeRange === '1개월'
+        ? cryptoData.monthlyPrices
+        : selectedTimeRange === '1년'
+          ? cryptoData.yearlyPrices
+          : cryptoData.weeklyPrices;
 
-  const chartData = selectedData.map((price, index) => ({
+  const chartData = selectedData?.map((price, index) => ({
     name: `Day ${index + 1}`,
     value: price,
   }));
 
-  const minPrice = Math.min(...selectedData);
-  const maxPrice = Math.max(...selectedData);
+  const minPrice = Math.min(...(selectedData || []));
+  const maxPrice = Math.max(...(selectedData || []));
 
   const padding = (maxPrice - minPrice) * 0.1;
   const adjustedMin = minPrice - padding;
@@ -115,7 +119,7 @@ const CryptoDetailPage: React.FC = () => {
           className="text-xl font-bold text-center text-white"
           onClick={toggleLoginStatus}
         >
-          {cryptoData.name}
+          {cryptoData.coinName}
         </h1>
         <div className="flex items-center space-x-4 text-white">
           <div onClick={handleHeartClick}>
@@ -135,19 +139,19 @@ const CryptoDetailPage: React.FC = () => {
           </h1>
           <span
             className={`mr-4 mt-2 text-md font-normal px-2 py-1 rounded-full ${
-              cryptoData.percentageChange.startsWith('+')
+              cryptoData.priceChange > 0
                 ? 'bg-green-900 text-white'
                 : 'bg-green-100 text-black'
             }`}
           >
-            {cryptoData.percentageChange}
+            {cryptoData.priceChange}
           </span>
         </div>
       </div>
 
       {/* 시간 범위 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
-        {['7일', '1개월', '3개월', '1년'].map((option) => (
+        {['실시간', '7일', '1개월', '1년'].map((option) => (
           <button
             key={option}
             onClick={() => handleTimeRangeChange(option)}
@@ -216,7 +220,7 @@ const CryptoDetailPage: React.FC = () => {
           inputValue={buyInputValue}
           setInputValue={setBuyInputValue}
           onClose={handleBuyModalClose}
-          cryptoName={cryptoData.name}
+          cryptoName={cryptoData.coinName}
           cryptoPrice={cryptoData.price}
         />
       )}
@@ -227,7 +231,7 @@ const CryptoDetailPage: React.FC = () => {
           inputValue={sellInputValue}
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
-          cryptoName={cryptoData.name}
+          cryptoName={cryptoData.coinName}
           cryptoPrice={cryptoData.price}
         />
       )}

@@ -1,21 +1,24 @@
-import React from "react";
-import { AreaChart, XAxis, YAxis, ResponsiveContainer, Area } from "recharts";
-import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
+import React from 'react';
+import { AreaChart, XAxis, YAxis, ResponsiveContainer, Area } from 'recharts';
+import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 
 interface CryptoItemProps {
   name: string;
   price: number;
-  percentageChange: string;
+  priceChange: number;
   weeklyPrices: number[];
+  monthlyPrices: number[];
+  yearlyPrices: number[];
 }
 
 const CryptoItem: React.FC<CryptoItemProps> = ({
   name,
   price,
-  percentageChange,
+  priceChange,
   weeklyPrices,
 }) => {
-  const isPositiveChange = percentageChange.startsWith("+");
+  // console.log('priceChange:', priceChange, 'Type:', typeof priceChange);
+  const isPositiveChange = priceChange > 0;
   const chartData = weeklyPrices.map((value, index) => ({
     name: `Day ${index + 1}`,
     value,
@@ -32,12 +35,12 @@ const CryptoItem: React.FC<CryptoItemProps> = ({
         <span
           className={`flex items-center justify-center text-xs rounded-full px-2 py-1 ${
             isPositiveChange
-              ? "bg-green-900 text-white"
-              : "bg-green-100 text-customDarkGreen"
+              ? 'bg-green-900 text-white'
+              : 'bg-green-100 text-customDarkGreen'
           }`}
         >
           {isPositiveChange ? <MdArrowDropUp /> : <MdArrowDropDown />}
-          {percentageChange}
+          {priceChange}
         </span>
       </div>
       <div className="text-white font-bold text-2xl mb-2">
