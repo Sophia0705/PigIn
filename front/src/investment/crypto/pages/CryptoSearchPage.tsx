@@ -3,12 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaSearch } from 'react-icons/fa';
 import { CgChevronLeft } from 'react-icons/cg';
 import CryptoSearchResults from '../components/CryptoSearchResults';
-import CryptoCurrenciesData from '../../../data/CryptoCurrenciesData.json';
+import {
+  getWeeklyCryptoChartData,
+  getMonthlyCryptoChartData,
+  getYearlyCryptoChartData,
+} from '../../../api/investment/crypto/CryptoChartData';
+import { searchCryptos } from '../../../api/investment/crypto/CryptoSearch';
+import {
+  CryptoItemData,
+  CryptoListData,
+} from '../../interfaces/CryptoInterface';
 
 const CryptoSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
+  const [filteredCryptos, setFilteredCryptos] = useState<CryptoItemData[]>([]);
 
   const navigate = useNavigate();
 
@@ -23,12 +33,53 @@ const CryptoSearchPage: React.FC = () => {
     navigate(-1);
   };
 
-  // 검색기록 추가하는 함수
-  const handleSearch = () => {
+  // 검색기록 추가 및 검색 API 호출하는 함수
+  const handleSearch = async () => {
     if (searchQuery && !searchHistory.includes(searchQuery)) {
       setSearchHistory([...searchHistory, searchQuery]);
+      setIsSearchTriggered(true);
+
+      try {
+        const results = await searchCryptos(searchQuery);
+        console.log(results);
+
+        const enrichedResults = await Promise.all(
+          results.map(async (crypto: CryptoListData) => {
+            try {
+              const [weeklyData, monthlyData, yearlyData] = await Promise.all([
+                getWeeklyCryptoChartData(crypto.coinCode, 'day'),
+                getMonthlyCryptoChartData(crypto.coinCode, 'day'),
+                getYearlyCryptoChartData(crypto.coinCode, 'month'),
+              ]);
+
+              return {
+                coinName: crypto.coinName,
+                coinCode: crypto.coinCode,
+                price: parseFloat(crypto.price),
+                priceChange: crypto.priceChange,
+                weeklyPrices: weeklyData.map((data) => data.coin_clpr),
+                monthlyPrices: monthlyData.map((data) => data.coin_clpr),
+                yearlyPrices: yearlyData.map((data) => data.coin_clpr),
+              };
+            } catch (error) {
+              console.error(
+                `Error fetching chart data for crypto ${crypto.coinCode}:`,
+                error
+              );
+              return null;
+            }
+          })
+        );
+
+        const validResults = enrichedResults.filter(
+          (result) => result !== null
+        ) as unknown as CryptoItemData[];
+
+        setFilteredCryptos(validResults);
+      } catch (error) {
+        console.error('암호화폐 데이터 불러오는 중 오류 발생:', error);
+      }
     }
-    setIsSearchTriggered(true);
   };
 
   // 검색기록 삭제하는 함수
@@ -37,11 +88,6 @@ const CryptoSearchPage: React.FC = () => {
       searchHistory.filter((historyItem) => historyItem !== item)
     );
   };
-
-  // 검색결과 반환하는 함수
-  const filteredCryptos = isSearchTriggered
-    ? CryptoCurrenciesData.filter((crypto) => crypto.name.includes(searchQuery))
-    : [];
 
   return (
     <div className="min-h-screen flex flex-col items-start justify-start p-4 w-full bg-customDarkGreen">

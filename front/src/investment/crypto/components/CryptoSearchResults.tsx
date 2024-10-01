@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CryptoItem from '../../crypto/components/CryptoItem';
 import { CryptoItemData } from '../../interfaces/CryptoInterface';
+import { getIndividualCryptoData } from '../../../api/investment/crypto/IndividualCryptoData';
 
 interface CryptoSearchResultsProps {
   filteredCryptos: CryptoItemData[];
@@ -12,10 +13,29 @@ const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleItemClick = (crypto: CryptoItemData) => {
-    navigate(`/investment/cryptocurrency/${crypto.coin}`, {
-      state: { item: crypto },
-    });
+  const handleItemClick = async (crypto: CryptoItemData) => {
+    try {
+      // 개별 가상화폐의 상세정보 가져오기
+      const detailedCryptoData = await getIndividualCryptoData(crypto.coin);
+
+      // 기존 목록 데이터에 주간, 월간, 연간 데이터를 추가하여 새로운 객체 생성
+      const enrichedCryptoData = {
+        ...detailedCryptoData,
+        weeklyPrices: crypto.weeklyPrices,
+        monthlyPrices: crypto.monthlyPrices,
+        yearlyPrices: crypto.yearlyPrices,
+      };
+
+      console.log('가상화폐 상세정보:', enrichedCryptoData);
+
+      navigate(`/investment/cryptocurrency/${crypto.coin}`, {
+        state: {
+          item: enrichedCryptoData,
+        },
+      });
+    } catch (error) {
+      console.error('가상화폐 상세정보 가져오는 중 에러 발생:', error);
+    }
   };
 
   return (

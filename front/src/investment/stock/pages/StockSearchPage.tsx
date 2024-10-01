@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaSearch } from 'react-icons/fa';
 import { CgChevronLeft } from 'react-icons/cg';
 import StockSearchResults from '../components/StockSearchResults';
-// import KoreanStocksData from '../../../data/KoreanStocksData.json';
 import {
   getWeeklyStockChartData,
   getMonthlyStockChartData,
@@ -94,13 +93,6 @@ const StockSearchPage: React.FC = () => {
       searchHistory.filter((historyItem) => historyItem !== item)
     );
   };
-
-  // 검색결과 반환하는 함수
-  // const filteredStocks = searchQuery
-  //   ? KoreanStocksData.filter((stock) =>
-  //       stock.hts_kor_isnm.includes(searchQuery)
-  //     )
-  //   : [];
 
   return (
     <div className="min-h-screen flex flex-col items-start justify-start p-4 w-full">

@@ -1,13 +1,13 @@
 import axios from 'axios';
 import axiosInstance from '../../axiosInstance';
-import { StockListResponse } from '../../../investment/interfaces/StockInterface';
+import { CryptoListData } from '../../../investment/interfaces/CryptoInterface';
 
-export const searchStocks = async (
+export const searchCryptos = async (
   searchQuery: string
-): Promise<StockListResponse[]> => {
+): Promise<CryptoListData[]> => {
   try {
-    const response = await axiosInstance.get<StockListResponse[]>(
-      'api/stock/search',
+    const response = await axiosInstance.get<CryptoListData[]>(
+      'api/coin/search',
       {
         params: {
           keyword: searchQuery,
