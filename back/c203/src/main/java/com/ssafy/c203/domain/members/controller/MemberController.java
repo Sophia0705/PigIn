@@ -118,7 +118,7 @@ public class MemberController {
         @ApiResponse(responseCode = "200", description = "ID(이메일) response"),
         @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
-    @GetMapping("/find-id")
+    @PostMapping("/find-id")
     public ResponseEntity<?> findByEmail(@RequestBody FindIdDto findIdDto) {
         String email = memberService.findEmail(findIdDto);
         if (email.equals("fail")) {
