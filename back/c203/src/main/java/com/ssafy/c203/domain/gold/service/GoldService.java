@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
+import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public interface GoldService {
 
     List<GoldYearDto> goldYearList();
 
-    List<GoldYearDto> goldDayList();
-    List<GoldYearDto> goldMonthList();
+    List<GoldDto> goldDayList();
+
+    List<GoldDto> goldMonthList();
 }

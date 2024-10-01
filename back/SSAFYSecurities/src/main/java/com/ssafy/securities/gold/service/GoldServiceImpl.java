@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.securities.gold.dto.response.GoldItemDto;
 import com.ssafy.securities.gold.dto.response.GoldParsingDto;
+import com.ssafy.securities.gold.dto.response.GoldDto;
 import com.ssafy.securities.gold.dto.response.GoldYearDto;
 import com.ssafy.securities.gold.entity.Gold;
 import com.ssafy.securities.gold.repository.GoldRepository;
@@ -265,32 +266,32 @@ public class GoldServiceImpl implements GoldService {
     public List<GoldYearDto> getGoldList() {
         LocalDate oneYearAgo = LocalDate.now().minusYears(1);
 
-        List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneYearAgo);
+        List<GoldYearDto> goldList = goldRepository.getMonthlyAverages(oneYearAgo);
 
         return goldList.stream()
-            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
+            .map(gold -> new GoldYearDto(gold.getMonth(), gold.getClose()))
             .collect(Collectors.toList());
     }
 
     @Override
-    public List<GoldYearDto> getGoldDaysList() {
+    public List<GoldDto> getGoldDaysList() {
         LocalDate oneWeeksAgo = LocalDate.now().minusWeeks(1);
 
         List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 7));
 
         return goldList.stream()
-            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
+            .map(gold -> new GoldDto(gold.getDate(), gold.getClose()))
             .collect(Collectors.toList());
     }
 
     @Override
-    public List<GoldYearDto> getGoldMonthsList() {
+    public List<GoldDto> getGoldMonthsList() {
         LocalDate oneWeeksAgo = LocalDate.now().minusMonths(1);
 
         List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 30));
 
         return goldList.stream()
-            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
+            .map(gold -> new GoldDto(gold.getDate(), gold.getClose()))
             .collect(Collectors.toList());
     }
 }
