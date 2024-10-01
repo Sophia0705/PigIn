@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class GoldYearDto {
+public class GoldDto {
 
     private LocalDate date;
     private String close;

@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class GoldYearDto {
+public class GoldDto {
     private LocalDate date;
     private String close;
 
-    public GoldYearDto(LocalDate date, String close) {
+    public GoldDto(LocalDate date, String close) {
         this.date = date;
         this.close = close;
     }
