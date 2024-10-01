@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -277,7 +276,7 @@ public class GoldServiceImpl implements GoldService {
     public List<GoldYearDto> getGoldDaysList() {
         LocalDate oneWeeksAgo = LocalDate.now().minusWeeks(1);
 
-        List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneWeeksAgo);
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 7));
 
         return goldList.stream()
             .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
@@ -288,7 +287,7 @@ public class GoldServiceImpl implements GoldService {
     public List<GoldYearDto> getGoldMonthsList() {
         LocalDate oneWeeksAgo = LocalDate.now().minusMonths(1);
 
-        List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneWeeksAgo);
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 30));
 
         return goldList.stream()
             .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
