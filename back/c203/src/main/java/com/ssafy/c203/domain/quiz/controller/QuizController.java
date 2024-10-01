@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class QuizController {
 
     private final QuizService quizService;
-    private final AccountService accountService;
 
     // 일일 퀴즈 조회
     @GetMapping("/daily")
@@ -32,21 +31,9 @@ public class QuizController {
 
     // 퀴즈 결과
     @PostMapping("/result")
-    public ResponseEntity<QuizResultDto> QuizResult(@RequestBody MemberAnswerSubmitDto memberAnswerSubmitDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long memberId = customUserDetails.getUserId();
-        QuizResultDto quizResultDto = new QuizResultDto();
+    public ResponseEntity<QuizResultDto> submitQuizResult(@RequestBody MemberAnswerSubmitDto memberAnswerSubmitDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        boolean isCorrectAnswer = quizService.compareUserAnswer(memberAnswerSubmitDto);
-        String description = quizService.findDescription(memberAnswerSubmitDto.getId());
-
-        if (isCorrectAnswer) {
-            Long price = quizService.generateRewardPrice();
-            accountService.depositAccount(memberId, price);
-            quizResultDto.setReward(price);
-        }
-
-        quizResultDto.setResult(isCorrectAnswer);
-        quizResultDto.setDescription(description);
+        QuizResultDto quizResultDto = quizService.submitQuizResult(memberAnswerSubmitDto, customUserDetails.getUserId());
 
         return ResponseEntity.ok().body(quizResultDto);
     }

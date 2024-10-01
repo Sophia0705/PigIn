@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.quiz.service;
 
 import com.ssafy.c203.domain.quiz.dto.request.MemberAnswerSubmitDto;
+import com.ssafy.c203.domain.quiz.dto.response.QuizResultDto;
 import com.ssafy.c203.domain.quiz.entity.Quiz;
 
 public interface QuizService {
@@ -12,4 +13,6 @@ public interface QuizService {
     Long generateRewardPrice(); // 정답일 경우 10~100원 가격 랜덤 생성 후 사용자 저축계좌에 입금
 
     String findDescription(Long quizId); //  퀴즈 해설 내용 조회
+
+    QuizResultDto submitQuizResult(MemberAnswerSubmitDto memberAnswerSubmitDto, Long memberId); // 퀴즈 제출
 }

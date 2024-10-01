@@ -1,6 +1,8 @@
 package com.ssafy.c203.domain.quiz.service;
 
+import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.quiz.dto.request.MemberAnswerSubmitDto;
+import com.ssafy.c203.domain.quiz.dto.response.QuizResultDto;
 import com.ssafy.c203.domain.quiz.entity.Quiz;
 import com.ssafy.c203.domain.quiz.exception.QuizException;
 import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
@@ -15,6 +17,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
+    private final AccountService accountService;
+
     private final Integer MAX_PRICE = 100;
     private final Integer MIN_PRICE = 10;
 
@@ -29,6 +33,25 @@ public class QuizServiceImpl implements QuizService {
         }
 
         return findQuiz;
+    }
+
+    @Override
+    public QuizResultDto submitQuizResult(MemberAnswerSubmitDto memberAnswerSubmitDto, Long memberId) {
+        QuizResultDto quizResultDto = new QuizResultDto();
+
+        boolean isCorrectAnswer = compareUserAnswer(memberAnswerSubmitDto);
+        String description = findDescription(memberAnswerSubmitDto.getId());
+
+        if (isCorrectAnswer) {
+            Long price = generateRewardPrice();
+            accountService.depositAccount(memberId, price);
+            quizResultDto.setReward(price);
+        }
+
+        quizResultDto.setResult(isCorrectAnswer);
+        quizResultDto.setDescription(description);
+
+        return quizResultDto;
     }
 
     @Override
