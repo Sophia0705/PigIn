@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   AreaChart,
   XAxis,
@@ -6,7 +6,8 @@ import {
   Area,
   ResponsiveContainer,
   Tooltip,
-} from "recharts";
+} from 'recharts';
+import CustomTooltip from '../../components/CustomTooltip';
 
 interface CryptoDetailGraphProps {
   chartData: { name: string; value: number }[];
@@ -32,16 +33,7 @@ const CryptoDetailGraph: React.FC<CryptoDetailGraphProps> = ({
             </defs>
             <YAxis domain={[adjustedMin, adjustedMax]} hide />
             <XAxis dataKey="name" hide />
-            <Tooltip
-              cursor={false}
-              contentStyle={{
-                backgroundColor: "#ffffff",
-                borderRadius: "10px",
-                border: "none",
-              }}
-              labelStyle={{ color: "#333" }}
-              itemStyle={{ color: "#333" }}
-            />
+            <Tooltip cursor={false} content={<CustomTooltip />} />
             <Area
               type="monotone"
               dataKey="value"

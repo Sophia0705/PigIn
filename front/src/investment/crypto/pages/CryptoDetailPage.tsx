@@ -8,6 +8,7 @@ import CryptoDetailGraph from '../components/CryptoDetailGraph';
 import CryptoDetailInfo from '../components/CryptoDetailInfo';
 import CryptoNews from '../components/CryptoNews';
 import CryptoSellModal from '../components/modals/CryptoSellModal';
+import { format, subDays } from 'date-fns';
 
 const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -97,10 +98,26 @@ const CryptoDetailPage: React.FC = () => {
           ? cryptoData.yearlyPrices
           : cryptoData.weeklyPrices;
 
-  const chartData = selectedData?.map((price, index) => ({
-    name: `Day ${index + 1}`,
-    value: price,
-  }));
+  const chartData = selectedData
+    ?.map((price, index) => {
+      const currentDate = new Date();
+      if (selectedTimeRange === '1년') {
+        const pastDate = new Date(
+          currentDate.setMonth(currentDate.getMonth() - index)
+        );
+        return {
+          name: format(pastDate, 'yyyy-MM'),
+          value: price,
+        };
+      } else {
+        const pastDate = subDays(currentDate, index);
+        return {
+          name: format(pastDate, 'yyyy-MM-dd'),
+          value: price,
+        };
+      }
+    })
+    .reverse();
 
   const minPrice = Math.min(...(selectedData || []));
   const maxPrice = Math.max(...(selectedData || []));

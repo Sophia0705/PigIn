@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import CustomTooltip from '../../components/CustomTooltip';
 
 interface StockDetailGraphProps {
   chartData: { name: string; value: number }[];
@@ -32,16 +33,7 @@ const StockDetailGraph: React.FC<StockDetailGraphProps> = ({
             </defs>
             <YAxis domain={[adjustedMin, adjustedMax]} hide />
             <XAxis dataKey="name" hide />
-            <Tooltip
-              cursor={false}
-              contentStyle={{
-                backgroundColor: '#ffffff',
-                borderRadius: '10px',
-                border: 'none',
-              }}
-              labelStyle={{ color: '#333' }}
-              itemStyle={{ color: '#333' }}
-            />
+            <Tooltip cursor={false} content={<CustomTooltip />} />
             <Area
               type="monotone"
               dataKey="value"
