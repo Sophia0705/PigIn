@@ -1,7 +1,7 @@
 package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
-import com.ssafy.c203.domain.gold.dto.request.BuyGoldDto;
+import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
 import com.ssafy.c203.domain.gold.repository.GoldTradeRepository;
@@ -20,11 +20,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class GoldServiceImpl implements GoldService {
 
     private final GoldTradeRepository goldTradeRepository;
@@ -39,82 +41,76 @@ public class GoldServiceImpl implements GoldService {
     private String MY_SECURITES_BASE_URL;
 
 
-    //Todo : 내 통장에서 돈빼기 해야함
     @Override
-    public void buyGoldRequest(BuyGoldDto buyGoldDto, Long userId) {
+    public void goldTradeRequest(GoldTradeDto buyGoldDto, Long userId) {
         Members member = membersRepository.findById(userId)
             .orElseThrow(MemberNotFoundException::new);
-
-        //잔액 확인
-
-        //돈빼기
 
         int tradePrice = buyGoldDto.getTradePrice();
         LocalTime now = LocalTime.now();
 
-        // 장 시간이 아니면 대기큐에 넣기
+        //장시간 외이면
         if (now.isAfter(GOLD_END_TIME) || now.isBefore(GOLD_START_TIME)) {
-            goldWaitingQueueRepository.save(GoldWaitingQueue
+            if (buyGoldDto.getMethod().equals("SELL")) {
+                goldWaitingQueueRepository.save(GoldWaitingQueue
+                    .builder()
+                    .member(member)
+                    .tradePrice(tradePrice)
+                    .method(TradeMethod.SELL)
+                    .build());
+                return;
+            } else {
+                goldWaitingQueueRepository.save(GoldWaitingQueue
+                    .builder()
+                    .member(member)
+                    .tradePrice(tradePrice)
+                    .method(TradeMethod.BUY)
+                    .build());
+                return;
+            }
+        }
+
+        tradeGold(buyGoldDto, member);
+    }
+
+    private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
+        int goldPrice = getGoldPrice();
+        int tradePrice = goldTradeDto.getTradePrice();
+        double count = getGoldCount(goldTradeDto.getTradePrice(), goldPrice);
+        TradeMethod tradeMethod = null;
+        if (goldTradeDto.getMethod().equals("SELL")) {
+            //Todo : 거래 가능 검증
+
+            //Todo : 통장에 돈 넣어주기
+
+
+            tradeMethod = TradeMethod.SELL;
+
+            goldTradeRepository.save(GoldTrade
                 .builder()
                 .member(member)
+                .method(tradeMethod)
+                .goldPrice(goldPrice)
+                .count(count)
                 .tradePrice(tradePrice)
                 .build());
-            return;
+        } else {
+            //Todo : 통장 돈 검증
+
+            //Todo : 돈 빼기
+
+
+            tradeMethod = TradeMethod.BUY;
+
+            goldTradeRepository.save(GoldTrade
+                .builder()
+                .member(member)
+                .method(tradeMethod)
+                .goldPrice(goldPrice)
+                .count(count)
+                .tradePrice(tradePrice)
+                .build());
         }
-
-        //금 구매
-        buyGold(buyGoldDto, member);
-    }
-
-    private void buyGold(BuyGoldDto buyGoldDto, Members member) {
-        //현재 금가격 가져오기 => 함수로 뺄것
-        int goldPrice = getGoldPrice();
-
-        int tradePrice = buyGoldDto.getTradePrice();
-
-        //count 수 구하기 => 함수화
-        double count = getGoldCount(tradePrice, goldPrice);
-
-        //장시간이면
-        goldTradeRepository.save(GoldTrade
-            .builder()
-            .method(TradeMethod.BUY)
-            .count(count)
-            .tradePrice(tradePrice)
-            .goldPrice(goldPrice)
-            .member(member)
-            .build());
-    }
-
-    @Override
-    public void sellGoldInTime(BuyGoldDto buyGoldDto, Long userId) {
-        Members member = membersRepository.findById(userId)
-            .orElseThrow(MemberNotFoundException::new);
-
-        // 금 현재가격 가져오기
-        int goldPrice = getGoldPrice();
-        int tradePrice = buyGoldDto.getTradePrice();
-
-        //count 수 세기
-        double count = getGoldCount(tradePrice, goldPrice);
-
-        //Todo : 현재갖은 금보다 거래금액이 더 많으면 안됨
-        //Todo : 통장에서 돈빼기
-
-        LocalTime now = LocalTime.now();
-
-        if (now.isAfter(GOLD_END_TIME) || now.isBefore(GOLD_START_TIME)) {
-
-        }
-        goldTradeRepository.save(GoldTrade
-            .builder()
-            .member(member)
-            .method(TradeMethod.SELL)
-            .goldPrice(goldPrice)
-            .count(count)
-            .tradePrice(tradePrice)
-            .build());
-
     }
 
     private int getGoldPrice() {
@@ -136,7 +132,7 @@ public class GoldServiceImpl implements GoldService {
     }
 
     //사용자 잔고 확인
-    private boolean checkAccoung(Members member) {
+    private boolean checkAccount(Members member) {
         return true;
     }
 

@@ -43,8 +43,9 @@ public class GoldWaitingQueue {
     private Members member;
 
     @Builder
-    public GoldWaitingQueue(int tradePrice, Members member) {
+    public GoldWaitingQueue(int tradePrice, TradeMethod method, Members member) {
         this.tradePrice = tradePrice;
+        this.method = method;
         this.member = member;
     }
 }
