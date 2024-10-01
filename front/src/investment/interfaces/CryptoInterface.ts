@@ -16,7 +16,7 @@ export interface CryptoItemData {
 
 export interface CryptoListData {
   coinName: string;
-  coinCode: string;
+  coin: string;
   price: string;
   priceChange: number;
 }

@@ -21,6 +21,8 @@ const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({
       // 기존 목록 데이터에 주간, 월간, 연간 데이터를 추가하여 새로운 객체 생성
       const enrichedCryptoData = {
         ...detailedCryptoData,
+        price: crypto.price,
+        priceChange: crypto.priceChange,
         weeklyPrices: crypto.weeklyPrices,
         monthlyPrices: crypto.monthlyPrices,
         yearlyPrices: crypto.yearlyPrices,

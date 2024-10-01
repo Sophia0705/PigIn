@@ -37,16 +37,16 @@ const CryptoItemsContainer: React.FC<CryptoItemsContainerProps> = () => {
             try {
               // 개별 가상화폐의 상세 정보를 가져옴
               const details: CryptoItemData = await getIndividualCryptoData(
-                crypto.coinCode
+                crypto.coin
               );
 
               // 개별 가상화폐의 기간별 차트 데이터를 가져옴
               const weeklyChartData: CryptoChartData[] =
-                await getWeeklyCryptoChartData(crypto.coinCode, 'day');
+                await getWeeklyCryptoChartData(crypto.coin, 'day');
               const monthlyChartData: CryptoChartData[] =
-                await getMonthlyCryptoChartData(crypto.coinCode, 'day');
+                await getMonthlyCryptoChartData(crypto.coin, 'day');
               const yearlyChartData: CryptoChartData[] =
-                await getYearlyCryptoChartData(crypto.coinCode, 'month');
+                await getYearlyCryptoChartData(crypto.coin, 'month');
 
               // 목록 데이터, 상세 정보, 주간 차트 데이터를 합쳐서 반환
               return {

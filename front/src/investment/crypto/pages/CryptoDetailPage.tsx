@@ -71,6 +71,24 @@ const CryptoDetailPage: React.FC = () => {
     return <div>로딩중...</div>;
   }
 
+  const latestValue = cryptoData.weeklyPrices.length
+    ? cryptoData.weeklyPrices[cryptoData.weeklyPrices.length - 1]
+    : 0;
+
+  const previousValue =
+    cryptoData.weeklyPrices.length > 1
+      ? cryptoData.weeklyPrices[cryptoData.weeklyPrices.length - 2] || 0
+      : 0;
+
+  const percentageChange = previousValue
+    ? (((latestValue - previousValue) / previousValue) * 100).toFixed(2)
+    : '0.00';
+
+  const formattedPercentageChange =
+    Number(percentageChange) >= 0
+      ? `+${percentageChange}%`
+      : `${percentageChange}%`;
+
   const selectedData =
     selectedTimeRange === '7일'
       ? cryptoData.weeklyPrices
@@ -135,12 +153,12 @@ const CryptoDetailPage: React.FC = () => {
           </h1>
           <span
             className={`mr-4 mt-2 text-md font-normal px-2 py-1 rounded-full ${
-              cryptoData.priceChange > 0
+              Number(percentageChange) > 0
                 ? 'bg-green-900 text-white'
                 : 'bg-green-100 text-black'
             }`}
           >
-            {cryptoData.priceChange}
+            {formattedPercentageChange}
           </span>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaSearch } from 'react-icons/fa';
 import { CgChevronLeft } from 'react-icons/cg';
@@ -19,6 +19,10 @@ const CryptoSearchPage: React.FC = () => {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
   const [filteredCryptos, setFilteredCryptos] = useState<CryptoItemData[]>([]);
+
+  useEffect(() => {
+    console.log('Filtered Cryptos:', filteredCryptos);
+  }, [filteredCryptos]);
 
   const navigate = useNavigate();
 
@@ -47,14 +51,14 @@ const CryptoSearchPage: React.FC = () => {
           results.map(async (crypto: CryptoListData) => {
             try {
               const [weeklyData, monthlyData, yearlyData] = await Promise.all([
-                getWeeklyCryptoChartData(crypto.coinCode, 'day'),
-                getMonthlyCryptoChartData(crypto.coinCode, 'day'),
-                getYearlyCryptoChartData(crypto.coinCode, 'month'),
+                getWeeklyCryptoChartData(crypto.coin, 'day'),
+                getMonthlyCryptoChartData(crypto.coin, 'day'),
+                getYearlyCryptoChartData(crypto.coin, 'month'),
               ]);
 
               return {
                 coinName: crypto.coinName,
-                coinCode: crypto.coinCode,
+                coin: crypto.coin,
                 price: parseFloat(crypto.price),
                 priceChange: crypto.priceChange,
                 weeklyPrices: weeklyData.map((data) => data.coin_clpr),
@@ -63,7 +67,7 @@ const CryptoSearchPage: React.FC = () => {
               };
             } catch (error) {
               console.error(
-                `Error fetching chart data for crypto ${crypto.coinCode}:`,
+                `Error fetching chart data for crypto ${crypto.coin}:`,
                 error
               );
               return null;
@@ -73,7 +77,7 @@ const CryptoSearchPage: React.FC = () => {
 
         const validResults = enrichedResults.filter(
           (result) => result !== null
-        ) as unknown as CryptoItemData[];
+        ) as CryptoItemData[];
 
         setFilteredCryptos(validResults);
       } catch (error) {
