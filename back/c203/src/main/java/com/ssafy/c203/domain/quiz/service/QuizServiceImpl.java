@@ -4,29 +4,34 @@ import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.quiz.dto.request.MemberAnswerSubmitDto;
 import com.ssafy.c203.domain.quiz.dto.response.QuizResultDto;
 import com.ssafy.c203.domain.quiz.entity.Quiz;
+import com.ssafy.c203.domain.quiz.exception.QuizAlreadySolvedException;
 import com.ssafy.c203.domain.quiz.exception.QuizException;
 import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
 import com.ssafy.c203.domain.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class QuizServiceImpl implements QuizService {
     private static final Integer MAX_REWARD_PRICE = 100;
     private static final Integer MIN_REWARD_PRICE = 10;
-    private static final Logger log = LoggerFactory.getLogger(QuizServiceImpl.class);
+    private static final int MAX_RETRY_COUNT = 3;
 
+    private final RedisTemplate<String, Object> redisTemplate;
     private final QuizRepository quizRepository;
     private final AccountService accountService;
 
-    // TODO: 일일 퀴즈로 조회 필요할 경우 -> Redis 등에 퀴즈 푼 내역을 저장해야함
     @Override
     public Quiz provideQuiz() {
 
@@ -37,6 +42,16 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional
     public QuizResultDto submitQuizResult(MemberAnswerSubmitDto memberAnswerSubmitDto, Long memberId) {
+
+        // Redis에서 퀴즈 풀이 여부 확인
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        String redisKey = "QUIZ_SOLVED:" + memberId;
+        boolean hasSolved = valueOperations.get(redisKey) != null;
+
+        if (hasSolved) {
+            throw new QuizAlreadySolvedException(QuizException.QUIZ_ALREADY_SOLVED);
+        }
+
         // 정답 확인 및 퀴즈 조회
         Quiz quiz = quizRepository.findById(memberAnswerSubmitDto.getId())
                 .orElseThrow(() -> new QuizNotFoundException(QuizException.QUIZ_NOT_FOUND));
@@ -46,6 +61,8 @@ public class QuizServiceImpl implements QuizService {
         QuizResultDto quizResultDto = new QuizResultDto();
         quizResultDto.setResult(isCorrectAnswer);
         quizResultDto.setDescription(quiz.getDescription());
+
+        log.info("회원 ID {}의 퀴즈 풀이 결과: {}", memberId, isCorrectAnswer ? "정답" : "오답");
 
         // 정답
         if (isCorrectAnswer) {
@@ -60,12 +77,47 @@ public class QuizServiceImpl implements QuizService {
             quizResultDto.setReward(0L); // 오답
         }
 
+        valueOperations.set(redisKey, true, 1, TimeUnit.DAYS);
+
         return quizResultDto;
     }
 
     @Override
     public Long generateRewardPrice() {
-        Random random = new Random();
-        return (long) (random.nextInt((MAX_REWARD_PRICE - MIN_REWARD_PRICE) + 1) + MIN_REWARD_PRICE);
+        return MIN_REWARD_PRICE + (long) (Math.random() * (MAX_REWARD_PRICE - MIN_REWARD_PRICE + 1));
     }
+
+
+    // 매일 오전 9시에 Daily Quiz 풀이 여부 초기화
+    @Scheduled(cron = "0 0 9 * * *")
+    public void resetDailyQuizKeys() {
+        int retryCount = 0;
+
+        while (retryCount < MAX_RETRY_COUNT) {
+            try {
+                log.info("Redis 키 삭제 작업 시도: {} / {}", (retryCount + 1), MAX_RETRY_COUNT);
+
+                // QUIZ_SOLVED로 시작하는 모든 키 가져오기
+                Set<String> keys = redisTemplate.keys("QUIZ_SOLVED:*");
+                if (keys != null && !keys.isEmpty()) {
+                    redisTemplate.delete(keys);
+                    keys.forEach(key -> log.info("Deleted Redis Key: " + key));
+                }
+
+                log.info("Redis 키 삭제 작업 성공");
+                break; // 성공 시 재시도 중지
+
+            } catch (Exception e) {
+                retryCount++;
+                log.error("Redis 작업 실패, 재시도 중... ({} / {})   error: {}", retryCount, MAX_RETRY_COUNT, e.getMessage());
+
+                try {
+                    Thread.sleep(5000); // 5초 대기 후 재시도
+                } catch (InterruptedException interruptedException) {
+                    log.error("재시도 대기 중 인터럽트 발생: {}", interruptedException.getMessage());
+                }
+            }
+        }
+    }
+
 }
