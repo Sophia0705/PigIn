@@ -29,7 +29,7 @@ const PhoneNumberInput: React.FC = () => {
   // 전화번호 입력 핸들러
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedPhoneNumber = formatPhoneNumber(e.target.value); // 하이픈 자동 추가
-    setFormData({ phoneNumber: formattedPhoneNumber }); // Zustand에서 전화번호 변경
+    setFormData({ ...formData, phoneNumber: formattedPhoneNumber }); // Zustand에서 전화번호 변경
   };
 
   // 인증번호 입력 핸들러

@@ -16,9 +16,9 @@ const UpdateProfileModal: React.FC = () => {
     openSignOutModal,
     isSignOutModalOpen,
     formData,
+    setFormData,
   } = useMemberStore();
 
-  const [phoneNumber, setPhoneNumber] = useState(''); // 전화번호
   const [currentPassword, setCurrentPassword] = useState(''); // 기존 비밀번호
   const [showCurrentPassword, setShowCurrentPassword] = useState(false); // 기존 비밀번호 표시 여부
   const [isPasswordEditEnabled, setIsPasswordEditEnabled] = useState(false); // 비밀번호 수정 여부
@@ -27,14 +27,32 @@ const UpdateProfileModal: React.FC = () => {
     const fetchMemberInfo = async () => {
       try {
         const memberInfo = await getMemberInfoAPI();
-        setPhoneNumber(memberInfo.phoneNumber); // 초기 전화번호 설정
+        setFormData({
+          phoneNumber: formatPhoneNumber(memberInfo.phoneNumber), // 전화번호 설정
+          savingRate: memberInfo.savingRate, // 저축률 설정
+        });
       } catch (error) {
         console.error('회원 정보 불러오기 실패:', error);
       }
     };
 
     fetchMemberInfo();
-  }, []);
+  }, [setFormData]);
+
+  // 전화번호에서 하이픈을 제거하는 함수
+  const removeHyphens = (phoneNumber: string) => {
+    return phoneNumber.replace(/-/g, ''); // 모든 하이픈을 제거
+  };
+
+  const formatPhoneNumber = (phoneNumber: string) => {
+    const cleaned = phoneNumber.replace(/\D/g, ''); // 숫자만 남기기
+    const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/); // 3-3~4-4 형태로 매칭
+
+    if (match) {
+      return `${match[1]}-${match[2]}-${match[3]}`; // 010-1234-5678 같은 형식 반환
+    }
+    return phoneNumber; // 형식이 맞지 않으면 원본 반환
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,12 +67,12 @@ const UpdateProfileModal: React.FC = () => {
       phoneNumber: string;
       oldPassword: string;
       newPassword?: string;
-      isChange: boolean;
+      change: boolean;
     } = {
       savingRate: formData.savingRate, // Zustand에서 가져온 저축률 사용
-      phoneNumber,
+      phoneNumber: removeHyphens(formData.phoneNumber), // 하이픈 제거한 전화번호 사용, // Zustand에서 가져온 전화번호 사용
       oldPassword: currentPassword,
-      isChange: isPasswordEditEnabled ? true : false, // 비밀번호 수정 여부를 결정
+      change: isPasswordEditEnabled ? true : false, // 비밀번호 수정 여부를 결정
     };
 
     if (isPasswordEditEnabled) {
@@ -81,8 +99,8 @@ const UpdateProfileModal: React.FC = () => {
 
   const formIsValid = () => {
     // 핸드폰 인증 여부 확인
-    if (!formData.isPhoneVerified) return false;
-    console.log(1);
+    // if (!formData.isPhoneVerified) return false;
+    // console.log(1);
 
     // 기존 비밀번호 8자 이상, 영어와 숫자 섞임 여부 확인
     if (currentPassword.length < 8 || !hasNumberAndLetter(currentPassword)) {
