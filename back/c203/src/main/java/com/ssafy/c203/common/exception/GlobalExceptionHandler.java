@@ -7,6 +7,7 @@ import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
+import com.ssafy.c203.domain.quiz.exception.QuizAlreadySolvedException;
 import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -60,6 +61,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(QuizNotFoundException.class)
     public ResponseEntity<String> handleQuizNotFoundException(QuizNotFoundException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(QuizAlreadySolvedException.class)
+    public ResponseEntity<String> handleQuizAlreadySolvedException(QuizAlreadySolvedException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }
