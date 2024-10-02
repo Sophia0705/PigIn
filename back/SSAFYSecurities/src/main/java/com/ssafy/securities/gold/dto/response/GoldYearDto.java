@@ -1,15 +1,14 @@
 package com.ssafy.securities.gold.dto.response;
 
-import java.time.LocalDate;
 import lombok.Data;
 
 @Data
 public class GoldYearDto {
-    private LocalDate date;
-    private String close;
+    private String month;
+    private double close;
 
-    public GoldYearDto(LocalDate date, String close) {
-        this.date = date;
+    public GoldYearDto(String month, double close) {
+        this.month = month;
         this.close = close;
     }
 }

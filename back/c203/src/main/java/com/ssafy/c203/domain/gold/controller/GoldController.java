@@ -32,7 +32,17 @@ public class GoldController {
     }
 
     @GetMapping("/gold-year")
-    public ResponseEntity<?> getYearGold(){
+    public ResponseEntity<?> getYearGold() {
         return ResponseEntity.ok(goldService.goldYearList());
+    }
+
+    @GetMapping("/gold-week")
+    public ResponseEntity<?> getWeekGold() {
+        return ResponseEntity.ok(goldService.goldDayList());
+    }
+
+    @GetMapping("/gold-month")
+    public ResponseEntity<?> getMonthGold() {
+        return ResponseEntity.ok(goldService.goldMonthList());
     }
 }

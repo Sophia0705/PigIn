@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
+import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
@@ -83,14 +84,47 @@ public class GoldServiceImpl implements GoldService {
             new HttpHeaders());
 
         ResponseEntity<List<GoldYearDto>> response = restTemplate.exchange(
-            MY_SECURITES_BASE_URL + "/api/gold/",
+            MY_SECURITES_BASE_URL + "/api/gold/years",
             HttpMethod.GET,
             entity,
-            new ParameterizedTypeReference<List<GoldYearDto>>() {}
+            new ParameterizedTypeReference<List<GoldYearDto>>() {
+            }
         );
 
         return response.getBody();
 
+    }
+
+    @Override
+    public List<GoldDto> goldDayList() {
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(new HashMap<>(),
+            new HttpHeaders());
+
+        ResponseEntity<List<GoldDto>> response = restTemplate.exchange(
+            MY_SECURITES_BASE_URL + "/api/gold/weeks",
+            HttpMethod.GET,
+            entity,
+            new ParameterizedTypeReference<List<GoldDto>>() {
+            }
+        );
+
+        return response.getBody();
+    }
+
+    @Override
+    public List<GoldDto> goldMonthList() {
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(new HashMap<>(),
+            new HttpHeaders());
+
+        ResponseEntity<List<GoldDto>> response = restTemplate.exchange(
+            MY_SECURITES_BASE_URL + "/api/gold/months",
+            HttpMethod.GET,
+            entity,
+            new ParameterizedTypeReference<List<GoldDto>>() {
+            }
+        );
+
+        return response.getBody();
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
@@ -102,7 +136,6 @@ public class GoldServiceImpl implements GoldService {
             //Todo : 거래 가능 검증
 
             //Todo : 통장에 돈 넣어주기
-
 
             tradeMethod = TradeMethod.SELL;
 
@@ -118,7 +151,6 @@ public class GoldServiceImpl implements GoldService {
             //Todo : 통장 돈 검증
 
             //Todo : 돈 빼기
-
 
             tradeMethod = TradeMethod.BUY;
 

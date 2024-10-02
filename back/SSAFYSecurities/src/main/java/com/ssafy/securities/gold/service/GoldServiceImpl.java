@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.securities.gold.dto.response.GoldItemDto;
 import com.ssafy.securities.gold.dto.response.GoldParsingDto;
+import com.ssafy.securities.gold.dto.response.GoldDto;
 import com.ssafy.securities.gold.dto.response.GoldYearDto;
 import com.ssafy.securities.gold.entity.Gold;
 import com.ssafy.securities.gold.repository.GoldRepository;
@@ -20,8 +21,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -201,7 +201,8 @@ public class GoldServiceImpl implements GoldService {
                 "&numOfRows=100&resultType=json&beginBasDt=");
             urlBuilder.append(dateList.get(i));
             urlBuilder.append("&endBasDt=");
-            urlBuilder.append(i + 1 < dateList.size() ? dateList.get(i + 1) : dateList.get(i));            urlBuilder.append("&itmsNm=%EA%B8%88%2099.99_1Kg");
+            urlBuilder.append(i + 1 < dateList.size() ? dateList.get(i + 1) : dateList.get(i));
+            urlBuilder.append("&itmsNm=%EA%B8%88%2099.99_1Kg");
 
             URL url = new URL(urlBuilder.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -265,12 +266,32 @@ public class GoldServiceImpl implements GoldService {
     public List<GoldYearDto> getGoldList() {
         LocalDate oneYearAgo = LocalDate.now().minusYears(1);
 
-        List<Gold> goldList = goldRepository.findByDateGreaterThanEqualOrderByDateDesc(oneYearAgo);
-        List<GoldYearDto> yearGoldList = goldList.stream()
-            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
-            .collect(Collectors.toList());
+        List<GoldYearDto> goldList = goldRepository.getMonthlyAverageCloseLastYear();
 
-        log.info("list : {}", yearGoldList.toString());
-        return yearGoldList;
+        return goldList.stream()
+            .map(gold -> new GoldYearDto(gold.getMonth(), gold.getClose()))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GoldDto> getGoldDaysList() {
+        LocalDate oneWeeksAgo = LocalDate.now().minusWeeks(1);
+
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 7));
+
+        return goldList.stream()
+            .map(gold -> new GoldDto(gold.getDate(), gold.getClose()))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GoldDto> getGoldMonthsList() {
+        LocalDate oneWeeksAgo = LocalDate.now().minusMonths(1);
+
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 30));
+
+        return goldList.stream()
+            .map(gold -> new GoldDto(gold.getDate(), gold.getClose()))
+            .collect(Collectors.toList());
     }
 }
