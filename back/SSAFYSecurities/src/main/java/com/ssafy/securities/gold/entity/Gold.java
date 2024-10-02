@@ -18,18 +18,18 @@ public class Gold {
     private String srtnCd;
     private String isin;
     private String itemName;
-    private String close;
+    private int close;
     private String vsYesterday;
     private String upDownRate;
-    private String open;
-    private String high;
-    private String low;
+    private int open;
+    private int high;
+    private int low;
     private String tradeAmount;
     private String tradePrice;
 
     @Builder
-    public Gold(LocalDate date, String srtnCd, String isin, String itemName, String close,
-        String vsYesterday, String upDownRate, String open, String high, String low,
+    public Gold(LocalDate date, String srtnCd, String isin, String itemName, int close,
+        String vsYesterday, String upDownRate, int open, int high, int low,
         String tradeAmount,
         String tradePrice) {
         this.date = date;
