@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
@@ -10,6 +10,7 @@ import CryptoDetailInfo from '../components/CryptoDetailInfo';
 import CryptoNews from '../components/CryptoNews';
 import CryptoSellModal from '../components/modals/CryptoSellModal';
 import { format, subDays } from 'date-fns';
+import { getIndividualCryptoData } from '../../../api/investment/crypto/IndividualCryptoData';
 
 const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const CryptoDetailPage: React.FC = () => {
   const [cryptoData] = useState<CryptoItemData>(location.state?.item);
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
   const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
+  const [bitcoinPrice, setBitcoinPrice] = useState<number>(0);
 
   const [isLiked, setIsLiked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
@@ -24,6 +26,19 @@ const CryptoDetailPage: React.FC = () => {
   const [buyInputValue, setBuyInputValue] = useState<string>('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState<string>('00');
+
+  useEffect(() => {
+    const fetchBitcoinPrice = async () => {
+      try {
+        const bitcoinData = await getIndividualCryptoData('KRW-BTC');
+        setBitcoinPrice(bitcoinData.close);
+      } catch (error) {
+        console.error('비트코인 가격 가져오는데 오류 발생:', error);
+      }
+    };
+
+    fetchBitcoinPrice();
+  }, []);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -220,7 +235,7 @@ const CryptoDetailPage: React.FC = () => {
 
       {/* 가상화폐 정보 */}
       {selectedInfoType === '상세정보' && (
-        <CryptoDetailInfo cryptoData={cryptoData} />
+        <CryptoDetailInfo cryptoData={cryptoData} bitcoinPrice={bitcoinPrice} />
       )}
 
       {/* 뉴스 */}

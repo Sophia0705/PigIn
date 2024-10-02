@@ -67,15 +67,53 @@ const CryptoItemsContainer: React.FC<CryptoItemsContainerProps> = () => {
         );
 
         // 오류로 인해 null인 데이터를 제외하고 상태에 설정
-        const validCryptoData = finalCryptoData.filter((item) => item !== null);
-        setCryptoData(validCryptoData); // 최종 데이터를 상태에 저장
+        const validCryptoData = finalCryptoData.filter(
+          (item) => item !== null
+        ) as CryptoItemData[];
+
+        // 비트코인 가격 가져오기
+        const bitcoinPrice = validCryptoData.find(
+          (crypto) => crypto.coin === 'KRW-BTC'
+        )?.price;
+
+        // 비트코인캐시, 이더리움클래식 가격 재조정
+        const adjustedCryptoData = validCryptoData.map((crypto) => {
+          if (crypto.coin === 'BTC-BCH' && bitcoinPrice) {
+            const adjustedPrice = crypto.price * bitcoinPrice;
+            return { ...crypto, price: Number(adjustedPrice.toFixed(0)) };
+          }
+          if (crypto.coin === 'BTC-ETC' && bitcoinPrice) {
+            const adjustedPrice = crypto.price * bitcoinPrice;
+            return { ...crypto, price: Number(adjustedPrice.toFixed(0)) };
+          }
+          return crypto;
+        });
+
+        setCryptoData(adjustedCryptoData);
       } catch (error) {
-        console.error('가상화폐 목록을 가져오는 중 오류 발생:', error);
+        console.error('Error fetching crypto list:', error);
       }
     };
 
     fetchCryptoData();
   }, []);
+
+  // const bitcoinPrice = cryptoData.find(
+  //   (crypto) => crypto.coin === 'KRW-BTC'
+  // )?.price;
+
+  // 비트코인 가격에 따라 비트코인캐시, 이더리움클래식 가격 변경
+  // const adjustedCryptoData = cryptoData.map((crypto) => {
+  //   if (crypto.coin === 'BTC-BCH' && bitcoinPrice) {
+  //     const adjustedPrice = crypto.price * bitcoinPrice;
+  //     return { ...crypto, price: Number(adjustedPrice.toFixed(0)) };
+  //   }
+  //   if (crypto.coin === 'BTC-ETC' && bitcoinPrice) {
+  //     const adjustedPrice = crypto.price * bitcoinPrice;
+  //     return { ...crypto, price: Number(adjustedPrice.toFixed(0)) };
+  //   }
+  //   return crypto;
+  // });
 
   // 선택한 옵션에 따라 데이터를 정렬하는 로직
   useEffect(() => {
