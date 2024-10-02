@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import InvestMainHeader from '../investment/components/InvestMainHeader';
 import InvestmentCard from '../investment/components/InvestmentCard';
 import KospiData from '../data/KospiData.json';
-import BTCData from '../data/BTCData.json';
+import { getWeeklyCryptoChartData } from '../api/investment/crypto/CryptoChartData';
 import GoldData from '../data/GoldData.json';
 
 const calculatePercentageChange = (data: { name: string; value: number }[]) => {
@@ -21,13 +21,35 @@ const getCurrentValue = (data: { name: string; value: number }[]) => {
 };
 
 const InvestmentPage: React.FC = () => {
+  const [btcData, setBtcData] = useState<{ name: string; value: number }[]>([]);
+
+  useEffect(() => {
+    const fetchBTCData = async () => {
+      try {
+        const weeklyData = await getWeeklyCryptoChartData('KRW-BTC', 'day');
+
+        const formattedData = weeklyData.reverse().map((data) => ({
+          name: data.coin_bsop_date,
+          value: data.coin_clpr,
+        }));
+        setBtcData(formattedData);
+      } catch (error) {
+        console.error('비트코인 데이터 가져오는 중 에러 발생:', error);
+      }
+    };
+
+    fetchBTCData();
+  }, []);
+
   const kospiPercentageChange = calculatePercentageChange(KospiData);
-  const btcPercentageChange = calculatePercentageChange(BTCData);
   const goldPercentageChange = calculatePercentageChange(GoldData);
+  const btcPercentageChange = btcData.length
+    ? calculatePercentageChange(btcData)
+    : '0.00%';
 
   const kospiCurrentValue = getCurrentValue(KospiData);
-  const btcCurrentValue = getCurrentValue(BTCData);
   const goldCurrentValue = getCurrentValue(GoldData);
+  const btcCurrentValue = btcData.length ? getCurrentValue(btcData) : '0';
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center">
@@ -50,7 +72,7 @@ const InvestmentPage: React.FC = () => {
           value={btcCurrentValue}
           percentageChange={btcPercentageChange}
           headerColor="bg-blue-500"
-          data={BTCData}
+          data={btcData}
         />
 
         {/* 금 */}

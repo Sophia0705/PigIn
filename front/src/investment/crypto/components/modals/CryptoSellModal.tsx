@@ -77,7 +77,7 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {cryptoName} 현재 보유 : {cryptoPrice.toLocaleString()} 원
+          {cryptoName} 현재 보유 : {Number(cryptoPrice).toLocaleString()} 원
         </div>
 
         {/* 가격 표시 칸 */}
@@ -161,7 +161,7 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
         </div>
 
         {/* 매도하기 버튼 */}
-        <div className="flex justify-center mt-1">
+        <div className="flex justify-center">
           <button
             className={`w-full py-3 rounded-md text-lg font-bold ${
               inputValue === '00'

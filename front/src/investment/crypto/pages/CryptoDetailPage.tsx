@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
 import { CryptoItemData } from '../../interfaces/CryptoInterface';
+import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 import CryptoPurchaseModal from '../components/modals/CryptoPurchaseModal';
 import CryptoDetailGraph from '../components/CryptoDetailGraph';
 import CryptoDetailInfo from '../components/CryptoDetailInfo';
@@ -126,6 +127,9 @@ const CryptoDetailPage: React.FC = () => {
   const adjustedMin = minPrice - padding;
   const adjustedMax = maxPrice + padding;
 
+  const isNegativeChange = Number(percentageChange) < 0;
+  const isZeroChange = Number(percentageChange) === 0;
+
   return (
     <div className="min-h-screen w-full flex flex-col bg-customDarkGreen">
       <div className="flex justify-between items-center p-4 w-full">
@@ -149,15 +153,25 @@ const CryptoDetailPage: React.FC = () => {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white text-left ml-4">
-            {cryptoData.price.toLocaleString()}
+            {Number(cryptoData.price).toLocaleString()}
+            <span className="text-lg"> 원</span>
           </h1>
           <span
-            className={`mr-4 mt-2 text-md font-normal px-2 py-1 rounded-full ${
-              Number(percentageChange) > 0
-                ? 'bg-green-900 text-white'
-                : 'bg-green-100 text-black'
+            className={`mr-4 mt-2 text-md font-normal px-2 py-1 rounded-full flex items-center ${
+              isNegativeChange
+                ? 'bg-green-100 text-customDarkGreen'
+                : isZeroChange
+                  ? 'bg-gray-300 text-gray-700'
+                  : 'bg-green-900 text-white'
             }`}
           >
+            {isZeroChange ? (
+              <span></span>
+            ) : isNegativeChange ? (
+              <MdArrowDropDown />
+            ) : (
+              <MdArrowDropUp />
+            )}
             {formattedPercentageChange}
           </span>
         </div>

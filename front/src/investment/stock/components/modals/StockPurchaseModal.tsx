@@ -164,7 +164,7 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
         </div>
 
         {/* 매수하기 버튼 */}
-        <div className="flex justify-center mt-1">
+        <div className="flex justify-center">
           <button
             className={`w-full py-3 rounded-md text-lg font-bold ${
               inputValue === '00'

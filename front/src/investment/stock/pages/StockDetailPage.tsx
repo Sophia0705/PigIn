@@ -228,7 +228,7 @@ const StockDetailPage: React.FC = () => {
       )}
 
       {/* 매수, 매도 버튼 */}
-      <div className="mt-6 flex justify-between w-10/12 mx-auto">
+      <div className="mt-5 flex justify-between w-10/12 mx-auto">
         <button
           className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
           onClick={handleBuyClick}
