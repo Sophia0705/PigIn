@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class GoldYearDto {
-    private int month;
+    private String month;
     private double close;
 
-    public GoldYearDto(int month, double close) {
+    public GoldYearDto(String month, double close) {
         this.month = month;
         this.close = close;
     }
