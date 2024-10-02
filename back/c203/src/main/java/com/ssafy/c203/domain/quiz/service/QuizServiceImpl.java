@@ -93,7 +93,7 @@ public class QuizServiceImpl implements QuizService {
 
     // 매일 오전 9시에 Daily Quiz 풀이 여부 초기화
 //    @Scheduled(cron = "0 0 9 * * *")
-    @Scheduled(cron = "0 * * * * *") // 1분 마다
+    @Scheduled(cron = "0 */2 * * * *") // 2분마다
     public void resetDailyQuizKeys() {
         int retryCount = 0;
 
