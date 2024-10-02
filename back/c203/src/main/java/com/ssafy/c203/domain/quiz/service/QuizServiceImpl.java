@@ -8,15 +8,20 @@ import com.ssafy.c203.domain.quiz.exception.QuizException;
 import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
 import com.ssafy.c203.domain.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
     private static final Integer MAX_REWARD_PRICE = 100;
     private static final Integer MIN_REWARD_PRICE = 10;
+    private static final Logger log = LoggerFactory.getLogger(QuizServiceImpl.class);
 
     private final QuizRepository quizRepository;
     private final AccountService accountService;
@@ -30,6 +35,7 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
+    @Transactional
     public QuizResultDto submitQuizResult(MemberAnswerSubmitDto memberAnswerSubmitDto, Long memberId) {
         // 정답 확인 및 퀴즈 조회
         Quiz quiz = quizRepository.findById(memberAnswerSubmitDto.getId())
@@ -44,7 +50,11 @@ public class QuizServiceImpl implements QuizService {
         // 정답
         if (isCorrectAnswer) {
             Long rewardPrice = generateRewardPrice();
+            Long depositBeforeBalance = accountService.findDAccountBalanceByMemberId(memberId);
+            log.info("입금 전 저축 계좌 잔액: {}", depositBeforeBalance);
             accountService.depositAccount(memberId, rewardPrice);
+            Long depositAfterBalance = accountService.findDAccountBalanceByMemberId(memberId);
+            log.info("입금 후 저축 계좌 잔액: {}", depositAfterBalance);
             quizResultDto.setReward(rewardPrice);
         } else {
             quizResultDto.setReward(0L); // 오답
