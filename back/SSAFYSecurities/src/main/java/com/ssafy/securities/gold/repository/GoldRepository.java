@@ -16,7 +16,7 @@ public interface GoldRepository extends MongoRepository<Gold, Long> {
     List<Gold> findAllByOrderByDateDesc(Pageable pageable);
 
     @Aggregation(pipeline = {
-        "{ $match: { date: { $gte: { $dateSubtract: { startDate: '$$NOW', unit: 'year', amount: 1 } } } } }",
+        "{ $match: { date: { $gte: { $dateSubtract: { startDate: new Date(), unit: 'year', amount: 1 } } } } }",
         "{ $group: { _id: { $dateToString: { format: '%Y-%m', date: '$date' } }, avgClose: { $avg: { $toDouble: '$close' } } } }",
         "{ $project: { _id: 0, month: '$_id', avgClose: 1 } }",
         "{ $sort: { month: 1 } }"
