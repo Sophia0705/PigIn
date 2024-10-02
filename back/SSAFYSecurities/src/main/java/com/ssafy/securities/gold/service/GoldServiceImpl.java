@@ -266,7 +266,7 @@ public class GoldServiceImpl implements GoldService {
     public List<GoldYearDto> getGoldList() {
         LocalDate oneYearAgo = LocalDate.now().minusYears(1);
 
-        List<GoldYearDto> goldList = goldRepository.getMonthlyAverages(oneYearAgo);
+        List<GoldYearDto> goldList = goldRepository.getMonthlyAverageCloseLastYear();
 
         return goldList.stream()
             .map(gold -> new GoldYearDto(gold.getMonth(), gold.getClose()))
