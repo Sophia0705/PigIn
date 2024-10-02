@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
@@ -8,9 +8,25 @@ import GoldSellModal from '../components/modals/GoldSellModal';
 import GoldDetailGraph from '../components/GoldDetailGraph';
 import GoldDetailInfo from '../components/GoldDetailInfo';
 import GoldNews from '../components/GoldNews';
+import getGoldData from '../../../api/investment/gold/GoldSpecificData';
 
 const GoldDetailPage: React.FC = () => {
   const navigate = useNavigate();
+  const [goldData, setGoldData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchGoldData = async () => {
+      try {
+        const data = await getGoldData();
+        console.log('Gold data:', data);
+        setGoldData(data);
+      } catch (error) {
+        console.error('금 데이터 가져오는 중 에러 발생:', error);
+      }
+    };
+
+    fetchGoldData();
+  }, []);
 
   const latestValue = GoldData[GoldData.length - 1].value;
   const previousValue = GoldData[GoldData.length - 2]?.value || 0;
@@ -31,30 +47,14 @@ const GoldDetailPage: React.FC = () => {
   const [buyInputValue, setBuyInputValue] = useState<string>('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState<string>('00');
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  const toggleLoginStatus = () => {
-    setIsLoggedIn((prev) => !prev);
-    alert(isLoggedIn ? '로그아웃되었습니다.' : '로그인되었습니다.');
-  };
-
-  const handleActionForLoggedInUsers = (action: () => void) => {
-    if (isLoggedIn) {
-      action();
-    } else {
-      console.log('로그인 하세욧');
-    }
-  };
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleAddToPortfolio = () => {
-    handleActionForLoggedInUsers(() => {
-      setIsAdded((prevAdded) => !prevAdded);
-      alert(isAdded ? '금 제거 완료!' : '금 추가 완료!');
-    });
+    setIsAdded((prevAdded) => !prevAdded);
+    alert(isAdded ? '금 제거 완료!' : '금 추가 완료!');
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -66,9 +66,7 @@ const GoldDetailPage: React.FC = () => {
   };
 
   const handleHeartClick = () => {
-    handleActionForLoggedInUsers(() => {
-      setIsLiked((prevLiked) => !prevLiked);
-    });
+    setIsLiked((prevLiked) => !prevLiked);
   };
 
   const handleBuyClick = () => {
@@ -116,12 +114,7 @@ const GoldDetailPage: React.FC = () => {
         <div onClick={handleBackClick} className="text-white">
           <CgChevronLeft size={24} />
         </div>
-        <h1
-          className="text-xl font-bold text-center text-white"
-          onClick={toggleLoginStatus}
-        >
-          금
-        </h1>
+        <h1 className="text-xl font-bold text-center text-white">금</h1>
         <div className="flex items-center space-x-4 text-white">
           <div onClick={handleHeartClick}>
             {isLiked ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
@@ -203,13 +196,13 @@ const GoldDetailPage: React.FC = () => {
       <div className="mt-6 flex justify-between w-10/12 mx-auto">
         <button
           className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
-          onClick={() => handleActionForLoggedInUsers(handleBuyClick)}
+          onClick={handleBuyClick}
         >
           매수
         </button>
         <button
           className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
-          onClick={() => handleActionForLoggedInUsers(handleSellClick)}
+          onClick={handleSellClick}
         >
           매도
         </button>
