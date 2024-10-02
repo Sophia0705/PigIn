@@ -1,14 +1,12 @@
 package com.ssafy.c203.domain.quiz.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Quiz {
 
@@ -17,8 +15,12 @@ public class Quiz {
     private Long id;
 
     @Column(nullable = false)
-    private String quiestion;
+    private String question; // 문제 내용
 
     @Column(nullable = false)
-    private String answer;
+    @Enumerated(EnumType.STRING)
+    private OXAnswer answer; // 정답 (O, X)
+
+    @Column(nullable = false)
+    private String description; // 문제 해설
 }

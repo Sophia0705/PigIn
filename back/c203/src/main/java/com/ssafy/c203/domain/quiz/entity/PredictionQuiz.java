@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,7 +24,7 @@ public class PredictionQuiz {
     private Long id;
 
     @Column(nullable = false)
-    private UserAnswer answer;
+    private OXAnswer answer;
 
     @CreationTimestamp
     @Column(nullable = false)
