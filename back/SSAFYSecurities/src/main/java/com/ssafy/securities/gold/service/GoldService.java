@@ -1,5 +1,6 @@
 package com.ssafy.securities.gold.service;
 
+import com.ssafy.securities.gold.dto.response.GoldDetailDto;
 import com.ssafy.securities.gold.dto.response.GoldItemDto;
 import com.ssafy.securities.gold.dto.response.GoldDto;
 import com.ssafy.securities.gold.dto.response.GoldYearDto;
@@ -21,4 +22,6 @@ public interface GoldService {
     List<GoldDto> getGoldDaysList();
 
     List<GoldDto> getGoldMonthsList();
+
+    GoldDetailDto getDetail();
 }
