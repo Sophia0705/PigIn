@@ -1,9 +1,8 @@
 {
   "stockPrice": 15000,
-  "goldPrice": 5000,
   "cryptoPrice": 8000,
-  "foreignCurrencyPrice": 4000,
-  "totalPrice": 32000,
+  "goldPrice": 5000,
+  "totalPrice": 28000,
   "stocks": [
     {
       "name": "삼성전자",
@@ -30,14 +29,6 @@
       "profitRate": -0.08
     }
   ],
-  "gold": [
-    {
-      "name": "골드바 1kg",
-      "quantity": 0.025,
-      "price": 200000,
-      "profitRate": 0.05
-    }
-  ],
   "cryptocurrencies": [
     {
       "name": "비트코인",
@@ -58,23 +49,11 @@
       "profitRate": -0.15
     }
   ],
-  "foreignCurrencies": [
+  "gold": [
     {
-      "name": "미국 달러",
-      "quantity": 2000,
-      "price": 1.3,
-      "profitRate": 0.02
-    },
-    {
-      "name": "유로",
-      "quantity": 500,
-      "price": 1.5,
-      "profitRate": -0.01
-    },
-    {
-      "name": "일본 엔",
-      "quantity": 20000,
-      "price": 0.009,
+      "name": "골드바 1kg",
+      "quantity": 0.025,
+      "price": 200000,
       "profitRate": 0.05
     }
   ]

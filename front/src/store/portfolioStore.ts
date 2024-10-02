@@ -27,11 +27,6 @@ export const usePortfolioStore = create<PortfolioState>((set) => ({
           totalValue: data.cryptoPrice,
           items: data.cryptocurrencies,
         },
-        {
-          name: '외화',
-          totalValue: data.foreignCurrencyPrice,
-          items: data.foreignCurrencies,
-        },
       ];
 
       set({
