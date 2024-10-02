@@ -194,6 +194,7 @@ public class GoldServiceImpl implements GoldService {
         dateList = getDateRange.generateMonthlyStartEndDates(startDate, endDate);
 
         for (int i = 0; i < dateList.size(); i += 2) {
+            System.out.println(dateList.get(i) + " " + dateList.get(i + 1));
             StringBuilder urlBuilder = new StringBuilder(
                 "https://apis.data.go.kr/1160100/service/GetGeneralProductInfoService/getGoldPriceInfo");
             urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + APIKEY);
