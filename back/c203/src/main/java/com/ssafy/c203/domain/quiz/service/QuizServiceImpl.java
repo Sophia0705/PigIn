@@ -10,13 +10,16 @@ import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
 import com.ssafy.c203.domain.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisKeyCommands;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -89,7 +92,8 @@ public class QuizServiceImpl implements QuizService {
 
 
     // 매일 오전 9시에 Daily Quiz 풀이 여부 초기화
-    @Scheduled(cron = "0 0 9 * * *")
+//    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 * * * * *") // 1분 마다
     public void resetDailyQuizKeys() {
         int retryCount = 0;
 
@@ -97,22 +101,26 @@ public class QuizServiceImpl implements QuizService {
             try {
                 log.info("Redis 키 삭제 작업 시도: {} / {}", (retryCount + 1), MAX_RETRY_COUNT);
 
-                // QUIZ_SOLVED로 시작하는 모든 키 가져오기
-                Set<String> keys = redisTemplate.keys("QUIZ_SOLVED:*");
-                if (keys != null && !keys.isEmpty()) {
-                    redisTemplate.delete(keys);
-                    keys.forEach(key -> log.info("Deleted Redis Key: " + key));
+                RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+                if (connectionFactory != null) {
+                    RedisKeyCommands keyCommands = connectionFactory.getConnection().keyCommands();
+
+                    try (Cursor<byte[]> cursor = keyCommands.scan(ScanOptions.scanOptions().match("QUIZ_SOLVED:*").build())) {
+                        while (cursor.hasNext()) {
+                            String redisKey = new String(cursor.next());
+                            redisTemplate.delete(redisKey);
+                            log.info("Deleted Redis Key: {}", redisKey);
+                        }
+                    }
+
+                    log.info("Redis 키 삭제 작업 성공");
+                    break; // 성공 시 재시도 중지
                 }
-
-                log.info("Redis 키 삭제 작업 성공");
-                break; // 성공 시 재시도 중지
-
             } catch (Exception e) {
                 retryCount++;
                 log.error("Redis 작업 실패, 재시도 중... ({} / {})   error: {}", retryCount, MAX_RETRY_COUNT, e.getMessage());
-
                 try {
-                    Thread.sleep(5000); // 5초 대기 후 재시도
+                    Thread.sleep(5000);
                 } catch (InterruptedException interruptedException) {
                     log.error("재시도 대기 중 인터럽트 발생: {}", interruptedException.getMessage());
                 }
