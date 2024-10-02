@@ -83,9 +83,18 @@ const CryptoDetailPage: React.FC = () => {
     setSellInputValue('00');
   };
 
-  if (!cryptoData) {
-    return <div>로딩중...</div>;
-  }
+  const adjustPrice = (prices: number[]) => {
+    const isBitcoinRelated =
+      cryptoData.coinName === '비트코인캐시' ||
+      cryptoData.coinName === '이더리움클래식';
+    return isBitcoinRelated
+      ? prices.map((price) => Math.round(price * bitcoinPrice))
+      : prices;
+  };
+
+  const adjustedWeeklyPrices = adjustPrice(cryptoData.weeklyPrices);
+  const adjustedMonthlyPrices = adjustPrice(cryptoData.monthlyPrices);
+  const adjustedYearlyPrices = adjustPrice(cryptoData.yearlyPrices);
 
   const latestValue = cryptoData.weeklyPrices.length
     ? cryptoData.weeklyPrices[cryptoData.weeklyPrices.length - 1]
@@ -107,12 +116,12 @@ const CryptoDetailPage: React.FC = () => {
 
   const selectedData =
     selectedTimeRange === '7일'
-      ? cryptoData.weeklyPrices
+      ? adjustedWeeklyPrices
       : selectedTimeRange === '1개월'
-        ? cryptoData.monthlyPrices
+        ? adjustedMonthlyPrices
         : selectedTimeRange === '1년'
-          ? cryptoData.yearlyPrices
-          : cryptoData.weeklyPrices;
+          ? adjustedYearlyPrices
+          : adjustedWeeklyPrices;
 
   const chartData = selectedData
     ?.map((price, index) => {

@@ -9,6 +9,7 @@ import {
   getYearlyCryptoChartData,
 } from '../../../api/investment/crypto/CryptoChartData';
 import { searchCryptos } from '../../../api/investment/crypto/CryptoSearch';
+import { getIndividualCryptoData } from '../../../api/investment/crypto/IndividualCryptoData';
 import {
   CryptoItemData,
   CryptoListData,
@@ -19,10 +20,19 @@ const CryptoSearchPage: React.FC = () => {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
   const [filteredCryptos, setFilteredCryptos] = useState<CryptoItemData[]>([]);
+  const [bitcoinPrice, setBitcoinPrice] = useState<number>(0);
 
   useEffect(() => {
-    console.log('Filtered Cryptos:', filteredCryptos);
-  }, [filteredCryptos]);
+    const fetchBitcoinPrice = async () => {
+      try {
+        const bitcoinData = await getIndividualCryptoData('KRW-BTC');
+        setBitcoinPrice(bitcoinData.close);
+      } catch (error) {
+        console.error('비트코인 가격을 가져오는 중 오류 발생:', error);
+      }
+    };
+    fetchBitcoinPrice();
+  }, []);
 
   const navigate = useNavigate();
 
@@ -138,7 +148,10 @@ const CryptoSearchPage: React.FC = () => {
 
       {/* 검색결과 */}
       {isSearchTriggered && (
-        <CryptoSearchResults filteredCryptos={filteredCryptos} />
+        <CryptoSearchResults
+          filteredCryptos={filteredCryptos}
+          bitcoinPrice={bitcoinPrice}
+        />
       )}
     </div>
   );

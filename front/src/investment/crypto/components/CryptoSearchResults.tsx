@@ -6,29 +6,40 @@ import { getIndividualCryptoData } from '../../../api/investment/crypto/Individu
 
 interface CryptoSearchResultsProps {
   filteredCryptos: CryptoItemData[];
+  bitcoinPrice: number;
 }
 
 const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({
   filteredCryptos,
+  bitcoinPrice,
 }) => {
   const navigate = useNavigate();
 
   const handleItemClick = async (crypto: CryptoItemData) => {
     try {
+      let bitcoinPrice = 1;
+      if (crypto.coin === 'BTC-BCH' || crypto.coin === 'BTC-ETC') {
+        const bitcoinData = await getIndividualCryptoData('KRW-BTC');
+        bitcoinPrice = bitcoinData.close;
+      }
+
       // 개별 가상화폐의 상세정보 가져오기
       const detailedCryptoData = await getIndividualCryptoData(crypto.coin);
+
+      const isBitcoinRelated =
+        crypto.coin === 'BTC-BCH' || crypto.coin === 'BTC-ETC';
 
       // 기존 목록 데이터에 주간, 월간, 연간 데이터를 추가하여 새로운 객체 생성
       const enrichedCryptoData = {
         ...detailedCryptoData,
-        price: crypto.price,
+        price: isBitcoinRelated
+          ? Math.round(crypto.price * bitcoinPrice)
+          : crypto.price,
         priceChange: crypto.priceChange,
         weeklyPrices: crypto.weeklyPrices,
         monthlyPrices: crypto.monthlyPrices,
         yearlyPrices: crypto.yearlyPrices,
       };
-
-      console.log('가상화폐 상세정보:', enrichedCryptoData);
 
       navigate(`/investment/cryptocurrency/${crypto.coin}`, {
         state: {
@@ -53,7 +64,11 @@ const CryptoSearchResults: React.FC<CryptoSearchResultsProps> = ({
           >
             <CryptoItem
               name={crypto.coinName}
-              price={crypto.price}
+              price={
+                crypto.coin === 'BTC-BCH' || crypto.coin === 'BTC-ETC'
+                  ? Math.round(crypto.price * bitcoinPrice)
+                  : crypto.price
+              }
               priceChange={crypto.priceChange}
               weeklyPrices={crypto.weeklyPrices}
               monthlyPrices={[]}
