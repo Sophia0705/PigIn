@@ -118,7 +118,8 @@ public class QuizServiceImpl implements QuizService {
                 }
             } catch (Exception e) {
                 retryCount++;
-                log.error("Redis 작업 실패, 재시도 중... ({} / {})   error: {}", retryCount, MAX_RETRY_COUNT, e.getMessage());
+                log.error("Redis 작업 실패, 재시도 중... ({} / {})", retryCount, MAX_RETRY_COUNT);
+                log.error("error: {}", e.getMessage());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException interruptedException) {
