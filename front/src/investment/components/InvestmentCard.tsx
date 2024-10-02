@@ -1,5 +1,5 @@
-import React from "react";
-import { MdPlayArrow } from "react-icons/md";
+import React from 'react';
+import { MdPlayArrow } from 'react-icons/md';
 import {
   AreaChart,
   XAxis,
@@ -7,8 +7,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   Area,
-} from "recharts";
-import { useNavigate } from "react-router-dom";
+} from 'recharts';
+import { useNavigate } from 'react-router-dom';
+import CustomTooltip from './CustomTooltip';
 
 interface InvestmentCardProps {
   subject: string;
@@ -31,14 +32,14 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
   // 종목별 메인 페이지로 가는 로직
   const handleNavigation = () => {
     switch (title) {
-      case "KOSPI":
-        navigate("/investment/stock");
+      case 'KOSPI':
+        navigate('/investment/stock');
         break;
-      case "BTC":
-        navigate("/investment/cryptocurrency");
+      case 'BTC':
+        navigate('/investment/cryptocurrency');
         break;
-      case "국내 금":
-        navigate("/investment/gold");
+      case '국내 금':
+        navigate('/investment/gold');
         break;
       default:
         break;
@@ -60,14 +61,14 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
   const isPositiveChange = changeRatio > 0;
 
   // 비율의 양수, 음수 여부에 따라 화살표 방향(위, 아래) 및 색깔(빨강, 파랑) 결정
-  const arrowRotation = isPositiveChange ? "-rotate-90" : "rotate-90";
-  const arrowColor = isPositiveChange ? "text-red-500" : "text-blue-500";
+  const arrowRotation = isPositiveChange ? '-rotate-90' : 'rotate-90';
+  const arrowColor = isPositiveChange ? 'text-red-500' : 'text-blue-500';
 
   const percentageBgColor = isPositiveChange
-    ? "bg-red-500 bg-opacity-20"
-    : "bg-blue-500 bg-opacity-20";
+    ? 'bg-red-500 bg-opacity-20'
+    : 'bg-blue-500 bg-opacity-20';
 
-  const strokeColor = isPositiveChange ? "#FF0000" : "#0000FF";
+  const strokeColor = isPositiveChange ? '#FF0000' : '#0000FF';
   const gradientId = `areaGradient-${subject}`;
 
   const values = data.map((entry) => entry.value);
@@ -124,7 +125,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
             {/* x축, y축 설정 */}
             <XAxis dataKey="name" hide />
             <YAxis hide domain={[domainMin, domainMax]} />
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
             {/* 선 아래 그라데이션 영역 */}
             <Area
               type="monotone"
