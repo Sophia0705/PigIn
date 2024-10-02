@@ -1,6 +1,6 @@
 // ModalManager.tsx
 import React from 'react';
-import IsLoginModal from './modals/IsLoginModal';
+import IsLoginModal from './modals/isLoginModal';
 import LoginModal from './modals/LoginModal';
 import SignUpModal from './modals/SignUpModal';
 import FindEmailModal from './modals/FindEmailModal';
