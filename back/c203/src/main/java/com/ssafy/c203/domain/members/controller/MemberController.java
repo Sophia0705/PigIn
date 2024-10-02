@@ -3,6 +3,7 @@ package com.ssafy.c203.domain.members.controller;
 import com.ssafy.c203.common.jwt.JWTUtil;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.AutoFundingMoneyDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.EmailCheckDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
@@ -313,6 +314,14 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일이 이미 존재합니다.");
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/money-set")
+    public ResponseEntity<?> setMoney(@RequestBody AutoFundingMoneyDto autoFundingMoneyDto,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        memberService.setMoney(autoFundingMoneyDto.getMoney(), userId);
+        return ResponseEntity.ok("금액 설정 완료");
     }
 
     private Cookie createCookie(String key, String value) {

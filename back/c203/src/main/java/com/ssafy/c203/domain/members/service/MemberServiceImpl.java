@@ -347,4 +347,13 @@ public class MemberServiceImpl implements MemberService {
         return membersRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
     }
+
+    @Override
+    @Transactional
+    public void setMoney(int money, Long userId) {
+        Members member = membersRepository.findById(userId)
+            .orElseThrow(MemberNotFoundException::new);
+
+        member.updateSavingAmount(money);
+    }
 }

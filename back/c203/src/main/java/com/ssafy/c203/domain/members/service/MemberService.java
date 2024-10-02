@@ -41,4 +41,6 @@ public interface MemberService {
     boolean emailCheck(String email);
 
     Members findMemberById(Long id);
+
+    void setMoney(int money, Long userId);
 }

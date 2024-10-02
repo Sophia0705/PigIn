@@ -106,4 +106,8 @@ public class Members {
     public void updateId(Long id) {
         this.id = id;
     }
+
+    public void updateSavingAmount(int savingAmount) {
+        this.savingAmount = savingAmount;
+    }
 }
