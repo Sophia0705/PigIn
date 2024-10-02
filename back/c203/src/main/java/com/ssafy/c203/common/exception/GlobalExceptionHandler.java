@@ -7,6 +7,7 @@ import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
+import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,5 +56,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIOException(IOException ex) {
         // 로그 출력을 막거나 커스텀 로깅 처리
         return ResponseEntity.ok("IOException occurred but suppressed");
+    }
+
+    @ExceptionHandler(QuizNotFoundException.class)
+    public ResponseEntity<String> handleQuizNotFoundException(QuizNotFoundException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }
