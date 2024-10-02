@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class GoldYearDto {
 
-    private int month;
+    private String month;
     private double close;
 
 }
