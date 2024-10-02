@@ -39,6 +39,16 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
+  redis:
+    image: redis:latest
+    container_name: pigin-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - pigin-network
+    volumes:
+      - redis-data:/data
+    restart: always
 
 networks:
   pigin-network:
