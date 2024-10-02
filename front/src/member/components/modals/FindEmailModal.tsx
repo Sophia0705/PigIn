@@ -172,9 +172,15 @@ const FindEmailModal: React.FC = () => {
   };
 
   return (
-    <div className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20"
+      onClick={closeFindEmailModal}
+    >
       {/* 모달 본체 */}
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+      <div
+        className="modal-content relative bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
+      >
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
           아이디 찾기
         </h2>

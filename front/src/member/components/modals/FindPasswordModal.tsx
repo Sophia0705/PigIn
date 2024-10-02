@@ -114,8 +114,14 @@ const FindPasswordModal: React.FC = () => {
   };
 
   return (
-    <div className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up">
+    <div
+      className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50"
+      onClick={closeFindPasswordModal}
+    >
+      <div
+        className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up"
+        onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
+      >
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
           비밀번호 찾기
         </h2>

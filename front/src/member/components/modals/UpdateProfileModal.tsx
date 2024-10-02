@@ -135,8 +135,8 @@ const UpdateProfileModal: React.FC = () => {
 
   return (
     <div
-      className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      onClick={() => console.log('closeUpdateProfileModal() 호출 필요')}
+      className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50"
+      onClick={closeUpdateProfileModal}
     >
       <div
         className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up"

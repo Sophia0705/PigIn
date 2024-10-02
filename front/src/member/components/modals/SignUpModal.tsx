@@ -7,6 +7,7 @@ import axios from 'axios';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
 import axiosInstance from '../../../api/axiosInstance';
+import { X } from 'lucide-react';
 
 const SignUpModal: React.FC = () => {
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
@@ -274,18 +275,21 @@ const SignUpModal: React.FC = () => {
 
   return (
     // 모달 배경
-    <div className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div
+      className="modal-content fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20"
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* 모달 본체 */}
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
-          회원가입
-        </h2>
-        <button
+      <div
+        className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        // 이벤트 전파 방지
+      >
+        <h2 className="text-3xl font-bold mb-4 text-center">회원가입</h2>
+        {/* 닫기 버튼 */}
+        <X
           onClick={closeSignUpModal}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-        >
-          X
-        </button>
+          className="absolute top-4 right-4 w-10 h-10 text-gray-400 hover:text-gray-600 dark:hover:text-white"
+        />
         {/* 회원가입 폼 */}
         <form
           onSubmit={handleSubmit}
@@ -298,9 +302,9 @@ const SignUpModal: React.FC = () => {
             value={formData.name}
             onChange={handleChange}
             placeholder="이름"
-            className="w-full p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
+            className="w-full p-2 text-md border-b border-gray-300 focus:outline-none focus:border-green-300"
           />
-          <hr className="w-[330px] mx-auto border-t border-gray-300 relative top-[-11px]" />
+
           <div className="flex space-x-2 items-center">
             {/* 이메일 입력 필드 */}
             <input
@@ -308,8 +312,8 @@ const SignUpModal: React.FC = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="이메일 (예: example@example.com)"
-              className={`flex-1 p-2 border-none rounded focus:outline-none focus:ring-2 ${
+              placeholder="이메일 (example@example.com)"
+              className={`flex-grow p-2 text-md border-b border-gray-300 focus:outline-none focus:border-green-300 ${
                 isEmailValid ? 'focus:ring-green-300' : 'focus:ring-red-500'
               }`}
               disabled={isEmailAvailable} // 이메일 중복 확인이 완료되면 필드 비활성화
@@ -318,7 +322,7 @@ const SignUpModal: React.FC = () => {
             <button
               type="button"
               onClick={checkEmailDuplication}
-              className={`p-2 rounded ${
+              className={`p-2 rounded w-24 text-md ${
                 formData.email && isEmailValid && !isEmailAvailable
                   ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -328,11 +332,10 @@ const SignUpModal: React.FC = () => {
               {isEmailAvailable ? '확인 완료' : '중복 확인'}
             </button>
           </div>
-          <hr className="w-[240px] ml-0 border-t border-gray-300 relative top-[-12px]" />
 
           {/* 이메일 유효성 오류 메시지 */}
           {!isEmailValid && (
-            <p className="text-xs text-red-500 mt-1">
+            <p className="ml-2 mt-0 text-xs text-red-500">
               유효한 이메일 주소를 입력해주세요.
             </p>
           )}
@@ -344,12 +347,12 @@ const SignUpModal: React.FC = () => {
               value={formData.birth}
               onChange={handleChange}
               placeholder="생년월일 (예: 000101)"
-              className={`w-full p-2 border-b ${
-                isBirthValid ? 'border-gray-300' : 'border-red-500'
-              } focus:outline-none focus:border-green-300`}
+              className={`flex-grow p-2 w-full text-md border-b border-gray-300 focus:outline-none focus:border-green-300 ${
+                isBirthValid ? 'focus:ring-green-300' : 'focus:ring-red-500'
+              }`}
             />
             {!isBirthValid && (
-              <p className="text-xs text-red-500 mt-1">
+              <p className="ml-2 text-xs text-red-500 mt-1">
                 유효한 생년월일을 입력해주세요.
               </p>
             )}
