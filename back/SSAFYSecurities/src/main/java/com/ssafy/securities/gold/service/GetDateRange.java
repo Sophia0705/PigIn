@@ -25,7 +25,12 @@ public class GetDateRange {
 
             // 해당 월의 마지막 날짜 추가 (첫 날짜와 다른 경우에만)
             if (!lastDayOfMonth.isEqual(startDate)) {
-                dateList.add(lastDayOfMonth.format(formatter));
+                String lastDayString = lastDayOfMonth.format(formatter);
+
+                // 마지막 날짜의 일(day)에 1을 더한 문자열 생성
+                int lastDay = Integer.parseInt(lastDayString.substring(6));
+                String nextDayString = lastDayString.substring(0, 6) + String.format("%02d", lastDay + 1);
+                dateList.add(nextDayString);
             }
 
             // 다음 달의 첫 날로 이동
