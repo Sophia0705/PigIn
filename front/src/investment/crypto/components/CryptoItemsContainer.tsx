@@ -98,23 +98,6 @@ const CryptoItemsContainer: React.FC<CryptoItemsContainerProps> = () => {
     fetchCryptoData();
   }, []);
 
-  // const bitcoinPrice = cryptoData.find(
-  //   (crypto) => crypto.coin === 'KRW-BTC'
-  // )?.price;
-
-  // 비트코인 가격에 따라 비트코인캐시, 이더리움클래식 가격 변경
-  // const adjustedCryptoData = cryptoData.map((crypto) => {
-  //   if (crypto.coin === 'BTC-BCH' && bitcoinPrice) {
-  //     const adjustedPrice = crypto.price * bitcoinPrice;
-  //     return { ...crypto, price: Number(adjustedPrice.toFixed(0)) };
-  //   }
-  //   if (crypto.coin === 'BTC-ETC' && bitcoinPrice) {
-  //     const adjustedPrice = crypto.price * bitcoinPrice;
-  //     return { ...crypto, price: Number(adjustedPrice.toFixed(0)) };
-  //   }
-  //   return crypto;
-  // });
-
   // 선택한 옵션에 따라 데이터를 정렬하는 로직
   useEffect(() => {
     const sortedCryptos = [...cryptoData].sort((a, b) => {
