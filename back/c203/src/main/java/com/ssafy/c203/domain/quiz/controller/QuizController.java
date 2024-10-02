@@ -32,7 +32,7 @@ public class QuizController {
     // 퀴즈 결과
     @PostMapping("/result")
     public ResponseEntity<QuizResultDto> submitQuizResult(@RequestBody MemberAnswerSubmitDto memberAnswerSubmitDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        log.info("=============submitQuizResult============");
+        log.info("=============submitQuizResult !============");
         log.info("memberAnswerSubmitDto {}", memberAnswerSubmitDto);
         QuizResultDto quizResultDto = quizService.submitQuizResult(memberAnswerSubmitDto, customUserDetails.getUserId());
         log.info("quizResultDto: {}", quizResultDto);
