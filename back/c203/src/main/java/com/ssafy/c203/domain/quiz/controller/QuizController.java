@@ -1,6 +1,5 @@
 package com.ssafy.c203.domain.quiz.controller;
 
-import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.quiz.dto.request.MemberAnswerSubmitDto;
 import com.ssafy.c203.domain.quiz.dto.response.DailyQuizInfoDto;
@@ -24,6 +23,7 @@ public class QuizController {
     // 일일 퀴즈 조회
     @GetMapping("/daily")
     public ResponseEntity<DailyQuizInfoDto> getDailyQuizInfo() {
+        log.info("=============getDailyQuizInfo============");
         Quiz quiz = quizService.provideQuiz();
         DailyQuizInfoDto dailyQuizInfoDto = new DailyQuizInfoDto(quiz.getId(), quiz.getQuestion());
         return ResponseEntity.ok().body(dailyQuizInfoDto);
@@ -32,9 +32,10 @@ public class QuizController {
     // 퀴즈 결과
     @PostMapping("/result")
     public ResponseEntity<QuizResultDto> submitQuizResult(@RequestBody MemberAnswerSubmitDto memberAnswerSubmitDto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-
+        log.info("=============submitQuizResult============");
+        log.info("memberAnswerSubmitDto {}", memberAnswerSubmitDto);
         QuizResultDto quizResultDto = quizService.submitQuizResult(memberAnswerSubmitDto, customUserDetails.getUserId());
-
+        log.info("quizResultDto: {}", quizResultDto);
         return ResponseEntity.ok().body(quizResultDto);
     }
 }
