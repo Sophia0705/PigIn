@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
+import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
@@ -124,6 +125,20 @@ public class GoldServiceImpl implements GoldService {
             }
         );
 
+        return response.getBody();
+    }
+
+    @Override
+    public GoldDetailDto goldDetail() {
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(new HashMap<>(),
+            new HttpHeaders());
+
+        ResponseEntity<GoldDetailDto> response = restTemplate.exchange(
+            MY_SECURITES_BASE_URL + "/api/gold/detail",
+            HttpMethod.GET,
+            entity,
+            GoldDetailDto.class
+        );
         return response.getBody();
     }
 

@@ -2,6 +2,7 @@ package com.ssafy.securities.gold.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.securities.gold.dto.response.GoldDetailDto;
 import com.ssafy.securities.gold.dto.response.GoldItemDto;
 import com.ssafy.securities.gold.dto.response.GoldParsingDto;
 import com.ssafy.securities.gold.dto.response.GoldDto;
@@ -194,7 +195,6 @@ public class GoldServiceImpl implements GoldService {
         dateList = getDateRange.generateMonthlyStartEndDates(startDate, endDate);
 
         for (int i = 0; i < dateList.size(); i += 2) {
-            System.out.println(dateList.get(i) + " " + dateList.get(i + 1));
             StringBuilder urlBuilder = new StringBuilder(
                 "https://apis.data.go.kr/1160100/service/GetGeneralProductInfoService/getGoldPriceInfo");
             urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + APIKEY);
@@ -265,8 +265,6 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public List<GoldYearDto> getGoldList() {
-        LocalDate oneYearAgo = LocalDate.now().minusYears(1);
-
         List<GoldYearDto> goldList = goldRepository.getMonthlyAverageCloseLastYear();
 
         return goldList.stream()
@@ -276,8 +274,6 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public List<GoldDto> getGoldDaysList() {
-        LocalDate oneWeeksAgo = LocalDate.now().minusWeeks(1);
-
         List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 7));
 
         return goldList.stream()
@@ -287,12 +283,32 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public List<GoldDto> getGoldMonthsList() {
-        LocalDate oneWeeksAgo = LocalDate.now().minusMonths(1);
-
         List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 30));
 
         return goldList.stream()
             .map(gold -> new GoldDto(gold.getDate(), gold.getClose()))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public GoldDetailDto getDetail() {
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 1));
+        return goldList.stream()
+            .map(gold -> GoldDetailDto
+                .builder()
+                .date(gold.getDate())
+                .srtnCd(gold.getSrtnCd())
+                .isin(gold.getIsin())
+                .itemName(gold.getItemName())
+                .close(gold.getClose())
+                .vsYesterday(gold.getVsYesterday())
+                .upDownRate(gold.getUpDownRate())
+                .open(gold.getOpen())
+                .high(gold.getHigh())
+                .low(gold.getLow())
+                .tradePrice(gold.getTradePrice())
+                .tradeAmount(gold.getTradeAmount())
+                .build())
+            .collect(Collectors.toList()).get(0);
     }
 }
