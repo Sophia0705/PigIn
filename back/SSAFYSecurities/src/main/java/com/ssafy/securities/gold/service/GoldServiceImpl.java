@@ -267,7 +267,7 @@ public class GoldServiceImpl implements GoldService {
     public List<GoldYearDto> getGoldList() {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusYears(1); // 현재 연도의 1월 1일
-        List<Gold> goldList = goldRepository.findMonthlyFirstDataLastYear(startDate, endDate);
+        List<Gold> goldList = goldRepository.findMonthlyLastDataLastYear(startDate, endDate);
         return goldList.stream()
             .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
             .collect(Collectors.toList());

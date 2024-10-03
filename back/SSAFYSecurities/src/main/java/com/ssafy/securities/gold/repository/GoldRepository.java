@@ -17,13 +17,13 @@ public interface GoldRepository extends MongoRepository<Gold, Long> {
 
     @Aggregation(pipeline = {
         "{ $match: { date: { $gte: ?0, $lte: ?1 } } }",
-        "{ $sort: { date: 1 } }",
+        "{ $sort: { date: -1 } }", // 날짜를 내림차순으로 정렬 (최신 순)
         "{ $group: { " +
             "    _id: { $dateToString: { format: '%Y-%m', date: '$date' } }, " +
-            "    firstData: { $first: '$$ROOT' }" +
+            "    lastData: { $first: '$$ROOT' }" + // $first를 사용하여 각 그룹의 최신 데이터를 선택
             "  }}",
-        "{ $replaceRoot: { newRoot: '$firstData' } }",
-        "{ $sort: { date: 1 } }"
+        "{ $replaceRoot: { newRoot: '$lastData' } }",
+        "{ $sort: { date: -1 } }" // 최종 결과를 날짜 내림차순으로 정렬
     })
-    List<Gold> findMonthlyFirstDataLastYear(LocalDate startDate, LocalDate endDate);
+    List<Gold> findMonthlyLastDataLastYear(LocalDate startDate, LocalDate endDate);
 }
