@@ -258,11 +258,8 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public int getGoldPrice() {
-        LocalDate today = LocalDate.now();
-        String date = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        Gold gold = goldRepository.findByDate(date);
-
-        return gold.getClose();
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 1));
+        return goldList.get(0).getClose();
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 public interface MemberService {
 
-    void singUp(Members members) throws NoSuchAlgorithmException;
+    void singUp(Members members) throws Exception;
 
     boolean MMSGenerate(MMSDto mmsDto) throws Exception;
 
