@@ -3,7 +3,8 @@ import InvestMainHeader from '../investment/components/InvestMainHeader';
 import InvestmentCard from '../investment/components/InvestmentCard';
 import KospiData from '../data/KospiData.json';
 import { getWeeklyCryptoChartData } from '../api/investment/crypto/CryptoChartData';
-import GoldData from '../data/GoldData.json';
+import { getWeeklyGoldChartData } from '../api/investment/gold/GoldChartData';
+import { GoldChartDataResponse } from '../investment/interfaces/GoldInterface';
 
 const calculatePercentageChange = (data: { name: string; value: number }[]) => {
   const lastTwoValues = data.slice(-2);
@@ -22,6 +23,9 @@ const getCurrentValue = (data: { name: string; value: number }[]) => {
 
 const InvestmentPage: React.FC = () => {
   const [btcData, setBtcData] = useState<{ name: string; value: number }[]>([]);
+  const [goldWeeklyData, setGoldWeeklyData] = useState<
+    { name: string; value: number }[]
+  >([]);
 
   useEffect(() => {
     const fetchBTCData = async () => {
@@ -38,17 +42,38 @@ const InvestmentPage: React.FC = () => {
       }
     };
 
+    const fetchGoldData = async () => {
+      try {
+        const weeklyData = await getWeeklyGoldChartData();
+
+        const formatData = (data: GoldChartDataResponse[]) =>
+          data
+            .map((item) => ({
+              name: item.date,
+              value: parseFloat(item.close),
+            }))
+            .reverse();
+
+        setGoldWeeklyData(formatData(weeklyData));
+
+        console.log('금 주간 데이터:', weeklyData);
+      } catch (error) {
+        console.error('금 데이터 가져오는 중 에러 발생:', error);
+      }
+    };
+
     fetchBTCData();
+    fetchGoldData();
   }, []);
 
   const kospiPercentageChange = calculatePercentageChange(KospiData);
-  const goldPercentageChange = calculatePercentageChange(GoldData);
+  const goldPercentageChange = calculatePercentageChange(goldWeeklyData);
   const btcPercentageChange = btcData.length
     ? calculatePercentageChange(btcData)
     : '0.00%';
 
   const kospiCurrentValue = getCurrentValue(KospiData);
-  const goldCurrentValue = getCurrentValue(GoldData);
+  const goldCurrentValue = getCurrentValue(goldWeeklyData);
   const btcCurrentValue = btcData.length ? getCurrentValue(btcData) : '0';
 
   return (
@@ -82,7 +107,7 @@ const InvestmentPage: React.FC = () => {
           value={goldCurrentValue}
           percentageChange={goldPercentageChange}
           headerColor="bg-yellow-400"
-          data={GoldData}
+          data={goldWeeklyData}
         />
       </div>
     </div>

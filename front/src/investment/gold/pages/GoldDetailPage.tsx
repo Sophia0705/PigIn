@@ -18,7 +18,7 @@ const GoldDetailPage: React.FC = () => {
     const fetchGoldData = async () => {
       try {
         const data = await getGoldData();
-        console.log('Gold data:', data);
+        console.log('금 정보:', data);
         setGoldData(data);
       } catch (error) {
         console.error('금 데이터 가져오는 중 에러 발생:', error);

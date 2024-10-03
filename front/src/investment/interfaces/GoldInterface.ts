@@ -11,4 +11,13 @@ export interface GoldItemData {
   low: number;
   tradeAmount: number;
   tradePrice: number;
+  weeklyPrices: number[];
+  monthlyPrices: number[];
+  threeMonthlyPrices: number[];
+  yearlyPrices: number[];
+}
+
+export interface GoldChartDataResponse {
+  date: string;
+  close: string;
 }
