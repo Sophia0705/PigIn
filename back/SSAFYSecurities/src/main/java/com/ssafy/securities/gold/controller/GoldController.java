@@ -58,6 +58,11 @@ public class GoldController {
         return ResponseEntity.ok(goldService.getGoldMonthsList());
     }
 
+    @GetMapping("/three-months")
+    public ResponseEntity<?> getGoldThreeMonths(){
+        return ResponseEntity.ok(goldService.getGoldThreeMonthList());
+    }
+
     @GetMapping("/detail")
     public ResponseEntity<?> getDetail(){
         return ResponseEntity.ok(goldService.getDetail());

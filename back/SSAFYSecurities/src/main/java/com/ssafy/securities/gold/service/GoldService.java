@@ -24,4 +24,6 @@ public interface GoldService {
     List<GoldDto> getGoldMonthsList();
 
     GoldDetailDto getDetail();
+
+    List<GoldDto> getGoldThreeMonthList();
 }
