@@ -183,14 +183,25 @@ public class CoinServiceImpl implements CoinService {
         CoinItem coinItem = coinItemRepository.findById(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
         Members member = memberService.findMemberById(userId);
+        CoinPortfolio coinPortfolio = valiateCoinPortfolio(coinItem, member, amount);
 
-        // 2. 코인 보유량 확인
-
-
-        // 3. 거래
-
-        // 4. 거래내역 저장
-
+        // 2. 코인 보유량 감소
+        updateCoinPortfolio(coinPortfolio, -amount);
+        try {
+            // 3. 거래
+            SecuritiesCoinTrade securitiesCoinTrade = SecuritiesCoinSell(coinCode, amount);
+            // 4. 저장
+            saveTradeRecode(member, coinItem, amount, securitiesCoinTrade.getResult(), TradeMethod.SELL);
+            // 5. 입금
+            long salePrice = Math.round(securitiesCoinTrade.getResult());
+            if (!deposit(userId, salePrice)) {
+                throw new RuntimeException("입금 실패");
+            }
+        } catch (Exception e) {
+            log.error("Error fetching coin: ", e);
+            updateCoinPortfolio(coinPortfolio, amount);
+            throw new RuntimeException("코인 매도 오류");
+        }
     }
 
     public void initializeCoinItems() {
@@ -287,5 +298,12 @@ public class CoinServiceImpl implements CoinService {
         coinPortfolioRepository.save(coinPortfolio);
     }
 
-//    private void
+    private CoinPortfolio valiateCoinPortfolio(CoinItem coinItem, Members members, Double amount) {
+        CoinPortfolio coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem, members)
+                .orElseThrow(() -> new RuntimeException("No such coin item"));
+        if (amount > coinPortfolio.getAmount()) {
+            throw new RuntimeException("보유 코인 수량 부족");
+        }
+        return coinPortfolio;
+    }
 }
