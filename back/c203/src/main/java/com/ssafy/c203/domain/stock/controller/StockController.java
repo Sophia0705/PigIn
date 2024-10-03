@@ -1,8 +1,7 @@
 package com.ssafy.c203.domain.stock.controller;
 
-import com.ssafy.c203.domain.stock.dto.FindStockAllResponse;
-import com.ssafy.c203.domain.stock.dto.FindStockChartAllResponse;
-import com.ssafy.c203.domain.stock.dto.FindStockDetailResponse;
+import com.ssafy.c203.domain.members.dto.CustomUserDetails;
+import com.ssafy.c203.domain.stock.dto.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -79,4 +79,21 @@ public class StockController {
         return stockEmitterService.addEmitter();
     }
 
+    @PostMapping("/sell")
+    public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        log.info("request = {}", request);
+        if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount())) {
+            return ResponseEntity.ok().body("판매 성공");
+        }
+        return ResponseEntity.ok().body("판매 대기");
+    }
+
+    @PostMapping("/buy")
+    public ResponseEntity<?> buyStock(@RequestBody StockBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        log.info("request = {}", request);
+        if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice())) {
+            return ResponseEntity.ok().body("구매 성공");
+        }
+        return ResponseEntity.ok().body("구매 대기");
+    }
 }

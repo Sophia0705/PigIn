@@ -28,4 +28,8 @@ public class StockPortfolio {
     public void addAmount(Double amount) {
         this.amount += amount;
     }
+
+    public void subAmount(Double amount) {
+        this.amount -= amount;
+    }
 }
