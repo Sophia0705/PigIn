@@ -44,6 +44,7 @@ public class GoldController {
 
     @GetMapping("/years")
     public ResponseEntity<?> getGold() throws IOException {
+        log.info("들어왔다.");
         return ResponseEntity.ok(goldService.getGoldList());
     }
 
