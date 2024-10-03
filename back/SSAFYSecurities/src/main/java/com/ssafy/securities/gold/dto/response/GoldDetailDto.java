@@ -10,12 +10,12 @@ public class GoldDetailDto {
     private String srtnCd;
     private String isin;
     private String itemName;
-    private String close;
+    private int close;
     private String vsYesterday;
     private String upDownRate;
-    private String open;
-    private String high;
-    private String low;
+    private int open;
+    private int high;
+    private int low;
     private String tradeAmount;
     private String tradePrice;
 }

@@ -71,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void singUp(Members members) throws NoSuchAlgorithmException {
+    public void singUp(Members members) throws Exception {
         Members findMember = membersRepository.findByEmail(members.getEmail());
 
         //패스워드 암호화
@@ -118,7 +118,9 @@ public class MemberServiceImpl implements MemberService {
             String.class
         );
 
-        log.info("member : {}", members.toString());
+        String tradeAccount = AccountNoResponse.getBody();
+        mmsService.sendMMS("거래용 계좌는 " + tradeAccount + " 입니다.", members.getPhoneNumber());
+
 
         //Todo : accountNo가 Null일때 처리 필요
         savingsAccountRepository.save(SavingsAccount
@@ -283,6 +285,7 @@ public class MemberServiceImpl implements MemberService {
 
         HttpStatusCode statusCode = response.getStatusCode();
         if (statusCode.equals(HttpStatus.OK)) {
+            //Todo : 메세지로 1원 인증번호 보내기
             return true;
         }
         return false;

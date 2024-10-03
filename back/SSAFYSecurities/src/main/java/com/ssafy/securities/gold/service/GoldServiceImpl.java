@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -86,12 +88,12 @@ public class GoldServiceImpl implements GoldService {
             .srtnCd(itemNode.path("srtnCd").asText())
             .isin(itemNode.path("isinCd").asText())
             .itemName(itemNode.path("itmsNm").asText())
-            .close(itemNode.path("clpr").asText())
+            .close(itemNode.path("clpr").asInt())
             .vsYesterday(itemNode.path("vs").asText())
             .upDownRate(itemNode.path("fltRt").asText())
-            .open(itemNode.path("mkp").asText())
-            .high(itemNode.path("hipr").asText())
-            .low(itemNode.path("lopr").asText())
+            .open(itemNode.path("mkp").asInt())
+            .high(itemNode.path("hipr").asInt())
+            .low(itemNode.path("lopr").asInt())
             .tradeAmount(itemNode.path("trqu").asText())
             .tradePrice(itemNode.path("trPrc").asText())
             .build();
@@ -256,19 +258,17 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public int getGoldPrice() {
-        LocalDate today = LocalDate.now();
-        String date = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        Gold gold = goldRepository.findByDate(date);
-
-        return Integer.parseInt(gold.getClose());
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 1));
+        return goldList.get(0).getClose();
     }
 
     @Override
     public List<GoldYearDto> getGoldList() {
-        List<GoldYearDto> goldList = goldRepository.getMonthlyAverageCloseLastYear();
-
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusYears(1); // 현재 연도의 1월 1일
+        List<Gold> goldList = goldRepository.findMonthlyFirstDataLastYear(startDate, endDate);
         return goldList.stream()
-            .map(gold -> new GoldYearDto(gold.getMonth(), gold.getClose()))
+            .map(gold -> new GoldYearDto(gold.getDate(), gold.getClose()))
             .collect(Collectors.toList());
     }
 

@@ -1,12 +1,15 @@
 package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
+import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
+import com.ssafy.c203.domain.gold.exception.MoreSellException;
+import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.gold.repository.GoldTradeRepository;
 import com.ssafy.c203.domain.gold.repository.GoldWaitingQueueRepository;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -38,6 +41,7 @@ public class GoldServiceImpl implements GoldService {
     private final GoldWaitingQueueRepository goldWaitingQueueRepository;
     private final MembersRepository membersRepository;
     private final RestTemplate restTemplate;
+    private final AccountService accountService;
 
     private final LocalTime GOLD_END_TIME = LocalTime.of(15, 30);
     private final LocalTime GOLD_START_TIME = LocalTime.of(9, 30);
@@ -57,6 +61,15 @@ public class GoldServiceImpl implements GoldService {
         //장시간 외이면
         if (now.isAfter(GOLD_END_TIME) || now.isBefore(GOLD_START_TIME)) {
             if (buyGoldDto.getMethod().equals("SELL")) {
+                //거래 가능 검증
+                boolean canSell = compareGold(member, tradePrice);
+                if (!canSell) {
+                    throw new MoreSellException();
+                }
+
+                //통장에 돈 넣어주기
+                accountService.depositAccount(member.getId(), (long) tradePrice);
+
                 goldWaitingQueueRepository.save(GoldWaitingQueue
                     .builder()
                     .member(member)
@@ -65,6 +78,15 @@ public class GoldServiceImpl implements GoldService {
                     .build());
                 return;
             } else {
+                //통장 돈 검증
+                boolean canBuy = checkAccount(member, tradePrice);
+                if (!canBuy) {
+                    throw new NoMoneyException();
+                }
+
+                //돈 빼기
+                accountService.withdrawAccount(member.getId(), (long) tradePrice);
+
                 goldWaitingQueueRepository.save(GoldWaitingQueue
                     .builder()
                     .member(member)
@@ -148,9 +170,14 @@ public class GoldServiceImpl implements GoldService {
         double count = getGoldCount(goldTradeDto.getTradePrice(), goldPrice);
         TradeMethod tradeMethod = null;
         if (goldTradeDto.getMethod().equals("SELL")) {
-            //Todo : 거래 가능 검증
+            //거래 가능 검증
+            boolean canSell = compareGold(member, tradePrice);
+            if (!canSell) {
+                throw new MoreSellException();
+            }
 
-            //Todo : 통장에 돈 넣어주기
+            //통장에 돈 넣어주기
+            accountService.depositAccount(member.getId(), (long) tradePrice);
 
             tradeMethod = TradeMethod.SELL;
 
@@ -163,9 +190,14 @@ public class GoldServiceImpl implements GoldService {
                 .tradePrice(tradePrice)
                 .build());
         } else {
-            //Todo : 통장 돈 검증
+            //통장 돈 검증
+            boolean canBuy = checkAccount(member, tradePrice);
+            if (!canBuy) {
+                throw new NoMoneyException();
+            }
 
-            //Todo : 돈 빼기
+            //돈 빼기
+            accountService.withdrawAccount(member.getId(), (long) tradePrice);
 
             tradeMethod = TradeMethod.BUY;
 
@@ -195,16 +227,35 @@ public class GoldServiceImpl implements GoldService {
     }
 
     private double getGoldCount(int tradePrice, int goldPrice) {
-        return (double) goldPrice / tradePrice;
+        return (double) tradePrice / goldPrice;
     }
 
     //사용자 잔고 확인
-    private boolean checkAccount(Members member) {
-        return true;
+    private boolean checkAccount(Members member, int price) {
+        Long remind = accountService.findDAccountBalanceByMemberId(
+            member.getId());
+        //잔액이 거래금액보다 많으면
+        if (remind >= price) {
+            return true;
+        }
+        return false;
     }
 
     //보유 개수 비교
-    private boolean compareGold(Members member) {
+    private boolean compareGold(Members member, int price) {
+        int goldPrice = getGoldPrice();
+        double cnt = getGoldCount(price, goldPrice);
+
+        Double buyCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
+            TradeMethod.BUY);
+        Double sellCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
+            TradeMethod.SELL);
+
+        Double mineCnt = buyCnt - sellCnt;
+        //판매 개수가 내 개수보다 많으면
+        if (cnt > mineCnt) {
+            return false;
+        }
         return true;
     }
 }

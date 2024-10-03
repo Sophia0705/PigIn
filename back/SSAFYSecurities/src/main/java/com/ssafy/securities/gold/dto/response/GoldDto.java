@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class GoldDto {
     private LocalDate date;
-    private String close;
+    private int close;
 
-    public GoldDto(LocalDate date, String close) {
+    public GoldDto(LocalDate date, int close) {
         this.date = date;
         this.close = close;
     }

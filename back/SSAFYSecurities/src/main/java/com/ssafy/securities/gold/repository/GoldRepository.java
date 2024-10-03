@@ -16,10 +16,14 @@ public interface GoldRepository extends MongoRepository<Gold, Long> {
     List<Gold> findAllByOrderByDateDesc(Pageable pageable);
 
     @Aggregation(pipeline = {
-        "{ $match: { date: { $gte: { $dateSubtract: { startDate: new Date(), unit: 'year', amount: 1 } } } } }",
-        "{ $group: { _id: { $dateToString: { format: '%Y-%m', date: '$date' } }, avgClose: { $avg: { $toDouble: '$close' } } } }",
-        "{ $project: { _id: 0, month: '$_id', avgClose: 1 } }",
-        "{ $sort: { month: 1 } }"
+        "{ $match: { date: { $gte: ?0, $lte: ?1 } } }",
+        "{ $sort: { date: 1 } }",
+        "{ $group: { " +
+            "    _id: { $dateToString: { format: '%Y-%m', date: '$date' } }, " +
+            "    firstData: { $first: '$$ROOT' }" +
+            "  }}",
+        "{ $replaceRoot: { newRoot: '$firstData' } }",
+        "{ $sort: { date: 1 } }"
     })
-    List<GoldYearDto> getMonthlyAverageCloseLastYear();
+    List<Gold> findMonthlyFirstDataLastYear(LocalDate startDate, LocalDate endDate);
 }
