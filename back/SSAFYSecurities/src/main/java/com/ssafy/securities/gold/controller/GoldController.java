@@ -36,4 +36,9 @@ public class GoldController {
         goldService.saveAllGold();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/get-today-price")
+    public ResponseEntity<?> getTodayPrice() throws IOException {
+        return ResponseEntity.ok(goldService.getGoldPrice());
+    }
 }

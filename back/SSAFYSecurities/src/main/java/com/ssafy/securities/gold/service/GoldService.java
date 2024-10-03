@@ -10,4 +10,5 @@ public interface GoldService {
     GoldItemDto getGold() throws IOException;
     void saveGold(GoldItemDto gold);
     void saveAllGold() throws IOException;
+    int getGoldPrice();
 }
