@@ -68,7 +68,7 @@ const LoginModal: React.FC = () => {
     >
       {/* 모달 본체 */}
       <div
-        className="relative bg-white rounded-lg w-full max-w-md p-6"
+        className="relative bg-white rounded-lg w-full max-w-md p-6 animate-slide-up"
         onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
       >
         {/* 닫기 버튼 */}

@@ -7,15 +7,24 @@ import { compareVerificationCodeAPI } from '../../../api/member/compareVerificat
 import { resetPasswordAPI } from '../../../api/member/resetPasswordAPI';
 import NewPasswordConfirmInput from '../inputs/NewPasswordConfirmInput';
 import NewPasswordInput from '../inputs/NewPasswordInput';
+import { X } from 'lucide-react';
+import { CgChevronLeft } from 'react-icons/cg'; // 뒤로 가기 아이콘
 
 const FindPasswordModal: React.FC = () => {
-  const { formData, setFormData, closeFindPasswordModal } = useMemberStore(); // Zustand 상태 관리
+  const { formData, setFormData, closeFindPasswordModal, openLoginModal } =
+    useMemberStore(); // Zustand 상태 관리
 
   // 인증 상태 관리
   const [isCodeSent, setIsCodeSent] = useState(false); // 인증 요청 여부
   const [authenticationNumber, setAuthenticationNumber] = useState(''); // 인증번호 입력 값
   const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState(false); // 인증 여부 상태
   const [isFormValid, setIsFormValid] = useState(false); // 폼 유효성 상태
+
+  // 뒤로 가기 버튼 클릭 시 호출되는 함수
+  const handleBackClick = () => {
+    closeFindPasswordModal(); // 회원가입 모달 닫기
+    openLoginModal(); // 로그인 모달 열기
+  };
 
   // 이름, 이메일, 전화번호 입력 필드가 모두 채워졌는지 확인하는 함수
   useEffect(() => {
@@ -122,16 +131,19 @@ const FindPasswordModal: React.FC = () => {
         className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up"
         onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
       >
-        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
-          비밀번호 찾기
-        </h2>
-        <button
-          onClick={closeFindPasswordModal}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+        {/* 뒤로가기 버튼 */}
+        <p
+          onClick={handleBackClick}
+          className="absolute top-5 left-4 w-10 h-10 text-gray-400 hover:text-gray-600"
         >
-          X
-        </button>
-
+          <CgChevronLeft size={40} />
+        </p>
+        <h2 className="text-xl font-bold mb-6 text-center">비밀번호 찾기</h2>
+        {/* 닫기 버튼 */}
+        <X
+          onClick={closeFindPasswordModal}
+          className="absolute top-5 right-4 w-8 h-8 text-gray-400 hover:text-gray-600"
+        />
         <form
           onSubmit={handleSubmit}
           className="flex flex-col space-y-3 w-full"

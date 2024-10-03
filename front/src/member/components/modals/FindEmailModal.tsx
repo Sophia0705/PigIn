@@ -3,6 +3,8 @@ import { useMemberStore } from '../../../store/memberStore'; // Zustand로 관�
 import axiosInstance from '../../../api/axiosInstance';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
+import { X } from 'lucide-react';
+import { CgChevronLeft } from 'react-icons/cg'; // 뒤로 가기 아이콘
 
 const FindEmailModal: React.FC = () => {
   const {
@@ -23,6 +25,12 @@ const FindEmailModal: React.FC = () => {
   const [failMessage, setFailMessage] = useState(''); // 실패 메시지
 
   if (!isFindEmailModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
+
+  // 뒤로 가기 버튼 클릭 시 호출되는 함수
+  const handleBackClick = () => {
+    closeFindEmailModal(); // 회원가입 모달 닫기
+    openLoginModal(); // 로그인 모달 열기
+  };
 
   // 입력 필드가 변경될 때 호출되는 핸들러 함수
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,18 +186,22 @@ const FindEmailModal: React.FC = () => {
     >
       {/* 모달 본체 */}
       <div
-        className="modal-content relative bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        className="modal-content relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up"
         onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
       >
-        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
-          아이디 찾기
-        </h2>
-        <button
-          onClick={closeFindEmailModal}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+        {/* 뒤로가기 버튼 */}
+        <p
+          onClick={handleBackClick}
+          className="absolute top-5 left-4 w-10 h-10 text-gray-400 hover:text-gray-600"
         >
-          X
-        </button>
+          <CgChevronLeft size={40} />
+        </p>
+        <h2 className="text-xl font-bold mb-6 text-center">아이디 찾기</h2>
+        {/* 닫기 버튼 */}
+        <X
+          onClick={closeFindEmailModal}
+          className="absolute top-5 right-4 w-8 h-8 text-gray-400 hover:text-gray-600"
+        />
         {/* 회원가입 폼 */}
         <form
           onSubmit={handleSubmit}

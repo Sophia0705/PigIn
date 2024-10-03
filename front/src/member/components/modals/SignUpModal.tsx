@@ -8,6 +8,7 @@ import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
 import axiosInstance from '../../../api/axiosInstance';
 import { X } from 'lucide-react';
+import { CgChevronLeft } from 'react-icons/cg'; // 뒤로 가기 아이콘
 
 const SignUpModal: React.FC = () => {
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
@@ -38,6 +39,12 @@ const SignUpModal: React.FC = () => {
   // 모달이 닫혀있으면 렌더링하지 않음
   if (!isSignUpModalOpen) return null;
   // const [savingRate, setSavingRate] = useState(0); // 저축률 상태
+
+  // 뒤로 가기 버튼 클릭 시 호출되는 함수
+  const handleBackClick = () => {
+    closeSignUpModal(); // 회원가입 모달 닫기
+    openLoginModal(); // 로그인 모달 열기
+  };
 
   const isEmailFormatValid = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -281,14 +288,21 @@ const SignUpModal: React.FC = () => {
     >
       {/* 모달 본체 */}
       <div
-        className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up"
         // 이벤트 전파 방지
       >
+        {/* 뒤로가기 버튼 */}
+        <p
+          onClick={handleBackClick}
+          className="absolute top-4 left-4 w-10 h-10 text-gray-400 hover:text-gray-600" // 왼쪽으로 위치 변경
+        >
+          <CgChevronLeft size={48} />
+        </p>
         <h2 className="text-3xl font-bold mb-4 text-center">회원가입</h2>
         {/* 닫기 버튼 */}
         <X
           onClick={closeSignUpModal}
-          className="absolute top-4 right-4 w-10 h-10 text-gray-400 hover:text-gray-600 dark:hover:text-white"
+          className="absolute top-4 right-4 w-10 h-10 text-gray-400 hover:text-gray-600"
         />
         {/* 회원가입 폼 */}
         <form
@@ -371,7 +385,7 @@ const SignUpModal: React.FC = () => {
             <button
               type="button"
               onClick={requestVerificationCode}
-              className={`p-2 rounded ${
+              className={`p-2 rounded w-24 text-md ${
                 formData.phoneNumber.length === 13
                   ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
