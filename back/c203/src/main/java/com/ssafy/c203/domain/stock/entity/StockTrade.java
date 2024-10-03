@@ -11,12 +11,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
+@Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class StockTrade {
 
     @Id
@@ -27,7 +30,10 @@ public class StockTrade {
     private TradeMethod method;
 
     @Column(nullable = false)
-    private float count;
+    private Double count;
+
+    @Column(nullable = false)
+    private Double price;
 
     @CreationTimestamp
     @Column(nullable = false)

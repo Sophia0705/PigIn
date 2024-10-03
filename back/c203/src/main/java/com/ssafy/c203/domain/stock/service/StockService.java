@@ -13,4 +13,6 @@ public interface StockService {
     public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count);
     public List<MongoStockMinute> findStockMinute();
     public List<MongoStockMinute> findStockMinuteChart(String stockCode, Integer count);
+    public void buyStock(Long userId, Long stockId, Long price);
 }
+
