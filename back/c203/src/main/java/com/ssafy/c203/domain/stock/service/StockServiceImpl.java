@@ -135,18 +135,18 @@ public class StockServiceImpl implements StockService {
         try {
             if (isBusinessHours()) {
                 // 3. 주식 매수 처리
-                SecuritiesStockTrade tradeResult = executeStockPurchase(stockId, price);
+                SecuritiesStockTrade tradeResult = SecuritiesStockBuy(stockId, price);
                 // 4. 거래 기록 저장
                 saveTradeRecord(member, stockItem, tradeResult.getResult(), tradeResult.getTradePrice(), TradeMethod.BUY);
                 // 5. 보유 주식 업데이트
                 Optional<StockPortfolio> portfolio = stockPortfolioRepository.findByStockItemAndMember(stockItem, member);
                 if (portfolio.isPresent()) {
-                    updateStockPortfolio(portfolio.get(), tradeResult.getTradePrice());
+                    updateStockPortfolio(portfolio.get(), tradeResult.getResult());
                 } else {
                     StockPortfolio newPortfolio = StockPortfolio.builder()
                             .stockItem(stockItem)
                             .member(member)
-                            .amount(tradeResult.getTradePrice())
+                            .amount(tradeResult.getResult())
                             .build();
                     stockPortfolioRepository.save(newPortfolio);
                 }
@@ -162,8 +162,6 @@ public class StockServiceImpl implements StockService {
             log.error("주식 매수 중 오류 발생: ", e);
             throw new RuntimeException("주식 매수 처리 중 오류가 발생했습니다.", e);
         }
-
-
     }
 
 
@@ -180,7 +178,7 @@ public class StockServiceImpl implements StockService {
         try {
             if (isBusinessHours()) {
                 // 2. 주식 매도 처리
-                SecuritiesStockTrade tradeResult = executeStockSale(stockId, count);
+                SecuritiesStockTrade tradeResult = SecuritiesStockSell(stockId, count);
                 // 3. 거래 기록 저장
                 saveTradeRecord(member, stockItem, count, tradeResult.getTradePrice(), TradeMethod.SELL);
                 // 4. 입금 처리
@@ -212,7 +210,7 @@ public class StockServiceImpl implements StockService {
     }
 
     // Securities 에 판매 요청
-    private SecuritiesStockTrade executeStockSale(String stockId, Double count) {
+    private SecuritiesStockTrade SecuritiesStockSell(String stockId, Double count) {
         String url = SECURITIES_URL + "/stock/trade/sell";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("stockCode", stockId);
@@ -288,7 +286,7 @@ public class StockServiceImpl implements StockService {
     }
 
     // 주식 구매
-    private SecuritiesStockTrade executeStockPurchase(String stockId, Long price) {
+    private SecuritiesStockTrade SecuritiesStockBuy(String stockId, Long price) {
         String url = SECURITIES_URL + "/stock/trade/buy";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("stockCode", stockId);
