@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -310,5 +311,21 @@ public class GoldServiceImpl implements GoldService {
                 .tradeAmount(gold.getTradeAmount())
                 .build())
             .collect(Collectors.toList()).get(0);
+    }
+
+    @Override
+    public List<GoldDto> getGoldThreeMonthList() {
+        List<Gold> goldList = goldRepository.findAllByOrderByDateDesc(PageRequest.of(0, 90));
+
+        List<GoldDto> arr = goldList.stream()
+            .map(gold -> new GoldDto(gold.getDate(), gold.getClose()))
+            .collect(Collectors.toList());
+
+        List<GoldDto> threeMonth = new ArrayList<>();
+        for (int i = 0; i < arr.size(); i += 3) {
+            threeMonth.add(arr.get(i));
+        }
+
+        return threeMonth;
     }
 }
