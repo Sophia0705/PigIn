@@ -9,10 +9,31 @@ import GoldDetailGraph from '../components/GoldDetailGraph';
 import GoldDetailInfo from '../components/GoldDetailInfo';
 import GoldNews from '../components/GoldNews';
 import getGoldData from '../../../api/investment/gold/GoldSpecificData';
+import {
+  getWeeklyGoldChartData,
+  getMonthlyGoldChartData,
+  getThreeMonthlyGoldChartData,
+  getYearlyGoldChartData,
+} from '../../../api/investment/gold/GoldChartData';
+import {
+  GoldItemData,
+  GoldChartDataResponse,
+} from '../../interfaces/GoldInterface';
 
 const GoldDetailPage: React.FC = () => {
   const navigate = useNavigate();
-  const [goldData, setGoldData] = useState<any>(null);
+  const [goldData, setGoldData] = useState<GoldItemData>({} as GoldItemData);
+  const [chartData, setChartData] = useState<{ name: string; value: number }[]>(
+    []
+  );
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
+  const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
+  const [isLiked, setIsLiked] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
+  const [buyInputValue, setBuyInputValue] = useState<string>('00');
+  const [isSellModalVisible, setIsSellModalVisible] = useState(false);
+  const [sellInputValue, setSellInputValue] = useState<string>('00');
 
   useEffect(() => {
     const fetchGoldData = async () => {
@@ -28,6 +49,47 @@ const GoldDetailPage: React.FC = () => {
     fetchGoldData();
   }, []);
 
+  useEffect(() => {
+    fetchChartData(selectedTimeRange);
+  }, [selectedTimeRange]);
+
+  const fetchChartData = async (timeRange: string) => {
+    try {
+      let responseData: GoldChartDataResponse[];
+
+      switch (timeRange) {
+        case '7일':
+          responseData = await getWeeklyGoldChartData();
+          break;
+        case '1개월':
+          responseData = await getMonthlyGoldChartData();
+          break;
+        case '3개월':
+          responseData = await getThreeMonthlyGoldChartData();
+          console.log(responseData);
+          break;
+        case '1년':
+          responseData = await getYearlyGoldChartData();
+          console.log(responseData);
+          break;
+        default:
+          responseData = await getWeeklyGoldChartData();
+          break;
+      }
+
+      const formattedData = responseData
+        .map((entry) => ({
+          name: entry.date,
+          value: parseFloat(entry.close),
+        }))
+        .reverse();
+
+      setChartData(formattedData);
+    } catch (error) {
+      console.error('Error fetching gold chart data:', error);
+    }
+  };
+
   const latestValue = GoldData[GoldData.length - 1].value;
   const previousValue = GoldData[GoldData.length - 2]?.value || 0;
   const percentageChange = (
@@ -38,15 +100,6 @@ const GoldDetailPage: React.FC = () => {
     Number(percentageChange) >= 0
       ? `+${percentageChange}%`
       : `${percentageChange}%`;
-
-  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
-  const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
-  const [isLiked, setIsLiked] = useState(false);
-  const [isAdded, setIsAdded] = useState(false);
-  const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
-  const [buyInputValue, setBuyInputValue] = useState<string>('00');
-  const [isSellModalVisible, setIsSellModalVisible] = useState(false);
-  const [sellInputValue, setSellInputValue] = useState<string>('00');
 
   const handleBackClick = () => {
     navigate(-1);
@@ -87,22 +140,8 @@ const GoldDetailPage: React.FC = () => {
     setSellInputValue('00');
   };
 
-  const selectedData =
-    selectedTimeRange === '7일'
-      ? GoldData.slice(-7)
-      : selectedTimeRange === '1개월'
-        ? GoldData.slice(-30)
-        : selectedTimeRange === '3개월'
-          ? GoldData.slice(-90)
-          : GoldData;
-
-  const chartData = selectedData.map((entry, index) => ({
-    name: `Day ${index + 1}`,
-    value: entry.value,
-  }));
-
-  const minPrice = Math.min(...selectedData.map((data) => data.value));
-  const maxPrice = Math.max(...selectedData.map((data) => data.value));
+  const minPrice = Math.min(...chartData.map((data) => data.value));
+  const maxPrice = Math.max(...chartData.map((data) => data.value));
 
   const padding = (maxPrice - minPrice) * 0.1;
   const adjustedMin = minPrice - padding;
@@ -186,7 +225,7 @@ const GoldDetailPage: React.FC = () => {
 
       {/* 금 상세 정보 */}
       {selectedInfoType === '상세정보' && (
-        <GoldDetailInfo latestValue={latestValue} />
+        <GoldDetailInfo goldData={goldData} />
       )}
 
       {/* 뉴스 */}

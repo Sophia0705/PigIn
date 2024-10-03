@@ -3,18 +3,14 @@ export interface GoldItemData {
   srtnCd: string;
   isin: string;
   itemName: string;
-  close: number;
-  vsYesterday: number;
-  upDownRate: number;
-  open: number;
-  high: number;
-  low: number;
-  tradeAmount: number;
-  tradePrice: number;
-  weeklyPrices: number[];
-  monthlyPrices: number[];
-  threeMonthlyPrices: number[];
-  yearlyPrices: number[];
+  close: string;
+  vsYesterday: string;
+  upDownRate: string;
+  open: string;
+  high: string;
+  low: string;
+  tradeAmount: string;
+  tradePrice: string;
 }
 
 export interface GoldChartDataResponse {
