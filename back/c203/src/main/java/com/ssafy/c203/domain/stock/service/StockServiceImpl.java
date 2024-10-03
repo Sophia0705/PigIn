@@ -7,12 +7,14 @@ import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
 import com.ssafy.c203.domain.stock.entity.StockItem;
+import com.ssafy.c203.domain.stock.entity.StockPortfolio;
 import com.ssafy.c203.domain.stock.entity.StockTrade;
 import com.ssafy.c203.domain.stock.entity.StockWaitingQueue;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
 import com.ssafy.c203.domain.stock.repository.StockItemRepository;
+import com.ssafy.c203.domain.stock.repository.StockPortfolioRepository;
 import com.ssafy.c203.domain.stock.repository.StockTradeRepository;
 import com.ssafy.c203.domain.stock.repository.StockWaitingQueueRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockDetailRepository;
@@ -25,10 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -38,6 +37,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +51,7 @@ public class StockServiceImpl implements StockService {
     private final StockItemRepository stockItemRepository;
     private final StockTradeRepository stockTradeRepository; ;
     private final StockWaitingQueueRepository sockWaitingQueueRepository;
+    private final StockPortfolioRepository stockPortfolioRepository;
 
 
     private final MemberService memberService;
@@ -122,30 +123,61 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public void buyStock(Long userId, Long stockId, Long price) {
+    public void buyStock(Long userId, String stockId, Long price) {
+        // 1. 입력 검증
+        StockItem stockItem = stockItemRepository.findById(stockId)
+                .orElseThrow(() -> new RuntimeException("Stock item not found: " + stockId));
+        Members member = memberService.findMemberById(userId);
 
+        // 2. 잔고 확인 및 출금
+        if (!withdraw(userId, price)) {
+            throw new RuntimeException("잔액 부족");
+        }
+
+        try {
+            if (isBusinessHours()) {
+                // 3. 주식 매수 처리
+                SecuritiesStockTrade tradeResult = executeStockPurchase(stockId, price);
+                // 4. 거래 기록 저장
+                saveTradeRecord(member, stockItem, tradeResult);
+                // 5. 보유 주식 업데이트
+                updateStockPortfolio(member, stockItem, tradeResult.getResult());
+            } else {
+                // 6. 대기 큐에 저장
+                saveToWaitingQueue(member, stockItem, price);
+            }
+        } catch (Exception e) {
+            // 7. 예외 발생 시 출금 취소
+            deposit(userId, price);
+            log.error("주식 매수 중 오류 발생: ", e);
+            throw new RuntimeException("주식 매수 처리 중 오류가 발생했습니다.", e);
+        }
+    }
+
+
+    @Override
+    public void sellStock(Long userId, String stockId, Double count) {
         // StockId 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
                 .orElseThrow(() -> new RuntimeException("Stock item not found"));
         // 유저 검증
         Members members = memberService.findMemberById(userId);
 
-        // 1. 잔고 확인
-        if (checkWithdraw(userId, stockId)) {
-            throw new RuntimeException();
+        // 1. 보유 주식 개수 확인
+        StockPortfolio stockPortfolio = stockPortfolioRepository.findByStockItem_IdAndMember_Id(stockId, userId)
+                .orElseThrow(() -> new RuntimeException("Stock portfolio not found"));
+        if (stockPortfolio.getAmount() < count) {
+            throw new RuntimeException("보유량 적음");
         }
-        // 2. 출금
-        if (!withdraw(userId, stockId)) {
-            throw new RuntimeException();
-        }
-        // 3. 시간 체크
+
+        // 2. 시간 확인
         if (isBusinessHours()) {
-            // 매수 로직
-            String url = SECURITIES_URL + "/stock/trade/buy";
+            // 3 - 1 거래 시간시 매도 요청 + 입금, 주식 수 빼기
+            String url = SECURITIES_URL + "/stock/trade/sell";
 
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("stockCode", stockId);
-            requestBody.put("quantity", price);
+            requestBody.put("quantity", count);
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Content-Type", "application/json");
@@ -162,24 +194,34 @@ public class StockServiceImpl implements StockService {
 
                 // 거래 기록 저장
                 StockTrade stockTrade = StockTrade.builder()
-                        .method(TradeMethod.BUY)
-                        .count(response.getBody().getResult())
+                        .method(TradeMethod.SELL)
+                        .count(count)
                         .price(response.getBody().getTradePrice())
                         .tradeTime(LocalDateTime.now())
                         .stockItem(stockItem)
                         .member(members)
                         .build();
-
                 stockTradeRepository.save(stockTrade);
+
+                // 입금
+                if (!deposit(userId, Math.round(response.getBody().getResult()))) {
+                    throw new RuntimeException("입금 실패");
+                }
+                // 주식 빼기
+                // TODO: 보유 주식 빼기 로직 필요
+
             } catch (Exception e) {
-                log.error("매수 통신, 저장 에러 = {}",e.getMessage());
+                // TODO: 예외 발생 시 코인 개수 다시 저장 로직 필요
+                log.error("매도 통신, 저장 에러 = {}",e.getMessage());
             }
-        } else {
-            // 대기 큐 저장
+        }
+        else {
+            // 3 - 2 거래 시간 아닐 시 대기큐 삽입
             StockWaitingQueue stockWaitingQueue = StockWaitingQueue.builder()
                     .tradeTime(LocalDateTime.now())
-                    .tradePrice(price)
+                    .tradeAmount(count)
                     .stockItem(stockItem)
+                    .method(TradeMethod.SELL)
                     .member(members)
                     .build();
             stockWaitingQueueRepository.save(stockWaitingQueue);
@@ -210,6 +252,73 @@ public class StockServiceImpl implements StockService {
 
         return !now.isBefore(start) && !now.isAfter(end);
     }
+
+    private SecuritiesStockTrade executeStockPurchase(String stockId, Long price) {
+        String url = SECURITIES_URL + "/stock/trade/buy";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("stockCode", stockId);
+        requestBody.put("quantity", price);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<SecuritiesStockTrade> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                SecuritiesStockTrade.class
+        );
+
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            throw new RuntimeException("증권사 API 호출 실패");
+        }
+
+        return response.getBody();
+    }
+
+    private void saveTradeRecord(Members member, StockItem stockItem, SecuritiesStockTrade tradeResult) {
+        StockTrade stockTrade = StockTrade.builder()
+                .method(TradeMethod.BUY)
+                .count(tradeResult.getResult())
+                .price(tradeResult.getTradePrice())
+                .tradeTime(LocalDateTime.now())
+                .stockItem(stockItem)
+                .member(member)
+                .build();
+        stockTradeRepository.save(stockTrade);
+    }
+
+    private void updateStockPortfolio(Members member, StockItem stockItem, Double purchasedAmount) {
+        stockPortfolioRepository.findByStockItemAndMember(stockItem, member)
+                .ifPresentOrElse(
+                        portfolio -> {
+                            portfolio.addAmount(purchasedAmount);
+                            stockPortfolioRepository.save(portfolio);
+                        },
+                        () -> {
+                            StockPortfolio newPortfolio = StockPortfolio.builder()
+                                    .stockItem(stockItem)
+                                    .member(member)
+                                    .amount(purchasedAmount)
+                                    .build();
+                            stockPortfolioRepository.save(newPortfolio);
+                        }
+                );
+    }
+
+    private void saveToWaitingQueue(Members member, StockItem stockItem, Long price) {
+        StockWaitingQueue stockWaitingQueue = StockWaitingQueue.builder()
+                .tradeTime(LocalDateTime.now())
+                .tradePrice(price)
+                .stockItem(stockItem)
+                .method(TradeMethod.BUY)
+                .member(member)
+                .build();
+        stockWaitingQueueRepository.save(stockWaitingQueue);
+    }
+
 
     public void saveStockItems() {
         stockItemRepository.save(new StockItem("005930", "삼성전자"));

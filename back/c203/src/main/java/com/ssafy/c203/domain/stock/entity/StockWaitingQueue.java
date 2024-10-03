@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.stock.entity;
 
+import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.members.entity.Members;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,8 +30,13 @@ public class StockWaitingQueue {
     @Column(nullable = false)
     private LocalDateTime tradeTime;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long tradePrice;
+
+    private Double tradeAmount;
+
+    @Column(nullable = false)
+    private TradeMethod method;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "stock_id")
