@@ -2,19 +2,24 @@ import { useMemo, useRef } from 'react';
 import { usePortfolioStore } from '../../store/portfolioStore';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
+import { AssetItem } from '../interfaces/PortfolioInterface';
 
 const PortfolioDetails: React.FC = () => {
   const { categories, activeIndex, isLoading, error, showAllItems } =
     usePortfolioStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const items = useMemo(() => {
+  const items: (AssetItem & { categoryName?: string })[] = useMemo(() => {
+    if (!categories || categories.length === 0) return [];
+
     if (showAllItems) {
       return categories.flatMap((category) =>
         category.items.map((item) => ({ ...item, categoryName: category.name }))
       );
     }
-    return activeIndex !== undefined ? categories[activeIndex].items : [];
+    return activeIndex !== undefined && categories[activeIndex]
+      ? categories[activeIndex].items
+      : [];
   }, [categories, activeIndex, showAllItems]);
 
   if (isLoading)
@@ -25,6 +30,9 @@ const PortfolioDetails: React.FC = () => {
         Error loading details: {error}
       </div>
     );
+
+  if (!categories || categories.length === 0)
+    return <div className="text-center py-4">No portfolio data available.</div>;
 
   const itemCount = items.length;
   const isItemLoaded = (index: number) => index < items.length;
@@ -46,7 +54,7 @@ const PortfolioDetails: React.FC = () => {
     const item = items[index];
     return (
       <div style={style} className="flex items-center border-b px-4">
-        {showAllItems && (
+        {showAllItems && 'categoryName' in item && (
           <div className="w-1/4 py-2 text-sm font-medium">
             {item.categoryName}
           </div>
@@ -85,7 +93,9 @@ const PortfolioDetails: React.FC = () => {
           style={{ height: 'calc(100% - 24px)' }}
         >
           <h2 className="text-xl font-bold pt-4 mb-1 px-4">
-            {showAllItems ? '전체' : categories[activeIndex!].name}
+            {showAllItems
+              ? '전체'
+              : categories[activeIndex!]?.name || '포트폴리오'}
           </h2>
           {/* 안쪽만 스크롤 */}
           <div className="h-full pt-4 pb-10 overflow-y-auto">

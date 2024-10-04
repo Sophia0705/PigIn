@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit, ChevronLeft, XCircle } from 'lucide-react';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
-// import { saveAutoInvestment } from '../../api/portfolio/autoInvestment';
 import AutoDashboard from '../components/AutoDashboard';
 
 const CATEGORIES = ['주식', '가상화폐', '금'];

@@ -30,8 +30,7 @@ const CustomLabel = ({
 };
 
 const AutoDashboard = () => {
-  const { investmentAmount, allocations, activeCategory } =
-    useAutoInvestmentStore();
+  const { investmentAmount, allocations } = useAutoInvestmentStore();
 
   const chartData = useMemo(() => {
     return Object.entries(allocations).map(([category, items]) => ({
@@ -59,7 +58,7 @@ const AutoDashboard = () => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {chartData.map((entry, index) => (
+                {chartData.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
