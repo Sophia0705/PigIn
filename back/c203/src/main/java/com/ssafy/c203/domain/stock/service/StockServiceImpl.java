@@ -140,12 +140,13 @@ public class StockServiceImpl implements StockService {
                 // 5. 보유 주식 업데이트
                 Optional<StockPortfolio> portfolio = stockPortfolioRepository.findByStockItemAndMember(stockItem, member);
                 if (portfolio.isPresent()) {
-                    updateStockPortfolio(portfolio.get(), tradeResult.getResult());
+                    addStockPortfolio(portfolio.get(), tradeResult.getResult(), tradeResult.getTradePrice());
                 } else {
                     StockPortfolio newPortfolio = StockPortfolio.builder()
                             .stockItem(stockItem)
                             .member(member)
                             .amount(tradeResult.getResult())
+                            .priceAvg(tradeResult.getTradePrice())
                             .build();
                     stockPortfolioRepository.save(newPortfolio);
                 }
@@ -173,7 +174,7 @@ public class StockServiceImpl implements StockService {
         StockPortfolio stockPortfolio = validateStockPortfolio(stockId, userId, count);
 
         // 1. 보유 주식 수량 감소
-        updateStockPortfolio(stockPortfolio, -count);
+        subStockPortfolio(stockPortfolio, count);
         try {
             if (isBusinessHours()) {
                 // 2. 주식 매도 처리
@@ -193,7 +194,7 @@ public class StockServiceImpl implements StockService {
             }
         } catch (Exception e) {
             log.error("주식 매도 중 오류 발생: ", e);
-            updateStockPortfolio(stockPortfolio, count);
+            subStockPortfolio(stockPortfolio, -count);
             throw new RuntimeException("주식 매도 처리 중 오류가 발생했습니다.", e);
         }
     }
@@ -247,9 +248,16 @@ public class StockServiceImpl implements StockService {
         stockTradeRepository.save(stockTrade);
     }
 
-    // 주식 보유량 수정
-    private void updateStockPortfolio(StockPortfolio stockPortfolio, Double soldCount) {
-        stockPortfolio.addAmount(soldCount);
+    // 주식 보유량 증가
+    private void addStockPortfolio(StockPortfolio stockPortfolio, Double amount, Double price) {
+        stockPortfolio.addAmount(amount);
+        stockPortfolio.updatePriceAvg(price, amount);
+        stockPortfolioRepository.save(stockPortfolio);
+    }
+
+    // 주식 보유량 감소
+    private void subStockPortfolio(StockPortfolio stockPortfolio, Double amount) {
+        stockPortfolio.subAmount(amount);
         stockPortfolioRepository.save(stockPortfolio);
     }
 
