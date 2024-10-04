@@ -41,7 +41,9 @@ const QuizCard: React.FC = () => {
           <NavLink to="/quiz">
             <h3 className="text-black font-semibold mb-2">금융 상식 퀴즈</h3>
           </NavLink>
-          <h3>주가 Up Down?!</h3>
+          <NavLink to="/flow-quiz">
+            <h3>주가 Up Down?!</h3>
+          </NavLink>
         </div>
       )}
     </div>
