@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 interface Stock {
   stockCode: string;
-  close: number;
-  date: string;
-  time: string;
+  stck_bsop_date: string;
+  stock_bsop_time: string;
+  stck_clpr: string;
+  stck_oprc: string;
+  stck_hgpr: string;
+  stck_lwpr: string;
+  acml_vol: string;
 }
 
 const StockLiveStream: React.FC = () => {
@@ -39,7 +43,8 @@ const StockLiveStream: React.FC = () => {
       <ul>
         {stockData.map((stock, index) => (
           <li key={index}>
-            {stock.stockCode}: {stock.close} - {stock.date} {stock.time}
+            {stock.stockCode}: {stock.stck_clpr} - {stock.stck_bsop_date}{' '}
+            {stock.stock_bsop_time}
           </li>
         ))}
       </ul>
