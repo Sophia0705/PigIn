@@ -69,15 +69,11 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
 
   const handleBuyClick = async () => {
     try {
-      const response = await purchaseStock(
-        stockId,
-        parseFloat(inputValue),
-        stockPrice
-      );
-      console.log('구매 성공:', response);
+      const response = await purchaseStock(stockId, parseFloat(inputValue));
+      console.log('구매 성공핑:', response);
       onClose();
     } catch (error) {
-      console.error('구매 실패:', error);
+      console.error('구매 실패핑:', error);
     }
   };
 

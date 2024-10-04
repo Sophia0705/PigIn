@@ -63,20 +63,20 @@ const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
   const handleBuyClick = async () => {
     try {
       const response = await tradeGold(inputAmount, 'BUY');
-      console.log('Gold purchase successful:', response);
+      console.log('금 매수 성공핑:', response);
       onClose();
     } catch (error) {
-      console.error('Gold purchase failed:', error);
+      console.error('금 매수 실패핑:', error);
     }
   };
 
   return (
-    <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
         {/* 모달 상단 */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-black flex justify-center">
-            얼마나 매수하시겠어요?
+            얼마나 매수하시겠어요?????
           </h1>
           <div onClick={onClose} className="text-black">
             <CgClose size={24} />
@@ -94,27 +94,30 @@ const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
             value={inputValue === '00' ? '' : inputValue}
             readOnly
             className={`bg-transparent text-center text-black text-3xl w-3/4 p-2 transition-all ${
-              inputValue ? 'border-b border-black' : ''
+              inputValue && inputValue !== '00' ? 'border-b border-black' : ''
             }`}
           />
-          <div
-            className={`absolute right-4 mt-3 flex items-center space-x-1 ${
-              inputValue ? 'text-black' : ''
-            }`}
-          >
-            <span className="text-xl">원 ({percentage}%)</span>
-          </div>
+          {inputValue && inputValue !== '00' && (
+            <div className="absolute right-4 mt-3 flex items-center space-x-1 text-black">
+              <span className="text-xl">{`원 (${percentage}%)`}</span>
+            </div>
+          )}
         </div>
 
         {/* 500, 1000, 3000, 5000원 추가 버튼 */}
         <div className="flex justify-center space-x-4 mb-6">
-          {[500, 1000, 3000, 5000].map((amount) => (
+          {[
+            { label: '+500원', value: 500 },
+            { label: '+1000원', value: 1000 },
+            { label: '+3000원', value: 3000 },
+            { label: '+5000원', value: 5000 },
+          ].map((button) => (
             <button
-              key={amount}
+              key={button.value}
               className="bg-customDarkGreen p-2 text-sm rounded-full text-white transition-colors"
-              onClick={() => handleAddAmount(amount)}
+              onClick={() => handleAddAmount(button.value)}
             >
-              +{amount.toLocaleString()}원
+              {button.label}
             </button>
           ))}
         </div>
@@ -165,7 +168,7 @@ const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
         </div>
 
         {/* 매수하기 버튼 */}
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-1">
           <button
             className={`w-full py-3 rounded-md text-lg font-bold ${
               inputValue === '00'
