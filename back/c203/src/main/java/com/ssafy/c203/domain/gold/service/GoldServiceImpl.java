@@ -244,12 +244,12 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public boolean isFavoriteGold(Long userId) {
-        return goldFavoriteRepository.ExistsByMember_Id(userId);
+        return goldFavoriteRepository.existsByMember_Id(userId);
     }
 
     @Override
     public boolean isAutoFundingGold(Long userId) {
-        return autoFundingRepository.ExistsByMember_Id(userId);
+        return autoFundingRepository.existsByMember_Id(userId);
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
