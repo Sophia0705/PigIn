@@ -192,15 +192,16 @@ const FindEmailModal: React.FC = () => {
         {/* 뒤로가기 버튼 */}
         <p
           onClick={handleBackClick}
-          className="absolute top-5 left-4 w-10 h-10 text-gray-400 hover:text-gray-600"
+          className="absolute top-6 left-4 text-gray-400 hover:text-gray-600"
         >
-          <CgChevronLeft size={40} />
+          <CgChevronLeft size={32} />
         </p>
+        {/* 제목 */}
         <h2 className="text-xl font-bold mb-6 text-center">아이디 찾기</h2>
         {/* 닫기 버튼 */}
         <X
           onClick={closeFindEmailModal}
-          className="absolute top-5 right-4 w-8 h-8 text-gray-400 hover:text-gray-600"
+          className="absolute top-6 right-5 w-8 h-8 text-gray-400 hover:text-gray-600"
         />
         {/* 회원가입 폼 */}
         <form
