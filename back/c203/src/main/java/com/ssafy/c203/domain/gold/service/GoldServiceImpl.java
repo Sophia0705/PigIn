@@ -356,10 +356,13 @@ public class GoldServiceImpl implements GoldService {
     private boolean compareGold(Members member, double cnt) {
         Double buyCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
             TradeMethod.BUY);
+        log.info("나의 구매 개수 : {}", buyCnt);
         Double sellCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
             TradeMethod.SELL);
+        log.info("나의 판매 개수 : {}", sellCnt);
 
         Double mineCnt = buyCnt - sellCnt;
+        log.info("내 개수 : {}", mineCnt);
         //판매 개수가 내 개수보다 많으면
         if (cnt > mineCnt) {
             return false;
