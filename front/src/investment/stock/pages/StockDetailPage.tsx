@@ -266,6 +266,7 @@ const StockDetailPage: React.FC = () => {
       {/* 매도 모달 */}
       {isSellModalVisible && (
         <StockSellModal
+          stockId={stockData.stck_shrn_iscd}
           inputValue={sellInputValue}
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}

@@ -1,11 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
+import { sellStock } from '../../../../api/investment/stock/StockSell';
 
 interface StockSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
   stockName: string;
+  stockId: string;
   stockPrice: number;
 }
 
@@ -15,6 +17,7 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
   onClose,
   stockName,
   stockPrice,
+  stockId,
 }) => {
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
@@ -63,6 +66,16 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
 
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / stockPrice) * 100).toFixed(2);
+
+  const handleSellClick = async () => {
+    try {
+      const response = await sellStock(stockId, inputAmount);
+      console.log('매도 성공핑:', response);
+      onClose();
+    } catch (error) {
+      console.error('매도 실패핑:', error);
+    }
+  };
 
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
@@ -172,6 +185,7 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
                 : 'bg-red-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleSellClick}
           >
             매도하기
           </button>
