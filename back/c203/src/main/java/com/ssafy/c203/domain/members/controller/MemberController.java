@@ -3,6 +3,8 @@ package com.ssafy.c203.domain.members.controller;
 import com.ssafy.c203.common.jwt.JWTUtil;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.AccountNoDto;
+import com.ssafy.c203.domain.members.dto.RequestDto.AutoFundingMoneyDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.EmailCheckDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
@@ -57,7 +59,7 @@ public class MemberController {
     })
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody SignUpDto signUpDto)
-        throws NoSuchAlgorithmException {
+        throws Exception {
         memberService.singUp(Members
             .builder()
             .name(signUpDto.getName())
@@ -118,7 +120,7 @@ public class MemberController {
         @ApiResponse(responseCode = "200", description = "ID(이메일) response"),
         @ApiResponse(responseCode = "404", description = "해당 member를 찾지 못했습니다.")
     })
-    @GetMapping("/find-id")
+    @PostMapping("/find-id")
     public ResponseEntity<?> findByEmail(@RequestBody FindIdDto findIdDto) {
         String email = memberService.findEmail(findIdDto);
         if (email.equals("fail")) {
@@ -174,10 +176,10 @@ public class MemberController {
         @ApiResponse(responseCode = "404", description = "등록된 계좌가 아닙니다.")
     })
     @PostMapping("/account-authentication")
-    public ResponseEntity<?> accountAuthentication(@RequestBody String accountNo,
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> accountAuthentication(@RequestBody AccountNoDto accountNoDto,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         String userKey = customUserDetails.getUserKey();
-        boolean isSend = memberService.oneWonSend(accountNo, userKey);
+        Long userId = customUserDetails.getUserId();
+        boolean isSend = memberService.oneWonSend(accountNoDto.getAccountNo(), userKey);
         if (isSend) {
             return ResponseEntity.ok("1원 송금 완료");
         }
@@ -313,6 +315,14 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일이 이미 존재합니다.");
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/money-set")
+    public ResponseEntity<?> setMoney(@RequestBody AutoFundingMoneyDto autoFundingMoneyDto,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        memberService.setMoney(autoFundingMoneyDto.getMoney(), userId);
+        return ResponseEntity.ok("금액 설정 완료");
     }
 
     private Cookie createCookie(String key, String value) {

@@ -4,6 +4,7 @@ import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.coin.dto.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.SecuritiesCoinTrade;
+import com.ssafy.c203.domain.coin.dto.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.CoinTrade;
@@ -103,9 +104,15 @@ public class CoinServiceImpl implements CoinService {
 
     @Override
     @Transactional(readOnly = true)
-    public MongoCoinMinute findCoin(String coinCode) {
-        // Exception 처리 필요
-        return mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode).orElseThrow();
+    public FindCoinResponse findCoin(String coinCode) {
+        MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
+                .orElseThrow(); // 코인 데이터를 가져옴
+
+        // 코인 이름 가져오기
+        CoinItem coinItem = coinItemRepository.findById(coinCode).orElseThrow();
+        String coinName = coinItem.getName();
+
+        return new FindCoinResponse(mongoCoinMinute, coinName); // 코인 이름과 함께 반환
     }
 
     @Override

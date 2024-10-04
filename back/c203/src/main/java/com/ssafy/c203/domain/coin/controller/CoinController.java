@@ -48,7 +48,7 @@ public class CoinController {
     // 코인 상세 조회
     @GetMapping("/{coinCode}")
     public ResponseEntity<?> findCoinById(@PathVariable String coinCode) {
-        FindCoinResponse response = new FindCoinResponse(coinService.findCoin(coinCode));
+        FindCoinResponse response = coinService.findCoin(coinCode);
         return ResponseEntity.ok().body(response);
     }
 

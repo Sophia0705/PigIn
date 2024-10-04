@@ -41,4 +41,30 @@ public class GoldController {
     public ResponseEntity<?> getTodayPrice() throws IOException {
         return ResponseEntity.ok(goldService.getGoldPrice());
     }
+
+    @GetMapping("/years")
+    public ResponseEntity<?> getGold() throws IOException {
+        log.info("들어왔다.");
+        return ResponseEntity.ok(goldService.getGoldList());
+    }
+
+    @GetMapping("/weeks")
+    public ResponseEntity<?> getGoldWeeks(){
+        return ResponseEntity.ok(goldService.getGoldDaysList());
+    }
+
+    @GetMapping("/months")
+    public ResponseEntity<?> getGoldMonths(){
+        return ResponseEntity.ok(goldService.getGoldMonthsList());
+    }
+
+    @GetMapping("/three-months")
+    public ResponseEntity<?> getGoldThreeMonths(){
+        return ResponseEntity.ok(goldService.getGoldThreeMonthList());
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<?> getDetail(){
+        return ResponseEntity.ok(goldService.getDetail());
+    }
 }
