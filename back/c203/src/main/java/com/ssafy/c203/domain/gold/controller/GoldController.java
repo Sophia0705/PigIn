@@ -91,10 +91,23 @@ public class GoldController {
     }
 
     @GetMapping("/favorite-cancel")
-    public ResponseEntity<?> cancelFavoriteGold(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> cancelFavoriteGold(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         goldService.cancelFavoriteGold(userId);
         return ResponseEntity.ok("금 찜 해제 성공");
     }
 
+    @GetMapping("/isfavorite")
+    public ResponseEntity<?> isFavoriteGold(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return ResponseEntity.ok(goldService.isFavoriteGold(userId));
+    }
+
+    @GetMapping("/is-auto-funding")
+    public ResponseEntity<?> isAutoFunding(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return ResponseEntity.ok(goldService.isAutoFundingGold(userId));
+    }
 }
