@@ -306,6 +306,7 @@ public class GoldServiceImpl implements GoldService {
 
                 //돈 빼기
                 accountService.withdrawAccount(member.getId(), (long) tradePrice);
+                log.info("돈 뺐다 마 걔쒜이야");
             } catch (Exception e) {
                 throw new TradeErrorExeption();
             }
