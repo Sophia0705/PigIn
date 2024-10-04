@@ -29,4 +29,8 @@ public interface GoldService {
     void favoriteGold(Long userId);
 
     void cancelFavoriteGold(Long userId);
+
+    boolean isFavoriteGold(Long userId);
+
+    boolean isAutoFundingGold(Long userId);
 }

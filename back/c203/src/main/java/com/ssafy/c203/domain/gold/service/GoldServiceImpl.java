@@ -242,6 +242,16 @@ public class GoldServiceImpl implements GoldService {
         goldFavoriteRepository.delete(goldFavorite);
     }
 
+    @Override
+    public boolean isFavoriteGold(Long userId) {
+        return goldFavoriteRepository.ExistsByMember_Id(userId);
+    }
+
+    @Override
+    public boolean isAutoFundingGold(Long userId) {
+        return autoFundingRepository.ExistsByMember_Id(userId);
+    }
+
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
         int goldPrice = getGoldPrice();
         int tradePrice = goldTradeDto.getTradePrice();
