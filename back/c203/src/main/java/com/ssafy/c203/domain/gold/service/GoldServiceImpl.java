@@ -209,7 +209,7 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public void cancelAutoFunding(Long userId) {
-        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMemberId(userId)
+        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMember_Id(userId)
             .orElseThrow(AutoFundingNotFoundException::new);
 
         autoFundingRepository.delete(goldAutoFunding);
@@ -218,7 +218,7 @@ public class GoldServiceImpl implements GoldService {
     @Override
     @Transactional
     public void setAutoFundingRate(Long userId, int rate) {
-        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMemberId(userId)
+        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMember_Id(userId)
             .orElseThrow(AutoFundingNotFoundException::new);
         goldAutoFunding.updateRate(rate);
     }
@@ -236,7 +236,7 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public void cancelFavoriteGold(Long userId) {
-        GoldFavorite goldFavorite = goldFavoriteRepository.findByMemberId(userId)
+        GoldFavorite goldFavorite = goldFavoriteRepository.findByMember_Id(userId)
             .orElseThrow(GoldFavoriteNotFoundException::new);
 
         goldFavoriteRepository.delete(goldFavorite);
