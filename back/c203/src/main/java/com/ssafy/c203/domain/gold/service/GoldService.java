@@ -21,4 +21,6 @@ public interface GoldService {
     List<GoldDto> goldThreeMonthList();
 
     void addAutoFunding(Long userId);
+
+    void cancelAutoFunding(Long userId);
 }

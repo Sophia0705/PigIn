@@ -1,5 +1,6 @@
 package com.ssafy.c203.common.exception;
 
+import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
@@ -72,6 +73,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TradeErrorExeption.class)
     public ResponseEntity<String> handleTradeErrorExeption(TradeErrorExeption e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AutoFundingNotFoundException.class)
+    public ResponseEntity<String> handleAutoFundingNotFoundException(AutoFundingNotFoundException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }

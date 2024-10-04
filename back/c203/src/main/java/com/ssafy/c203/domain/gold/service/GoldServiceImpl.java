@@ -9,6 +9,7 @@ import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import com.ssafy.c203.domain.gold.entity.GoldAutoFunding;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
+import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
@@ -200,6 +201,14 @@ public class GoldServiceImpl implements GoldService {
             .builder()
             .member(member)
             .build());
+    }
+
+    @Override
+    public void cancelAutoFunding(Long userId) {
+        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMemberId(userId)
+            .orElseThrow(AutoFundingNotFoundException::new);
+
+        autoFundingRepository.delete(goldAutoFunding);
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {

@@ -62,4 +62,10 @@ public class GoldController {
         goldService.addAutoFunding(userId);
         return ResponseEntity.ok("자동투자 등록 성공");
     }
+
+    @GetMapping("/auto-funding-cancel")
+    public ResponseEntity<?> cancelAutoFunding(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return null;
+    }
 }
