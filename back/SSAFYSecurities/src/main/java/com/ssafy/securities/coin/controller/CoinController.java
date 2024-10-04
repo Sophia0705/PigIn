@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 public class CoinController {
     private final CoinService coinService;
 
-    @PostMapping("/{coinCode}/buy")
-    public ResponseEntity<?> buyCoin(@RequestBody CoinTradeRequest request, @PathVariable String coinCode) {
+    @PostMapping("/trade/buy")
+    public ResponseEntity<?> buyCoin(@RequestBody CoinTradeRequest request) {
         CoinTradeResponse response = coinService.buyCoin(request.getCoinCode(), request.getQuantity());
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/{coinCode}/sell")
-    public ResponseEntity<?> sellCoin(@RequestBody CoinTradeRequest request, @PathVariable String coinCode) {
+    @PostMapping("/trade/sell")
+    public ResponseEntity<?> sellCoin(@RequestBody CoinTradeRequest request) {
         CoinTradeResponse response = coinService.sellCoin(request.getCoinCode(), request.getQuantity());
         return ResponseEntity.ok().body(response);
     }
