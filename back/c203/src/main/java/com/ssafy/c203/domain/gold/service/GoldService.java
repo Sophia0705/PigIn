@@ -33,4 +33,6 @@ public interface GoldService {
     boolean isFavoriteGold(Long userId);
 
     boolean isAutoFundingGold(Long userId);
+
+    double getMine(Long userId);
 }
