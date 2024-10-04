@@ -11,6 +11,7 @@ import StockPurchaseModal from '../components/modals/StockPurchaseModal';
 import StockNews from '../components/StockNews';
 import StockSellModal from '../components/modals/StockSellModal';
 import StockLiveStream from '../components/StockLiveStream';
+import AuthGuardClickable from '../../../member/components/AuthGuardClickable';
 
 const StockDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -137,12 +138,16 @@ const StockDetailPage: React.FC = () => {
           {stockData.hts_kor_isnm}
         </h1>
         <div className="flex items-center space-x-4 text-white">
-          <div onClick={handleHeartClick}>
-            {isLiked ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
-          </div>
-          <div onClick={handleAddToPortfolio}>
-            {isAdded ? <CgCheckR size={28} /> : <CgAddR size={28} />}
-          </div>
+          <AuthGuardClickable onAuthSuccess={handleHeartClick}>
+            <div onClick={handleHeartClick}>
+              {isLiked ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
+            </div>
+          </AuthGuardClickable>
+          <AuthGuardClickable onAuthSuccess={handleAddToPortfolio}>
+            <div onClick={handleAddToPortfolio}>
+              {isAdded ? <CgCheckR size={28} /> : <CgAddR size={28} />}
+            </div>
+          </AuthGuardClickable>
         </div>
       </div>
 
@@ -228,21 +233,24 @@ const StockDetailPage: React.FC = () => {
       )}
 
       {/* 매수, 매도 버튼 */}
-      <div className="mt-5 flex justify-between w-10/12 mx-auto">
-        <button
-          className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
-          onClick={handleBuyClick}
-        >
-          매수
-        </button>
-        <button
-          className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
-          onClick={handleSellClick}
-        >
-          매도
-        </button>
+      <div className="mt-6 flex justify-between w-10/12 mx-auto">
+        <AuthGuardClickable onAuthSuccess={handleBuyClick}>
+          <button
+            className="w-1/2 bg-green-500 text-white py-2 rounded-lg mr-2"
+            onClick={handleBuyClick}
+          >
+            매수
+          </button>
+        </AuthGuardClickable>
+        <AuthGuardClickable onAuthSuccess={handleSellClick}>
+          <button
+            className="w-1/2 bg-red-500 text-white py-2 rounded-lg ml-2"
+            onClick={handleSellClick}
+          >
+            매도
+          </button>
+        </AuthGuardClickable>
       </div>
-
       {/* 매수 모달 */}
       {isBuyModalVisible && (
         <StockPurchaseModal

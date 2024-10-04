@@ -8,7 +8,6 @@ import { useMemberStore } from '../../store/memberStore';
 // import UpdateProfileModal from '../components/modals/UpdateProfileModal';
 // import SignOutModal from '../components/modals/SignOutModal';
 // import SpendingAccountRegisterModal from '../components/modals/SpendingAccountRegisterModal';
-import AuthGuard from '../components/AuthGuard';
 import { FiLogOut } from 'react-icons/fi'; // 로그아웃 아이콘 임포트
 import { logoutAPI } from '../../api/member/logoutAPI';
 
@@ -37,17 +36,15 @@ const MyPage: React.FC = () => {
           </button>
         )}
       </div>
-      <AuthGuard>
-        {/* 회원 정보 컴포넌트 */}
-        <div className="mt-8 w-full flex justify-center relative">
-          <MemberInfo />
-        </div>
+      {/* 회원 정보 컴포넌트 */}
+      <div className="mt-8 w-full flex justify-center relative">
+        <MemberInfo />
+      </div>
 
-        {/* 계좌 정보 슬라이더 컴포넌트 */}
-        <div className="mt-8 w-full flex justify-center">
-          <AccountSlider />
-        </div>
-      </AuthGuard>
+      {/* 계좌 정보 슬라이더 컴포넌트 */}
+      <div className="mt-8 w-full flex justify-center">
+        <AccountSlider />
+      </div>
     </div>
   );
 };

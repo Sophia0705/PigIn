@@ -6,9 +6,16 @@ import {
   FaHeart,
   FaUser,
 } from 'react-icons/fa';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import AuthGuardClickable from '../member/components/AuthGuardClickable';
 
 const Navbar: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleAuthSuccess = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <div className="absolute bottom-4 left-4 right-4 w-auto flex justify-center z-10">
       <div className="flex items-center justify-around w-full max-w-md h-[75px] bg-green-100 rounded-full shadow-md px-4">
@@ -16,7 +23,7 @@ const Navbar: React.FC = () => {
         <NavLink
           to="/main"
           className={({ isActive }) =>
-            `p-2 ${
+            `p-2 flex items-center justify-center ${
               isActive
                 ? 'text-customAqua hover:text-customAqua'
                 : 'text-black hover:text-black'
@@ -27,24 +34,28 @@ const Navbar: React.FC = () => {
         </NavLink>
 
         {/* 포트폴리오 */}
-        <NavLink
-          to="/myportfolio"
-          className={({ isActive }) =>
-            `p-2 ${
-              isActive
-                ? 'text-customAqua hover:text-customAqua'
-                : 'text-black hover:text-black'
-            }`
-          }
+        <AuthGuardClickable
+          onAuthSuccess={() => handleAuthSuccess('/myportfolio')}
         >
-          <FaChartPie size={24} />
-        </NavLink>
+          <NavLink
+            to="/myportfolio"
+            className={({ isActive }) =>
+              `p-2 flex items-center justify-center ${
+                isActive
+                  ? 'text-customAqua hover:text-customAqua'
+                  : 'text-black hover:text-black'
+              }`
+            }
+          >
+            <FaChartPie size={24} />
+          </NavLink>
+        </AuthGuardClickable>
 
         {/* 투자 */}
         <NavLink
           to="/investment"
           className={({ isActive }) =>
-            `p-2 ${
+            `p-2 flex items-center justify-center ${
               isActive
                 ? 'text-customAqua hover:text-customAqua'
                 : 'text-black hover:text-black'
@@ -55,32 +66,38 @@ const Navbar: React.FC = () => {
         </NavLink>
 
         {/* 찜 */}
-        <NavLink
-          to="/favorite"
-          className={({ isActive }) =>
-            `p-2 ${
-              isActive
-                ? 'text-customAqua hover:text-customAqua'
-                : 'text-black hover:text-black'
-            }`
-          }
+        <AuthGuardClickable
+          onAuthSuccess={() => handleAuthSuccess('/favorite')}
         >
-          <FaHeart size={24} />
-        </NavLink>
+          <NavLink
+            to="/favorite"
+            className={({ isActive }) =>
+              `p-2 flex items-center justify-center ${
+                isActive
+                  ? 'text-customAqua hover:text-customAqua'
+                  : 'text-black hover:text-black'
+              }`
+            }
+          >
+            <FaHeart size={24} />
+          </NavLink>
+        </AuthGuardClickable>
 
-        {/* 개인정보 */}
-        <NavLink
-          to="/mypage"
-          className={({ isActive }) =>
-            `p-2 ${
-              isActive
-                ? 'text-customAqua hover:text-customAqua'
-                : 'text-black hover:text-black'
-            }`
-          }
-        >
-          <FaUser size={24} />
-        </NavLink>
+        {/* 마이페이지 */}
+        <AuthGuardClickable onAuthSuccess={() => handleAuthSuccess('/mypage')}>
+          <NavLink
+            to="/mypage"
+            className={({ isActive }) =>
+              `p-2 flex items-center justify-center ${
+                isActive
+                  ? 'text-customAqua hover:text-customAqua'
+                  : 'text-black hover:text-black'
+              }`
+            }
+          >
+            <FaUser size={24} />
+          </NavLink>
+        </AuthGuardClickable>
       </div>
     </div>
   );

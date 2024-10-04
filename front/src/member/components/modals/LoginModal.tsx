@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { loginAPI } from '../../../api/member/loginAPI';
-// import { useAuthStore } from '../../../store/AuthStore';
 import { useMemberStore } from '../../../store/memberStore';
 import { X } from 'lucide-react';
 
@@ -63,92 +62,99 @@ const LoginModal: React.FC = () => {
 
   if (!isLoginModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
   return (
-    <div>
-      {/* 모달 배경 */}
-      <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 z-50"></div>
-
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20"
+      onClick={closeLoginModal} // 배경 클릭 시 모달 닫기
+    >
       {/* 모달 본체 */}
-      <div className="modal-content fixed inset-0 flex items-center justify-center z-50">
-        <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-          {/* 닫기 버튼 */}
-          <X
-            onClick={closeLoginModal}
-            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-white"
-          />
+      <div
+        className="relative bg-white rounded-lg w-full max-w-md p-6 animate-slide-up"
+        onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
+      >
+        {/* 닫기 버튼 */}
+        <X
+          onClick={closeLoginModal}
+          className="absolute top-4 right-4 w-10 h-10 text-gray-400 hover:text-gray-600 dark:hover:text-white"
+        />
 
-          {/* 모달 제목 */}
-          <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-            Login
-          </h3>
+        {/* 모달 제목 */}
+        <h3 className="text-center text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+          Login
+        </h3>
 
-          {/* 로그인 폼 */}
-          <form onSubmit={handleSubmit}>
-            {/* 이메일 입력 필드 */}
-            <div className="mb-6">
-              <label
-                htmlFor="email"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                이메일 입력
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)} // 상태 업데이트
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                placeholder="ssafy@samsung.com"
-                required
-              />
-            </div>
-
-            {/* 비밀번호 입력 필드 */}
-            <div className="mb-6">
-              <label
-                htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                비밀번호 입력
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)} // 상태 업데이트
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                required
-              />
-            </div>
-
-            {/* 로그인 버튼 */}
-            <button
-              type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        {/* 로그인 폼 */}
+        <form onSubmit={handleSubmit}>
+          {/* 이메일 입력 필드 */}
+          <div className="mb-6">
+            <label
+              htmlFor="email"
+              className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
             >
-              Login
-            </button>
-          </form>
+              이메일 입력
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} // 상태 업데이트
+              className="bg-gray-50 border border-gray-300 text-xl rounded-lg block w-full p-2.5"
+              placeholder="ssafy@samsung.com"
+              required
+            />
+          </div>
 
-          {/* 이메일 찾기 및 비밀번호 찾기, 회원가입 버튼 */}
-          <div className="flex justify-between items-center mt-4">
-            <button
-              className="text-sm text-blue-600 hover:underline"
-              onClick={handleFindEmailClick} // 이메일 찾기 모달로 이동
+          {/* 비밀번호 입력 필드 */}
+          <div className="mb-6">
+            <label
+              htmlFor="password"
+              className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
             >
-              이메일 찾기
-            </button>
+              비밀번호 입력
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} // 상태 업데이트
+              className="bg-gray-50 border border-gray-300 text-xl rounded-lg block w-full p-2.5"
+              required
+            />
+          </div>
+
+          {/* 로그인 버튼 */}
+          <button
+            type="submit"
+            className="text-2xl bg-customAqua font-bold rounded-lg w-full h-[60px] px-5 py-2.5 text-center"
+          >
+            로그인
+          </button>
+        </form>
+
+        {/* 이메일 찾기 및 비밀번호 찾기, 회원가입 버튼 */}
+        <div className="flex flex-col items-center mt-4">
+          <div className="flex items-center">
+            <p>처음 이용하시나요?</p>
             <button
-              className="text-sm text-blue-600 hover:underline"
-              onClick={handleFindPasswordClick} // 비밀번호 찾기 모달로 이동
-            >
-              비밀번호 찾기
-            </button>
-            <button
-              className="text-sm text-blue-600 hover:underline"
-              // onClick={onOpenSignUpModal} // 회원가입 모달 열기
+              className="ml-2 text-md font-semibold text-blue-600 hover:underline"
               onClick={handleSignUpClick} // 회원가입 모달로 이동
             >
               회원가입
+            </button>
+          </div>
+          <div className="flex items-center mt-2">
+            <p>기억나지 않으세요?</p>
+            <button
+              className="ml-2 text-md font-semibold text-blue-600 hover:underline"
+              onClick={handleFindEmailClick} // 이메일 찾기 모달로 이동
+            >
+              아이디
+            </button>
+            <span className="mx-1">/</span>
+            <button
+              className="text-md font-semibold text-blue-600 hover:underline"
+              onClick={handleFindPasswordClick} // 비밀번호 찾기 모달로 이동
+            >
+              비밀번호 찾기
             </button>
           </div>
         </div>

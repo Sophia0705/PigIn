@@ -1,7 +1,6 @@
 import React from 'react';
 import StockList from '../components/StockList'; // 주식 목록 컴포넌트
 import CryptoList from '../components/CryptoList'; // 가상화폐 목록 컴포넌트
-import AuthGuard from '../components/AuthGuard';
 
 const FavoritePage: React.FC = () => {
   return (
@@ -11,16 +10,14 @@ const FavoritePage: React.FC = () => {
           찜 목록
         </h1>
       </div>
-      <AuthGuard>
-        {/* 주식 목록을 5개만 렌더링*/}
-        <div className="mt-6">
-          <StockList limit={5} showTitle={true} />
-        </div>
-        {/* 가상화폐 목록을 5개만 렌더링*/}
-        <div className="mt-7">
-          <CryptoList limit={5} showTitle={true} />
-        </div>
-      </AuthGuard>
+      {/* 주식 목록을 5개만 렌더링*/}
+      <div className="mt-6">
+        <StockList limit={5} showTitle={true} />
+      </div>
+      {/* 가상화폐 목록을 5개만 렌더링*/}
+      <div className="mt-7">
+        <CryptoList limit={5} showTitle={true} />
+      </div>
     </div>
   );
 };
