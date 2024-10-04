@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
-import GoldData from '../../../data/GoldData.json';
 import GoldPurchaseModal from '../components/modals/GoldPurchaseModal';
 import GoldSellModal from '../components/modals/GoldSellModal';
 import GoldDetailGraph from '../components/GoldDetailGraph';
@@ -91,8 +90,8 @@ const GoldDetailPage: React.FC = () => {
     }
   };
 
-  const latestValue = GoldData[GoldData.length - 1].value;
-  const previousValue = GoldData[GoldData.length - 2]?.value || 0;
+  const latestValue = chartData.length > 0 ? chartData[0].value : 0;
+  const previousValue = chartData.length > 1 ? chartData[1].value : 0;
   const percentageChange = (
     ((latestValue - previousValue) / previousValue) *
     100
@@ -173,7 +172,7 @@ const GoldDetailPage: React.FC = () => {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white text-left ml-4">
-            {latestValue.toLocaleString()}원
+            {Number(goldData.close).toLocaleString()}원
           </h1>
           <span
             className={`mr-4 mt-2 text-md font-normal px-2 py-1 rounded-full ${

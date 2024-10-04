@@ -1,4 +1,5 @@
 export interface GoldItemData {
+  length: number;
   date: string;
   srtnCd: string;
   isin: string;
