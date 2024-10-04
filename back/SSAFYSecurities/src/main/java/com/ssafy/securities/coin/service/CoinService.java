@@ -1,7 +1,9 @@
 package com.ssafy.securities.coin.service;
 
 import com.ssafy.securities.coin.dto.CoinRestDTO;
+import com.ssafy.securities.coin.dto.CoinTradeResponse;
 import com.ssafy.securities.coin.entity.CoinHistory;
+import com.ssafy.securities.coin.entity.CoinMinute;
 import com.ssafy.securities.coin.repository.CoinHistoryRepository;
 import com.ssafy.securities.coin.repository.CoinMinuteRepository;
 import com.ssafy.securities.stock.entity.StockHistory;
@@ -125,5 +127,27 @@ public class CoinService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public CoinTradeResponse buyCoin(String coinCode, Double price) {
+        // 1. Coin 가격 조회
+        CoinMinute coinMinute = coinMinuteRepository.findFirstByCoinOrderByDateDescTimeDesc(coinCode)
+                .orElseThrow();
+        // 2. 판매시 가격 계산
+        double quantity = price / coinMinute.getClose();
+
+        // 반환
+        return new CoinTradeResponse(quantity, coinMinute.getClose());
+    }
+
+    public CoinTradeResponse sellCoin(String coinCode, Double amount) {
+        log.info("coinCode:{}, amount:{}", coinCode, amount);
+        // 1. Coin 가격 조회
+        CoinMinute coinMinute = coinMinuteRepository.findFirstByCoinOrderByDateDescTimeDesc(coinCode)
+                .orElseThrow();
+        // 2. 판매 시 수량 계산
+        double quantity = amount / coinMinute.getClose();
+        // 3. 반환
+        return new CoinTradeResponse(quantity, coinMinute.getClose());
     }
 }
