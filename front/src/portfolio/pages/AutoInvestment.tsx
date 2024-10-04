@@ -1,5 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FixedSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
 import { Edit, ChevronLeft, XCircle } from 'lucide-react';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 import AutoDashboard from '../components/AutoDashboard';
@@ -25,18 +27,28 @@ const AutoInvestment: React.FC = () => {
     investmentAmount.toString()
   );
   const [error, setError] = useState<string>('');
+  const [showAutoDashboard, setShowAutoDashboard] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const threshold = 100; // AutoDashboard를 숨길 스크롤 위치
+      setShowAutoDashboard(scrollPosition <= threshold);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleInvestmentAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
 
-    // 입력값이 비어있거나 숫자로만 구성되어 있는지 확인
     if (value === '' || /^\d+$/.test(value)) {
       setLocalInvestmentAmount(value);
       setError('');
     } else {
-      // 숫자가 아닌 값이 입력된 경우 에러 메시지 설정
       setError('숫자만 입력해주세요.');
     }
   };
@@ -61,22 +73,49 @@ const AutoInvestment: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  // 전체 카테고리의 총 할당된 퍼센트 계산
+  const totalAllocatedPercentage = useMemo(() => {
+    return Object.values(localAllocations).reduce(
+      (total, categoryAllocations) =>
+        total +
+        categoryAllocations.reduce(
+          (categoryTotal, allocation) => categoryTotal + allocation.percentage,
+          0
+        ),
+      0
+    );
+  }, [localAllocations]);
+
+  // 설정완료 버튼 활성화 여부
+  const isSubmitEnabled = totalAllocatedPercentage === 100;
+
+  const handleSubmit = () => {
+    if (totalAllocatedPercentage !== 100) {
+      return;
+    }
+
     try {
-      // 로컬 상태를 전역 상태로 업데이트
       const numericAmount = Number(localInvestmentAmount);
+
+      // Store 업데이트를 동기적으로 처리
       setInvestmentAmount(numericAmount);
       setAllocations(localAllocations);
 
-      // API를 통한 설정 저장
-      // await saveAutoInvestmentSettings({
+      // 로컬 상태도 업데이트
+      setLocalInvestmentAmount(numericAmount.toString());
+
+      // API를 통한 설정 저장 (필요한 경우)
+      // saveAutoInvestmentSettings({
       //   investmentAmount: numericAmount,
       //   allocations: localAllocations,
       //   isEnabled: isAutoInvestmentEnabled,
       // });
 
-      // 성공 메시지 표시
       alert('설정이 성공적으로 저장되었습니다.');
+
+      // AutoDashboard를 강제로 리렌더링하기 위해 상태 업데이트
+      setShowAutoDashboard(false);
+      setTimeout(() => setShowAutoDashboard(true), 0);
     } catch (error) {
       console.error('자동 투자 설정 저장 중 오류:', error);
       alert('설정 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -91,8 +130,72 @@ const AutoInvestment: React.FC = () => {
     }));
   }, [localAllocations, activeCategory, localInvestmentAmount]);
 
+  // 무한 스크롤 관련 함수들
+  const itemCount = memoizedAllocations.length;
+  const loadMoreItems = (_startIndex: number, _stopIndex: number) => {
+    // allocation API로 가져올거임
+    return Promise.resolve();
+  };
+
+  const isItemLoaded = (index: number) => index < memoizedAllocations.length;
+
+  const AllocationItem = useCallback(
+    ({ index, style }: { index: number; style: React.CSSProperties }) => {
+      const allocation = memoizedAllocations[index];
+      if (!allocation) {
+        return null;
+      }
+
+      const handleSliderChange = (e: React.FormEvent<HTMLInputElement>) => {
+        const value = Number(e.currentTarget.value);
+        requestAnimationFrame(() => {
+          handleAllocationChange(allocation.symbol, value);
+        });
+      };
+
+      return (
+        <div style={{ ...style, width: '100%' }}>
+          <div className="p-2 rounded-lg bg-white mb-2">
+            <div className="flex items-center justify-between">
+              <div className="flex-grow mr-2">
+                <span className="text-black text-sm font-medium mb-1 block">
+                  {allocation.symbol}
+                </span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={allocation.percentage}
+                  onInput={handleSliderChange}
+                  className="w-full accent-customAqua"
+                />
+              </div>
+              <div className="flex items-center">
+                <div className="flex flex-col items-end mr-2">
+                  <span className="text-black text-sm">
+                    {allocation.percentage}%
+                  </span>
+                  <span className="text-black text-xs">
+                    {allocation.value.toLocaleString()}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleRemoveAllocation(allocation.symbol)}
+                  className="text-red-500 p-1"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    },
+    [memoizedAllocations, handleAllocationChange, handleRemoveAllocation]
+  );
+
   return (
-    <div className="bg-customDarkGreen w-full text-white p-4">
+    <div className="bg-customDarkGreen w-full text-white p-4 pb-40">
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={() => nav(-1)}
@@ -103,7 +206,9 @@ const AutoInvestment: React.FC = () => {
         <div className="flex items-center">
           <span className="mr-2 text-lg">자동화 투자</span>
           <div
-            className={`w-12 h-6 ${isAutoInvestmentEnabled ? 'bg-customAqua' : 'bg-gray-600'} rounded-full p-1 cursor-pointer transition-colors duration-300 ease-in-out`}
+            className={`w-12 h-6 ${
+              isAutoInvestmentEnabled ? 'bg-customAqua' : 'bg-gray-600'
+            } rounded-full p-1 cursor-pointer transition-colors duration-300 ease-in-out`}
             onClick={() => setIsAutoInvestmentEnabled(!isAutoInvestmentEnabled)}
           >
             <div
@@ -163,7 +268,7 @@ const AutoInvestment: React.FC = () => {
             </div>
           )}
 
-          <AutoDashboard />
+          {showAutoDashboard && <AutoDashboard key={localInvestmentAmount} />}
 
           <div className="mt-6">
             <div className="bg-[#EAFFF7] p-1 rounded-full flex justify-between items-center mb-4">
@@ -186,58 +291,50 @@ const AutoInvestment: React.FC = () => {
               ))}
             </div>
 
-            {/* 나중에 여기 내부 스크롤되게 만들어야 함 */}
-            {memoizedAllocations.map((allocation) => (
-              <div
-                key={allocation.symbol}
-                className="p-4 rounded-lg bg-white mb-4"
-              >
-                <div className="flex items-center">
-                  <div className="w-3/4 mr-4">
-                    <span className="text-black text-lg mb-2 block">
-                      {allocation.symbol}
-                    </span>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={allocation.percentage}
-                      onChange={(e) =>
-                        handleAllocationChange(
-                          allocation.symbol,
-                          Number(e.target.value)
-                        )
-                      }
-                      className="w-full accent-customAqua"
-                    />
-                  </div>
-                  <div className="flex items-center w-1/4">
-                    <div className="flex flex-col items-end mr-2">
-                      <span className="text-black text-base">
-                        {allocation.percentage}%
-                      </span>
-                      <span className="text-black text-base">
-                        {allocation.value.toLocaleString()}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveAllocation(allocation.symbol)}
-                      className="text-red-500 justify-end p-4 self-center"
-                    >
-                      <XCircle className="w-6 h-6" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-end">
-            <button
-              onClick={handleSubmit}
-              className="mt-6 bg-customAqua text-customDarkGreen py-2 px-4 rounded justify-end w-1/3 font-bold"
+            <InfiniteLoader
+              isItemLoaded={isItemLoaded}
+              itemCount={itemCount}
+              loadMoreItems={loadMoreItems}
             >
-              설정완료
-            </button>
+              {({ onItemsRendered, ref }) => (
+                <List
+                  className="List"
+                  height={500}
+                  itemCount={itemCount}
+                  itemSize={70}
+                  onItemsRendered={onItemsRendered}
+                  ref={ref}
+                  width="100%"
+                >
+                  {AllocationItem}
+                </List>
+              )}
+            </InfiniteLoader>
+
+            {/* Footer (총 할당 비율 및 설정완료 버튼) */}
+            <div className="fixed bottom-20 left-0 right-0 bg-customDarkGreen p-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <span className="text-lg font-bold">총 비율:</span>
+                  <span
+                    className={`text-2xl font-bold ${totalAllocatedPercentage === 100 ? 'text-green-500' : 'text-red-500'}`}
+                  >
+                    {totalAllocatedPercentage}%
+                  </span>
+                </div>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!isSubmitEnabled}
+                  className={`py-2 px-6 rounded-md text-lg font-bold ${
+                    isSubmitEnabled
+                      ? 'bg-customAqua text-customDarkGreen'
+                      : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                  }`}
+                >
+                  설정완료
+                </button>
+              </div>
+            </div>
           </div>
         </>
       )}
