@@ -360,8 +360,11 @@ public class GoldServiceImpl implements GoldService {
         Double sellCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
             TradeMethod.SELL);
         log.info("나의 판매 개수 : {}", sellCnt);
+        Double mineCnt = buyCnt;
 
-        Double mineCnt = buyCnt - sellCnt;
+        if (sellCnt != null) {
+            mineCnt = buyCnt - sellCnt;
+        }
         log.info("내 개수 : {}", mineCnt);
         //판매 개수가 내 개수보다 많으면
         if (cnt > mineCnt) {
