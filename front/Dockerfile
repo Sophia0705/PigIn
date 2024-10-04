@@ -4,6 +4,9 @@ FROM node:20.16.0
 # 작업 디렉토리 설정
 WORKDIR /app
 
+# 시간대 설정
+ENV TZ=Asia/Seoul
+
 # package.json과 package-lock.json 복사
 COPY package.json package-lock.json* ./
 
