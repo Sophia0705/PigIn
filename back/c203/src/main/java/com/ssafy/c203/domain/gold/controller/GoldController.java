@@ -79,4 +79,13 @@ public class GoldController {
         goldService.setAutoFundingRate(userId, rate);
         return ResponseEntity.ok("자동투자 비율 설정 완료");
     }
+
+    @GetMapping("/favorite")
+    public ResponseEntity<?> getFavoriteGold(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        goldService.favoriteGold(userId);
+        return ResponseEntity.ok("금 찜하기 성공");
+    }
+    
 }

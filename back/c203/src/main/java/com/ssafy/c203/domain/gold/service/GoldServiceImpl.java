@@ -7,6 +7,7 @@ import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import com.ssafy.c203.domain.gold.entity.GoldAutoFunding;
+import com.ssafy.c203.domain.gold.entity.GoldFavorite;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
 import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
@@ -14,6 +15,7 @@ import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
 import com.ssafy.c203.domain.gold.repository.GoldAutoFundingRepository;
+import com.ssafy.c203.domain.gold.repository.GoldFavoriteRepository;
 import com.ssafy.c203.domain.gold.repository.GoldTradeRepository;
 import com.ssafy.c203.domain.gold.repository.GoldWaitingQueueRepository;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -47,6 +49,7 @@ public class GoldServiceImpl implements GoldService {
     private final RestTemplate restTemplate;
     private final AccountService accountService;
     private final GoldAutoFundingRepository autoFundingRepository;
+    private final GoldFavoriteRepository goldFavoriteRepository;
 
     private final LocalTime GOLD_END_TIME = LocalTime.of(15, 30);
     private final LocalTime GOLD_START_TIME = LocalTime.of(9, 30);
@@ -217,6 +220,17 @@ public class GoldServiceImpl implements GoldService {
         GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMemberId(userId)
             .orElseThrow(AutoFundingNotFoundException::new);
         goldAutoFunding.updateRate(rate);
+    }
+
+    @Override
+    public void favoriteGold(Long userId) {
+        Members member = membersRepository.findById(userId)
+            .orElseThrow(MemberNotFoundException::new);
+
+        goldFavoriteRepository.save(GoldFavorite
+            .builder()
+            .member(member)
+            .build());
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
