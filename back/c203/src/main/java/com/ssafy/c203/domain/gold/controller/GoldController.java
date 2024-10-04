@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -66,6 +67,16 @@ public class GoldController {
     @GetMapping("/auto-funding-cancel")
     public ResponseEntity<?> cancelAutoFunding(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        return null;
+        goldService.cancelAutoFunding(userId);
+        return ResponseEntity.ok("자동투자 삭제 완료");
+    }
+
+    @GetMapping("/auto-funding-setrate")
+    public ResponseEntity<?> setAutoFundingRate(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam("rate") int rate) {
+        Long userId = customUserDetails.getUserId();
+        goldService.setAutoFundingRate(userId, rate);
+        return ResponseEntity.ok("자동투자 비율 설정 완료");
     }
 }

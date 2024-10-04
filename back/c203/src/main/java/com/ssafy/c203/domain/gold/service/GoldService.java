@@ -23,4 +23,6 @@ public interface GoldService {
     void addAutoFunding(Long userId);
 
     void cancelAutoFunding(Long userId);
+
+    void setAutoFundingRate(Long userId, int rate);
 }

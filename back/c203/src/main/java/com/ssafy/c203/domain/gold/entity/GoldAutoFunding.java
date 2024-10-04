@@ -11,9 +11,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoldAutoFunding {
 
@@ -32,5 +34,9 @@ public class GoldAutoFunding {
     @Builder
     public GoldAutoFunding(Members member) {
         this.member = member;
+    }
+
+    public void updateRate(int rate) {
+        this.rate = rate;
     }
 }

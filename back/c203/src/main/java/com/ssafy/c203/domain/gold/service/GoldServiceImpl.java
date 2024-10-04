@@ -211,6 +211,14 @@ public class GoldServiceImpl implements GoldService {
         autoFundingRepository.delete(goldAutoFunding);
     }
 
+    @Override
+    @Transactional
+    public void setAutoFundingRate(Long userId, int rate) {
+        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMemberId(userId)
+            .orElseThrow(AutoFundingNotFoundException::new);
+        goldAutoFunding.updateRate(rate);
+    }
+
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
         int goldPrice = getGoldPrice();
         int tradePrice = goldTradeDto.getTradePrice();
