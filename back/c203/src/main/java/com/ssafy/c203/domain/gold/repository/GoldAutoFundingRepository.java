@@ -5,5 +5,5 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GoldAutoFundingRepository extends JpaRepository<GoldAutoFunding, Long> {
-    Optional<GoldAutoFunding> findByMemberId(Long memberId);
+    Optional<GoldAutoFunding> findByMember_Id(Long memberId);
 }

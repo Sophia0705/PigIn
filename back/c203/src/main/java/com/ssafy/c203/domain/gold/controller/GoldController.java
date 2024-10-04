@@ -58,14 +58,16 @@ public class GoldController {
     }
 
     @GetMapping("/auto-funding-add")
-    public ResponseEntity<?> addAutoFundingGold(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> addAutoFundingGold(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         goldService.addAutoFunding(userId);
         return ResponseEntity.ok("자동투자 등록 성공");
     }
 
     @GetMapping("/auto-funding-cancel")
-    public ResponseEntity<?> cancelAutoFunding(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> cancelAutoFunding(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         goldService.cancelAutoFunding(userId);
         return ResponseEntity.ok("자동투자 삭제 완료");
@@ -79,4 +81,20 @@ public class GoldController {
         goldService.setAutoFundingRate(userId, rate);
         return ResponseEntity.ok("자동투자 비율 설정 완료");
     }
+
+    @GetMapping("/favorite")
+    public ResponseEntity<?> getFavoriteGold(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        goldService.favoriteGold(userId);
+        return ResponseEntity.ok("금 찜하기 성공");
+    }
+
+    @GetMapping("/favorite-cancel")
+    public ResponseEntity<?> cancelFavoriteGold(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        goldService.cancelFavoriteGold(userId);
+        return ResponseEntity.ok("금 찜 해제 성공");
+    }
+
 }

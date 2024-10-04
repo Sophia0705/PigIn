@@ -25,4 +25,8 @@ public interface GoldService {
     void cancelAutoFunding(Long userId);
 
     void setAutoFundingRate(Long userId, int rate);
+
+    void favoriteGold(Long userId);
+
+    void cancelFavoriteGold(Long userId);
 }
