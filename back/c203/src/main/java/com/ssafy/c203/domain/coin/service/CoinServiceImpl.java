@@ -57,7 +57,7 @@ public class CoinServiceImpl implements CoinService {
     //쿼리문으로 넣기 귀찮아서 그냥 여기 작정했어요..ㅋ
     @PostConstruct
     private void init() {
-//        initializeCoinItems();
+        initializeCoinItems();
     }
 
     @Override
@@ -189,10 +189,15 @@ public class CoinServiceImpl implements CoinService {
         try {
             // 3. 거래
             SecuritiesCoinTrade securitiesCoinTrade = SecuritiesCoinSell(coinCode, amount);
+            log.info("거래 끝");
             // 4. 저장
             saveTradeRecode(member, coinItem, amount, securitiesCoinTrade.getResult(), TradeMethod.SELL);
+            log.info("저장 끝");
             // 5. 입금
             long salePrice = Math.round(securitiesCoinTrade.getResult());
+            log.info("거래내역:{}", securitiesCoinTrade);
+
+            log.info("입금 끝");
             if (!deposit(userId, salePrice)) {
                 throw new RuntimeException("입금 실패");
             }
@@ -233,13 +238,15 @@ public class CoinServiceImpl implements CoinService {
     private SecuritiesCoinTrade SecuritiesCoinSell(String coinCode, Double count) {
         String url = SECURITIES_URL + "/coin/trade/sell";
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("CoinCode", coinCode);
+        requestBody.put("coinCode", coinCode);
         requestBody.put("quantity", count);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        log.info(entity.toString());
 
         ResponseEntity<SecuritiesCoinTrade> response = restTemplate.exchange(
                 url,
