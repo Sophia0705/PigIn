@@ -1,4 +1,4 @@
-package com.ssafy.securities.stock.dto.apiResponse.apiResponse;
+package com.ssafy.securities.stock.dto.apiResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 

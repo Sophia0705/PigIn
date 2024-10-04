@@ -1,9 +1,11 @@
 package com.ssafy.securities.stock.service;
 
 import com.ssafy.securities.stock.dto.AccessTokenDTO;
-import com.ssafy.securities.stock.dto.apiResponse.apiResponse.StockResponse;
+import com.ssafy.securities.stock.dto.apiResponse.StockResponse;
+import com.ssafy.securities.stock.dto.apiResponse.StockTradeResponse;
 import com.ssafy.securities.stock.entity.StockDetail;
 import com.ssafy.securities.stock.entity.StockHistory;
+import com.ssafy.securities.stock.entity.StockMinute;
 import com.ssafy.securities.stock.repository.StockDetailRepository;
 import com.ssafy.securities.stock.repository.StockHistoryRepository;
 import com.ssafy.securities.stock.repository.StockMinuteRepository;
@@ -178,4 +180,32 @@ public class StockServiceImpl implements StockService{
             e.printStackTrace();
         }
     }
+
+    // 1. 주식 구매 로직
+    @Override
+    public StockTradeResponse buyStock(double price, String stockCode) {
+        // 1. Stock 가격 조회
+        StockMinute stockMinute = stockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
+                .orElseThrow();
+        // 2. 구매 시 수량 계산
+        double quantity = Double.parseDouble(stockMinute.getClose()) / price;
+
+        // 반환
+        return new StockTradeResponse(quantity, Double.parseDouble(stockMinute.getClose()));
+    }
+
+    // 2. 주식 판매 로직
+    @Override
+    public StockTradeResponse sellStock(double amount, String stockCode) {
+        // 1. Stock 가격 조회
+        StockMinute stockMinute = stockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
+                .orElseThrow();
+
+        // 2. 판매시 가격 계산
+        double quantity = Double.parseDouble(stockMinute.getClose()) * amount;
+
+        // 반환
+        return new StockTradeResponse(quantity, Double.parseDouble(stockMinute.getClose()));
+    }
+
 }
