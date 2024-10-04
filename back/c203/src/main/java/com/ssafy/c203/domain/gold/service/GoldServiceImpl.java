@@ -6,11 +6,14 @@ import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
+import com.ssafy.c203.domain.gold.entity.GoldAutoFunding;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
+import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
+import com.ssafy.c203.domain.gold.repository.GoldAutoFundingRepository;
 import com.ssafy.c203.domain.gold.repository.GoldTradeRepository;
 import com.ssafy.c203.domain.gold.repository.GoldWaitingQueueRepository;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -43,6 +46,7 @@ public class GoldServiceImpl implements GoldService {
     private final MembersRepository membersRepository;
     private final RestTemplate restTemplate;
     private final AccountService accountService;
+    private final GoldAutoFundingRepository autoFundingRepository;
 
     private final LocalTime GOLD_END_TIME = LocalTime.of(15, 30);
     private final LocalTime GOLD_START_TIME = LocalTime.of(9, 30);
@@ -186,6 +190,33 @@ public class GoldServiceImpl implements GoldService {
         );
 
         return response.getBody();
+    }
+
+    @Override
+    public void addAutoFunding(Long userId) {
+        Members member = membersRepository.findById(userId)
+            .orElseThrow(MemberNotFoundException::new);
+
+        autoFundingRepository.save(GoldAutoFunding
+            .builder()
+            .member(member)
+            .build());
+    }
+
+    @Override
+    public void cancelAutoFunding(Long userId) {
+        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMemberId(userId)
+            .orElseThrow(AutoFundingNotFoundException::new);
+
+        autoFundingRepository.delete(goldAutoFunding);
+    }
+
+    @Override
+    @Transactional
+    public void setAutoFundingRate(Long userId, int rate) {
+        GoldAutoFunding goldAutoFunding = autoFundingRepository.findByMemberId(userId)
+            .orElseThrow(AutoFundingNotFoundException::new);
+        goldAutoFunding.updateRate(rate);
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {

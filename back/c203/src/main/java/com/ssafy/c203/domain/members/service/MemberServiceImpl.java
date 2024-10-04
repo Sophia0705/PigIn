@@ -285,7 +285,6 @@ public class MemberServiceImpl implements MemberService {
 
         HttpStatusCode statusCode = response.getStatusCode();
         if (statusCode.equals(HttpStatus.OK)) {
-            //Todo : 메세지로 1원 인증번호 보내기
             return true;
         }
         return false;

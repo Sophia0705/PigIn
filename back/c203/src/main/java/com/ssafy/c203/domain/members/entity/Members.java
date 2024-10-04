@@ -94,10 +94,6 @@ public class Members {
         this.status = WithDrawalStatus.INACTIVE;
     }
 
-    public void updateSavingRate(int savingRate) {
-        this.savingRate = savingRate;
-    }
-
     public void updateSavingRateAndPhoneNumber(int savingRate, String phoneNumber) {
         this.savingRate = savingRate;
         this.phoneNumber = phoneNumber;
