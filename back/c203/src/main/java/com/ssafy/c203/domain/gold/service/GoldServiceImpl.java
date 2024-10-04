@@ -11,6 +11,7 @@ import com.ssafy.c203.domain.gold.entity.GoldFavorite;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
 import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
+import com.ssafy.c203.domain.gold.exception.GoldFavoriteNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
@@ -231,6 +232,14 @@ public class GoldServiceImpl implements GoldService {
             .builder()
             .member(member)
             .build());
+    }
+
+    @Override
+    public void cancelFavoriteGold(Long userId) {
+        GoldFavorite goldFavorite = goldFavoriteRepository.findByMemberId(userId)
+            .orElseThrow(GoldFavoriteNotFoundException::new);
+
+        goldFavoriteRepository.delete(goldFavorite);
     }
 
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {

@@ -1,6 +1,7 @@
 package com.ssafy.c203.common.exception;
 
 import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
+import com.ssafy.c203.domain.gold.exception.GoldFavoriteNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
@@ -21,7 +22,8 @@ import java.io.IOException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationConflictException.class)
-    public ResponseEntity<String> handleAuthenticationConflictException(AuthenticationConflictException e) {
+    public ResponseEntity<String> handleAuthenticationConflictException(
+        AuthenticationConflictException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 
@@ -41,7 +43,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationNotFoundException.class)
-    public ResponseEntity<String> handleAuthenticationNotFoundException(AuthenticationNotFoundException e) {
+    public ResponseEntity<String> handleAuthenticationNotFoundException(
+        AuthenticationNotFoundException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 
@@ -77,7 +80,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AutoFundingNotFoundException.class)
-    public ResponseEntity<String> handleAutoFundingNotFoundException(AutoFundingNotFoundException e) {
+    public ResponseEntity<String> handleAutoFundingNotFoundException(
+        AutoFundingNotFoundException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(GoldFavoriteNotFoundException.class)
+    public ResponseEntity<String> handleGoldFavoriteNotFoundException(GoldFavoriteNotFoundException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }
