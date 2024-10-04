@@ -257,6 +257,7 @@ const StockDetailPage: React.FC = () => {
           inputValue={buyInputValue}
           setInputValue={setBuyInputValue}
           onClose={handleBuyModalClose}
+          stockId={stockData.stck_shrn_iscd}
           stockName={stockData.hts_kor_isnm}
           stockPrice={stockData.stck_prpr}
         />

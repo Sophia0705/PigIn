@@ -1,5 +1,9 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { CgClose } from 'react-icons/cg';
+import {
+  tradeGold,
+  getMyGold,
+} from '../../../../api/investment/gold/GoldTrade';
 
 interface GoldSellModalProps {
   inputValue: string;
@@ -14,6 +18,8 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
   onClose,
   goldPrice,
 }) => {
+  const [myGold, setMyGold] = useState<number>(0);
+
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
       if (prev.length > 4) {
@@ -59,8 +65,31 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
     };
   }, [handleBackspace]);
 
+  useEffect(() => {
+    const fetchMyGold = async () => {
+      try {
+        const response = await getMyGold();
+        setMyGold(response);
+      } catch (error) {
+        console.error('금 잔액 가져오기 실패:', error);
+      }
+    };
+
+    fetchMyGold();
+  }, []);
+
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / goldPrice) * 100).toFixed(2);
+
+  const handleSellClick = async () => {
+    try {
+      const response = await tradeGold(inputAmount, 'SELL');
+      console.log('금 매도 성공핑:', response);
+      onClose();
+    } catch (error) {
+      console.error('금 매도 실패핑:', error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
@@ -75,7 +104,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          금 현재 보유 : {goldPrice.toLocaleString()} 원
+          금 현재 보유 : {Math.round(Number(myGold)).toLocaleString()}원
         </div>
 
         {/* 가격 표시 칸 */}
@@ -95,7 +124,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
           )}
         </div>
 
-        {/* 100, 1000, 3000, 5000원 추가 버튼 */}
+        {/* 500, 1000, 3000, 5000원 추가 버튼 */}
         <div className="flex justify-center space-x-4 mb-6">
           {[
             { label: '+500원', value: 500 },
@@ -167,6 +196,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
                 : 'bg-red-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleSellClick}
           >
             매도하기
           </button>

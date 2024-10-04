@@ -1,25 +1,43 @@
-import React from "react";
+import React from 'react';
+import { GoldItemData } from '../../interfaces/GoldInterface';
 
 interface GoldDetailInfoProps {
-  latestValue: number;
+  goldData: GoldItemData;
 }
 
-const GoldDetailInfo: React.FC<GoldDetailInfoProps> = ({ latestValue }) => {
+const GoldDetailInfo: React.FC<GoldDetailInfoProps> = ({ goldData }) => {
   return (
     <div className="w-10/12 max-w-md mx-auto p-4 bg-white rounded-2xl shadow-md h-80 overflow-y-auto">
       <div>
         {[
-          { label: "현재가", value: latestValue.toLocaleString() + "원" },
           {
-            label: "최고가",
-            value: (latestValue * 1.1).toLocaleString() + "원",
+            label: '현재가',
+            value: Number(goldData.close).toLocaleString() + '원',
           },
           {
-            label: "최저가",
-            value: (latestValue * 0.9).toLocaleString() + "원",
+            label: '최고가',
+            value: Number(goldData.high).toLocaleString() + '원',
           },
-          { label: "거래량", value: "1,234kg" },
-          { label: "시가총액", value: "5조원" },
+          {
+            label: '최저가',
+            value: Number(goldData.low).toLocaleString() + '원',
+          },
+          {
+            label: '시가',
+            value: Number(goldData.open).toLocaleString() + '원',
+          },
+          {
+            label: '종가',
+            value: Number(goldData.close).toLocaleString() + '원',
+          },
+          {
+            label: '거래량',
+            value: Number(goldData.tradeAmount).toLocaleString() + 'kg',
+          },
+          {
+            label: '전일 대비 증감액',
+            value: Number(goldData.vsYesterday).toLocaleString() + '원',
+          },
         ].map((item, index) => (
           <div
             key={index}
