@@ -26,10 +26,10 @@ export const sellStock = async (
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('axios 문제로 주식 매수 실패핑:', error.response?.data);
+      console.error('axios 문제로 주식 매도 실패핑:', error.response?.data);
     } else {
-      console.error('니 문제로 주식 매수 실패핑:', error);
+      console.error('니 문제로 주식 매도 실패핑:', error);
     }
-    throw new Error('주식 구매 실패핑');
+    throw new Error('주식 매도 실패핑');
   }
 };

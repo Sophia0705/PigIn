@@ -69,7 +69,8 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
 
   const handleSellClick = async () => {
     try {
-      const response = await sellStock(stockId, inputAmount);
+      console.log(stockId, percentage);
+      const response = await sellStock(stockId, Number(percentage) * 0.01);
       console.log('매도 성공핑:', response);
       onClose();
     } catch (error) {
