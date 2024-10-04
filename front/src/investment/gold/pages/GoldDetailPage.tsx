@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
+import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
 import GoldPurchaseModal from '../components/modals/GoldPurchaseModal';
 import GoldSellModal from '../components/modals/GoldSellModal';
@@ -111,10 +112,6 @@ const GoldDetailPage: React.FC = () => {
     ((latestValue - previousValue) / previousValue) *
     100
   ).toFixed(2);
-  const formattedPercentageChange =
-    Number(percentageChange) >= 0
-      ? `+${percentageChange}%`
-      : `${percentageChange}%`;
 
   const handleBackClick = () => {
     navigate(-1);
@@ -173,6 +170,8 @@ const GoldDetailPage: React.FC = () => {
   const padding = (maxPrice - minPrice) * 0.1;
   const adjustedMin = minPrice - padding;
   const adjustedMax = maxPrice + padding;
+  const isNegativeChange = Number(percentageChange) < 0;
+  const isZeroChange = Number(percentageChange) === 0;
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-customDarkGreen">
@@ -202,13 +201,22 @@ const GoldDetailPage: React.FC = () => {
             {Number(goldData.close).toLocaleString()}원
           </h1>
           <span
-            className={`mr-4 mt-2 text-md font-normal px-2 py-1 rounded-full ${
-              Number(percentageChange) >= 0
-                ? 'bg-green-900 text-white'
-                : 'bg-green-100 text-black'
+            className={`mr-2 mt-2 text-md font-normal px-2 py-1 rounded-full flex items-center ${
+              isNegativeChange
+                ? 'bg-green-100 text-customDarkGreen'
+                : isZeroChange
+                  ? 'bg-gray-300 text-gray-700'
+                  : 'bg-green-900 text-white'
             }`}
           >
-            {formattedPercentageChange}
+            {isZeroChange ? (
+              <span></span>
+            ) : isNegativeChange ? (
+              <MdArrowDropDown />
+            ) : (
+              <MdArrowDropUp />
+            )}
+            {percentageChange}%
           </span>
         </div>
       </div>

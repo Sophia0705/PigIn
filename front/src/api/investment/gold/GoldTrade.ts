@@ -18,3 +18,13 @@ export const tradeGold = async (tradePrice: number, method: 'BUY' | 'SELL') => {
     throw error;
   }
 };
+
+export const getMyGold = async (): Promise<number> => {
+  try {
+    const response = await axiosInstance.get('/api/gold/mine');
+    return response.data;
+  } catch (error) {
+    console.error('내 금 잔액 오류핑:', error);
+    throw error;
+  }
+};

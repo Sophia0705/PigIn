@@ -1,6 +1,9 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { CgClose } from 'react-icons/cg';
-import { tradeGold } from '../../../../api/investment/gold/GoldTrade';
+import {
+  tradeGold,
+  getMyGold,
+} from '../../../../api/investment/gold/GoldTrade';
 
 interface GoldSellModalProps {
   inputValue: string;
@@ -15,6 +18,8 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
   onClose,
   goldPrice,
 }) => {
+  const [myGold, setMyGold] = useState<number>(0);
+
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
       if (prev.length > 4) {
@@ -60,6 +65,19 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
     };
   }, [handleBackspace]);
 
+  useEffect(() => {
+    const fetchMyGold = async () => {
+      try {
+        const response = await getMyGold();
+        setMyGold(response);
+      } catch (error) {
+        console.error('금 잔액 가져오기 실패:', error);
+      }
+    };
+
+    fetchMyGold();
+  }, []);
+
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / goldPrice) * 100).toFixed(2);
 
@@ -86,7 +104,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          금 현재 보유 : {goldPrice.toLocaleString()} 원
+          금 현재 보유 : {Math.round(Number(myGold)).toLocaleString()}원
         </div>
 
         {/* 가격 표시 칸 */}
