@@ -55,4 +55,11 @@ public class GoldController {
     public ResponseEntity<?> getDetailGold() {
         return ResponseEntity.ok(goldService.goldDetail());
     }
+
+    @GetMapping("/auto-funding-add")
+    public ResponseEntity<?> addAutoFundingGold(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        goldService.addAutoFunding(userId);
+        return ResponseEntity.ok("자동투자 등록 성공");
+    }
 }

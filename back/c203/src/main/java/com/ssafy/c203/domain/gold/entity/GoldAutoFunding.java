@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -21,10 +22,15 @@ public class GoldAutoFunding {
     private Long id;
 
     @Column(nullable = false)
-    private int rate;
+    private int rate = 0;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
     private Members member;
 
+
+    @Builder
+    public GoldAutoFunding(Members member) {
+        this.member = member;
+    }
 }
