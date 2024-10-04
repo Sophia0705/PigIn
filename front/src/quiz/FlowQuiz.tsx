@@ -104,7 +104,9 @@ const FlowQuizPage = () => {
           style={{ minHeight: '300px' }}
         >
           <h2 className="text-3xl font-bold mb-4">{quizData.stockName}</h2>
-          <p className="text-xl mb-4">현재 가격: {quizData.currentPrice}원</p>
+          <p className="text-xl mb-4">
+            현재 가격: {quizData.currentPrice.toLocaleString()}원
+          </p>
           <p className="text-2xl text-gray-800 font-semibold text-center">
             내일 이 주식의 가격이 오를까요, 내릴까요?
           </p>
