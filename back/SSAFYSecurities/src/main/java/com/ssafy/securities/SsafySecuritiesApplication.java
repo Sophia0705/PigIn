@@ -10,6 +10,5 @@ public class SsafySecuritiesApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SsafySecuritiesApplication.class, args);
-
     }
 }
