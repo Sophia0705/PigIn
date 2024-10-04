@@ -2,6 +2,7 @@ package com.ssafy.c203.common.exception;
 
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
+import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
@@ -66,6 +67,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(QuizAlreadySolvedException.class)
     public ResponseEntity<String> handleQuizAlreadySolvedException(QuizAlreadySolvedException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(TradeErrorExeption.class)
+    public ResponseEntity<String> handleTradeErrorExeption(TradeErrorExeption e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }
