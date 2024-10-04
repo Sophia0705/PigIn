@@ -1,11 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
+import { purchaseStock } from '../../../../api/investment/stock/StockPurchase';
 
 interface StockPurchaseModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
   stockName: string;
+  stockId: string;
   stockPrice: number;
 }
 
@@ -14,6 +16,7 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
   setInputValue,
   onClose,
   stockName,
+  stockId,
   stockPrice,
 }) => {
   const handleKeypadClick = (number: string) => {
@@ -63,6 +66,20 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
 
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / stockPrice) * 100).toFixed(2);
+
+  const handleBuyClick = async () => {
+    try {
+      const response = await purchaseStock(
+        stockId,
+        parseFloat(inputValue),
+        stockPrice
+      );
+      console.log('구매 성공:', response);
+      onClose();
+    } catch (error) {
+      console.error('구매 실패:', error);
+    }
+  };
 
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
@@ -172,6 +189,7 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
                 : 'bg-green-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleBuyClick}
           >
             매수하기
           </button>
