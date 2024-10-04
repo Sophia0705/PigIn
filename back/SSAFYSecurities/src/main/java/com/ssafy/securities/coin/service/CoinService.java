@@ -146,7 +146,7 @@ public class CoinService {
         CoinMinute coinMinute = coinMinuteRepository.findFirstByCoinOrderByDateDescTimeDesc(coinCode)
                 .orElseThrow();
         // 2. 판매 시 수량 계산
-        double quantity = amount / coinMinute.getClose();
+        double quantity = amount * coinMinute.getClose();
         // 3. 반환
         return new CoinTradeResponse(quantity, coinMinute.getClose());
     }
