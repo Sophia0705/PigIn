@@ -1,4 +1,4 @@
-package com.ssafy.c203.domain.stock.dto;
+package com.ssafy.c203.domain.stock.dto.request;
 
 import lombok.Data;
 

@@ -73,6 +73,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockDetail> findAllStock() {
         try {
             // 연결 테스트
@@ -85,16 +86,19 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockDetail> searchStock(String keyword) {
         return mongoStockDetailRepository.findByHtsKorIsnmLike(keyword);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MongoStockDetail findStock(String stockCode) {
         return mongoStockDetailRepository.findByStckShrnIscd(stockCode).orElseThrow();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count) {
         Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
         try {
@@ -108,6 +112,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockMinute> findStockMinuteChart(String stockCode, Integer count) {
         Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
         List<MongoStockMinute> tmp = mongoStockMinuteRepository.findByStockCodeOrderByDateDescTimeDesc(stockCode, pageable);
@@ -115,6 +120,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockMinute> findStockMinute() {
         return mongoStockMinuteRepository.findLatestStockMinuteForEachStock();
     }
@@ -164,7 +170,6 @@ public class StockServiceImpl implements StockService {
         }
     }
 
-
     @Override
     public boolean sellStock(Long userId, String stockId, Double count) {
         // 입력 검증
@@ -197,6 +202,32 @@ public class StockServiceImpl implements StockService {
             subStockPortfolio(stockPortfolio, -count);
             throw new RuntimeException("주식 매도 처리 중 오류가 발생했습니다.", e);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public StockPortfolio findStockPortfolioByCode(Long userId, String stockCode) {
+        return stockPortfolioRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<StockPortfolio> findStockPortfolio(Long userId) {
+        return stockPortfolioRepository.findAll();
+    }
+
+    @Override
+    public Double calculateProfit(Double priceAvg, String stockCode) {
+        MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
+                .orElseThrow();
+        Double currentPrice = Double.parseDouble(stockMinute.getClose());
+
+        // 수익률 계산: (현재가격 - 평균매입가격) / 평균매입가격 * 100
+        double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
+
+        // 소수점 둘째 자리까지 반올림
+        return Math.round(profitRate * 100.0) / 100.0;
     }
 
     // 해당 주식 판매 여부 검증

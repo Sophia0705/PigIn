@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MongoStockMinuteRepository extends MongoRepository<MongoStockMinute, String> {
     @Aggregation(pipeline = {
@@ -16,4 +17,6 @@ public interface MongoStockMinuteRepository extends MongoRepository<MongoStockMi
     List<MongoStockMinute> findLatestStockMinuteForEachStock();
 
     List<MongoStockMinute> findByStockCodeOrderByDateDescTimeDesc(String stockCode, Pageable pageable);
+
+    Optional<MongoStockMinute> findTopByStockCodeOrderByDateDescTimeDesc(String stockCode);
 }
