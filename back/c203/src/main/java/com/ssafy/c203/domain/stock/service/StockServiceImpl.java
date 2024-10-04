@@ -61,7 +61,6 @@ public class StockServiceImpl implements StockService {
     @Value("${ssafy.securities.url}")
     private String SECURITIES_URL;
 
-
     @PostConstruct
     public void init() {
         intervals = new HashMap<>();
@@ -70,7 +69,7 @@ public class StockServiceImpl implements StockService {
         intervals.put("month", "M");
 
         // 주식 코드 저장
-//        saveStockItems();
+        saveStockItems();
     }
 
     @Override

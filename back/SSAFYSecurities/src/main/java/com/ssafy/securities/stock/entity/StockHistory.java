@@ -1,15 +1,12 @@
 package com.ssafy.securities.stock.entity;
 
-import com.ssafy.securities.stock.dto.StockDetailsDTO;
-import com.ssafy.securities.stock.dto.apiResponse.apiResponse.StockDataDTO;
+import com.ssafy.securities.stock.dto.apiResponse.StockDataDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDate;
 
 @Document(collection = "stockHistory")
 @Getter
