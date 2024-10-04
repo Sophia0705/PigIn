@@ -15,6 +15,11 @@ import {
   getYearlyGoldChartData,
 } from '../../../api/investment/gold/GoldChartData';
 import {
+  addGoldToFavorite,
+  removeGoldFromFavorite,
+  checkIfFavorite,
+} from '../../../api/investment/gold/GoldFavorite';
+import {
   GoldItemData,
   GoldChartDataResponse,
 } from '../../interfaces/GoldInterface';
@@ -28,7 +33,7 @@ const GoldDetailPage: React.FC = () => {
   );
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
   const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
-  const [isLiked, setIsLiked] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
   const [buyInputValue, setBuyInputValue] = useState<string>('00');
@@ -46,7 +51,17 @@ const GoldDetailPage: React.FC = () => {
       }
     };
 
+    const checkFavoriteStatus = async () => {
+      try {
+        const isFav = await checkIfFavorite();
+        setIsFavorite(isFav);
+      } catch (error) {
+        console.error('즐겨찾기 상태 확인 오류핑:', error);
+      }
+    };
+
     fetchGoldData();
+    checkFavoriteStatus();
   }, []);
 
   useEffect(() => {
@@ -118,8 +133,20 @@ const GoldDetailPage: React.FC = () => {
     setSelectedInfoType(option);
   };
 
-  const handleHeartClick = () => {
-    setIsLiked((prevLiked) => !prevLiked);
+  const handleHeartClick = async () => {
+    try {
+      if (isFavorite) {
+        await removeGoldFromFavorite();
+        setIsFavorite(false);
+        alert('즐겨찾기에서 제거됨');
+      } else {
+        await addGoldToFavorite();
+        setIsFavorite(true);
+        alert('즐겨찾기에 추가됨');
+      }
+    } catch (error) {
+      console.error('즐겨찾기 추가/삭제 오류:', error);
+    }
   };
 
   const handleBuyClick = () => {
@@ -157,7 +184,7 @@ const GoldDetailPage: React.FC = () => {
         <div className="flex items-center space-x-4 text-white">
           <AuthGuardClickable onAuthSuccess={handleHeartClick}>
             <div onClick={handleHeartClick}>
-              {isLiked ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
+              {isFavorite ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
             </div>
           </AuthGuardClickable>
           <AuthGuardClickable onAuthSuccess={handleAddToPortfolio}>
