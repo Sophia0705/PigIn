@@ -78,21 +78,21 @@ public class StockController {
         return stockEmitterService.addEmitter();
     }
 
-    @PostMapping("/sell")
+    @PostMapping("/{stockId}/sell")
     public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("request = {}", request);
         if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount())) {
-            return ResponseEntity.ok().body("판매 성공");
+            return ResponseEntity.ok().body("success");
         }
-        return ResponseEntity.ok().body("판매 대기");
+        return ResponseEntity.ok().body("wait");
     }
 
-    @PostMapping("/buy")
+    @PostMapping("/{stockId}/buy")
     public ResponseEntity<?> buyStock(@RequestBody StockBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("request = {}", request);
         if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice())) {
-            return ResponseEntity.ok().body("구매 성공");
+            return ResponseEntity.ok().body("success");
         }
-        return ResponseEntity.ok().body("구매 대기");
+        return ResponseEntity.ok().body("wait");
     }
 }

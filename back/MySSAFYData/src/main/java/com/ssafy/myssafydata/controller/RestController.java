@@ -41,7 +41,6 @@ public class RestController {
 
         if (result!= null) {
             AccountCreateDTO dto = accountService.makeAccount(result.getUserKey());
-            accountService.deposit(user.getUserKey(), dto.getAccountNo(), "1000000", "기본 입금");
             response.setAccountNo(dto.getAccountNo());
             response.setUserKey(result.getUserKey());
             return ResponseEntity.ok().body(response);
@@ -54,9 +53,14 @@ public class RestController {
     public ResponseEntity<?> addAccount(@RequestBody AccountMakeRequest request) {
         log.info("add account {}", request.getEmail());
         AccountCreateDTO account = accountService.makeAccount(request.getUserKey());
+
         if (account != null) {
+            accountService.deposit(request.getUserKey(), account.getAccountNo(), "1000000", "기본 입금");
             return ResponseEntity.ok().body(account.getAccountNo());
         }
+
+
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to add account");
     }
 
