@@ -7,6 +7,7 @@ import lombok.Data;
 public class FindCoinResponse {
 
     private String coin; // 코인 종류
+    private String coinName; // 코인 이름
     private String date;
     private Double open;
     private Double close;
@@ -14,8 +15,9 @@ public class FindCoinResponse {
     private Double low;
     private Double volume;
 
-    public FindCoinResponse(MongoCoinMinute mongoCoinMinute) {
+    public FindCoinResponse(MongoCoinMinute mongoCoinMinute, String coinName) {
         this.coin = mongoCoinMinute.getCoin();
+        this.coinName = coinName;
         this.date = mongoCoinMinute.getDate().toString().replace("-", "");
         this.open = mongoCoinMinute.getOpen();
         this.close = mongoCoinMinute.getClose();

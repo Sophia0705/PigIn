@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 public interface MemberService {
 
-    void singUp(Members members) throws NoSuchAlgorithmException;
+    void singUp(Members members) throws Exception;
 
     boolean MMSGenerate(MMSDto mmsDto) throws Exception;
 
@@ -41,4 +41,6 @@ public interface MemberService {
     boolean emailCheck(String email);
 
     Members findMemberById(Long id);
+
+    void setMoney(int money, Long userId);
 }

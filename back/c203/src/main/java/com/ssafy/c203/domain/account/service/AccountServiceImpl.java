@@ -73,6 +73,8 @@ public class AccountServiceImpl implements AccountService{
     @Override
     @Transactional(readOnly = true)
     public Boolean depositAccount(Long memberId, Long price) {
+        log.info("==============depositAccount==============");
+        log.info("memberId: {}, price: {}", memberId, price);
         // 1. 계좌번호 가져오기
         SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
                 .orElseThrow(RuntimeException::new);

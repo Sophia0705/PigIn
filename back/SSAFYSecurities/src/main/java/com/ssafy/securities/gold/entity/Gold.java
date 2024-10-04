@@ -1,6 +1,7 @@
 package com.ssafy.securities.gold.entity;
 
 
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,27 +9,27 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "Gold")
+@Document(collection = "Gold")
 @Getter
 @NoArgsConstructor
 public class Gold {
 
-    private String date;
+    private LocalDate date;
     private String srtnCd;
     private String isin;
     private String itemName;
-    private String close;
+    private int close;
     private String vsYesterday;
     private String upDownRate;
-    private String open;
-    private String high;
-    private String low;
+    private int open;
+    private int high;
+    private int low;
     private String tradeAmount;
     private String tradePrice;
 
     @Builder
-    public Gold(String date, String srtnCd, String isin, String itemName, String close,
-        String vsYesterday, String upDownRate, String open, String high, String low,
+    public Gold(LocalDate date, String srtnCd, String isin, String itemName, int close,
+        String vsYesterday, String upDownRate, int open, int high, int low,
         String tradeAmount,
         String tradePrice) {
         this.date = date;

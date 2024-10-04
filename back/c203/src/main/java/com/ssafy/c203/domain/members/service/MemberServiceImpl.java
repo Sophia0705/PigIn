@@ -71,18 +71,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void singUp(Members members) throws NoSuchAlgorithmException {
+    public void singUp(Members members) throws Exception {
         Members findMember = membersRepository.findByEmail(members.getEmail());
-
-//        대중현
-        //해당 이메일로 회원가입한 사람이 있으면 return
-        if (findMember != null) {
-            throw new EmailConflictException();
-        }
 
         //패스워드 암호화
         String password = bCryptPasswordEncoder.encode(members.getPassword());
         members.updatePassword(password);
+
+        log.info("member : {}", members.toString());
 
         //userkey 지정
         Map<String, String> requestBody = new HashMap<>();
@@ -112,9 +108,7 @@ public class MemberServiceImpl implements MemberService {
         //거래계좌 개설
         requestBody = new HashMap<>();
         requestBody.put("email", members.getEmail());
-        requestBody.put("name", members.getName());
-        requestBody.put("phoneNumber", members.getPhoneNumber());
-        requestBody.put("birth", members.getBirth());
+        requestBody.put("userKey", userKey);
 
         entity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> AccountNoResponse = restTemplate.exchange(
@@ -123,6 +117,11 @@ public class MemberServiceImpl implements MemberService {
             entity,
             String.class
         );
+
+        String tradeAccount = AccountNoResponse.getBody();
+        mmsService.sendMMS("거래용 계좌는 " + tradeAccount + " 입니다.", members.getPhoneNumber());
+
+
         //Todo : accountNo가 Null일때 처리 필요
         savingsAccountRepository.save(SavingsAccount
             .builder()
@@ -217,6 +216,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void refreshPassword(RefreshPassowrdDto refreshPassowrdDto) {
         Members member = membersRepository.findByEmailAndStatus(refreshPassowrdDto.getEmail(),
                 WithDrawalStatus.ACTIVE)
@@ -233,8 +233,7 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(MemberNotFoundException::new);
 
         //기존 패스워드 검증
-        if (!member.getPassword()
-            .equals(bCryptPasswordEncoder.encode(updateMemberDto.getOldPassword()))) {
+        if (!bCryptPasswordEncoder.matches(updateMemberDto.getOldPassword(), member.getPassword())) {
             throw new WrongPasswordException();
         }
 
@@ -349,5 +348,14 @@ public class MemberServiceImpl implements MemberService {
     public Members findMemberById(Long id) {
         return membersRepository.findById(id)
                 .orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    @Transactional
+    public void setMoney(int money, Long userId) {
+        Members member = membersRepository.findById(userId)
+            .orElseThrow(MemberNotFoundException::new);
+
+        member.updateSavingAmount(money);
     }
 }
