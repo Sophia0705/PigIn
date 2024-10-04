@@ -185,10 +185,10 @@ public class StockServiceImpl implements StockService{
     @Override
     public StockTradeResponse buyStock(double price, String stockCode) {
         // 1. Stock 가격 조회
-        StockMinute stockMinute = stockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
+        StockMinute stockMinute = stockMinuteRepository.findFirstByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElseThrow();
         // 2. 구매 시 수량 계산
-        double quantity = Double.parseDouble(stockMinute.getClose()) / price;
+        double quantity = price / Double.parseDouble(stockMinute.getClose());
 
         // 반환
         return new StockTradeResponse(quantity, Double.parseDouble(stockMinute.getClose()));
@@ -198,7 +198,7 @@ public class StockServiceImpl implements StockService{
     @Override
     public StockTradeResponse sellStock(double amount, String stockCode) {
         // 1. Stock 가격 조회
-        StockMinute stockMinute = stockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
+        StockMinute stockMinute = stockMinuteRepository.findFirstByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElseThrow();
 
         // 2. 판매시 가격 계산
