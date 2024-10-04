@@ -9,6 +9,19 @@ module.exports = {
         customGreen: '#00C99D',
         customRed: '#FF2414',
       },
+      // 폰트
+      fontFamily: {
+        'ibm-plex': ['"IBM Plex Sans KR"', 'sans-serif'],
+        'gowun-dodum': ['"Gowun Dodum"', 'sans-serif'],
+        'gothic-a1': ['"Gothic A1"', 'sans-serif'],
+        'arita-dotum': ['"Arita-dotum-Medium"', 'sans-serif'],
+        'suite': ['"SUITE-Regular"', 'sans-serif'],
+        'kbo-dia': ['"KBO-Dia-Gothic_bold"', 'sans-serif'],
+        'gmarket-sans': ['"GmarketSansMedium"', 'sans-serif'],
+        'line-seed': ['"INESeedKR-Bd"', 'sans-serif'],
+        'jamsil-bold': ['"TheJamsil5Bold', 'sans-serif'],
+        'rix-reg': ['"RixYeoljeongdo_Regular"', 'sans-serif'],
+      },
       keyframes: {
         // 동전이 떨어지는 애니메이션
         dropCoin: {

@@ -1,68 +1,91 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ShadowButton from '../components/ShadowButton';
 import QImg from '../assets/Q_image.svg?url';
 import OImg from '../assets/O_image.svg?url';
 import XImg from '../assets/X_image.svg?url';
+import {
+  fetchQuizData,
+  submitQuizResult,
+  QuizData,
+  QuizResult,
+} from '../api/quiz/quiz';
 
 interface ModalProps {
-  isCorrect: boolean;
-  explanation: string;
+  result: boolean;
+  description: string;
+  reward: number;
   onClose: () => void;
 }
 
 const ResultModal: React.FC<ModalProps> = ({
-  isCorrect,
-  explanation,
+  result,
+  description,
+  reward,
   onClose,
 }) => (
   <div className="fixed inset-0 bg-gray-600 bg-opacity-40 overflow-y-auto h-full w-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
     <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md h-3/5">
       <div className="flex items-center justify-center mb-4">
-        {isCorrect ? (
-          <img src={OImg} alt="Correct" />
-        ) : (
-          <img src={XImg} alt="Incorrect" />
-        )}
+        <img
+          src={result ? OImg : XImg}
+          alt={result ? 'Correct' : 'Incorrect'}
+        />
       </div>
       <p className="text-3xl font-semibold mb-4">
-        {isCorrect ? '정답입니다!' : '틀렸습니다.'}
+        {result ? '정답입니다!' : '틀렸습니다.'}
       </p>
       <p
         className="text-xl text-gray-600 mb-6"
-        dangerouslySetInnerHTML={{ __html: explanation }}
+        dangerouslySetInnerHTML={{ __html: description }}
       ></p>
-      <button onClick={onClose}>확인</button>
+      <p>{result ? `${reward}원을 획득했어요!` : '다음에는 맞춰봐요!'}</p>
+      <button
+        onClick={onClose}
+        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        확인
+      </button>
     </div>
   </div>
 );
 
-interface Question {
-  text: string;
-  options: string[];
-  correctAnswer: string;
-  explanation: string;
-}
-
 const QuizPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [quizData, setQuizData] = useState<QuizData | null>(null);
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
 
-  const question: Question = {
-    text: '주식을 소유하면 회사의 일부를 소유하는 것이다.',
-    options: ['O', 'X'],
-    correctAnswer: 'O',
-    explanation:
-      '주식은 회사의 실질적인 일부를 나타내며, 소유자에게 회사의 자산과 수익에 대한 청구권을 부여합니다.',
-  };
+  useEffect(() => {
+    const loadQuizData = async () => {
+      try {
+        const data = await fetchQuizData();
+        setQuizData(data);
+      } catch (error) {
+        console.error('Failed to fetch quiz data:', error);
+      }
+    };
 
-  const handleAnswer = (answer: string) => {
-    setIsCorrect(answer === question.correctAnswer);
-    setShowModal(true);
+    loadQuizData();
+  }, []);
+
+  const handleAnswer = async (memberAnswer: 'O' | 'X') => {
+    if (!quizData) return;
+
+    try {
+      const result = await submitQuizResult({ id: quizData.id, memberAnswer });
+      setQuizResult(result);
+      setShowModal(true);
+    } catch (error) {
+      console.error('Failed to submit quiz result:', error);
+    }
   };
 
   const closeModal = () => {
     setShowModal(false);
   };
+
+  if (!quizData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-200">
@@ -73,21 +96,22 @@ const QuizPage: React.FC = () => {
           style={{ minHeight: '300px' }}
         >
           <p className="text-2xl text-gray-800 font-medium text-center">
-            {question.text}
+            {quizData.question}
           </p>
         </div>
       </div>
       <div className="flex-grow flex flex-col w-full justify-center items-center gap-12 pb-24 px-6">
-        {question.options.map((option) => (
-          <div key={option} className="w-full flex justify-center">
-            <ShadowButton text={option} onClick={() => handleAnswer(option)} />
+        {(['O', 'X'] as const).map((answer) => (
+          <div key={answer} className="w-full flex justify-center">
+            <ShadowButton text={answer} onClick={() => handleAnswer(answer)} />
           </div>
         ))}
       </div>
-      {showModal && (
+      {showModal && quizResult && (
         <ResultModal
-          isCorrect={isCorrect}
-          explanation={question.explanation}
+          result={quizResult.result}
+          description={quizResult.description}
+          reward={quizResult.reward}
           onClose={closeModal}
         />
       )}

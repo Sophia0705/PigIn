@@ -11,6 +11,8 @@ export const usePortfolioStore = create<PortfolioState>((set) => ({
   totalProfit: 0,
   totalProfitRate: 0,
   activeIndex: 0,
+  showAllItems: false,
+  setShowAllItems: (show) => set({ showAllItems: show }),
   isLoading: false,
   error: null,
   setActiveIndex: (index) => set({ activeIndex: index }),
@@ -26,11 +28,6 @@ export const usePortfolioStore = create<PortfolioState>((set) => ({
           name: '가상화폐',
           totalValue: data.cryptoPrice,
           items: data.cryptocurrencies,
-        },
-        {
-          name: '외화',
-          totalValue: data.foreignCurrencyPrice,
-          items: data.foreignCurrencies,
         },
       ];
 

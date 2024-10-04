@@ -6,6 +6,7 @@ import {
   Outlet,
 } from 'react-router-dom';
 import './App.css';
+import './fonts.css';
 import Layout from './mobileLayout';
 import Navbar from './components/Navbar';
 import MainPage from './pages/MainPage';

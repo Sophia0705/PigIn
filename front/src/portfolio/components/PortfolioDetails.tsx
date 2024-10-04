@@ -4,13 +4,18 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 
 const PortfolioDetails: React.FC = () => {
-  const { categories, activeIndex, isLoading, error } = usePortfolioStore();
+  const { categories, activeIndex, isLoading, error, showAllItems } =
+    usePortfolioStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const category = useMemo(
-    () => (activeIndex !== undefined ? categories[activeIndex] : null),
-    [categories, activeIndex]
-  );
+  const items = useMemo(() => {
+    if (showAllItems) {
+      return categories.flatMap((category) =>
+        category.items.map((item) => ({ ...item, categoryName: category.name }))
+      );
+    }
+    return activeIndex !== undefined ? categories[activeIndex].items : [];
+  }, [categories, activeIndex, showAllItems]);
 
   if (isLoading)
     return <div className="text-center py-4">Loading details...</div>;
@@ -20,10 +25,9 @@ const PortfolioDetails: React.FC = () => {
         Error loading details: {error}
       </div>
     );
-  if (!category) return null;
 
-  const itemCount = category.items.length;
-  const isItemLoaded = (index: number) => index < category.items.length;
+  const itemCount = items.length;
+  const isItemLoaded = (index: number) => index < items.length;
   const loadMoreItems = (_startIndex: number, _stopIndex: number) => {
     return Promise.resolve();
   };
@@ -39,24 +43,29 @@ const PortfolioDetails: React.FC = () => {
       return (Number(price) * Number(quantity)).toLocaleString();
     };
 
-    const item = category.items[index];
-    // 카테고리별 종목(item)
+    const item = items[index];
     return (
       <div style={style} className="flex items-center border-b px-4">
-        <div className="w-1/3 py-2 text-base font-semibold">{item.name}</div>
-        <div className="w-1/3 text-right py-2 font-medium text-base">
-          {Number.isInteger(item.quantity)
-            ? item.quantity.toString()
-            : item.quantity.toFixed(3)}
-        </div>
-        <div className="w-1/3 text-right py-2 text-sm">
-          <div>{calculateTotalValue(item.price, item.quantity)}원</div>
-          <div
-            className={`${item.profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
-          >
-            {(item.profitRate * 100).toFixed(1)}%{' '}
-            {item.profitRate >= 0 ? '▲' : '▼'}
+        {showAllItems && (
+          <div className="w-1/4 py-2 text-sm font-medium">
+            {item.categoryName}
           </div>
+        )}
+        <div
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 text-base font-semibold`}
+        >
+          {item.name}
+        </div>
+        <div
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-center`}
+        >
+          {calculateTotalValue(item.price, item.quantity)}원
+        </div>
+        <div
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-center ${item.profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
+        >
+          {(item.profitRate * 100).toFixed(1)}%{' '}
+          {item.profitRate >= 0 ? '▲' : '▼'}
         </div>
       </div>
     );
@@ -75,7 +84,9 @@ const PortfolioDetails: React.FC = () => {
           className="bg-white overflow-hidden relative"
           style={{ height: 'calc(100% - 24px)' }}
         >
-          <h2 className="text-xl font-bold pt-4 mb-4 px-4">{category.name}</h2>
+          <h2 className="text-xl font-bold pt-4 mb-1 px-4">
+            {showAllItems ? '전체' : categories[activeIndex!].name}
+          </h2>
           {/* 안쪽만 스크롤 */}
           <div className="h-full pt-4 pb-10 overflow-y-auto">
             <InfiniteLoader

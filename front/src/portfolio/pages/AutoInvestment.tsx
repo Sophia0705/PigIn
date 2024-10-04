@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Edit, ChevronLeft, XCircle } from 'lucide-react';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 // import { saveAutoInvestment } from '../../api/portfolio/autoInvestment';
-import Dashboard from '../components/Dashboard';
+import AutoDashboard from '../components/AutoDashboard';
 
 const CATEGORIES = ['주식', '가상화폐', '금'];
 
@@ -164,7 +164,7 @@ const AutoInvestment: React.FC = () => {
             </div>
           )}
 
-          <Dashboard />
+          <AutoDashboard />
 
           <div className="mt-6">
             <div className="bg-[#EAFFF7] p-1 rounded-full flex justify-between items-center mb-4">

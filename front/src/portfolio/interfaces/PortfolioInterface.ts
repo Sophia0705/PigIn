@@ -17,6 +17,8 @@ export interface PortfolioState {
   totalProfit: number; // 총 이익
   totalProfitRate: number; // 총 이익률
   activeIndex: number | undefined; // 파이차트 선택 위한 activeIndex
+  showAllItems: boolean;
+  setShowAllItems: (show: boolean) => void;
   isLoading: boolean;
   error: string | null;
   setActiveIndex: (index: number | undefined) => void;
