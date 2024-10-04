@@ -9,6 +9,7 @@ interface CustomLabelProps {
   totalValue: number;
   totalProfit: number;
   totalProfitRate: number;
+  onClick: () => void;
 }
 
 const CustomLabel: React.FC<CustomLabelProps> = ({
@@ -16,10 +17,12 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
   totalValue,
   totalProfit,
   totalProfitRate,
+  onClick,
 }) => {
   const { cx, cy } = viewBox;
   return (
-    <g>
+    <g onClick={onClick} style={{ cursor: 'pointer' }}>
+      {/* 가운데 금액 & 퍼센트 --> 이거 클릭하면 전체 목록으로 나오게! */}
       <text
         x={cx}
         y={cy - 20}
@@ -58,6 +61,7 @@ const Dashboard: React.FC = () => {
     totalValue,
     activeIndex,
     setActiveIndex,
+    setShowAllItems,
     isLoading,
     error,
   } = usePortfolioStore();
@@ -82,15 +86,20 @@ const Dashboard: React.FC = () => {
     return { totalProfit, totalProfitRate };
   }, [categories, totalValue]);
 
+  const handleCenterClick = () => {
+    setShowAllItems(true);
+    setActiveIndex(undefined);
+  };
+
   if (isLoading) return <div>Loading dashboard...</div>;
   if (error) return <div>Error loading dashboard: {error}</div>;
 
   const { totalProfit, totalProfitRate } = calculatePortfolioMetrics;
 
   return (
-    <div className="bg-white h-full rounded-lg p-4">
-      <h2 className="text-3xl font-bold mb-2">My Portfolio</h2>
-      <p className="text-sm text-gray-500 mb-1">
+    <div className="bg-white h-full rounded-2xl p-4">
+      <h2 className="text-3xl font-bold font-rix-reg mb-2">My Portfolio</h2>
+      <p className="text-base text-gray-500 mb-1">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
       </p>
       <div className="flex justify-between items-center">
@@ -106,7 +115,10 @@ const Dashboard: React.FC = () => {
                 fill="#8884d8"
                 paddingAngle={5}
                 dataKey="totalValue"
-                onClick={(_, index) => setActiveIndex(index)}
+                onClick={(_, index) => {
+                  setActiveIndex(index);
+                  setShowAllItems(false);
+                }}
               >
                 {categories.map((_entry, index) => (
                   <Cell
@@ -122,6 +134,7 @@ const Dashboard: React.FC = () => {
                       totalValue={totalValue}
                       totalProfit={totalProfit}
                       totalProfitRate={totalProfitRate}
+                      onClick={handleCenterClick}
                     />
                   }
                   position="center"
@@ -138,15 +151,15 @@ const Dashboard: React.FC = () => {
                   className="w-3 h-3 rounded-full mr-2"
                   style={{ backgroundColor: COLORS[index % COLORS.length] }}
                 ></div>
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-gray-700 text-base font-normal">
                   {category.name}
                 </span>
               </div>
-              <div className="pl-5 text-sm">
+              <div className="pl-3 font-medium text-base">
                 <span className="">
                   {((category.totalValue / totalValue) * 100).toFixed(1)}%{' '}
                 </span>
-                <span className="ml-2">
+                <span className="font-medium">
                   ({category.totalValue.toLocaleString()}원)
                 </span>
               </div>
