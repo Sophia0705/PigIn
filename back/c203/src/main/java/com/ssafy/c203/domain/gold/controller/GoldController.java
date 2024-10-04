@@ -110,4 +110,10 @@ public class GoldController {
         Long userId = customUserDetails.getUserId();
         return ResponseEntity.ok(goldService.isAutoFundingGold(userId));
     }
+
+    @GetMapping("/mine")
+    public ResponseEntity<?> getMine(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return ResponseEntity.ok(goldService.getMine(userId));
+    }
 }

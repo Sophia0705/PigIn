@@ -260,6 +260,26 @@ public class GoldServiceImpl implements GoldService {
         return autoFundingRepository.existsByMember_Id(userId);
     }
 
+    @Override
+    public double getMine(Long userId) {
+        Members member = membersRepository.findById(userId)
+            .orElseThrow(MemberNotFoundException::new);
+
+        Double buyCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
+            TradeMethod.BUY);
+        Double sellCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
+            TradeMethod.SELL);
+
+        Double mineCnt = buyCnt;
+        if (sellCnt != null) {
+            mineCnt = buyCnt - sellCnt;
+        }
+
+        int goldPrice = getGoldPrice();
+
+        return mineCnt * goldPrice;
+    }
+
     private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
         log.info("장내 {} 거래 들어옴", goldTradeDto.getMethod());
         int goldPrice = getGoldPrice();
