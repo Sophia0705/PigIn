@@ -101,6 +101,6 @@ public class CoinController {
             return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, coinService.findCoin(coinCode).getCoinName(),0.0, 0.0, 0.0));
         }
         PriceAndProfit result  = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
-        return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, portfolio.getCoinItem().getName(), result.getPrice() * portfolio.getAmount(), portfolio.getAmount(), result.getProfit()));
+        return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, portfolio.getCoinItem().getName(), portfolio.getAmount(), result.getPrice() * portfolio.getAmount(), result.getProfit()));
     }
 }

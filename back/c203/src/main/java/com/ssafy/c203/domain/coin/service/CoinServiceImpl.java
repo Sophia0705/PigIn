@@ -153,6 +153,7 @@ public class CoinServiceImpl implements CoinService {
 
     @Override
     public void buyCoin(Long userId, String coinCode, Double dPrice) {
+//        accountService.depositAccount(userId, 1000000L);
         // 1. 입력 확인
         Long price = Math.round(dPrice);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
@@ -167,6 +168,7 @@ public class CoinServiceImpl implements CoinService {
             // 3. 거래
             SecuritiesCoinTrade tradeResult = SecuritiesCoinBuy(coinCode, price);
             // 4. 거래내역 저장
+            log.info(tradeResult.toString());
             saveTradeRecode(member, coinItem, tradeResult.getResult(), tradeResult.getTradePrice(), TradeMethod.BUY);
             // 5. 보유 주식 업데이트
             Optional<CoinPortfolio> coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem, member);
@@ -265,9 +267,10 @@ public class CoinServiceImpl implements CoinService {
     public PriceAndProfit calculateProfit(Double priceAvg, String coinCode) {
         MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
-        Double currentProfit = coinMinute.getClose();
-        double profitRate = (currentProfit - priceAvg) / priceAvg * 100;
-        return new PriceAndProfit(currentProfit, Math.round(profitRate * 100.0) / 100.0);
+        Double currentPrice = coinMinute.getClose();
+        log.info("profit calc = ({} - {}) / {} = {}", currentPrice, priceAvg, priceAvg * 100, (currentPrice - priceAvg) / priceAvg * 100);
+        double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
+        return new PriceAndProfit(currentPrice, Math.round(profitRate * 100.0) / 100.0);
     }
 
     public void initializeCoinItems() {
