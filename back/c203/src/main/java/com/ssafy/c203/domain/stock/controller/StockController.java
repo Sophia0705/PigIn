@@ -1,13 +1,11 @@
 package com.ssafy.c203.domain.stock.controller;
 
+import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.request.StockBuyRequest;
 import com.ssafy.c203.domain.stock.dto.request.StockSellRequest;
-import com.ssafy.c203.domain.stock.dto.response.FindStockAllResponse;
-import com.ssafy.c203.domain.stock.dto.response.FindStockChartAllResponse;
-import com.ssafy.c203.domain.stock.dto.response.FindStockDetailResponse;
-import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
+import com.ssafy.c203.domain.stock.dto.response.*;
 import com.ssafy.c203.domain.stock.entity.StockPortfolio;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
@@ -38,7 +36,7 @@ public class StockController {
     @GetMapping
     public ResponseEntity<?> findAllStock() {
         List<MongoStockDetail> stockDetails = stockService.findAllStock();
-        log.info("stockDetails = {}", stockDetails);
+//        log.info("stockDetails = {}", stockDetails);
         List<FindStockAllResponse> response = stockDetails.stream()
                 .map(FindStockAllResponse::new)
                 .toList();
@@ -47,9 +45,9 @@ public class StockController {
 
     @GetMapping("/search")
     public ResponseEntity<?> findAllStockBySearch(@RequestParam String keyword) {
-        log.info("findAllStockBySearch: keyword = {}", keyword);
+//        log.info("findAllStockBySearch: keyword = {}", keyword);
         List<MongoStockDetail> stockDetails = stockService.searchStock(keyword);
-        log.info("stockDetails = {}", stockDetails);
+//        log.info("stockDetails = {}", stockDetails);
         List<FindStockAllResponse> response = stockDetails.stream()
                 .map(FindStockAllResponse::new)
                 .toList();
@@ -58,7 +56,7 @@ public class StockController {
 
     @GetMapping("/{stockId}/chart/{interval}")
     public ResponseEntity<?> findStockChart(@PathVariable String stockId, @PathVariable String interval, @RequestParam Integer count) {
-        log.info("findStockChart: stockId = {}, interval = {} count = {}", stockId, interval, count);
+//        log.info("findStockChart: stockId = {}, interval = {} count = {}", stockId, interval, count);
         List<FindStockChartAllResponse> responses;
         if (interval.equals("minute")) {
             List<MongoStockMinute> stockChart = stockService.findStockMinuteChart(stockId, count > 100 ? 100 : count);
@@ -76,7 +74,7 @@ public class StockController {
 
     @GetMapping("/{stockId}")
     public ResponseEntity<?> findStockById(@PathVariable String stockId) {
-        log.info("findStockById: stockId = {}", stockId);
+//        log.info("findStockById: stockId = {}", stockId);
         FindStockDetailResponse response = new FindStockDetailResponse(stockService.findStock(stockId));
         return ResponseEntity.ok().body(response);
     }
@@ -89,7 +87,7 @@ public class StockController {
 
     @PostMapping("/{stockId}/sell")
     public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        log.info("request = {}", request);
+//        log.info("request = {}", request);
         if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount())) {
             return ResponseEntity.ok().body("success");
         }
@@ -98,7 +96,7 @@ public class StockController {
 
     @PostMapping("/{stockId}/buy")
     public ResponseEntity<?> buyStock(@RequestBody StockBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        log.info("request = {}", request);
+//        log.info("request = {}", request);
         if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice())) {
             log.info("구매 성공");
             return ResponseEntity.ok().body("success");
@@ -108,7 +106,7 @@ public class StockController {
 
     @GetMapping("/{stockId}/quantity")
     public ResponseEntity<?> findStockQuantity(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        log.info("findStockQuantity: stockId = {}", stockId);
+//        log.info("findStockQuantity: stockId = {}", stockId);
         StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);
 //        log.info("portfolio = {} : {}", portfolio.getStockItem().getName(), portfolio.getPriceAvg());
         if (portfolio == null) {
@@ -116,5 +114,18 @@ public class StockController {
         }
         PriceAndProfit result = stockService.calculateProfit(portfolio.getPriceAvg(), stockId);
         return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getStockItem().getName(), portfolio.getAmount(), result.getPrice() * portfolio.getAmount(), result.getProfit()));
+    }
+
+    @GetMapping("/my-stocks")
+    public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
+        Long userId = user.getUserId();
+        log.info("findMyStocks: userId = {}", userId);
+        List<FindStockPortfolioResponse> stocks = stockService.findStockPortfolio(userId);
+
+        Double price = Math.round(stocks.stream()
+                .mapToDouble(FindStockPortfolioResponse::getPrice)
+                .sum() * 100.0) / 100.0;
+
+        return ResponseEntity.ok().body(new FindMyStockAllResponse(price, stocks));
     }
 }
