@@ -73,7 +73,7 @@ public class StockServiceImpl implements StockService {
         intervals.put("month", "M");
 
         // 주식 코드 저장
-//        saveStockItems();
+        saveStockItems();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class StockServiceImpl implements StockService {
         try {
             // 연결 테스트
 //            mongoStockDetailRepository.count();
-            return mongoStockDetailRepository.findAll();
+            return mongoStockDetailRepository.findLatestForAllStocks();
         } catch (Exception e) {
             log.error("Error fetching all stocks: ", e);
             throw new RuntimeException("Failed to fetch stocks from database", e);
@@ -92,13 +92,13 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional(readOnly = true)
     public List<MongoStockDetail> searchStock(String keyword) {
-        return mongoStockDetailRepository.findByHtsKorIsnmLike(keyword);
+        return mongoStockDetailRepository.findLatestByHtsKorIsnmContainingIgnoreCase(keyword);
     }
 
     @Override
     @Transactional(readOnly = true)
     public MongoStockDetail findStock(String stockCode) {
-        return mongoStockDetailRepository.findByStckShrnIscd(stockCode).orElseThrow();
+        return mongoStockDetailRepository.findTopByStckShrnIscdOrderByStckBsopDateDesc(stockCode).orElseThrow();
     }
 
     @Override

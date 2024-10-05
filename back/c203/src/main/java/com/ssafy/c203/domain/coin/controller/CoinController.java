@@ -3,12 +3,15 @@ package com.ssafy.c203.domain.coin.controller;
 import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinChartAllResponse;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
+import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
 import com.ssafy.c203.domain.coin.service.CoinEmitterService;
 import com.ssafy.c203.domain.coin.service.CoinService;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
+import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -89,17 +92,15 @@ public class CoinController {
         return ResponseEntity.ok().body("success");
     }
 
-//    @GetMapping("/{coinCode}/quantity")
-//    public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-//        Long userId = customUserDetails.getUserId();
-//        log.info("userId = {}, coinCode = {}", userId, coinCode);
-//        CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
-//        if (portfolio == null) {
-//            return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, 0.0, 0.0));
-//        }
-//        double profit = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
-//        return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, portfolio.getAmount(), profit));
-//    }
-
-
+    @GetMapping("/{coinCode}/quantity")
+    public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        log.info("userId = {}, coinCode = {}", userId, coinCode);
+        CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
+        if (portfolio == null) {
+            return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, portfolio.getCoinItem().getName(),0.0, 0.0, 0.0));
+        }
+        PriceAndProfit result  = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
+        return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, portfolio.getCoinItem().getName(), result.getPrice() * portfolio.getAmount(), portfolio.getAmount(), result.getProfit()));
+    }
 }

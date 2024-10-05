@@ -17,7 +17,8 @@ import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinHistoryRepository;
 import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinMinuteRepository;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
-import com.ssafy.c203.domain.stock.dto.response.FindCoinPortfolioResponse;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
+import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -33,7 +34,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -176,6 +179,7 @@ public class CoinServiceImpl implements CoinService {
                         .priceAvg(tradeResult.getTradePrice())
                         .amount(tradeResult.getResult())
                         .build();
+                log.info("새로운 저장 = {} : {}", newPortfolio.getPriceAvg(), newPortfolio.getAmount());
                 coinPortfolioRepository.save(newPortfolio);
             }
         } catch (Exception e) {
@@ -233,27 +237,37 @@ public class CoinServiceImpl implements CoinService {
     @Override
     @Transactional(readOnly = true)
     public List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId) {
+        Map<String, MongoCoinMinute> coinMinuteMap = mongoCoinMinuteRepository.findLatestDataForEachCoin()
+                .stream()
+                .collect(Collectors.toMap(
+                        MongoCoinMinute::getCoin,
+                        Function.identity(),
+                        (existing, replacement) -> existing
+                ));
+
         return coinPortfolioRepository.findByMember_Id(userId).stream()
                 .map(portfolio -> {
                     String coinCode = portfolio.getCoinItem().getId();
+                    Double currentPrice = coinMinuteMap.get(coinCode).getClose();
+                    String name = portfolio.getCoinItem().getName();
                     Double amount = portfolio.getAmount();
+                    Double price = amount * currentPrice;
                     Double priceAvg = portfolio.getPriceAvg();
-                    Double profit = calculateProfit(priceAvg, coinCode);
+                    double profitRate = (currentPrice - price) / priceAvg * 100;
 
-                    return new FindCoinPortfolioResponse(coinCode, amount, profit);
+                    return new FindCoinPortfolioResponse(coinCode, name, amount, price, profitRate);
                 })
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Double calculateProfit(Double priceAvg, String coinCode) {
+    public PriceAndProfit calculateProfit(Double priceAvg, String coinCode) {
         MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
         Double currentProfit = coinMinute.getClose();
         double profitRate = (currentProfit - priceAvg) / priceAvg * 100;
-
-        return Math.round(profitRate * 100.0) / 100.0;
+        return new PriceAndProfit(currentProfit, Math.round(profitRate * 100.0) / 100.0);
     }
 
     public void initializeCoinItems() {
@@ -328,6 +342,8 @@ public class CoinServiceImpl implements CoinService {
                 SecuritiesCoinTrade.class
         );
 
+        log.info(response.toString());
+
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
             throw new RuntimeException("증권사 API 호출 실패");
         }
@@ -355,6 +371,7 @@ public class CoinServiceImpl implements CoinService {
     private void buyCoinPortfolio(CoinPortfolio coinPortfolio, Double amount, Double price) {
         coinPortfolio.addAmount(amount);
         coinPortfolio.updatePriceAve(price, amount);
+        log.info("추가 매수 저장 = {} : {}", coinPortfolio.getPriceAvg(), coinPortfolio.getAmount());
         coinPortfolioRepository.save(coinPortfolio);
     }
 

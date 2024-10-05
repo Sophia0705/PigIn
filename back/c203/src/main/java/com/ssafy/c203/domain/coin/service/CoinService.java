@@ -5,7 +5,8 @@ import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
-import com.ssafy.c203.domain.stock.dto.response.FindCoinPortfolioResponse;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
+import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 
 import java.util.List;
 
@@ -21,5 +22,5 @@ public interface CoinService {
     public void buyCoin(Long userId, String coinCode, Double price);
     public CoinPortfolio findCoinPortfolioByCode(Long userId, String coinCode);
     public List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId);
-    public Double calculateProfit(Double priceAvg, String coinCode);
+    public PriceAndProfit calculateProfit(Double priceAvg, String coinCode);
 }
