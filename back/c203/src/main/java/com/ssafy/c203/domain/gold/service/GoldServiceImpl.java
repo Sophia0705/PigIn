@@ -377,7 +377,7 @@ public class GoldServiceImpl implements GoldService {
     @Override
     public FindGoldPortfolioResponse findPortfolio(Long userId) {
         GoldPortfolio portfolio = goldPortfolioRepository.findByMember_Id(userId)
-                .orElse(new GoldPortfolio(0, 0, memberServiceImpl.findMemberById(userId)));
+                .orElse(null);
         int goldPrice = getGoldPrice();
 
         return new FindGoldPortfolioResponse(portfolio.getAmount(), portfolio.getAmount() * goldPrice, portfolio.getAmount() == 0 ? 0 : (goldPrice - portfolio.getPriceAvg()) / portfolio.getPriceAvg() * 100);

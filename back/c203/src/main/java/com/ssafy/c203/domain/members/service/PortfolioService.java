@@ -31,8 +31,10 @@ public class PortfolioService {
         List<FindStockPortfolioResponse> stocks = stockService.findStockPortfolio(userId);
         List<FindCoinPortfolioResponse> coins = coinService.findCoinPortfolios(userId);
         List<FindGoldPortfolioResponse> gold = new LinkedList<>();
+
+
         FindGoldPortfolioResponse goldPortfolio = goldService.findPortfolio(userId);
-        gold.add(goldPortfolio);
+        double goldPrice = 0.0;
 
         Double stockPrice = Math.round(stocks.stream()
                 .mapToDouble(FindStockPortfolioResponse::getPrice)
@@ -42,7 +44,10 @@ public class PortfolioService {
                 .mapToDouble(FindCoinPortfolioResponse::getPrice)
                 .sum() * 100.0) / 100.0;
 
-        Double goldPrice = Math.round(goldPortfolio.getPrice() * 100.0) / 100.0;
+        if (goldPortfolio != null) {
+            gold.add(goldPortfolio);
+            goldPrice = Math.round(goldPortfolio.getPrice() * 100.0) / 100.0;
+        }
 
         Double total = stockPrice + coinPrice + goldPrice;
 
