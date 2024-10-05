@@ -5,6 +5,7 @@ import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
+import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.StockItem;
 import com.ssafy.c203.domain.stock.entity.StockPortfolio;
 import com.ssafy.c203.domain.stock.entity.StockTrade;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -213,8 +215,17 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<StockPortfolio> findStockPortfolio(Long userId) {
-        return stockPortfolioRepository.findAll();
+    public List<FindStockPortfolioResponse> findStockPortfolio(Long userId) {
+        return stockPortfolioRepository.findByMember_Id(userId).stream()
+                .map(portfolio -> {
+                    String stockCode = portfolio.getStockItem().getId(); // StockItem에서 stockCode를 가져온다고 가정
+                    Double amount = portfolio.getAmount();
+                    Double priceAvg = portfolio.getPriceAvg();
+                    Double profit = calculateProfit(priceAvg, stockCode);
+
+                    return new FindStockPortfolioResponse(stockCode, amount, profit);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

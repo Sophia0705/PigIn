@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface CoinPortfolioRepository extends JpaRepository<CoinPortfolio, Long> {
     Optional<CoinPortfolio> findByCoinItemAndMember(CoinItem coinItem, Members member);
+    Optional<CoinPortfolio> findByCoinItem_IdAndMember_Id(String coinId, Long userID);
 }

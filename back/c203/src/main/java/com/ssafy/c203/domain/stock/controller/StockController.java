@@ -104,7 +104,7 @@ public class StockController {
         return ResponseEntity.ok().body("wait");
     }
 
-    @GetMapping("/quantity/{stockId}")
+    @GetMapping("/{stockId}/quantity")
     public ResponseEntity<?> findStockQuantity(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("findStockQuantity: stockId = {}", stockId);
         StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);

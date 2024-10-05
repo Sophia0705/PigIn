@@ -1,6 +1,6 @@
 package com.ssafy.c203.domain.coin.service;
 
-import com.ssafy.c203.domain.coin.dto.FindCoinChartAllResponse;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinChartAllResponse;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

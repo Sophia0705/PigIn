@@ -2,9 +2,9 @@ package com.ssafy.c203.domain.coin.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
-import com.ssafy.c203.domain.coin.dto.FindCoinAllResponse;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.SecuritiesCoinTrade;
-import com.ssafy.c203.domain.coin.dto.FindCoinResponse;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.CoinTrade;
@@ -17,8 +17,7 @@ import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinHistoryRepository;
 import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinMinuteRepository;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
-import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
-import com.ssafy.c203.domain.stock.entity.StockPortfolio;
+import com.ssafy.c203.domain.stock.dto.response.FindCoinPortfolioResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -168,11 +167,12 @@ public class CoinServiceImpl implements CoinService {
             // 5. 보유 주식 업데이트
             Optional<CoinPortfolio> coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem, member);
             if (coinPortfolio.isPresent()) {
-                updateCoinPortfolio(coinPortfolio.get(), tradeResult.getResult());
+                buyCoinPortfolio(coinPortfolio.get(), tradeResult.getResult(), tradeResult.getTradePrice());
             } else {
                 CoinPortfolio newPortfolio = CoinPortfolio.builder()
                         .coinItem(coinItem)
                         .member(member)
+                        .priceAvg(tradeResult.getTradePrice())
                         .amount(tradeResult.getResult())
                         .build();
                 coinPortfolioRepository.save(newPortfolio);
@@ -192,7 +192,7 @@ public class CoinServiceImpl implements CoinService {
         CoinPortfolio coinPortfolio = valiateCoinPortfolio(coinItem, member, amount);
 
         // 2. 코인 보유량 감소
-        updateCoinPortfolio(coinPortfolio, -amount);
+        sellCoinPortfolio(coinPortfolio, -amount);
         try {
             // 3. 거래
             SecuritiesCoinTrade securitiesCoinTrade = SecuritiesCoinSell(coinCode, amount);
@@ -210,9 +210,33 @@ public class CoinServiceImpl implements CoinService {
             }
         } catch (Exception e) {
             log.error("Error fetching coin: ", e);
-            updateCoinPortfolio(coinPortfolio, amount);
+            sellCoinPortfolio(coinPortfolio, amount);
             throw new RuntimeException("코인 매도 오류");
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CoinPortfolio findCoinPortfolioByCode(Long userId, String coinCode) {
+        return coinPortfolioRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
+                .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId) {
+        return List.of();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Double calculateProfit(Double priceAvg, String coinCode) {
+        MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
+                .orElseThrow(() -> new RuntimeException("No such coin"));
+        Double currentProfit = coinMinute.getClose();
+        double profitRate = (currentProfit - priceAvg) / priceAvg * 100;
+
+        return Math.round(profitRate * 100.0) / 100.0;
     }
 
     public void initializeCoinItems() {
@@ -306,8 +330,14 @@ public class CoinServiceImpl implements CoinService {
         coinTradeRepository.save(coinTrade);
     }
 
-    private void updateCoinPortfolio(CoinPortfolio coinPortfolio, Double amount) {
+    private void sellCoinPortfolio(CoinPortfolio coinPortfolio, Double amount) {
         coinPortfolio.addAmount(amount);
+        coinPortfolioRepository.save(coinPortfolio);
+    }
+
+    private void buyCoinPortfolio(CoinPortfolio coinPortfolio, Double amount, Double price) {
+        coinPortfolio.addAmount(amount);
+        coinPortfolio.updatePriceAve(price, amount);
         coinPortfolioRepository.save(coinPortfolio);
     }
 

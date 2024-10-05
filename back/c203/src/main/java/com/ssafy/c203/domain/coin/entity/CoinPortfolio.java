@@ -26,12 +26,19 @@ public class CoinPortfolio {
 
     private Double amount;
 
+    @Column(name = "price_avg")
+    private Double priceAvg;
+
     public void addAmount(Double amount) {
         this.amount += amount;
     }
 
     public void subAmount(Double amount) {
         this.amount -= amount;
+    }
+
+    public void updatePriceAve(Double price, Double newAmount) {
+        this.priceAvg = (priceAvg * amount + priceAvg * newAmount) / (amount * newAmount);
     }
 
 }
