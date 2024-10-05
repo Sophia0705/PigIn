@@ -90,7 +90,7 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
 
   const isSubmitEnabled = totalAllocatedPercentage === 100;
 
-  const itemCount = memoizedAllocations.length + 1; // +1 for the submit button
+  const itemCount = memoizedAllocations.length + 1;
   const loadMoreItems = (_startIndex: number, _stopIndex: number) =>
     Promise.resolve();
   const isItemLoaded = (index: number) => index < itemCount;
@@ -98,7 +98,6 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
   const AllocationItem = useCallback(
     ({ index, style }: { index: number; style: React.CSSProperties }) => {
       if (index === memoizedAllocations.length) {
-        // Render submit button
         return (
           <div style={style}>
             <div className="bg-customDarkGreen p-2 w-[90%] mx-auto">
