@@ -4,23 +4,25 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { AssetItem } from '../interfaces/PortfolioInterface';
 
-const PortfolioDetails: React.FC = () => {
-  const { categories, activeIndex, isLoading, error, showAllItems } =
-    usePortfolioStore();
+const PortfolioDetails = () => {
+  const { categories, activeIndex, isLoading, error } = usePortfolioStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const items: (AssetItem & { categoryName?: string })[] = useMemo(() => {
+  const items: (AssetItem & { categoryName: string })[] = useMemo(() => {
     if (!categories || categories.length === 0) return [];
 
-    if (showAllItems) {
+    if (activeIndex === undefined || activeIndex === null) {
+      // 전체 목록을 표시
       return categories.flatMap((category) =>
         category.items.map((item) => ({ ...item, categoryName: category.name }))
       );
     }
-    return activeIndex !== undefined && categories[activeIndex]
-      ? categories[activeIndex].items
-      : [];
-  }, [categories, activeIndex, showAllItems]);
+    // 특정 카테고리의 아이템만 표시
+    return categories[activeIndex].items.map((item) => ({
+      ...item,
+      categoryName: categories[activeIndex].name,
+    }));
+  }, [categories, activeIndex]);
 
   if (isLoading)
     return <div className="text-center py-4">Loading details...</div>;
@@ -54,23 +56,17 @@ const PortfolioDetails: React.FC = () => {
     const item = items[index];
     return (
       <div style={style} className="flex items-center border-b px-4">
-        {showAllItems && 'categoryName' in item && (
-          <div className="w-1/4 py-2 text-sm font-medium">
-            {item.categoryName}
-          </div>
-        )}
-        <div
-          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 text-base font-semibold`}
-        >
-          {item.name}
+        <div className="w-1/4 py-2 text-sm font-medium">
+          {item.categoryName}
         </div>
-        <div
-          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-center`}
-        >
+        <div className="w-1/4 py-2 text-base font-semibold">{item.name}</div>
+        <div className="w-1/4 py-2 font-medium text-base text-center">
           {calculateTotalValue(item.price, item.quantity)}원
         </div>
         <div
-          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-center ${item.profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
+          className={`w-1/4 py-2 font-medium text-base text-center ${
+            item.profitRate >= 0 ? 'text-green-500' : 'text-red-500'
+          }`}
         >
           {(item.profitRate * 100).toFixed(1)}%{' '}
           {item.profitRate >= 0 ? '▲' : '▼'}
@@ -93,9 +89,9 @@ const PortfolioDetails: React.FC = () => {
           style={{ height: 'calc(100% - 24px)' }}
         >
           <h2 className="text-xl font-bold pt-4 mb-1 px-4">
-            {showAllItems
-              ? '전체'
-              : categories[activeIndex!]?.name || '포트폴리오'}
+            {activeIndex !== undefined && activeIndex !== null
+              ? categories[activeIndex]?.name
+              : '전체 포트폴리오'}
           </h2>
           {/* 안쪽만 스크롤 */}
           <div className="h-full pt-4 pb-10 overflow-y-auto">
