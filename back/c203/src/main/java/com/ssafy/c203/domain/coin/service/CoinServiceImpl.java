@@ -181,7 +181,7 @@ public class CoinServiceImpl implements CoinService {
                         .priceAvg(tradeResult.getTradePrice())
                         .amount(tradeResult.getResult())
                         .build();
-                log.info("새로운 저장 = {} : {}", newPortfolio.getPriceAvg(), newPortfolio.getAmount());
+//                log.info("새로운 저장 = {} : {}", newPortfolio.getPriceAvg(), newPortfolio.getAmount());
                 coinPortfolioRepository.save(newPortfolio);
             }
         } catch (Exception e) {
@@ -193,7 +193,7 @@ public class CoinServiceImpl implements CoinService {
     @Override
     public void sellCoin(Long userId, String coinCode, Double price) {
         // 1. 입력 확인
-        log.info("coinsell = {}, {}", userId, coinCode);
+//        log.info("coinsell = {}, {}", userId, coinCode);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
         Members member = memberService.findMemberById(userId);
@@ -210,15 +210,15 @@ public class CoinServiceImpl implements CoinService {
         try {
             // 3. 거래
             SecuritiesCoinTrade securitiesCoinTrade = SecuritiesCoinSell(coinCode, amount);
-            log.info("거래 끝");
+//            log.info("거래 끝");
             // 4. 저장
             saveTradeRecode(member, coinItem, amount, securitiesCoinTrade.getResult(), TradeMethod.SELL);
-            log.info("저장 끝");
+//            log.info("저장 끝");
             // 5. 입금
             long salePrice = Math.round(securitiesCoinTrade.getResult());
-            log.info("거래내역:{}", securitiesCoinTrade);
+//            log.info("거래내역:{}", securitiesCoinTrade);
 
-            log.info("입금 끝");
+//            log.info("입금 끝");
             if (!deposit(userId, salePrice)) {
                 throw new RuntimeException("입금 실패");
             }
@@ -254,7 +254,7 @@ public class CoinServiceImpl implements CoinService {
                     String name = portfolio.getCoinItem().getName();
                     Double amount = portfolio.getAmount();
                     Double price = amount * currentPrice;
-                    Double priceAvg = portfolio.getPriceAvg();
+                    Double priceAvg = portfolio.getPriceAvg() == null ? 0.0 : portfolio.getPriceAvg();
                     double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
 
                     return new FindCoinPortfolioResponse(coinCode, name, amount, price, profitRate);
@@ -268,7 +268,7 @@ public class CoinServiceImpl implements CoinService {
         MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
         Double currentPrice = coinMinute.getClose();
-        log.info("profit calc = ({} - {}) / {} = {}", currentPrice, priceAvg, priceAvg * 100, (currentPrice - priceAvg) / priceAvg * 100);
+//        log.info("profit calc = ({} - {}) / {} = {}", currentPrice, priceAvg, priceAvg * 100, (currentPrice - priceAvg) / priceAvg * 100);
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
         return new PriceAndProfit(currentPrice, Math.round(profitRate * 100.0) / 100.0);
     }

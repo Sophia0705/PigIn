@@ -9,6 +9,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.UserPortfolioResponse;
 import com.ssafy.c203.domain.members.entity.Members;
 import java.security.NoSuchAlgorithmException;
 

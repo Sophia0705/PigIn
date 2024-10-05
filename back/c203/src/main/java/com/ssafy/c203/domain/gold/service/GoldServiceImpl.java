@@ -3,6 +3,7 @@ package com.ssafy.c203.domain.gold.service;
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
+import com.ssafy.c203.domain.gold.dto.response.FindGoldPortfolioResponse;
 import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
@@ -30,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.ssafy.c203.domain.members.service.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +63,7 @@ public class GoldServiceImpl implements GoldService {
     private final LocalTime GOLD_END_TIME = LocalTime.of(15, 30);
     private final LocalTime GOLD_START_TIME = LocalTime.of(9, 30);
     private final GoldPortfolioRepository goldPortfolioRepository;
+    private final MemberServiceImpl memberServiceImpl;
 
     @Value("${ssafy.securities.url}")
     private String MY_SECURITES_BASE_URL;
@@ -368,6 +372,15 @@ public class GoldServiceImpl implements GoldService {
                 .tradePrice(tradePrice)
                 .build());
         }
+    }
+
+    @Override
+    public FindGoldPortfolioResponse findPortfolio(Long userId) {
+        GoldPortfolio portfolio = goldPortfolioRepository.findByMember_Id(userId)
+                .orElse(new GoldPortfolio(0, 0, memberServiceImpl.findMemberById(userId)));
+        int goldPrice = getGoldPrice();
+
+        return new FindGoldPortfolioResponse(portfolio.getAmount(), portfolio.getAmount() * goldPrice, portfolio.getAmount() == 0 ? 0 : (goldPrice - portfolio.getPriceAvg()) / portfolio.getPriceAvg() * 100);
     }
 
     private int getGoldPrice() {

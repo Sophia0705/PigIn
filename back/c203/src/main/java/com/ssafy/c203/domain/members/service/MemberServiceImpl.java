@@ -5,6 +5,10 @@ import com.ssafy.c203.common.dto.response.OneWonAuthenticationDto;
 import com.ssafy.c203.common.dto.response.OneWonResponseDto;
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
+import com.ssafy.c203.domain.coin.service.CoinService;
+import com.ssafy.c203.domain.gold.dto.response.FindGoldPortfolioResponse;
+import com.ssafy.c203.domain.gold.service.GoldService;
 import com.ssafy.c203.domain.members.dto.RequestDto.AccountAuthenticationCompareDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindIdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.FindPasswordDto;
@@ -15,6 +19,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.UserPortfolioResponse;
 import com.ssafy.c203.domain.members.entity.MMSAuthentication;
 import com.ssafy.c203.domain.members.entity.MemberAccount;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -29,12 +34,15 @@ import com.ssafy.c203.domain.members.repository.MemberAccountRepository;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+
+import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
+import com.ssafy.c203.domain.stock.service.StockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -45,6 +53,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import static java.lang.Math.round;
 
 @Service
 @Slf4j
@@ -58,6 +68,7 @@ public class MemberServiceImpl implements MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberAccountRepository memberAccountRepository;
     private final MMSService mmsService;
+
     //Todo : application.properties에 추가
     @Value("${ssafy.api.key}")
     private String apiKey;
