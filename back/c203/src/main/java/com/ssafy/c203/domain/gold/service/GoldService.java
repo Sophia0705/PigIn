@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
+import com.ssafy.c203.domain.gold.dto.response.FindGoldPortfolioResponse;
 import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
@@ -35,4 +36,6 @@ public interface GoldService {
     boolean isAutoFundingGold(Long userId);
 
     double getMine(Long userId);
+
+    FindGoldPortfolioResponse findPortfolio(Long userId);
 }
