@@ -1,27 +1,39 @@
 export interface AssetItem {
   name: string;
-  quantity: number;
+  amount: number;
   price: number;
-  profitRate: number;
-  categoryName?: string;
+  profitRate: number | string;
 }
 
-export interface AssetCategory {
-  name: string;
-  totalValue: number;
-  items: AssetItem[];
+export interface StockItem extends AssetItem {
+  stockCode: string;
 }
 
-export interface PortfolioState {
-  categories: AssetCategory[];
-  totalValue: number;
-  totalProfit: number;
-  totalProfitRate: number;
-  activeIndex: number | undefined;
-  showAllItems: boolean;
-  setShowAllItems: (show: boolean) => void;
+export interface CryptoItem extends AssetItem {
+  coinCode: string;
+}
+
+export interface PortfolioData {
+  stockPrice: number;
+  cryptoPrice: number;
+  goldPrice: number;
+  totalPrice: number;
+  stocks: StockItem[];
+  cryptocurrencies: CryptoItem[];
+  gold: AssetItem[];
+}
+
+export interface PortfolioState extends PortfolioData {
   isLoading: boolean;
   error: string | null;
-  setActiveIndex: (index: number | undefined) => void;
-  fetchPortfolioData: () => Promise<void>;
+  activeIndex: number | undefined;
+  showAllItems: boolean;
 }
+
+export interface PortfolioActions {
+  fetchPortfolioData: () => Promise<void>;
+  setActiveIndex: (index: number | undefined) => void;
+  setShowAllItems: (show: boolean) => void;
+}
+
+export type PortfolioStore = PortfolioState & PortfolioActions;

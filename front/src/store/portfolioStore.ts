@@ -1,46 +1,42 @@
 import { create } from 'zustand';
 import { fetchPortfolioData } from '../api/portfolio/portfolio';
 import {
-  AssetCategory,
-  PortfolioState,
+  PortfolioStore,
+  PortfolioData,
 } from '../portfolio/interfaces/PortfolioInterface';
 
-export const usePortfolioStore = create<PortfolioState>((set) => ({
-  categories: [],
-  totalValue: 0,
-  totalProfit: 0,
-  totalProfitRate: 0,
-  activeIndex: undefined,
-  showAllItems: false,
-  setShowAllItems: (show) => set({ showAllItems: show }),
+export const usePortfolioStore = create<PortfolioStore>((set) => ({
+  stockPrice: 0,
+  cryptoPrice: 0,
+  goldPrice: 0,
+  totalPrice: 0,
+  stocks: [],
+  cryptocurrencies: [],
+  gold: [],
   isLoading: false,
   error: null,
-  setActiveIndex: (index) => set({ activeIndex: index }),
+  activeIndex: undefined,
+  showAllItems: true,
+
+  setActiveIndex: (index: number | undefined) =>
+    set({ activeIndex: index, showAllItems: false }),
+  setShowAllItems: (show: boolean) =>
+    set({ showAllItems: show, activeIndex: undefined }),
+
   fetchPortfolioData: async () => {
     set({ isLoading: true, error: null });
     try {
-      const data = await fetchPortfolioData();
-
-      const newCategories: AssetCategory[] = [
-        { name: '주식', totalValue: data.stockPrice, items: data.stocks },
-        { name: '금', totalValue: data.goldPrice, items: data.gold },
-        {
-          name: '가상화폐',
-          totalValue: data.cryptoPrice,
-          items: data.cryptocurrencies,
-        },
-      ];
-
-      set({
-        categories: newCategories,
-        totalValue: data.totalPrice,
-        isLoading: false,
-      });
+      const data: PortfolioData = await fetchPortfolioData();
+      set({ ...data, isLoading: false });
     } catch (error) {
       set({
         error: '포트폴리오 데이터를 불러오는 데 실패했습니다.',
         isLoading: false,
       });
+      console.error(
+        'Error fetching portfolio data:',
+        error instanceof Error ? error.message : String(error)
+      );
     }
   },
 }));
