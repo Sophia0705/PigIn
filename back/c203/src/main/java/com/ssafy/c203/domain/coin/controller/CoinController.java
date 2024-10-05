@@ -1,10 +1,7 @@
 package com.ssafy.c203.domain.coin.controller;
 
 import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinChartAllResponse;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
+import com.ssafy.c203.domain.coin.dto.response.*;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
@@ -12,6 +9,8 @@ import com.ssafy.c203.domain.coin.service.CoinEmitterService;
 import com.ssafy.c203.domain.coin.service.CoinService;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
+import com.ssafy.c203.domain.stock.dto.response.FindMyStockAllResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -102,5 +101,18 @@ public class CoinController {
         }
         PriceAndProfit result  = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
         return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, portfolio.getCoinItem().getName(), portfolio.getAmount(), result.getPrice() * portfolio.getAmount(), result.getProfit()));
+    }
+
+    @GetMapping("/my-coins")
+    public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
+        Long userId = user.getUserId();
+        log.info("findMyCoins: userId = {}", userId);
+        List<FindCoinPortfolioResponse> coins = coinService.findCoinPortfolios(userId);
+
+        Double price = Math.round(coins.stream()
+                .mapToDouble(FindCoinPortfolioResponse::getPrice)
+                .sum() * 100.0) / 100.0;
+
+        return ResponseEntity.ok().body(new FindMyCoinAllResponse(price, coins));
     }
 }
