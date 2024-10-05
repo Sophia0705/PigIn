@@ -1,11 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
+import { purchaseCrypto } from '../../../../api/investment/crypto/CryptoPurchase';
 
 interface CryptoPurchaseModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
   cryptoName: string;
+  cryptoId: string;
   cryptoPrice: number;
 }
 
@@ -14,6 +16,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
   setInputValue,
   onClose,
   cryptoName,
+  cryptoId,
   cryptoPrice,
 }) => {
   const handleKeypadClick = (number: string) => {
@@ -64,6 +67,16 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
 
+  const handleBuyClick = async () => {
+    try {
+      const response = await purchaseCrypto(cryptoId, parseFloat(inputValue));
+      console.log('구매 성공핑:', response);
+      onClose();
+    } catch (error) {
+      console.error('구매 실패핑', error);
+    }
+  };
+
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
@@ -87,17 +100,15 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
             type="text"
             value={inputValue === '00' ? '' : inputValue}
             readOnly
-            className={`bg-transparent text-center text-black text-3xl w-3/4 p-2 transition-all ${
-              inputValue ? 'border-b border-black' : ''
+            className={`bg-transparent text-center text-black text-3xl w-6/7 p-2 transition-all ${
+              inputValue && inputValue !== '00' ? 'border-b border-black' : ''
             }`}
           />
-          <div
-            className={`absolute right-4 mt-3 flex items-center space-x-1 ${
-              inputValue ? 'text-black' : ''
-            }`}
-          >
-            <span className="text-xl">원 ({percentage}%)</span>
-          </div>
+          {inputValue && inputValue !== '00' && (
+            <div className="absolute right-4 mt-4 flex items-center space-x-1 text-black">
+              <span className="text-xl">원 ({percentage}%)</span>
+            </div>
+          )}
         </div>
 
         {/* 500, 1000, 3000, 5000원 추가 버튼 */}
@@ -172,6 +183,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
                 : 'bg-green-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleBuyClick}
           >
             매수하기
           </button>

@@ -100,17 +100,15 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
             type="text"
             value={inputValue === '00' ? '' : inputValue}
             readOnly
-            className={`bg-transparent text-center text-black text-3xl w-3/4 p-2 transition-all ${
-              inputValue ? 'border-b border-black' : ''
+            className={`bg-transparent text-center text-black text-3xl w-6/7 p-2 transition-all ${
+              inputValue && inputValue !== '00' ? 'border-b border-black' : ''
             }`}
           />
-          <div
-            className={`absolute right-4 mt-3 flex items-center space-x-1 ${
-              inputValue ? 'text-black' : ''
-            }`}
-          >
-            <span className="text-xl">원 ({percentage}%)</span>
-          </div>
+          {inputValue && inputValue !== '00' && (
+            <div className="absolute right-4 mt-4 flex items-center space-x-1 text-black">
+              <span className="text-xl">원 ({percentage}%)</span>
+            </div>
+          )}
         </div>
 
         {/* 500, 1000, 3000, 5000원 추가 버튼 */}
