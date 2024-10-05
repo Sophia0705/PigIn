@@ -14,6 +14,6 @@ class StockServiceImplTest {
 
     @Test
     void findStockPortfolio() {
-        System.out.println(stockService.findStockPortfolio(10L));
+        System.out.println(stockService.findStockPortfolio(2L));
     }
 }
