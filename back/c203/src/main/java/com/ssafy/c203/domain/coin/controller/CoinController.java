@@ -1,17 +1,15 @@
 package com.ssafy.c203.domain.coin.controller;
 
-import com.ssafy.c203.domain.coin.dto.request.CoinBuyRequest;
+import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
 import com.ssafy.c203.domain.coin.dto.request.CoinSellRequest;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinChartAllResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
-import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
 import com.ssafy.c203.domain.coin.service.CoinEmitterService;
 import com.ssafy.c203.domain.coin.service.CoinService;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
-import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -78,31 +76,31 @@ public class CoinController {
     }
 
     @PostMapping("/{coinCode}/sell")
-    public ResponseEntity<?> sellCoin(@RequestBody CoinSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> sellCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("request = {}", request);
-        coinService.sellCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getAmount());
+        coinService.sellCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getPrice());
         return ResponseEntity.ok().body("success");
 
     }
 
     @PostMapping("/{coinCode}/buy")
-    public ResponseEntity<?> buyCoin(@RequestBody CoinBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> buyCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("request = {}", request);
         coinService.buyCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getPrice());
         return ResponseEntity.ok().body("success");
     }
 
-    @GetMapping("/{coinCode}/quantity")
-    public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long userId = customUserDetails.getUserId();
-        log.info("userId = {}, coinCode = {}", userId, coinCode);
-        CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
-        if (portfolio == null) {
-            return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, 0.0, 0.0));
-        }
-        double profit = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
-        return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, portfolio.getAmount(), profit));
-    }
+//    @GetMapping("/{coinCode}/quantity")
+//    public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+//        Long userId = customUserDetails.getUserId();
+//        log.info("userId = {}, coinCode = {}", userId, coinCode);
+//        CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
+//        if (portfolio == null) {
+//            return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, 0.0, 0.0));
+//        }
+//        double profit = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
+//        return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, portfolio.getAmount(), profit));
+//    }
 
 
 }

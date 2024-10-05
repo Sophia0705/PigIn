@@ -149,8 +149,9 @@ public class CoinServiceImpl implements CoinService {
     }
 
     @Override
-    public void buyCoin(Long userId, String coinCode, Long price) {
+    public void buyCoin(Long userId, String coinCode, Double dPrice) {
         // 1. 입력 확인
+        Long price = Math.round(dPrice);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
         Members member = memberService.findMemberById(userId);
@@ -184,11 +185,17 @@ public class CoinServiceImpl implements CoinService {
     }
 
     @Override
-    public void sellCoin(Long userId, String coinCode, Double amount) {
+    public void sellCoin(Long userId, String coinCode, Double price) {
         // 1. 입력 확인
         CoinItem coinItem = coinItemRepository.findById(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
         Members member = memberService.findMemberById(userId);
+
+        MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
+                .orElseThrow();
+
+        Double amount = Double.parseDouble(mongoCoinMinute.getCoin()) / price;
+
         CoinPortfolio coinPortfolio = valiateCoinPortfolio(coinItem, member, amount);
 
         // 2. 코인 보유량 감소

@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.stock.controller;
 
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
+import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.request.StockBuyRequest;
 import com.ssafy.c203.domain.stock.dto.request.StockSellRequest;
 import com.ssafy.c203.domain.stock.dto.response.FindStockAllResponse;
@@ -99,6 +100,7 @@ public class StockController {
     public ResponseEntity<?> buyStock(@RequestBody StockBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("request = {}", request);
         if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice())) {
+            log.info("구매 성공");
             return ResponseEntity.ok().body("success");
         }
         return ResponseEntity.ok().body("wait");
@@ -108,11 +110,11 @@ public class StockController {
     public ResponseEntity<?> findStockQuantity(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         log.info("findStockQuantity: stockId = {}", stockId);
         StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);
+        log.info("portfolio = {} : {}", portfolio.getStockItem().getName(), portfolio.getPriceAvg());
         if (portfolio == null) {
-            return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, 0.0, 0.0));
+            return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getStockItem().getName(), 0.0, 0.0, 0.0));
         }
-
-        double profit = stockService.calculateProfit(portfolio.getPriceAvg(), stockId);
-        return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getAmount(), profit));
+        PriceAndProfit result = stockService.calculateProfit(portfolio.getPriceAvg(), stockId);
+        return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getStockItem().getName(), portfolio.getAmount(), result.getPrice() * portfolio.getAmount(), result.getProfit()));
     }
 }
