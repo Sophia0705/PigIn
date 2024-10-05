@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
 import { sellStock } from '../../../../api/investment/stock/StockSell';
+import { getStockQuantity } from '../../../../api/investment/stock/StockQuantity';
 
 interface StockSellModalProps {
   inputValue: string;
@@ -77,6 +78,18 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
       console.error('매도 실패핑:', error);
     }
   };
+
+  useEffect(() => {
+    const fetchStockQuantity = async () => {
+      try {
+        const response = await getStockQuantity(stockId);
+        console.log(response);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchStockQuantity();
+  }, [stockId]);
 
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
