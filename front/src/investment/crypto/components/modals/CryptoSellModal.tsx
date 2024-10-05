@@ -1,11 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
+import { sellCrypto } from '../../../../api/investment/crypto/CryptoSell';
 
 interface CryptoSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
   cryptoName: string;
+  cryptoId: string;
   cryptoPrice: number;
 }
 
@@ -15,6 +17,7 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
   onClose,
   cryptoName,
   cryptoPrice,
+  cryptoId,
 }) => {
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
@@ -63,6 +66,16 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
 
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
+
+  const handleSellClick = async () => {
+    try {
+      const response = await sellCrypto(cryptoId, parseFloat(inputValue));
+      console.log('가상화폐 매도 성공핑:', response);
+      onClose();
+    } catch (error) {
+      console.error('매도 실패핑:', error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
@@ -169,6 +182,7 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
                 : 'bg-red-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleSellClick}
           >
             매도하기
           </button>
