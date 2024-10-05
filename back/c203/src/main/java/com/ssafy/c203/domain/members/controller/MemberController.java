@@ -326,13 +326,12 @@ public class MemberController {
     }
 
     private Cookie createCookie(String key, String value) {
-
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
         cookie.setSecure(true);
         cookie.setPath("/");
+        cookie.setAttribute("SameSite", "None"); // 이 속성 추가
         cookie.setHttpOnly(true);
-
         return cookie;
     }
 
