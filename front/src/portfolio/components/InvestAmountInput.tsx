@@ -52,7 +52,7 @@ const InvestmentAmountInput: React.FC<InvestmentAmountInputProps> = ({
           {error && <p className="text-red-500 text-sm mt-1 ml-2">{error}</p>}
         </div>
       ) : (
-        <div className="mb-5 text-center">
+        <div className="mb-5 text-center text-white">
           <p className="text-lg mb-2">자동 투자금액 설정금액</p>
           <div className="flex items-center justify-center">
             <p className="text-3xl font-bold mr-2">
