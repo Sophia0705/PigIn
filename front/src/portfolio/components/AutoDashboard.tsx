@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Label, ResponsiveContainer } from 'recharts';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 
@@ -46,7 +46,7 @@ const AutoDashboard: React.FC = () => {
   }
 
   return (
-    <div className="bg-white h-full rounded-lg p-4">
+    <div className="bg-white h-3/7 rounded-lg p-4 w-[95%] mx-auto">
       <div className="flex justify-between items-center">
         <div className="w-1/2">
           <ResponsiveContainer width="100%" height={190}>
