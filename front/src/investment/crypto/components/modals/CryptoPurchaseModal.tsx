@@ -1,11 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
+import { purchaseCrypto } from '../../../../api/investment/crypto/CryptoPurchase';
 
 interface CryptoPurchaseModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
   cryptoName: string;
+  cryptoId: string;
   cryptoPrice: number;
 }
 
@@ -14,6 +16,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
   setInputValue,
   onClose,
   cryptoName,
+  cryptoId,
   cryptoPrice,
 }) => {
   const handleKeypadClick = (number: string) => {
@@ -63,6 +66,16 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
 
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
+
+  const handleBuyClick = async () => {
+    try {
+      const response = await purchaseCrypto(cryptoId, parseFloat(inputValue));
+      console.log('구매 성공핑:', response);
+      onClose();
+    } catch (error) {
+      console.error('구매 실패핑', error);
+    }
+  };
 
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
@@ -172,6 +185,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
                 : 'bg-green-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleBuyClick}
           >
             매수하기
           </button>
