@@ -92,17 +92,17 @@ public class CoinController {
         return ResponseEntity.ok().body("success");
     }
 
-    @GetMapping("/{coinCode}/quantity")
-    public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long userId = customUserDetails.getUserId();
-        log.info("userId = {}, coinCode = {}", userId, coinCode);
-        CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
-        if (portfolio == null) {
-            return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, 0.0, 0.0));
-        }
-        double profit = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
-        return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, portfolio.getAmount(), profit));
-    }
+//    @GetMapping("/{coinCode}/quantity")
+//    public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+//        Long userId = customUserDetails.getUserId();
+//        log.info("userId = {}, coinCode = {}", userId, coinCode);
+//        CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
+//        if (portfolio == null) {
+//            return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, 0.0, 0.0));
+//        }
+//        double profit = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
+//        return ResponseEntity.ok().body(new FindStockPortfolioResponse(coinCode, portfolio.getAmount(), profit));
+//    }
 
 
 }

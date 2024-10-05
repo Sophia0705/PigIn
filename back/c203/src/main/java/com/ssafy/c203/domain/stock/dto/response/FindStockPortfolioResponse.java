@@ -7,7 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class FindStockPortfolioResponse {
     private String stockCode;
+    private String name;
     private Double amount;
-    private Double profit;
-
+    private Double price;
+    private Double profitRate;
 }

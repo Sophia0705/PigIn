@@ -4,6 +4,7 @@ import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
+import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.StockItem;
@@ -38,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,7 +73,7 @@ public class StockServiceImpl implements StockService {
         intervals.put("month", "M");
 
         // 주식 코드 저장
-        saveStockItems();
+//        saveStockItems();
     }
 
     @Override
@@ -156,6 +158,7 @@ public class StockServiceImpl implements StockService {
                             .amount(tradeResult.getResult())
                             .priceAvg(tradeResult.getTradePrice())
                             .build();
+                    log.info("새 포폴 저장 : {}, {}", newPortfolio.getStockItem(), newPortfolio.getPriceAvg());
                     stockPortfolioRepository.save(newPortfolio);
                 }
                 return true;
@@ -216,29 +219,39 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional(readOnly = true)
     public List<FindStockPortfolioResponse> findStockPortfolio(Long userId) {
+        Map<String, MongoStockMinute> stockMinuteMap = mongoStockMinuteRepository.findLatestStockMinuteForEachStock()
+                .stream()
+                .collect(Collectors.toMap(
+                        MongoStockMinute::getStockCode,
+                        Function.identity(),
+                        (existing, replacement) -> existing
+                ));
+
         return stockPortfolioRepository.findByMember_Id(userId).stream()
                 .map(portfolio -> {
                     String stockCode = portfolio.getStockItem().getId(); // StockItem에서 stockCode를 가져온다고 가정
+                    double currentPrice = Double.parseDouble(stockMinuteMap.get(stockCode).getClose());
+                    String name = portfolio.getStockItem().getName();
                     Double amount = portfolio.getAmount();
+                    Double price = amount * currentPrice;
                     Double priceAvg = portfolio.getPriceAvg();
-                    Double profit = calculateProfit(priceAvg, stockCode);
+                    double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
 
-                    return new FindStockPortfolioResponse(stockCode, amount, profit);
+                    return new FindStockPortfolioResponse(stockCode, name, amount, price, profitRate);
                 })
                 .toList();
     }
 
     @Override
-    public Double calculateProfit(Double priceAvg, String stockCode) {
+    public PriceAndProfit calculateProfit(Double priceAvg, String stockCode) {
         MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElseThrow();
         Double currentPrice = Double.parseDouble(stockMinute.getClose());
-
+        log.info("current price: {}", currentPrice);
         // 수익률 계산: (현재가격 - 평균매입가격) / 평균매입가격 * 100
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
-
         // 소수점 둘째 자리까지 반올림
-        return Math.round(profitRate * 100.0) / 100.0;
+        return new PriceAndProfit(currentPrice, Math.round(profitRate * 100.0) / 100.0);
     }
 
     // 해당 주식 판매 여부 검증

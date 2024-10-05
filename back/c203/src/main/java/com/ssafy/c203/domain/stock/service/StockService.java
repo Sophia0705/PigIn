@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.stock.service;
 
+import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.StockPortfolio;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
@@ -7,6 +8,7 @@ import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StockService {
     public List<MongoStockDetail> findAllStock();
@@ -19,6 +21,6 @@ public interface StockService {
     public boolean sellStock(Long userId, String stockCode, Double count);
     public StockPortfolio findStockPortfolioByCode(Long userId, String stockCode);
     public List<FindStockPortfolioResponse> findStockPortfolio(Long userId);
-    public Double calculateProfit(Double priceAvg, String stockCode);
+    public PriceAndProfit calculateProfit(Double priceAvg, String stockCode);
 }
 
