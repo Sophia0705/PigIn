@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { getMessaging } from 'firebase/messaging';
+import { getMessaging, getToken } from 'firebase/messaging';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
@@ -19,3 +19,18 @@ export const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 export const analytics = getAnalytics(app);
+
+export function registerServiceWorker() {
+  navigator.serviceWorker
+    .register('/firebase-messaging-sw.js')
+    .then(async (registration) => {
+      const token = await getToken(messaging, {
+        vapidKey: process.env.VITE_APP_VAPID_KEY,
+        serviceWorkerRegistration: registration,
+      });
+      console.log('Token:', token);
+    })
+    .catch((error) => {
+      console.error('Service Worker registration failed:', error);
+    });
+}

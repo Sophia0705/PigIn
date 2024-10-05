@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { registerServiceWorker, getDeviceToken } from './utils/notification';
 import {
   BrowserRouter as Router,
   Routes,
@@ -29,6 +30,21 @@ import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
 import TestPage from './member/pages/TestPage';
 
 const App: React.FC = () => {
+  useEffect(() => {
+    const setupPushNotifications = async () => {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        await registerServiceWorker();
+        const token = await getDeviceToken();
+        console.log('FCM Token:', token);
+      } else {
+        console.log('Notification permission denied');
+      }
+    };
+
+    setupPushNotifications();
+  }, []);
+
   return (
     <Router>
       <Layout>
