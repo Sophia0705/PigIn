@@ -151,4 +151,13 @@ public class StockController {
         stockService.deleteStockFavorite(userId, stockId);
         return ResponseEntity.ok().body("success");
     }
+
+    @GetMapping("/recommend-items")
+    public ResponseEntity<?> recommendItems() {
+        List<StockRecommendResponse> responses = stockService.findRecommendStock().stream()
+                .map(StockRecommendResponse::new)
+                .toList();
+        log.info(responses.toString());
+        return ResponseEntity.ok().body(responses);
+    }
 }

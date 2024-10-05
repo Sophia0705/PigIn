@@ -281,6 +281,12 @@ public class StockServiceImpl implements StockService {
         stockFavoriteRepository.delete(stockFavorite);
     }
 
+    @Override
+    public List<StockItem> findRecommendStock() {
+        // 우선 Top 5
+        return stockFavoriteRepository.findTopNMostFavoriteStocks(5);
+    }
+
     // 해당 주식 판매 여부 검증
     private StockPortfolio validateStockPortfolio(String stockId, Long userId, Double count) {
         StockPortfolio stockPortfolio = stockPortfolioRepository.findByStockItem_IdAndMember_Id(stockId, userId)

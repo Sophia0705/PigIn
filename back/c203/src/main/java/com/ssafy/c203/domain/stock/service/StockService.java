@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.stock.service;
 
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
+import com.ssafy.c203.domain.stock.entity.StockItem;
 import com.ssafy.c203.domain.stock.entity.StockPortfolio;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
@@ -21,9 +22,10 @@ public interface StockService {
     public StockPortfolio findStockPortfolioByCode(Long userId, String stockCode);
     public List<FindStockPortfolioResponse> findStockPortfolio(Long userId);
     public PriceAndProfit calculateProfit(Double priceAvg, String stockCode);
-
     public boolean addStockFavorite(Long userId, String stockCode);
     public boolean isStockFavorite(Long userId, String stockCode);
     public void deleteStockFavorite(Long userId, String stockCode);
+
+    public List<StockItem> findRecommendStock();
 }
 
