@@ -38,7 +38,7 @@ public class CoinPortfolio {
     }
 
     public void updatePriceAve(Double price, Double newAmount) {
-        this.priceAvg = (priceAvg * amount + priceAvg * newAmount) / (amount * newAmount);
+        this.priceAvg = (priceAvg * amount + price * newAmount) / (amount + newAmount);
     }
 
 }
