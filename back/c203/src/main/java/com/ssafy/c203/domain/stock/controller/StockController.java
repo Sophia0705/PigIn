@@ -75,7 +75,7 @@ public class StockController {
     @GetMapping("/{stockId}")
     public ResponseEntity<?> findStockById(@PathVariable String stockId) {
 //        log.info("findStockById: stockId = {}", stockId);
-        FindStockDetailResponse response = new FindStockDetailResponse(stockService.findStock(stockId));
+        FindStockDetailResponse response = new FindStockDetailResponse(stockService.findStockDetail(stockId));
         return ResponseEntity.ok().body(response);
     }
 
@@ -110,7 +110,7 @@ public class StockController {
         StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);
 //        log.info("portfolio = {} : {}", portfolio.getStockItem().getName(), portfolio.getPriceAvg());
         if (portfolio == null) {
-            return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, stockService.findStock(stockId).getHtsKorIsnm(), 0.0, 0.0, 0.0));
+            return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, stockService.findStockDetail(stockId).getHtsKorIsnm(), 0.0, 0.0, 0.0));
         }
         PriceAndProfit result = stockService.calculateProfit(portfolio.getPriceAvg(), stockId);
         return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getStockItem().getName(), portfolio.getAmount(), result.getPrice() * portfolio.getAmount(), result.getProfit()));
@@ -119,7 +119,7 @@ public class StockController {
     @GetMapping("/my-stocks")
     public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
         Long userId = user.getUserId();
-        log.info("findMyStocks: userId = {}", userId);
+//        log.info("findMyStocks: userId = {}", userId);
         List<FindStockPortfolioResponse> stocks = stockService.findStockPortfolio(userId);
 
         Double price = Math.round(stocks.stream()
@@ -127,5 +127,28 @@ public class StockController {
                 .sum() * 100.0) / 100.0;
 
         return ResponseEntity.ok().body(new FindMyStockAllResponse(price, stocks));
+    }
+
+    @PostMapping("{stockId}/favorite")
+    public ResponseEntity<?> addFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        stockService.addStockFavorite(userId, stockId);
+        return ResponseEntity.ok().body("success");
+    }
+
+    @GetMapping("{stockId}/favorite")
+    public ResponseEntity<?> isFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        if (stockService.isStockFavorite(userId, stockId)) {
+            return ResponseEntity.ok().body(true);
+        };
+        return ResponseEntity.ok().body(false);
+    }
+
+    @DeleteMapping("{stockId}/favorite")
+    public ResponseEntity<?> deleteFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        stockService.deleteStockFavorite(userId, stockId);
+        return ResponseEntity.ok().body("success");
     }
 }

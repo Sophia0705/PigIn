@@ -7,17 +7,11 @@ import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
-import com.ssafy.c203.domain.stock.entity.StockItem;
-import com.ssafy.c203.domain.stock.entity.StockPortfolio;
-import com.ssafy.c203.domain.stock.entity.StockTrade;
-import com.ssafy.c203.domain.stock.entity.StockWaitingQueue;
+import com.ssafy.c203.domain.stock.entity.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
-import com.ssafy.c203.domain.stock.repository.StockItemRepository;
-import com.ssafy.c203.domain.stock.repository.StockPortfolioRepository;
-import com.ssafy.c203.domain.stock.repository.StockTradeRepository;
-import com.ssafy.c203.domain.stock.repository.StockWaitingQueueRepository;
+import com.ssafy.c203.domain.stock.repository.*;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockDetailRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockHistoryRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockMinuteRepository;
@@ -54,6 +48,7 @@ public class StockServiceImpl implements StockService {
     private final StockItemRepository stockItemRepository;
     private final StockTradeRepository stockTradeRepository; ;
     private final StockPortfolioRepository stockPortfolioRepository;
+    private final StockFavoriteRepository stockFavoriteRepository;
 
 
     private final MemberService memberService;
@@ -95,9 +90,14 @@ public class StockServiceImpl implements StockService {
         return mongoStockDetailRepository.findLatestByHtsKorIsnmContainingIgnoreCase(keyword);
     }
 
+    @Transactional(readOnly = true)
+    public StockItem findStockItem(String stockId) {
+        return stockItemRepository.findById(stockId).orElse(null);
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public MongoStockDetail findStock(String stockCode) {
+    public MongoStockDetail findStockDetail(String stockCode) {
         return mongoStockDetailRepository.findTopByStckShrnIscdOrderByStckBsopDateDesc(stockCode).orElseThrow();
     }
 
@@ -252,6 +252,33 @@ public class StockServiceImpl implements StockService {
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
         // 소수점 둘째 자리까지 반올림
         return new PriceAndProfit(currentPrice, Math.round(profitRate * 100.0) / 100.0);
+    }
+
+    @Override
+    public boolean addStockFavorite(Long userId, String stockCode) {
+        Optional<StockFavorite> stockFavorite = stockFavoriteRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        if (stockFavorite.isEmpty()) {
+            StockFavorite newStockFavorite = StockFavorite.builder()
+                    .stockItem(findStockItem(stockCode))
+                    .member(memberService.findMemberById(userId))
+                    .build();
+            stockFavoriteRepository.save(newStockFavorite);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isStockFavorite(Long userId, String stockCode) {
+        Optional<StockFavorite> stockFavorite = stockFavoriteRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        return stockFavorite.isPresent();
+    }
+
+    @Override
+    public void deleteStockFavorite(Long userId, String stockCode) {
+        StockFavorite stockFavorite = stockFavoriteRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElseThrow();
+        stockFavoriteRepository.delete(stockFavorite);
     }
 
     // 해당 주식 판매 여부 검증

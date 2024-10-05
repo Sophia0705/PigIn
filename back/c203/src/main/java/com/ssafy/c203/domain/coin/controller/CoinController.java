@@ -106,7 +106,7 @@ public class CoinController {
     @GetMapping("/my-coins")
     public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
         Long userId = user.getUserId();
-        log.info("findMyCoins: userId = {}", userId);
+//        log.info("findMyCoins: userId = {}", userId);
         List<FindCoinPortfolioResponse> coins = coinService.findCoinPortfolios(userId);
 
         Double price = Math.round(coins.stream()
