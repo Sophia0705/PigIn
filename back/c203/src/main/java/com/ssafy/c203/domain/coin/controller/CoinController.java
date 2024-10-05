@@ -1,7 +1,6 @@
 package com.ssafy.c203.domain.coin.controller;
 
 import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
-import com.ssafy.c203.domain.coin.dto.request.CoinSellRequest;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinChartAllResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
