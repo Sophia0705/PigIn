@@ -10,6 +10,7 @@ public enum GoldException {
     TRADE_ERROR("거래 중 에러가 발생했습니다.", HttpStatus.BAD_REQUEST.value()),
     AUTO_FUNDING_NOT_FOUND("금 자동 투자 상품을 찾지 못했습니다.", HttpStatus.NOT_FOUND.value()),
     GOLD_FAVORITE_NOT_FOUND("해당 찜 내용을 찾지 못했습니다.", HttpStatus.NOT_FOUND.value()),
+    PORTFOLIO_NOT_FOUND("포트폴리오를 찾지 못했습니다.", HttpStatus.NOT_FOUND.value()),
     ;
 
     private final String message;
