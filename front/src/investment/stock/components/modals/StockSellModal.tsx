@@ -1,21 +1,24 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { CgClose } from 'react-icons/cg';
+import { sellStock } from '../../../../api/investment/stock/StockSell';
+import { getStockQuantity } from '../../../../api/investment/stock/StockQuantity';
 
 interface StockSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  stockName: string;
-  stockPrice: number;
+  stockId: string;
 }
 
 const StockSellModal: React.FC<StockSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  stockName,
-  stockPrice,
+  stockId,
 }) => {
+  const [stockQuantity, setStockQuantity] = useState<number>(0);
+  const [profitRate, setProfitRate] = useState<number>(0);
+
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
       if (prev.length > 4) {
@@ -62,7 +65,35 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
   }, [handleBackspace]);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / stockPrice) * 100).toFixed(2);
+  const percentage =
+    inputAmount === 0 || stockQuantity === 0
+      ? 0.0
+      : ((inputAmount / stockQuantity) * 100).toFixed(2);
+
+  const handleSellClick = async () => {
+    try {
+      console.log(stockId, percentage);
+      const response = await sellStock(stockId, Number(percentage) * 0.01);
+      console.log('매도 성공핑:', response);
+      onClose();
+    } catch (error) {
+      console.error('매도 실패핑:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchStockQuantity = async () => {
+      try {
+        const response = await getStockQuantity(stockId);
+        console.log(response);
+        setStockQuantity(Number(Number(response.price).toFixed(2)));
+        setProfitRate(response.profitRate);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchStockQuantity();
+  }, [stockId]);
 
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
@@ -78,7 +109,8 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {stockName} 현재 보유 : {stockPrice.toLocaleString()}원
+          현재 보유 금액 : <span className="text-2xl">{stockQuantity}</span> 원{' '}
+          <span className="text-sm">({profitRate} %)</span>
         </div>
 
         {/* 가격 표시 칸 */}
@@ -88,16 +120,14 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
             value={inputValue === '00' ? '' : inputValue}
             readOnly
             className={`bg-transparent text-center text-black text-3xl w-6/7 p-2 transition-all ${
-              inputValue ? 'border-b border-black' : ''
+              inputValue && inputValue !== '00' ? 'border-b border-black' : ''
             }`}
           />
-          <div
-            className={`absolute right-4 mt-4 flex items-center space-x-1 ${
-              inputValue ? 'text-black' : ''
-            }`}
-          >
-            <span className="text-xl">원 ({percentage}%)</span>
-          </div>
+          {inputValue && inputValue !== '00' && (
+            <div className="absolute right-4 mt-4 flex items-center space-x-1 text-black">
+              <span className="text-xl">원 ({percentage}%)</span>
+            </div>
+          )}
         </div>
 
         {/* 100, 1000, 3000, 5000원 추가 버튼 */}
@@ -172,6 +202,7 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
                 : 'bg-red-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleSellClick}
           >
             매도하기
           </button>

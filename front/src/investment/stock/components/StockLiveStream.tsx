@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 interface Stock {
   stockCode: string;
-  close: number;
-  date: string;
-  time: string;
+  stck_bsop_date: string;
+  stock_bsop_time: string;
+  stck_clpr: string;
+  stck_oprc: string;
+  stck_hgpr: string;
+  stck_lwpr: string;
+  acml_vol: string;
 }
 
 const StockLiveStream: React.FC = () => {
@@ -18,6 +22,7 @@ const StockLiveStream: React.FC = () => {
     // Listen for incoming messages
     eventSource.onmessage = (event: MessageEvent) => {
       const data: Stock[] = JSON.parse(event.data); // Expecting an array of Stock objects
+      console.log('Received SSE data:', data);
       setStockData((prevData) => [...prevData, ...data]); // Update the state with new data
     };
 
@@ -38,7 +43,8 @@ const StockLiveStream: React.FC = () => {
       <ul>
         {stockData.map((stock, index) => (
           <li key={index}>
-            {stock.stockCode}: {stock.close} - {stock.date} {stock.time}
+            {stock.stockCode}: {stock.stck_clpr} - {stock.stck_bsop_date}{' '}
+            {stock.stock_bsop_time}
           </li>
         ))}
       </ul>

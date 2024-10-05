@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { CgClose } from 'react-icons/cg';
+import { tradeGold } from '../../../../api/investment/gold/GoldTrade';
 
 interface GoldPurchaseModalProps {
   inputValue: string;
@@ -60,6 +61,16 @@ const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
 
   const inputAmount = parseFloat(inputValue) || 0;
   const percentage = ((inputAmount / goldPrice) * 100).toFixed(2);
+
+  const handleBuyClick = async () => {
+    try {
+      const response = await tradeGold(inputAmount, 'BUY');
+      console.log('금 매수 성공핑:', response);
+      onClose();
+    } catch (error) {
+      console.error('금 매수 실패핑:', error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
@@ -166,6 +177,7 @@ const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
                 : 'bg-green-500 text-white'
             }`}
             disabled={inputValue === '00'}
+            onClick={handleBuyClick}
           >
             매수하기
           </button>

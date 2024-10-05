@@ -257,6 +257,7 @@ const StockDetailPage: React.FC = () => {
           inputValue={buyInputValue}
           setInputValue={setBuyInputValue}
           onClose={handleBuyModalClose}
+          stockId={stockData.stck_shrn_iscd}
           stockName={stockData.hts_kor_isnm}
           stockPrice={stockData.stck_prpr}
         />
@@ -265,11 +266,10 @@ const StockDetailPage: React.FC = () => {
       {/* 매도 모달 */}
       {isSellModalVisible && (
         <StockSellModal
+          stockId={stockData.stck_shrn_iscd}
           inputValue={sellInputValue}
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
-          stockName={stockData.hts_kor_isnm}
-          stockPrice={stockData.stck_prpr}
         />
       )}
     </div>
