@@ -1,6 +1,7 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { CgClose } from 'react-icons/cg';
 import { sellCrypto } from '../../../../api/investment/crypto/CryptoSell';
+import { getCryptoQuantity } from '../../../../api/investment/crypto/CryptoQuantity';
 
 interface CryptoSellModalProps {
   inputValue: string;
@@ -15,10 +16,12 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  cryptoName,
   cryptoPrice,
   cryptoId,
 }) => {
+  const [cryptoQuantity, setCryptoQuantity] = useState<number>(0);
+  const [profitRate, setProfitRate] = useState<number>(0);
+
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
       if (prev.length > 4) {
@@ -77,6 +80,19 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
     }
   };
 
+  useEffect(() => {
+    const fetchCryptoQuantity = async () => {
+      try {
+        const response = await getCryptoQuantity(cryptoId);
+        setCryptoQuantity(Number(Number(response.amount).toFixed(2)));
+        setProfitRate(response.profitRate);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCryptoQuantity();
+  }, [cryptoId]);
+
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
@@ -90,7 +106,8 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {cryptoName} 현재 보유 : {Number(cryptoPrice).toLocaleString()} 원
+          현재 보유 금액 : <span className="text-2xl">{cryptoQuantity}</span> 원{' '}
+          <span className="text-sm">({profitRate} %)</span>
         </div>
 
         {/* 가격 표시 칸 */}

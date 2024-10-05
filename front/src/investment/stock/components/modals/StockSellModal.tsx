@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { CgClose } from 'react-icons/cg';
 import { sellStock } from '../../../../api/investment/stock/StockSell';
 import { getStockQuantity } from '../../../../api/investment/stock/StockQuantity';
@@ -16,10 +16,12 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  stockName,
   stockPrice,
   stockId,
 }) => {
+  const [stockQuantity, setStockQuantity] = useState<number>(0);
+  const [profitRate, setProfitRate] = useState<number>(0);
+
   const handleKeypadClick = (number: string) => {
     setInputValue((prev) => {
       if (prev.length > 4) {
@@ -83,7 +85,8 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
     const fetchStockQuantity = async () => {
       try {
         const response = await getStockQuantity(stockId);
-        console.log(response);
+        setStockQuantity(Number(Number(response.amount).toFixed(2)));
+        setProfitRate(response.profitRate);
       } catch (error) {
         console.error(error);
       }
@@ -105,7 +108,8 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {stockName} 현재 보유 : {stockPrice.toLocaleString()}원
+          현재 보유 금액 : <span className="text-2xl">{stockQuantity}</span> 원{' '}
+          <span className="text-sm">({profitRate} %)</span>
         </div>
 
         {/* 가격 표시 칸 */}
