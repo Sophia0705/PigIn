@@ -294,9 +294,7 @@ const CryptoDetailPage: React.FC = () => {
           inputValue={sellInputValue}
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
-          cryptoName={cryptoData.coinName}
           cryptoId={cryptoData.coin}
-          cryptoPrice={cryptoData.price}
         />
       )}
     </div>

@@ -7,16 +7,13 @@ interface StockSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  stockName: string;
   stockId: string;
-  stockPrice: number;
 }
 
 const StockSellModal: React.FC<StockSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  stockPrice,
   stockId,
 }) => {
   const [stockQuantity, setStockQuantity] = useState<number>(0);
@@ -68,7 +65,10 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
   }, [handleBackspace]);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / stockPrice) * 100).toFixed(2);
+  const percentage =
+    inputAmount === 0 || stockQuantity === 0
+      ? 0.0
+      : ((inputAmount / stockQuantity) * 100).toFixed(2);
 
   const handleSellClick = async () => {
     try {
@@ -119,16 +119,14 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
             value={inputValue === '00' ? '' : inputValue}
             readOnly
             className={`bg-transparent text-center text-black text-3xl w-6/7 p-2 transition-all ${
-              inputValue ? 'border-b border-black' : ''
+              inputValue && inputValue !== '00' ? 'border-b border-black' : ''
             }`}
           />
-          <div
-            className={`absolute right-4 mt-4 flex items-center space-x-1 ${
-              inputValue ? 'text-black' : ''
-            }`}
-          >
-            <span className="text-xl">원 ({percentage}%)</span>
-          </div>
+          {inputValue && inputValue !== '00' && (
+            <div className="absolute right-4 mt-4 flex items-center space-x-1 text-black">
+              <span className="text-xl">원 ({percentage}%)</span>
+            </div>
+          )}
         </div>
 
         {/* 100, 1000, 3000, 5000원 추가 버튼 */}

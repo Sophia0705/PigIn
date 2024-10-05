@@ -7,16 +7,13 @@ interface CryptoSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  cryptoName: string;
   cryptoId: string;
-  cryptoPrice: number;
 }
 
 const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  cryptoPrice,
   cryptoId,
 }) => {
   const [cryptoQuantity, setCryptoQuantity] = useState<number>(0);
@@ -68,7 +65,10 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
   }, [handleBackspace]);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / cryptoPrice) * 100).toFixed(2);
+  const percentage =
+    inputAmount === 0 || cryptoQuantity === 0
+      ? 0.0
+      : ((inputAmount / cryptoQuantity) * 100).toFixed(2);
 
   const handleSellClick = async () => {
     try {
@@ -116,13 +116,13 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
             type="text"
             value={inputValue === '00' ? '' : inputValue}
             readOnly
-            className={`bg-transparent text-center text-black text-3xl w-3/4 p-2 transition-all ${
+            className={`bg-transparent text-center text-black text-3xl w-6/7 p-2 transition-all ${
               inputValue && inputValue !== '00' ? 'border-b border-black' : ''
             }`}
           />
           {inputValue && inputValue !== '00' && (
-            <div className="absolute right-4 mt-3 flex items-center space-x-1 text-black">
-              <span className="text-xl">{`원 (${percentage}%)`}</span>
+            <div className="absolute right-4 mt-4 flex items-center space-x-1 text-black">
+              <span className="text-xl">원 ({percentage}%)</span>
             </div>
           )}
         </div>

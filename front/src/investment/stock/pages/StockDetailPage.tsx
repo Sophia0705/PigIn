@@ -270,8 +270,6 @@ const StockDetailPage: React.FC = () => {
           inputValue={sellInputValue}
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
-          stockName={stockData.hts_kor_isnm}
-          stockPrice={stockData.stck_prpr}
         />
       )}
     </div>
