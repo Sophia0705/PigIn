@@ -1,7 +1,13 @@
 package com.ssafy.c203.domain.stock.controller;
 
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
-import com.ssafy.c203.domain.stock.dto.*;
+import com.ssafy.c203.domain.stock.dto.request.StockBuyRequest;
+import com.ssafy.c203.domain.stock.dto.request.StockSellRequest;
+import com.ssafy.c203.domain.stock.dto.response.FindStockAllResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockChartAllResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockDetailResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
+import com.ssafy.c203.domain.stock.entity.StockPortfolio;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
@@ -15,7 +21,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -94,5 +102,17 @@ public class StockController {
             return ResponseEntity.ok().body("success");
         }
         return ResponseEntity.ok().body("wait");
+    }
+
+    @GetMapping("/{stockId}/quantity")
+    public ResponseEntity<?> findStockQuantity(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        log.info("findStockQuantity: stockId = {}", stockId);
+        StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);
+        if (portfolio == null) {
+            return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, 0.0, 0.0));
+        }
+
+        double profit = stockService.calculateProfit(portfolio.getPriceAvg(), stockId);
+        return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getAmount(), profit));
     }
 }

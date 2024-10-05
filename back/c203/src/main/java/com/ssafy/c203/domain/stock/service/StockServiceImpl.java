@@ -5,6 +5,7 @@ import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
+import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.StockItem;
 import com.ssafy.c203.domain.stock.entity.StockPortfolio;
 import com.ssafy.c203.domain.stock.entity.StockTrade;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +75,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockDetail> findAllStock() {
         try {
             // 연결 테스트
@@ -85,16 +88,19 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockDetail> searchStock(String keyword) {
         return mongoStockDetailRepository.findByHtsKorIsnmLike(keyword);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MongoStockDetail findStock(String stockCode) {
         return mongoStockDetailRepository.findByStckShrnIscd(stockCode).orElseThrow();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count) {
         Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
         try {
@@ -108,6 +114,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockMinute> findStockMinuteChart(String stockCode, Integer count) {
         Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
         List<MongoStockMinute> tmp = mongoStockMinuteRepository.findByStockCodeOrderByDateDescTimeDesc(stockCode, pageable);
@@ -115,6 +122,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MongoStockMinute> findStockMinute() {
         return mongoStockMinuteRepository.findLatestStockMinuteForEachStock();
     }
@@ -140,12 +148,13 @@ public class StockServiceImpl implements StockService {
                 // 5. 보유 주식 업데이트
                 Optional<StockPortfolio> portfolio = stockPortfolioRepository.findByStockItemAndMember(stockItem, member);
                 if (portfolio.isPresent()) {
-                    updateStockPortfolio(portfolio.get(), tradeResult.getResult());
+                    addStockPortfolio(portfolio.get(), tradeResult.getResult(), tradeResult.getTradePrice());
                 } else {
                     StockPortfolio newPortfolio = StockPortfolio.builder()
                             .stockItem(stockItem)
                             .member(member)
                             .amount(tradeResult.getResult())
+                            .priceAvg(tradeResult.getTradePrice())
                             .build();
                     stockPortfolioRepository.save(newPortfolio);
                 }
@@ -163,7 +172,6 @@ public class StockServiceImpl implements StockService {
         }
     }
 
-
     @Override
     public boolean sellStock(Long userId, String stockId, Double count) {
         // 입력 검증
@@ -173,7 +181,7 @@ public class StockServiceImpl implements StockService {
         StockPortfolio stockPortfolio = validateStockPortfolio(stockId, userId, count);
 
         // 1. 보유 주식 수량 감소
-        updateStockPortfolio(stockPortfolio, -count);
+        subStockPortfolio(stockPortfolio, count);
         try {
             if (isBusinessHours()) {
                 // 2. 주식 매도 처리
@@ -193,9 +201,44 @@ public class StockServiceImpl implements StockService {
             }
         } catch (Exception e) {
             log.error("주식 매도 중 오류 발생: ", e);
-            updateStockPortfolio(stockPortfolio, count);
+            subStockPortfolio(stockPortfolio, -count);
             throw new RuntimeException("주식 매도 처리 중 오류가 발생했습니다.", e);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public StockPortfolio findStockPortfolioByCode(Long userId, String stockCode) {
+        return stockPortfolioRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FindStockPortfolioResponse> findStockPortfolio(Long userId) {
+        return stockPortfolioRepository.findByMember_Id(userId).stream()
+                .map(portfolio -> {
+                    String stockCode = portfolio.getStockItem().getId(); // StockItem에서 stockCode를 가져온다고 가정
+                    Double amount = portfolio.getAmount();
+                    Double priceAvg = portfolio.getPriceAvg();
+                    Double profit = calculateProfit(priceAvg, stockCode);
+
+                    return new FindStockPortfolioResponse(stockCode, amount, profit);
+                })
+                .toList();
+    }
+
+    @Override
+    public Double calculateProfit(Double priceAvg, String stockCode) {
+        MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
+                .orElseThrow();
+        Double currentPrice = Double.parseDouble(stockMinute.getClose());
+
+        // 수익률 계산: (현재가격 - 평균매입가격) / 평균매입가격 * 100
+        double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
+
+        // 소수점 둘째 자리까지 반올림
+        return Math.round(profitRate * 100.0) / 100.0;
     }
 
     // 해당 주식 판매 여부 검증
@@ -247,9 +290,16 @@ public class StockServiceImpl implements StockService {
         stockTradeRepository.save(stockTrade);
     }
 
-    // 주식 보유량 수정
-    private void updateStockPortfolio(StockPortfolio stockPortfolio, Double soldCount) {
-        stockPortfolio.addAmount(soldCount);
+    // 주식 보유량 증가
+    private void addStockPortfolio(StockPortfolio stockPortfolio, Double amount, Double price) {
+        stockPortfolio.addAmount(amount);
+        stockPortfolio.updatePriceAvg(price, amount);
+        stockPortfolioRepository.save(stockPortfolio);
+    }
+
+    // 주식 보유량 감소
+    private void subStockPortfolio(StockPortfolio stockPortfolio, Double amount) {
+        stockPortfolio.subAmount(amount);
         stockPortfolioRepository.save(stockPortfolio);
     }
 

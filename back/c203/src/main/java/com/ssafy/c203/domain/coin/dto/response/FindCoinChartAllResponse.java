@@ -1,4 +1,4 @@
-package com.ssafy.c203.domain.coin.dto;
+package com.ssafy.c203.domain.coin.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;

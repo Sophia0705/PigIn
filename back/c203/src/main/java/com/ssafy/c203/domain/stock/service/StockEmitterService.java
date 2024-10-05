@@ -1,6 +1,6 @@
 package com.ssafy.c203.domain.stock.service;
 
-import com.ssafy.c203.domain.stock.dto.FindStockChartAllResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockChartAllResponse;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
