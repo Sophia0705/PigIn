@@ -123,3 +123,18 @@ def crawlingGoldNews():
         collection.insert_many(parsed_articles)
     client.close()
     return "success"
+
+def getGoldNews():
+    load_dotenv()
+    mongodb_URI = os.getenv("MongoDBUrl")
+    client = MongoClient(mongodb_URI)
+    db = client["S11P23C203"]
+    collection = db['GoldNews']
+
+    results = collection.find()
+
+    response = []
+    for document in results:
+        response.append({"Date" : document["date"], "NewsCompany" : document["provider"], "NewsTitle" : document["NewsTitle"], "Link" : document["Link"]})
+
+    return response
