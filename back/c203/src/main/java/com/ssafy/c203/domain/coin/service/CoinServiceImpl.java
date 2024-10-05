@@ -187,6 +187,7 @@ public class CoinServiceImpl implements CoinService {
     @Override
     public void sellCoin(Long userId, String coinCode, Double price) {
         // 1. 입력 확인
+        log.info("coinsell = {}, {}", userId, coinCode);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
                 .orElseThrow(() -> new RuntimeException("No such coin"));
         Members member = memberService.findMemberById(userId);
@@ -194,7 +195,7 @@ public class CoinServiceImpl implements CoinService {
         MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
                 .orElseThrow();
 
-        Double amount = Double.parseDouble(mongoCoinMinute.getCoin()) / price;
+        Double amount = price / mongoCoinMinute.getClose();
 
         CoinPortfolio coinPortfolio = valiateCoinPortfolio(coinItem, member, amount);
 
@@ -360,6 +361,7 @@ public class CoinServiceImpl implements CoinService {
     private CoinPortfolio valiateCoinPortfolio(CoinItem coinItem, Members members, Double amount) {
         CoinPortfolio coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem, members)
                 .orElseThrow(() -> new RuntimeException("No such coin item"));
+        log.info("coinPortfolio = {} : {} - {}", coinPortfolio.getCoinItem().getName(), coinPortfolio.getAmount(), amount);
         if (amount > coinPortfolio.getAmount()) {
             throw new RuntimeException("보유 코인 수량 부족");
         }
