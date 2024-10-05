@@ -225,7 +225,7 @@ public class StockServiceImpl implements StockService {
 
                     return new FindStockPortfolioResponse(stockCode, amount, profit);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

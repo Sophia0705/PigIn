@@ -225,7 +225,16 @@ public class CoinServiceImpl implements CoinService {
     @Override
     @Transactional(readOnly = true)
     public List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId) {
-        return List.of();
+        return coinPortfolioRepository.findByMember_Id(userId).stream()
+                .map(portfolio -> {
+                    String coinCode = portfolio.getCoinItem().getId();
+                    Double amount = portfolio.getAmount();
+                    Double priceAvg = portfolio.getPriceAvg();
+                    Double profit = calculateProfit(priceAvg, coinCode);
+
+                    return new FindCoinPortfolioResponse(coinCode, amount, profit);
+                })
+                .toList();
     }
 
     @Override
