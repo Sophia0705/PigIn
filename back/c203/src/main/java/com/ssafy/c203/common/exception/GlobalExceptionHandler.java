@@ -4,6 +4,7 @@ import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
 import com.ssafy.c203.domain.gold.exception.GoldFavoriteNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
+import com.ssafy.c203.domain.gold.exception.PortfolioNotFoundException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationConflictException;
 import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
@@ -86,7 +87,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(GoldFavoriteNotFoundException.class)
-    public ResponseEntity<String> handleGoldFavoriteNotFoundException(GoldFavoriteNotFoundException e) {
+    public ResponseEntity<String> handleGoldFavoriteNotFoundException(
+        GoldFavoriteNotFoundException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(PortfolioNotFoundException.class)
+    public ResponseEntity<String> handlePortfolioNotFoundException(PortfolioNotFoundException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }

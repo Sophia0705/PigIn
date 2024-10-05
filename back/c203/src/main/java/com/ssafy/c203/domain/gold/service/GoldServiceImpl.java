@@ -8,15 +8,18 @@ import com.ssafy.c203.domain.gold.dto.response.GoldDto;
 import com.ssafy.c203.domain.gold.dto.response.GoldYearDto;
 import com.ssafy.c203.domain.gold.entity.GoldAutoFunding;
 import com.ssafy.c203.domain.gold.entity.GoldFavorite;
+import com.ssafy.c203.domain.gold.entity.GoldPortfolio;
 import com.ssafy.c203.domain.gold.entity.GoldTrade;
 import com.ssafy.c203.domain.gold.entity.GoldWaitingQueue;
 import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
 import com.ssafy.c203.domain.gold.exception.GoldFavoriteNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
 import com.ssafy.c203.domain.gold.exception.NoMoneyException;
+import com.ssafy.c203.domain.gold.exception.PortfolioNotFoundException;
 import com.ssafy.c203.domain.gold.exception.TradeErrorExeption;
 import com.ssafy.c203.domain.gold.repository.GoldAutoFundingRepository;
 import com.ssafy.c203.domain.gold.repository.GoldFavoriteRepository;
+import com.ssafy.c203.domain.gold.repository.GoldPortfolioRepository;
 import com.ssafy.c203.domain.gold.repository.GoldTradeRepository;
 import com.ssafy.c203.domain.gold.repository.GoldWaitingQueueRepository;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -26,6 +29,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,9 +55,11 @@ public class GoldServiceImpl implements GoldService {
     private final AccountService accountService;
     private final GoldAutoFundingRepository autoFundingRepository;
     private final GoldFavoriteRepository goldFavoriteRepository;
+    private final GoldPortfolioRepository portfolioRepository;
 
     private final LocalTime GOLD_END_TIME = LocalTime.of(15, 30);
     private final LocalTime GOLD_START_TIME = LocalTime.of(9, 30);
+    private final GoldPortfolioRepository goldPortfolioRepository;
 
     @Value("${ssafy.securities.url}")
     private String MY_SECURITES_BASE_URL;
@@ -97,10 +103,8 @@ public class GoldServiceImpl implements GoldService {
             } else {
                 try {
                     //통장 돈 검증
-                    log.info("장외 BUY 요청 들어옴");
                     boolean canBuy = checkAccount(member, tradePrice);
                     if (!canBuy) {
-                        log.info("돈도 없냐 그지새끼야");
                         throw new NoMoneyException();
                     }
 
@@ -280,7 +284,8 @@ public class GoldServiceImpl implements GoldService {
         return mineCnt * goldPrice;
     }
 
-    private void tradeGold(GoldTradeDto goldTradeDto, Members member) {
+    @Transactional
+    void tradeGold(GoldTradeDto goldTradeDto, Members member) {
         log.info("장내 {} 거래 들어옴", goldTradeDto.getMethod());
         int goldPrice = getGoldPrice();
         log.info("금 가격 : {}", goldPrice);
@@ -301,6 +306,13 @@ public class GoldServiceImpl implements GoldService {
 
                 tradeMethod = TradeMethod.SELL;
 
+                //보유량 업데이트
+                GoldPortfolio goldPortfolio = goldPortfolioRepository.findByMember_Id(
+                    member.getId()).orElseThrow(
+                    PortfolioNotFoundException::new);
+
+                goldPortfolio.minusAmount(count);
+
                 goldTradeRepository.save(GoldTrade
                     .builder()
                     .member(member)
@@ -316,21 +328,36 @@ public class GoldServiceImpl implements GoldService {
             accountService.depositAccount(member.getId(), (long) tradePrice);
         } else {
             try {
-                log.info("장 내 BUY 들어옴");
                 //통장 돈 검증
                 boolean canBuy = checkAccount(member, tradePrice);
                 if (!canBuy) {
-                    log.info("장 내 돈도 없냐 걔쒜이야");
                     throw new NoMoneyException();
                 }
-
                 //돈 빼기
                 accountService.withdrawAccount(member.getId(), (long) tradePrice);
-                log.info("돈 뺐다 마 걔쒜이야");
             } catch (Exception e) {
                 throw new TradeErrorExeption();
             }
             tradeMethod = TradeMethod.BUY;
+
+            //보유량 업데이트
+            Optional<GoldPortfolio> ogp = goldPortfolioRepository.findByMember_Id(
+                member.getId());
+            if (ogp.isEmpty()) {
+                goldPortfolioRepository.save(GoldPortfolio
+                    .builder()
+                    .member(member)
+                    .amount(count)
+                    .priceAvg(goldPrice)
+                    .build());
+            } else {
+                GoldPortfolio goldPortfolio = ogp.get();
+                double up =
+                    (goldPortfolio.getAmount() * goldPortfolio.getPriceAvg()) + (goldPrice * count);
+                double down = count + goldPortfolio.getAmount();
+                double newTradeAvg = up / down;
+                goldPortfolio.updatePortfolio(count, newTradeAvg);
+            }
 
             goldTradeRepository.save(GoldTrade
                 .builder()
@@ -374,22 +401,18 @@ public class GoldServiceImpl implements GoldService {
 
     //보유 개수 비교
     private boolean compareGold(Members member, double cnt) {
-        Double buyCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
-            TradeMethod.BUY);
-        log.info("나의 구매 개수 : {}", buyCnt);
-        Double sellCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
-            TradeMethod.SELL);
-        log.info("나의 판매 개수 : {}", sellCnt);
-        Double mineCnt = buyCnt;
-
-        if (sellCnt != null) {
-            mineCnt = buyCnt - sellCnt;
+        Optional<GoldPortfolio> ogp = goldPortfolioRepository.findByMember_Id(
+            member.getId());
+        if (ogp.isPresent()) {
+            //존재할때 비교
+            GoldPortfolio portfolio = ogp.get();
+            //가지고 있는게 더 많으면 가능
+            if (portfolio.getAmount() >= cnt) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        log.info("내 개수 : {}", mineCnt);
-        //판매 개수가 내 개수보다 많으면
-        if (cnt > mineCnt) {
-            return false;
-        }
-        return true;
+        return false;
     }
 }
