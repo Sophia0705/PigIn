@@ -85,7 +85,8 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
     const fetchStockQuantity = async () => {
       try {
         const response = await getStockQuantity(stockId);
-        setStockQuantity(Number(Number(response.amount).toFixed(2)));
+        console.log(response);
+        setStockQuantity(Number(Number(response.price).toFixed(2)));
         setProfitRate(response.profitRate);
       } catch (error) {
         console.error(error);

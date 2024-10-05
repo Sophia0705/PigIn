@@ -84,7 +84,8 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
     const fetchCryptoQuantity = async () => {
       try {
         const response = await getCryptoQuantity(cryptoId);
-        setCryptoQuantity(Number(Number(response.amount).toFixed(2)));
+        console.log(response);
+        setCryptoQuantity(Number(Number(response.price).toFixed(2)));
         setProfitRate(response.profitRate);
       } catch (error) {
         console.error(error);
