@@ -30,7 +30,6 @@ public interface StockService {
     public boolean isAutoFunding(Long userId, String stockCode);
     public void deleteAutoFunding(Long userId, String stockCode);
     public void setAutoFunding(Long userId, String stockCode, Integer percent);
-
     public List<MongoStockDetail> findFavoriteStock(Long userId);
 }
 

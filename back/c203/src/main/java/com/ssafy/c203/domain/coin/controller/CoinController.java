@@ -115,4 +115,28 @@ public class CoinController {
 
         return ResponseEntity.ok().body(new FindMyCoinAllResponse(price, coins));
     }
+
+    @PostMapping("/{coinCode}/favorite")
+    public ResponseEntity<?> addCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        return null;
+    }
+
+    @DeleteMapping("/{coinCode}/favorite")
+    public ResponseEntity<?> deleteCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        return null;
+    }
+
+    @GetMapping("/{coinCode}/favorite")
+    public ResponseEntity<?> isCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        return null;
+    }
+
+    @GetMapping("/favorite")
+    public ResponseEntity<?> findCoinFavorite(@AuthenticationPrincipal CustomUserDetails user) {
+        Long userId = user.getUserId();
+        return null;
+    }
 }
