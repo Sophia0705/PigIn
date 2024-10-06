@@ -19,7 +19,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/coin")
 @RestController
@@ -119,24 +121,32 @@ public class CoinController {
     @PostMapping("/{coinCode}/favorite")
     public ResponseEntity<?> addCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
         Long userId = user.getUserId();
-        return null;
+        return ResponseEntity.ok().body(makeResult("result", coinService.addCoinFavorite(userId, coinCode)));
     }
 
     @DeleteMapping("/{coinCode}/favorite")
     public ResponseEntity<?> deleteCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
         Long userId = user.getUserId();
-        return null;
+        coinService.deleteCoinFavorite(userId, coinCode);
+
+        return ResponseEntity.ok().body(makeResult("result", true));
     }
 
     @GetMapping("/{coinCode}/favorite")
     public ResponseEntity<?> isCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
         Long userId = user.getUserId();
-        return null;
+        return ResponseEntity.ok().body(makeResult("result", coinService.isCoinFavorite(userId, coinCode)));
     }
 
     @GetMapping("/favorite")
     public ResponseEntity<?> findCoinFavorite(@AuthenticationPrincipal CustomUserDetails user) {
         Long userId = user.getUserId();
         return null;
+    }
+
+    private Map<String, Boolean> makeResult(String key, Boolean value) {
+        Map<String, Boolean> result = new HashMap<>();
+        result.put(key, value);
+        return result;
     }
 }

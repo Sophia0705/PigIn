@@ -309,12 +309,16 @@ public class CoinServiceImpl implements CoinService {
     @Override
     @Transactional(readOnly = true)
     public boolean isCoinFavorite(Long userId, String coinCode) {
-        return false;
+        Optional<CoinFavorite> coinFavorite = coinFavoriteRepository.findByCoinItem_IdAndMember_Id(coinCode, userId);
+        return coinFavorite.isPresent();
     }
 
     @Override
     public void deleteCoinFavorite(Long userId, String coinCode) {
+        CoinFavorite coinFavorite = coinFavoriteRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
+                .orElseThrow(() -> new RuntimeException("No such coin"));
 
+        coinFavoriteRepository.delete(coinFavorite);
     }
 
     @Override
