@@ -324,6 +324,13 @@ public class MemberController {
         return ResponseEntity.ok("금액 설정 완료");
     }
 
+    @GetMapping("/balance")
+    public ResponseEntity<?> getBalance(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        Long userBalance = memberService.checkSavingAccount(userId);
+        return ResponseEntity.ok(userBalance);
+    }
+
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
