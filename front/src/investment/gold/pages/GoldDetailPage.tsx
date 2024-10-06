@@ -308,7 +308,6 @@ const GoldDetailPage: React.FC = () => {
           inputValue={sellInputValue}
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
-          goldPrice={latestValue}
         />
       )}
     </div>

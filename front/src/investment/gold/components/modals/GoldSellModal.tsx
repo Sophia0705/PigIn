@@ -9,14 +9,12 @@ interface GoldSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  goldPrice: number;
 }
 
 const GoldSellModal: React.FC<GoldSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  goldPrice,
 }) => {
   const [myGold, setMyGold] = useState<number>(0);
 
@@ -79,7 +77,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
   }, []);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / goldPrice) * 100).toFixed(2);
+  const percentage = ((inputAmount / myGold) * 100).toFixed(2);
 
   const handleSellClick = async () => {
     try {
@@ -104,7 +102,14 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          금 현재 보유 : {Math.round(Number(myGold)).toLocaleString()}원
+          금 현재 보유 :{' '}
+          <span
+            className="text-2xl cursor-pointer"
+            onClick={() => setInputValue(Math.round(Number(myGold)).toString())}
+          >
+            {Math.round(Number(myGold)).toLocaleString()}
+          </span>
+          원
         </div>
 
         {/* 가격 표시 칸 */}

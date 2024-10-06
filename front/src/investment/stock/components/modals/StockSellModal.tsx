@@ -109,8 +109,14 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          현재 보유 금액 : <span className="text-2xl">{stockQuantity}</span> 원{' '}
-          <span className="text-sm">({profitRate} %)</span>
+          현재 보유 금액 :{' '}
+          <span
+            className="text-2xl"
+            onClick={() => setInputValue(stockQuantity.toString())}
+          >
+            {stockQuantity}
+          </span>{' '}
+          원 <span className="text-sm">({profitRate} %)</span>
         </div>
 
         {/* 가격 표시 칸 */}
