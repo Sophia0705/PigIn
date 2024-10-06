@@ -21,8 +21,8 @@ public class StockSchedule {
     private final JobRegistry jobRegistry;
 
 
-    //    @Scheduled(cron = "0 0 9 * * MON-FRI") // 월요일부터 금요일까지 매일 오전 9시에 실행
-    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Seoul")
+    //    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 31 9 * * *", zone = "Asia/Seoul")
     public void runStockJob() {
         try {
             log.info("StockSchedule schedule start");
