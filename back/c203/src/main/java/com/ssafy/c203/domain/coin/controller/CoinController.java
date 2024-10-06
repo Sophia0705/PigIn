@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.coin.controller;
 
 import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
 import com.ssafy.c203.domain.coin.dto.response.*;
+import com.ssafy.c203.domain.coin.entity.CoinItem;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
@@ -10,7 +11,10 @@ import com.ssafy.c203.domain.coin.service.CoinService;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.response.FindMyStockAllResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockAllResponse;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
+import com.ssafy.c203.domain.stock.dto.response.StockRecommendResponse;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -19,7 +23,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/coin")
 @RestController
@@ -119,24 +125,63 @@ public class CoinController {
     @PostMapping("/{coinCode}/favorite")
     public ResponseEntity<?> addCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
         Long userId = user.getUserId();
-        return null;
+        return ResponseEntity.ok().body(makeResult("result", coinService.addCoinFavorite(userId, coinCode)));
     }
 
     @DeleteMapping("/{coinCode}/favorite")
     public ResponseEntity<?> deleteCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
         Long userId = user.getUserId();
-        return null;
+        coinService.deleteCoinFavorite(userId, coinCode);
+
+        return ResponseEntity.ok().body(makeResult("result", true));
     }
 
     @GetMapping("/{coinCode}/favorite")
     public ResponseEntity<?> isCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
         Long userId = user.getUserId();
-        return null;
+        return ResponseEntity.ok().body(makeResult("result", coinService.isCoinFavorite(userId, coinCode)));
     }
 
     @GetMapping("/favorite")
-    public ResponseEntity<?> findCoinFavorite(@AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseEntity<?> findCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @RequestParam Integer count) {
         Long userId = user.getUserId();
-        return null;
+
+        List<FindCoinAllResponse> response = coinService.findFavoriteCoin(userId).stream()
+                .limit(count)
+                .toList();
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/recommend-items")
+    public ResponseEntity<?> recommendItems() {
+        List<CoinRecommendResponse> responses = coinService.findRecommendCoin().stream()
+                .map(CoinRecommendResponse::new)
+                .toList();
+        return ResponseEntity.ok().body(responses);
+    }
+
+    @PostMapping("/{coinCode}/auto-funding")
+    public ResponseEntity<?> addAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        return ResponseEntity.ok().body(makeResult("result", coinService.addAutoFunding(userId, coinCode)));
+    }
+
+    @DeleteMapping("/{coinCode}/auto-funding")
+    public ResponseEntity<?> deleteAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        coinService.deleteAutoFunding(userId, coinCode);
+        return ResponseEntity.ok().body(makeResult("result", true));
+    }
+
+    @GetMapping("/{coinCode}/auto-funding")
+    public ResponseEntity<?> isAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        return ResponseEntity.ok().body(makeResult("result", coinService.isAutoFunding(userId, coinCode)));
+    }
+
+    private Map<String, Boolean> makeResult(String key, Boolean value) {
+        Map<String, Boolean> result = new HashMap<>();
+        result.put(key, value);
+        return result;
     }
 }
