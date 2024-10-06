@@ -86,7 +86,7 @@ public class PayServiceImpl implements PayService {
 
             int stockMoney = memberSavingAmount * (stockRate / 100);
 
-            stockService.buyStock(member.getId(), stockId, (long) stockMoney);
+            stockService.buyStock(member.getId(), stockId, (long) stockMoney, false);
         }
 
         //코인
