@@ -11,6 +11,9 @@ import com.ssafy.c203.domain.members.exceprtion.AuthenticationNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.EmailConflictException;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.exceprtion.WrongPasswordException;
+import com.ssafy.c203.domain.pay.exception.BuyErrorException;
+import com.ssafy.c203.domain.pay.exception.DepositErrorException;
+import com.ssafy.c203.domain.pay.exception.MemberAccountNotFoundException;
 import com.ssafy.c203.domain.quiz.exception.QuizAlreadySolvedException;
 import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -94,6 +97,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PortfolioNotFoundException.class)
     public ResponseEntity<String> handlePortfolioNotFoundException(PortfolioNotFoundException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(MemberAccountNotFoundException.class)
+    public ResponseEntity<String> handleMemberAccountNotFoundException(
+        MemberAccountNotFoundException e
+    ) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(BuyErrorException.class)
+    public ResponseEntity<String> handleBuyErrorException(BuyErrorException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    }
+
+    @ExceptionHandler(DepositErrorException.class)
+    public ResponseEntity<String> handleDepositErrorException(DepositErrorException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }

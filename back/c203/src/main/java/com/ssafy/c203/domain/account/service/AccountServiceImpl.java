@@ -23,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class AccountServiceImpl implements AccountService{
+public class AccountServiceImpl implements AccountService {
 
     private final SavingsAccountRepository savingsAccountRepository;
     private final MemberService memberService;
@@ -38,7 +38,7 @@ public class AccountServiceImpl implements AccountService{
     public Long findDAccountBalanceByMemberId(Long memberId) {
         // 1. 계좌번호 가져오기
         SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
-                .orElseThrow(RuntimeException::new);
+            .orElseThrow(RuntimeException::new);
         String accountNo = account.getAccountNo();
 
         // 2. userKey 가져오기
@@ -60,10 +60,10 @@ public class AccountServiceImpl implements AccountService{
 
         // 4. 반환
         ResponseEntity<FindBalanceResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                entity,
-                FindBalanceResponse.class
+            url,
+            HttpMethod.POST,
+            entity,
+            FindBalanceResponse.class
         );
         log.info(requestBody.toString());
         return Long.valueOf(response.getBody().getRec().getAccountBalance());
@@ -77,7 +77,7 @@ public class AccountServiceImpl implements AccountService{
 //        log.info("memberId: {}, price: {}", memberId, price);
         // 1. 계좌번호 가져오기
         SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
-                .orElseThrow(RuntimeException::new);
+            .orElseThrow(RuntimeException::new);
         String accountNo = account.getAccountNo();
 
         // 2. userKey 가져오기
@@ -100,10 +100,10 @@ public class AccountServiceImpl implements AccountService{
 
         try {
             restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    entity,
-                    String.class
+                url,
+                HttpMethod.POST,
+                entity,
+                String.class
             );
             return true;
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class AccountServiceImpl implements AccountService{
 //        log.info("memberId: " + memberId + " price: " + price);
         // 1. 계좌번호 가져오기
         SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
-                .orElseThrow(RuntimeException::new);
+            .orElseThrow(RuntimeException::new);
         String accountNo = account.getAccountNo();
 
         // 2. userKey 가져오기
@@ -144,10 +144,10 @@ public class AccountServiceImpl implements AccountService{
 
         try {
             restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    entity,
-                    String.class
+                url,
+                HttpMethod.POST,
+                entity,
+                String.class
             );
             return true;
         } catch (Exception e) {
@@ -157,5 +157,37 @@ public class AccountServiceImpl implements AccountService{
 
 //        log.info(response.getBody());
 
+    }
+
+    //거래계좌 돈빼기
+    @Override
+    public Boolean withdrawTradeAccount(Members member, String accountNo, Long price) {
+        String userKey = member.getUserKey();
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/updateDemandDepositAccountWithdrawal";
+        UserHeader header = new UserHeader("updateDemandDepositAccountWithdrawal", apiKey, userKey);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("Header", header);
+        requestBody.put("accountNo", accountNo);
+        requestBody.put("transactionBalance", price);
+        requestBody.put("transactionSummary", "출금");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                String.class
+            );
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 }
