@@ -369,4 +369,13 @@ public class MemberServiceImpl implements MemberService {
 
         member.updateSavingAmount(money);
     }
+
+    @Override
+    public void updateAutoTrading(Long userId, boolean autoTrading, int price) {
+        Members members = membersRepository.findById(userId)
+                .orElseThrow(MemberNotFoundException::new);
+
+        members.updateAutoFundingStatusAndPrice(autoTrading, price);
+        membersRepository.save(members);
+    }
 }

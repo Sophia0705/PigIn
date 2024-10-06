@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.coin.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
+import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.SecuritiesCoinTrade;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
@@ -370,6 +371,27 @@ public class CoinServiceImpl implements CoinService {
         return allCoins.stream()
                 .filter(coin -> favoriteCoinIds.contains(coin.getCoin()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateAutoFunding(Long userId, List<CoinAutoSetting> autoSettings) {
+        coinAutoFundingRepository.deleteByMember_Id(userId);
+
+        for (CoinAutoSetting autoSetting : autoSettings) {
+            CoinAutoFunding coinAutoFunding = CoinAutoFunding.builder()
+                    .member(memberService.findMemberById(userId))
+                    .coinItem(coinItemRepository.findById(autoSetting.getCoinCode()).get())
+                    .rate(autoSetting.getPercent())
+                    .build();
+            coinAutoFundingRepository.save(coinAutoFunding);
+        }
+    }
+
+    @Override
+    public List<CoinAutoSetting> findAutoFunding(Long userId) {
+        return coinAutoFundingRepository.findByMember_Id(userId).stream()
+                .map(CoinAutoSetting::new)
+                .toList();
     }
 
     // 출금
