@@ -142,7 +142,7 @@ const LoginModal: React.FC = () => {
               ) : (
                 <FaTimesCircle className="absolute right-10 top-2/4 text-red-500" />
               ))}
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-1">
               8자 이상, 영문, 숫자 포함
             </p>
           </div>
