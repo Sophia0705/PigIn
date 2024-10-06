@@ -8,10 +8,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CoinFavorite {
 
