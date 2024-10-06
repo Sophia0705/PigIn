@@ -95,7 +95,7 @@ const PhoneNumberInput: React.FC = () => {
           value={phoneNumber}
           onChange={handlePhoneNumberChange}
           placeholder="전화번호 (예: 010-1234-5678)"
-          className="flex-1 p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+          className="flex-1 p-2 border-b border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           maxLength={13} // 하이픈 포함 13자리 제한
         />
         <button
@@ -145,8 +145,6 @@ const PhoneNumberInput: React.FC = () => {
           </button>
         </>
       )}
-
-      <hr className="w-full border-t border-gray-300 mt-4" />
     </>
   );
 };

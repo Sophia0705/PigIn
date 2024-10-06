@@ -18,3 +18,10 @@ export interface GoldChartDataResponse {
   date: string;
   close: string;
 }
+
+export interface GoldNews {
+  Date: string;
+  NewsCompany: string;
+  NewsTitle: string;
+  Link: string;
+}

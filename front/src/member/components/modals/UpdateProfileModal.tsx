@@ -99,8 +99,8 @@ const UpdateProfileModal: React.FC = () => {
 
   const formIsValid = () => {
     // 핸드폰 인증 여부 확인
-    // if (!formData.isPhoneVerified) return false;
-    // console.log(1);
+    if (!formData.isPhoneVerified) return false;
+    console.log(1);
 
     // 기존 비밀번호 8자 이상, 영어와 숫자 섞임 여부 확인
     if (currentPassword.length < 8 || !hasNumberAndLetter(currentPassword)) {
@@ -143,15 +143,15 @@ const UpdateProfileModal: React.FC = () => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* 회원 정보 수정 제목 및 회원 탈퇴 버튼 */}
-        <div className="relative flex items-center justify-between">
-          <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
+        <div className="relative flex items-center justify-between w-full">
+          <h2 className="text-xl font-bold mb-4 md:mb-6 w-full text-center">
             회원 정보 수정
           </h2>
           <button
             onClick={openSignOutModal}
-            className="absolute right-4 top-0 text-xs text-red-400 hover:text-red-600 flex items-center"
+            className="text-xs text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded flex items-center absolute top-[-1px] right-0"
           >
-            <FaUserMinus className="mr-1" /> {/* 탈퇴 아이콘 */}
+            <FaUserMinus className="mr-0" /> {/* 탈퇴 아이콘 */}
             탈퇴
           </button>
         </div>
@@ -168,17 +168,17 @@ const UpdateProfileModal: React.FC = () => {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="기존 비밀번호 입력"
-                className="w-full p-2 text-base border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+                className="w-full p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
               />
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-8 text-gray-500 bg-transparent"
+                className="absolute right-2 top-2 text-gray-500"
               >
                 {showCurrentPassword ? (
-                  <AiOutlineEyeInvisible className="bg-transparent" />
+                  <AiOutlineEyeInvisible />
                 ) : (
-                  <AiOutlineEye className="bg-transparent" />
+                  <AiOutlineEye />
                 )}
               </button>
               {currentPassword &&
@@ -188,8 +188,7 @@ const UpdateProfileModal: React.FC = () => {
                   <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
                 ))}
             </div>
-            <hr className="w-full border-t border-gray-300" />
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-left text-gray-500 mt-1 ml-1">
               8자 이상, 영문, 숫자 포함
             </p>
           </div>

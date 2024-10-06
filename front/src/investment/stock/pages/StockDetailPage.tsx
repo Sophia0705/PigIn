@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
 import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 import { StockItemData } from '../../interfaces/StockInterface';
+import {
+  checkIfFavorite,
+  addToFavorite,
+  removeFromFavorite,
+} from '../../../api/investment/stock/StockFavorite';
+import {
+  checkIfAutoInvest,
+  addToAutoInvest,
+  removeFromAutoInvest,
+} from '../../../api/investment/stock/StockAutoInvest';
 import StockDetailGraph from '../components/StockDetailGraph';
 import StockDetailInfo from '../components/StockDetailInfo';
 import StockPurchaseModal from '../components/modals/StockPurchaseModal';
@@ -27,6 +37,24 @@ const StockDetailPage: React.FC = () => {
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState('00');
 
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const favoriteStatus = await checkIfFavorite(stockData.stck_shrn_iscd);
+        setIsLiked(favoriteStatus.result);
+
+        const autoInvestStatus = await checkIfAutoInvest(
+          stockData.stck_shrn_iscd
+        );
+        setIsAdded(autoInvestStatus.result);
+      } catch (error) {
+        console.error('상태 확인 중 오류 발생:', error);
+      }
+    };
+
+    fetchStatus();
+  }, [stockData.stck_shrn_iscd]);
+
   const countZeros = (str: string): number => {
     return (str.match(/0/g) || []).length;
   };
@@ -38,13 +66,17 @@ const StockDetailPage: React.FC = () => {
     navigate(-1);
   };
 
-  const handleAddToPortfolio = () => {
-    setIsAdded((prevAdded) => !prevAdded);
-    console.log(
-      isAdded
-        ? `${stockData.hts_kor_isnm} 제거 완료!`
-        : `${stockData.hts_kor_isnm} 추가 완료!`
-    );
+  const handleAddToPortfolio = async () => {
+    try {
+      if (isAdded) {
+        await removeFromAutoInvest(stockData.stck_shrn_iscd);
+      } else {
+        await addToAutoInvest(stockData.stck_shrn_iscd);
+      }
+      setIsAdded((prev) => !prev);
+    } catch (error) {
+      console.error('자동투자 목록 수정 중 오류 발생:', error);
+    }
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -55,8 +87,17 @@ const StockDetailPage: React.FC = () => {
     setSelectedInfoType(option);
   };
 
-  const handleHeartClick = () => {
-    setIsLiked((prevLiked) => !prevLiked);
+  const handleHeartClick = async () => {
+    try {
+      if (isLiked) {
+        await removeFromFavorite(stockData.stck_shrn_iscd);
+      } else {
+        await addToFavorite(stockData.stck_shrn_iscd);
+      }
+      setIsLiked((prevLiked) => !prevLiked);
+    } catch (error) {
+      console.error('찜 목록 수정 중 오류 발생:', error);
+    }
   };
 
   const handleBuyClick = () => {
