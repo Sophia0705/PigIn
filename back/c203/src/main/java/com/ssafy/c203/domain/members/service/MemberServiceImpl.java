@@ -3,6 +3,7 @@ package com.ssafy.c203.domain.members.service;
 import com.ssafy.c203.common.dto.header.UserHeader;
 import com.ssafy.c203.common.dto.response.OneWonAuthenticationDto;
 import com.ssafy.c203.common.dto.response.OneWonResponseDto;
+import com.ssafy.c203.domain.account.dto.response.FindBalanceResponse;
 import com.ssafy.c203.domain.account.entity.SavingsAccount;
 import com.ssafy.c203.domain.account.repository.SavingsAccountRepository;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
@@ -132,7 +133,6 @@ public class MemberServiceImpl implements MemberService {
         String tradeAccount = AccountNoResponse.getBody();
         mmsService.sendMMS("거래용 계좌는 " + tradeAccount + " 입니다.", members.getPhoneNumber());
 
-
         //Todo : accountNo가 Null일때 처리 필요
         savingsAccountRepository.save(SavingsAccount
             .builder()
@@ -244,7 +244,8 @@ public class MemberServiceImpl implements MemberService {
             .orElseThrow(MemberNotFoundException::new);
 
         //기존 패스워드 검증
-        if (!bCryptPasswordEncoder.matches(updateMemberDto.getOldPassword(), member.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(updateMemberDto.getOldPassword(),
+            member.getPassword())) {
             throw new WrongPasswordException();
         }
 
@@ -358,7 +359,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Members findMemberById(Long id) {
         return membersRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
+            .orElseThrow(RuntimeException::new);
     }
 
     @Override
@@ -373,9 +374,46 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void updateAutoTrading(Long userId, boolean autoTrading, int price) {
         Members members = membersRepository.findById(userId)
-                .orElseThrow(MemberNotFoundException::new);
+            .orElseThrow(MemberNotFoundException::new);
 
         members.updateAutoFundingStatusAndPrice(autoTrading, price);
         membersRepository.save(members);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long checkSavingAccount(Long memberId) {
+        // 1. 계좌번호 가져오기
+        SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
+            .orElseThrow(RuntimeException::new);
+        String accountNo = account.getAccountNo();
+
+        // 2. userKey 가져오기
+        Members member = membersRepository.findById(memberId)
+            .orElseThrow(MemberNotFoundException::new);
+        String userKey = member.getUserKey();
+
+        // 3. 메시지 생성
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/inquireDemandDepositAccountBalance";
+        UserHeader header = new UserHeader("inquireDemandDepositAccountBalance", apiKey, userKey);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("Header", header);
+        requestBody.put("accountNo", accountNo);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        // 4. 반환
+        ResponseEntity<FindBalanceResponse> response = restTemplate.exchange(
+            url,
+            HttpMethod.POST,
+            entity,
+            FindBalanceResponse.class
+        );
+        log.info(requestBody.toString());
+        return Long.valueOf(response.getBody().getRec().getAccountBalance());
     }
 }
