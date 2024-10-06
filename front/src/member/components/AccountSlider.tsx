@@ -30,7 +30,7 @@ const AccountSlider: React.FC = () => {
       >
         {/* 첫 번째 슬라이드 (투자 계좌) */}
         <SwiperSlide>
-          <div className="p-8 bg-green-100 rounded-lg shadow-md w-[80vw] h-[28vh] flex flex-col items-center justify-center">
+          <div className="p-8 bg-green-100 rounded-lg shadow-md w-[340px] h-[28vh] flex flex-col items-center justify-center">
             <FaPiggyBank className="text-green-600 text-5xl mb-4" />
             <h2 className="text-xl font-bold mb-1 text-green-800">투자 계좌</h2>
             <p className="text-gray-700 text-base">싸피은행</p>
@@ -44,7 +44,7 @@ const AccountSlider: React.FC = () => {
         {/* 두 번째 슬라이드 (소비 계좌 등록) */}
         <SwiperSlide>
           <div
-            className="p-8 bg-red-100 rounded-lg shadow-md w-[80vw] h-[28vh] flex flex-col items-center justify-center"
+            className="p-8 bg-red-100 rounded-lg shadow-md w-[340px] h-[28vh] flex flex-col items-center justify-center"
             onClick={openSpendingAccountRegisterModal} // Zustand의 전역 상태로 모달을 여는 함수 호출
           >
             <FaPlusCircle className="text-red-600 text-5xl mb-4" />

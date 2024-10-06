@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { loginAPI } from '../../../api/member/loginAPI';
 import { useMemberStore } from '../../../store/memberStore';
 import { X } from 'lucide-react';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import FailModal from './FailModal';
+import SuccessModal from './SuccessModal';
 
-// LoginModal 컴포넌트 정의
 const LoginModal: React.FC = () => {
   const {
     isLoginModalOpen,
-    isFindEmailModalOpen,
     closeLoginModal,
     openSignUpModal,
     openFindEmailModal,
@@ -17,70 +19,76 @@ const LoginModal: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // 성공 모달 상태
+  const [showFailModal, setShowFailModal] = useState(false); // 실패 모달 상태
+  const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
+  const [failMessage, setFailMessage] = useState(''); // 실패 메시지
 
-  // 회원가입 버튼 클릭 시 호출되는 함수
+  // 비밀번호 유효성 검사 함수
+  const isPasswordValid = (password: string) => {
+    const regex =
+      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+[\]{};':"\\|,.<>/?-]{8,}$/;
+    return regex.test(password);
+  };
+
   const handleSignUpClick = () => {
-    closeLoginModal(); // 로그인 모달을 닫고
-    openSignUpModal(); // 회원가입 모달을 연다
+    closeLoginModal();
+    openSignUpModal();
   };
 
-  // 이메일 찾기 버튼 클릭 시 호출되는 함수
   const handleFindEmailClick = () => {
-    console.log('이메일 찾기 버튼 클릭');
-    closeLoginModal(); // 로그인 모달을 닫고
-    openFindEmailModal(); // 이메일 찾기 모달을 열기
-    console.log('isFindEmailModalOpen:', isFindEmailModalOpen);
+    closeLoginModal();
+    openFindEmailModal();
   };
 
-  // 비밀번호 찾기 버튼 클릭 시 호출되는 함수
   const handleFindPasswordClick = () => {
-    closeLoginModal(); // 로그인 모달을 닫고
-    openFindPasswordModal(); // 비밀번호 찾기 모달을 연다
+    closeLoginModal();
+    openFindPasswordModal();
   };
 
-  // 로그인 폼 제출 처리 함수
+  // 로그인 처리 함수
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      // 로그인 API 호출
-      console.log('Login모달 : ', email, password);
       await loginAPI({ username: email, password });
-      alert('로그인 성공했습니다!');
-
-      // 로그인 상태를 업데이트하고 모달을 닫음
-      checkLoginStatus(); // 로그인 상태 확인
-      closeLoginModal(); // 로그인 모달 닫기
-
-      // 현재 페이지 새로고침
-      window.location.reload();
+      setSuccessMessage('로그인 성공하였습니다!');
+      setShowSuccessModal(true);
+      checkLoginStatus();
     } catch (error) {
       console.error('로그인 에러:', error);
-      alert('로그인에 실패했습니다. 다시 시도해주세요.');
+      setFailMessage('로그인 실패하였습니다.');
+      setShowFailModal(true);
     }
   };
 
-  if (!isLoginModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
+  // 성공 모달에서 확인 버튼을 누르면 페이지 새로고침
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    closeLoginModal(); // 모달을 닫은 후에 로그인 모달도 닫음
+    window.location.reload(); // 페이지 새로고침
+  };
+
+  if (!isLoginModalOpen) return null;
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20"
-      onClick={closeLoginModal} // 배경 클릭 시 모달 닫기
+      onClick={closeLoginModal}
     >
-      {/* 모달 본체 */}
       <div
-        className="relative bg-white rounded-lg w-full max-w-md p-6 animate-slide-up"
-        onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
+        className="relative bg-white rounded-lg w-full max-w-md px-6 py-6 animate-slide-up"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* 닫기 버튼 */}
         <X
           onClick={closeLoginModal}
-          className="absolute top-4 right-4 w-10 h-10 text-gray-400 hover:text-gray-600 dark:hover:text-white"
+          className="absolute top-7 right-4 w-10 h-10 text-gray-400 hover:text-gray-600"
         />
 
         {/* 모달 제목 */}
-        <h3 className="text-center text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-          Login
-        </h3>
+        <h3 className="text-center text-4xl font-bold text-gray-900">Login</h3>
 
         {/* 로그인 폼 */}
         <form onSubmit={handleSubmit}>
@@ -88,7 +96,7 @@ const LoginModal: React.FC = () => {
           <div className="mb-6">
             <label
               htmlFor="email"
-              className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-lg font-medium text-gray-900"
             >
               이메일 입력
             </label>
@@ -96,7 +104,7 @@ const LoginModal: React.FC = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)} // 상태 업데이트
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-gray-50 border border-gray-300 text-xl rounded-lg block w-full p-2.5"
               placeholder="ssafy@samsung.com"
               required
@@ -104,21 +112,39 @@ const LoginModal: React.FC = () => {
           </div>
 
           {/* 비밀번호 입력 필드 */}
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label
               htmlFor="password"
-              className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-lg font-medium text-gray-900"
             >
               비밀번호 입력
             </label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)} // 상태 업데이트
-              className="bg-gray-50 border border-gray-300 text-xl rounded-lg block w-full p-2.5"
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-xl rounded-lg block w-full p-2.5 pr-12" // pr-12을 추가하여 오른쪽 여백 확보
               required
             />
+            {/* 비밀번호 보이기/숨기기 아이콘 */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-2/4 text-gray-500"
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </button>
+            {/* 비밀번호 유효성 확인 아이콘 */}
+            {password &&
+              (isPasswordValid(password) ? (
+                <FaCheckCircle className="absolute right-10 top-2/4 text-green-500" />
+              ) : (
+                <FaTimesCircle className="absolute right-10 top-2/4 text-red-500" />
+              ))}
+            <p className="text-xs text-gray-500 mt-1">
+              8자 이상, 영문, 숫자 포함
+            </p>
           </div>
 
           {/* 로그인 버튼 */}
@@ -136,7 +162,7 @@ const LoginModal: React.FC = () => {
             <p>처음 이용하시나요?</p>
             <button
               className="ml-2 text-md font-semibold text-blue-600 hover:underline"
-              onClick={handleSignUpClick} // 회원가입 모달로 이동
+              onClick={handleSignUpClick}
             >
               회원가입
             </button>
@@ -145,20 +171,41 @@ const LoginModal: React.FC = () => {
             <p>기억나지 않으세요?</p>
             <button
               className="ml-2 text-md font-semibold text-blue-600 hover:underline"
-              onClick={handleFindEmailClick} // 이메일 찾기 모달로 이동
+              onClick={handleFindEmailClick}
             >
               아이디
             </button>
             <span className="mx-1">/</span>
             <button
               className="text-md font-semibold text-blue-600 hover:underline"
-              onClick={handleFindPasswordClick} // 비밀번호 찾기 모달로 이동
+              onClick={handleFindPasswordClick}
             >
               비밀번호 찾기
             </button>
           </div>
         </div>
       </div>
+      {/* 성공 모달 */}
+      {showSuccessModal && (
+        <SuccessModal
+          setShowModal={handleSuccessModalClose}
+          title={successMessage}
+          buttonText="확인"
+          buttonColor="bg-customAqua"
+          buttonHoverColor="hover:bg-[#7ee9ce]"
+        />
+      )}
+
+      {/* 실패 모달 */}
+      {showFailModal && (
+        <FailModal
+          setShowModal={setShowFailModal}
+          title={failMessage}
+          buttonText="확인"
+          buttonColor="bg-customRed"
+          buttonHoverColor="hover:bg-[#FF2414]"
+        />
+      )}
     </div>
   );
 };

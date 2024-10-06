@@ -173,7 +173,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
             name="bankName"
             value={formData.bankName}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="w-full py-2 px-1 !mt-1 text-lg border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           >
             <option value="">은행 선택</option>
             {bankOptions.map((bank, index) => (
@@ -189,7 +189,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
               value={formData.accountNumber}
               onChange={handleAccountNumberChange}
               placeholder="계좌번호"
-              className="flex-1 p-2 border-none border-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="flex-1 p-2 border-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
               maxLength={14} // 예시: 하이픈 포함 최대 14자리로 제한
             />
             <button
@@ -205,8 +205,6 @@ const SpendingAccountRegisterModal: React.FC = () => {
               1원 인증
             </button>
           </div>
-
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
 
           {/* 인증번호 입력 필드 및 인증 확인 버튼 */}
           {isCodeInputVisible && (
@@ -228,8 +226,8 @@ const SpendingAccountRegisterModal: React.FC = () => {
               </button>
             </>
           )}
+          <hr className="w-[270px] mr-auth border-t border-gray-300 relative top-[-11px]" />
 
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
             <input

@@ -25,27 +25,22 @@ const NewPasswordConfirmInput: React.FC = () => {
           value={newPasswordConfirm}
           onChange={handlePasswordConfirmChange}
           placeholder="새 비밀번호 확인"
-          className="w-full p-3 text-base border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+          className="w-full p-2 text-base border-b border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
         />
         <button
           type="button"
           onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-          className="absolute right-8 text-gray-500 bg-transparent"
+          className="absolute right-2 top-3 text-gray-500"
         >
-          {showPasswordConfirm ? (
-            <AiOutlineEyeInvisible className="bg-transparent" />
-          ) : (
-            <AiOutlineEye className="bg-transparent" />
-          )}
+          {showPasswordConfirm ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
         </button>
         {newPasswordConfirm &&
           (isPasswordMatch ? (
-            <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
+            <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
           ) : (
-            <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
+            <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
           ))}
       </div>
-      <hr className="w-full border-t border-gray-300" />
     </div>
   );
 };
