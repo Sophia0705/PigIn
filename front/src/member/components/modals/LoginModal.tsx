@@ -88,7 +88,7 @@ const LoginModal: React.FC = () => {
         />
 
         {/* 모달 제목 */}
-        <h3 className="text-center text-4xl font-bold text-gray-900">Login</h3>
+        <h3 className="text-center text-3xl font-bold text-gray-900">로그인</h3>
 
         {/* 로그인 폼 */}
         <form onSubmit={handleSubmit}>
