@@ -99,8 +99,8 @@ const UpdateProfileModal: React.FC = () => {
 
   const formIsValid = () => {
     // 핸드폰 인증 여부 확인
-    // if (!formData.isPhoneVerified) return false;
-    // console.log(1);
+    if (!formData.isPhoneVerified) return false;
+    console.log(1);
 
     // 기존 비밀번호 8자 이상, 영어와 숫자 섞임 여부 확인
     if (currentPassword.length < 8 || !hasNumberAndLetter(currentPassword)) {
