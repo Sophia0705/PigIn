@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.gold.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
+import com.ssafy.c203.domain.gold.dto.GoldAutoSetting;
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
 import com.ssafy.c203.domain.gold.dto.response.FindGoldPortfolioResponse;
 import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
@@ -27,10 +28,7 @@ import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.ssafy.c203.domain.members.service.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +62,7 @@ public class GoldServiceImpl implements GoldService {
     private final LocalTime GOLD_START_TIME = LocalTime.of(9, 30);
     private final GoldPortfolioRepository goldPortfolioRepository;
     private final MemberServiceImpl memberServiceImpl;
+    private final GoldAutoFundingRepository goldAutoFundingRepository;
 
     @Value("${ssafy.securities.url}")
     private String MY_SECURITES_BASE_URL;
@@ -386,6 +385,34 @@ public class GoldServiceImpl implements GoldService {
         int goldPrice = getGoldPrice();
 
         return new FindGoldPortfolioResponse(portfolio.getAmount(), portfolio.getAmount() * goldPrice, portfolio.getAmount() == 0 ? 0 : (goldPrice - portfolio.getPriceAvg()) / portfolio.getPriceAvg() * 100);
+    }
+
+    @Override
+    public void setAutoFunding(Long userId, int percent) {
+        GoldAutoFunding goldAutoFunding = goldAutoFundingRepository.findByMember_Id(userId)
+                .orElse(null);
+        if (goldAutoFunding == null) {
+            GoldAutoFunding newAutoFunding = GoldAutoFunding.builder()
+                    .rate(percent)
+                    .member(memberServiceImpl.findMemberById(userId))
+                    .build();
+            goldAutoFundingRepository.save(newAutoFunding);
+        } else {
+            goldAutoFunding.updateRate(percent);
+            goldAutoFundingRepository.save(goldAutoFunding);
+        }
+    }
+
+    @Override
+    public List<GoldAutoSetting> findAutoSetting(Long userId) {
+        GoldAutoFunding goldAutoFunding = goldAutoFundingRepository.findByMember_Id(userId)
+                .orElse(null);
+
+        List<GoldAutoSetting> goldAutoSettings = new ArrayList<>();
+        if (goldAutoFunding != null) {
+            goldAutoSettings.add(new GoldAutoSetting(goldAutoFunding.getRate()));
+        }
+        return goldAutoSettings;
     }
 
     private int getGoldPrice() {

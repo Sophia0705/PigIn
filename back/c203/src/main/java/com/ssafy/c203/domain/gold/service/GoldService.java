@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.gold.service;
 
+import com.ssafy.c203.domain.gold.dto.GoldAutoSetting;
 import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
 import com.ssafy.c203.domain.gold.dto.response.FindGoldPortfolioResponse;
 import com.ssafy.c203.domain.gold.dto.response.GoldDetailDto;
@@ -38,4 +39,8 @@ public interface GoldService {
     double getMine(Long userId);
 
     FindGoldPortfolioResponse findPortfolio(Long userId);
+
+    void setAutoFunding(Long userId, int percent);
+
+    List<GoldAutoSetting> findAutoSetting(Long userId);
 }

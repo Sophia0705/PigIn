@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.coin.service;
 
+import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
@@ -13,28 +14,17 @@ import java.util.List;
 
 public interface CoinService {
 
-    public List<FindCoinAllResponse> findAllCoins();
-
-    public List<FindCoinAllResponse> searchCoins(String keyword);
-
-    public FindCoinResponse findCoin(String coinCode);
-
-    public List<MongoCoinHistory> findCoinChart(String stockCode, String interval, Integer count);
-
-    public List<MongoCoinMinute> findCoinMinute();
-
-    public List<MongoCoinMinute> findCoinMinuteChart(String stockCode, Integer count);
-
-    public void sellCoin(Long userId, String coinCode, Double price);
-
-    public void buyCoin(Long userId, String coinCode, Double price);
-
-    public CoinPortfolio findCoinPortfolioByCode(Long userId, String coinCode);
-
-    public List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId);
-
-    public PriceAndProfit calculateProfit(Double priceAvg, String coinCode);
-
+    List<FindCoinAllResponse> findAllCoins();
+    List<FindCoinAllResponse> searchCoins(String keyword);
+    FindCoinResponse findCoin(String coinCode);
+    List<MongoCoinHistory> findCoinChart(String stockCode, String interval, Integer count);
+    List<MongoCoinMinute> findCoinMinute();
+    List<MongoCoinMinute> findCoinMinuteChart(String stockCode, Integer count);
+    void sellCoin(Long userId, String coinCode, Double price);
+    void buyCoin(Long userId, String coinCode, Double price);
+    CoinPortfolio findCoinPortfolioByCode(Long userId, String coinCode);
+    List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId);
+    PriceAndProfit calculateProfit(Double priceAvg, String coinCode);
     boolean addCoinFavorite(Long userId, String coinCode);
     boolean isCoinFavorite(Long userId, String coinCode);
     void deleteCoinFavorite(Long userId, String coinCode);
@@ -44,4 +34,6 @@ public interface CoinService {
     void deleteAutoFunding(Long userId, String coinCode);
     void setAutoFunding(Long userId, String coinCode, Integer percent);
     List<FindCoinAllResponse> findFavoriteCoin(Long userId);
+    void updateAutoFunding(Long userId, List<CoinAutoSetting> autoSettings);
+    List<CoinAutoSetting> findAutoFunding(Long userId);
 }

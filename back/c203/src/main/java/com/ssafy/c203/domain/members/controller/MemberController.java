@@ -299,7 +299,6 @@ public class MemberController {
         //response
         response.setHeader("access", newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
-
         return ResponseEntity.ok().build();
     }
 

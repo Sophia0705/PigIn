@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.stock.service;
 
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
+import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.StockItem;
 import com.ssafy.c203.domain.stock.entity.StockPortfolio;
@@ -11,25 +12,28 @@ import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
 import java.util.List;
 
 public interface StockService {
-    public List<MongoStockDetail> findAllStock();
-    public List<MongoStockDetail> searchStock(String keyword);
-    public MongoStockDetail findStockDetail(String stockCode);
-    public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count);
-    public List<MongoStockMinute> findStockMinute();
-    public List<MongoStockMinute> findStockMinuteChart(String stockCode, Integer count);
-    public boolean buyStock(Long userId, String stockCode, Long price, boolean isAuto);
-    public boolean sellStock(Long userId, String stockCode, Double count, boolean isAuto);
-    public StockPortfolio findStockPortfolioByCode(Long userId, String stockCode);
-    public List<FindStockPortfolioResponse> findStockPortfolio(Long userId);
-    public PriceAndProfit calculateProfit(Double priceAvg, String stockCode);
-    public boolean addStockFavorite(Long userId, String stockCode);
-    public boolean isStockFavorite(Long userId, String stockCode);
-    public void deleteStockFavorite(Long userId, String stockCode);
-    public List<StockItem> findRecommendStock();
-    public boolean addAutoFunding(Long userId, String stockCode);
-    public boolean isAutoFunding(Long userId, String stockCode);
-    public void deleteAutoFunding(Long userId, String stockCode);
-    public void setAutoFunding(Long userId, String stockCode, Integer percent);
-    public List<MongoStockDetail> findFavoriteStock(Long userId);
+    List<MongoStockDetail> findAllStock();
+    List<MongoStockDetail> searchStock(String keyword);
+    MongoStockDetail findStockDetail(String stockCode);
+    List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count);
+    List<MongoStockMinute> findStockMinute();
+    List<MongoStockMinute> findStockMinuteChart(String stockCode, Integer count);
+    boolean buyStock(Long userId, String stockCode, Long price, boolean isAuto);
+    boolean sellStock(Long userId, String stockCode, Double count, boolean isAuto);
+    StockPortfolio findStockPortfolioByCode(Long userId, String stockCode);
+    List<FindStockPortfolioResponse> findStockPortfolio(Long userId);
+    PriceAndProfit calculateProfit(Double priceAvg, String stockCode);
+    boolean addStockFavorite(Long userId, String stockCode);
+    boolean isStockFavorite(Long userId, String stockCode);
+    void deleteStockFavorite(Long userId, String stockCode);
+    List<StockItem> findRecommendStock();
+    boolean addAutoFunding(Long userId, String stockCode);
+    boolean isAutoFunding(Long userId, String stockCode);
+    void deleteAutoFunding(Long userId, String stockCode);
+    void setAutoFunding(Long userId, String stockCode, Integer percent);
+    List<MongoStockDetail> findFavoriteStock(Long userId);
+    void setStockAutoTrading(Long userId, List<StockAutoSetting> stockAutoSettings);
+
+    List<StockAutoSetting> findStockAutoSetting(Long userId);
 }
 
