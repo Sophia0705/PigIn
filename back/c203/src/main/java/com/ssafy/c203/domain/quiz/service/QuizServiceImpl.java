@@ -8,7 +8,6 @@ import com.ssafy.c203.domain.quiz.exception.QuizAlreadySolvedException;
 import com.ssafy.c203.domain.quiz.exception.QuizException;
 import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
 import com.ssafy.c203.domain.quiz.repository.QuizRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -21,7 +20,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -37,15 +35,15 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final AccountService accountService;
 
-    @PostConstruct
-    public void testRedisConnection() {
-        try {
-            String pong = Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().ping();
-            log.info("Redis 연결 상태: {}", pong);  // "PONG"이 출력되면 연결 성공
-        } catch (Exception e) {
-            log.error("Redis 연결 실패: ", e);
-        }
-    }
+//    @PostConstruct
+//    public void testRedisConnection() {
+//        try {
+//            String pong = Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection().ping();
+//            log.info("Redis 연결 상태: {}", pong);  // "PONG"이 출력되면 연결 성공
+//        } catch (Exception e) {
+//            log.error("Redis 연결 실패: ", e);
+//        }
+//    }
 
     @Override
     public Quiz provideQuiz() {
@@ -104,8 +102,8 @@ public class QuizServiceImpl implements QuizService {
 
 
     // 매일 오전 9시에 Daily Quiz 풀이 여부 초기화
-//    @Scheduled(cron = "0 0 9 * * *")
-    @Scheduled(cron = "0 */2 * * * *") // 2분마다
+    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
+//    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Seoul") // 2분마다
     public void resetDailyQuizKeys() {
         int retryCount = 0;
 
