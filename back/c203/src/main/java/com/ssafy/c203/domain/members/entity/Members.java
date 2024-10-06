@@ -106,4 +106,13 @@ public class Members {
     public void updateSavingAmount(int savingAmount) {
         this.savingAmount = savingAmount;
     }
+
+    public void updateAutoFundingStatusAndPrice(boolean flag, int price) {
+        if (flag) {
+            this.autoFundingStatus = AutoFundingStatus.ACTIVE;
+        } else {
+            this.autoFundingStatus = AutoFundingStatus.INACTIVE;
+        }
+        this.savingAmount = price;
+    }
 }
