@@ -181,6 +181,19 @@ public class StockController {
         return ResponseEntity.ok().body(makeResult("result", stockService.isAutoFunding(userId, stockId)));
     }
 
+    @GetMapping("/favorite")
+    public ResponseEntity<?> getFavoriteStocks(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam Integer count) {
+        Long userId = customUserDetails.getUserId();
+
+        List<MongoStockDetail> stockDetails = stockService.findFavoriteStock(userId);
+        List<FindStockAllResponse> response = stockDetails.stream()
+                .map(FindStockAllResponse::new)
+                .limit(count)
+                .toList();
+
+        return ResponseEntity.ok().body(response);
+    }
+
 //    @PutMapping("/{stockId}/auto-funding")
 //    public ResponseEntity<?> setAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 //        Long userId = customUserDetails.getUserId();

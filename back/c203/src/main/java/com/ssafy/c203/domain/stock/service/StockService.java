@@ -26,10 +26,11 @@ public interface StockService {
     public boolean isStockFavorite(Long userId, String stockCode);
     public void deleteStockFavorite(Long userId, String stockCode);
     public List<StockItem> findRecommendStock();
-
     public boolean addAutoFunding(Long userId, String stockCode);
     public boolean isAutoFunding(Long userId, String stockCode);
     public void deleteAutoFunding(Long userId, String stockCode);
     public void setAutoFunding(Long userId, String stockCode, Integer percent);
+
+    public List<MongoStockDetail> findFavoriteStock(Long userId);
 }
 
