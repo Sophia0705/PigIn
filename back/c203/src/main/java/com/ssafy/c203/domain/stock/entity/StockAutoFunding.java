@@ -14,7 +14,6 @@ import lombok.*;
 @Entity
 @Builder
 @Getter
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class StockAutoFunding {
