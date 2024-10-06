@@ -49,6 +49,7 @@ public class StockServiceImpl implements StockService {
     private final StockTradeRepository stockTradeRepository; ;
     private final StockPortfolioRepository stockPortfolioRepository;
     private final StockFavoriteRepository stockFavoriteRepository;
+    private final StockAutoFundingRepository stockAutoFundingRepository;
 
 
     private final MemberService memberService;
@@ -243,6 +244,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PriceAndProfit calculateProfit(Double priceAvg, String stockCode) {
         MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElseThrow();
@@ -269,6 +271,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isStockFavorite(Long userId, String stockCode) {
         Optional<StockFavorite> stockFavorite = stockFavoriteRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
         return stockFavorite.isPresent();
@@ -282,9 +285,47 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<StockItem> findRecommendStock() {
         // 우선 Top 5
         return stockFavoriteRepository.findTopNMostFavoriteStocks(5);
+    }
+
+    @Override
+    public boolean addAutoFunding(Long userId, String stockCode) {
+        Optional<StockAutoFunding> autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        if (autoFunding.isEmpty()) {
+            StockAutoFunding stockAutoFunding = StockAutoFunding.builder()
+                    .rate(0)
+                    .member(memberService.findMemberById(userId))
+                    .stockItem(findStockItem(stockCode))
+                    .build();
+            stockAutoFundingRepository.save(stockAutoFunding);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAutoFunding(Long userId, String stockCode) {
+        Optional<StockAutoFunding> autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        return autoFunding.isPresent();
+    }
+
+    @Override
+    public void deleteAutoFunding(Long userId, String stockCode) {
+        StockAutoFunding autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElseThrow();
+        stockAutoFundingRepository.delete(autoFunding);
+    }
+
+    @Override
+    public void setAutoFunding(Long userId, String stockCode, Integer percent) {
+        StockAutoFunding autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElseThrow();
+        autoFunding.updateRate(percent);
+        stockAutoFundingRepository.delete(autoFunding);
     }
 
     // 해당 주식 판매 여부 검증

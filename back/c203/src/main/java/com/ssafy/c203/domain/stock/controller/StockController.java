@@ -139,10 +139,10 @@ public class StockController {
     @GetMapping("{stockId}/favorite")
     public ResponseEntity<?> isFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        if (stockService.isStockFavorite(userId, stockId)) {
-            return ResponseEntity.ok().body(true);
-        };
-        return ResponseEntity.ok().body(false);
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("result", stockService.isStockFavorite(userId, stockId));
+
+        return ResponseEntity.ok().body(result);
     }
 
     @DeleteMapping("{stockId}/favorite")
@@ -160,4 +160,28 @@ public class StockController {
         log.info(responses.toString());
         return ResponseEntity.ok().body(responses);
     }
+
+    @PostMapping("/{stockId}/auto-funding")
+    public ResponseEntity<?> addAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return ResponseEntity.ok().body("success");
+    }
+
+    @DeleteMapping("/{stockId}/auto-funding")
+    public ResponseEntity<?> deleteAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return null;
+    }
+
+    @GetMapping("/{stockId}/auto-funding")
+    public ResponseEntity<?> isAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return null;
+    }
+
+//    @PutMapping("/{stockId}/auto-funding")
+//    public ResponseEntity<?> setAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+//        Long userId = customUserDetails.getUserId();
+//        return null;
+//    }
 }
