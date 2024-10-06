@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from crawling import crawlingNews, getStockNews, crawlingGoldNews, getGoldNews
+from crawling import crawlingNews, getStockNews, crawlingGoldNews, getGoldNews, getCoinNews
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -31,8 +31,11 @@ async def goldCrawling():
 
 @app.get("/news/getgold")
 async def getGoldNews():
-    response = await getGoldNews()
-    return response
+    return getGoldNews()
+
+@app.get("/news/getcoin")
+async def getCoinNews():
+    return getCoinNews()
 
 @app.get("/news/{stockId}")
 async def stock_news(stockId):
