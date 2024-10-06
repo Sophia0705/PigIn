@@ -31,7 +31,8 @@ async def goldCrawling():
 
 @app.get("/news/getgold")
 async def getGoldNews():
-    return getGoldNews()
+    response = await getGoldNews()
+    return response
 
 @app.get("/news/{stockId}")
 async def stock_news(stockId):
