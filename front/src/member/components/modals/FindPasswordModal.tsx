@@ -134,15 +134,15 @@ const FindPasswordModal: React.FC = () => {
         {/* 뒤로가기 버튼 */}
         <p
           onClick={handleBackClick}
-          className="absolute top-5 left-4 w-10 h-10 text-gray-400 hover:text-gray-600"
+          className="absolute top-5 left-4 text-gray-400 hover:text-gray-600"
         >
-          <CgChevronLeft size={40} />
+          <CgChevronLeft size={32} />
         </p>
         <h2 className="text-xl font-bold mb-6 text-center">비밀번호 찾기</h2>
         {/* 닫기 버튼 */}
         <X
           onClick={closeFindPasswordModal}
-          className="absolute top-5 right-4 w-8 h-8 text-gray-400 hover:text-gray-600"
+          className="absolute top-5 right-5 w-8 h-8 text-gray-400 hover:text-gray-600"
         />
         <form
           onSubmit={handleSubmit}

@@ -26,31 +26,28 @@ const NewPasswordInput: React.FC = () => {
           value={newPassword}
           onChange={handlePasswordChange}
           placeholder="새 비밀번호"
-          className="w-full p-2 text-base border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+          className="w-full p-2 text-base border-b border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
         />
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-8 text-gray-500 bg-transparent"
+          className="absolute right-2 top-3 text-gray-500"
         >
-          {showPassword ? (
-            <AiOutlineEyeInvisible className="bg-transparent" />
-          ) : (
-            <AiOutlineEye className="bg-transparent" />
-          )}
+          {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
         </button>
 
         {/* 비밀번호 유효성 체크 아이콘 */}
         {newPassword &&
           (isPasswordValid(newPassword) ? (
-            <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
+            <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
           ) : (
-            <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
+            <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
           ))}
       </div>
-      {/* 비밀번호 아래 선과 유효성 설명 */}
-      <hr className="w-full border-t border-gray-300" />
-      <p className="text-xs text-gray-500 mt-2">8자 이상, 영문, 숫자 포함</p>
+      {/* 유효성 설명 */}
+      <p className="text-xs text-left text-gray-500 !mt-1 ml-1">
+        8자 이상, 영문, 숫자 포함
+      </p>
     </div>
   );
 };

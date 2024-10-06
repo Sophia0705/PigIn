@@ -3,6 +3,7 @@ import { useMemberStore } from '../../../store/memberStore';
 import { signOutAPI } from '../../../api/member/signOutAPI'; // 회원 탈퇴 API 함수
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
+import { X } from 'lucide-react';
 
 const SignOutModal: React.FC = () => {
   // Zustand 스토어에서 상태와 모달 제어 함수 가져오기
@@ -70,18 +71,17 @@ const SignOutModal: React.FC = () => {
     >
       {/* 모달 본체 */}
       <div
-        className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        className="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6 animate-slide-up"
         onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
       >
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-center">
           회원탈퇴
         </h2>
-        <button
+        {/* 닫기 버튼 */}
+        <X
           onClick={closeSignOutModal}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-        >
-          X
-        </button>
+          className="absolute top-6 right-5 w-8 h-8 text-gray-400 hover:text-gray-600"
+        />
         {/* 회원탈퇴 폼 */}
         <form
           onSubmit={handleSubmit}

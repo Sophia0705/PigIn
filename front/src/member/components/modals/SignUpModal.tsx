@@ -294,15 +294,15 @@ const SignUpModal: React.FC = () => {
         {/* 뒤로가기 버튼 */}
         <p
           onClick={handleBackClick}
-          className="absolute top-4 left-4 w-10 h-10 text-gray-400 hover:text-gray-600" // 왼쪽으로 위치 변경
+          className="absolute top-5 left-4 text-gray-400 hover:text-gray-600" // 왼쪽으로 위치 변경
         >
-          <CgChevronLeft size={48} />
+          <CgChevronLeft size={40} />
         </p>
         <h2 className="text-3xl font-bold mb-4 text-center">회원가입</h2>
         {/* 닫기 버튼 */}
         <X
           onClick={closeSignUpModal}
-          className="absolute top-4 right-4 w-10 h-10 text-gray-400 hover:text-gray-600"
+          className="absolute top-5 right-4 w-10 h-10 text-gray-400 hover:text-gray-600"
         />
         {/* 회원가입 폼 */}
         <form
@@ -386,13 +386,16 @@ const SignUpModal: React.FC = () => {
               type="button"
               onClick={requestVerificationCode}
               className={`p-2 rounded w-24 text-md ${
-                formData.phoneNumber.length === 13
+                formData.phoneNumber.length === 13 && !isCodeSent
                   ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : isCodeSent
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' // 요청 완료 시 색상 변경
+                    : 'bg-green-500 text-white'
               }`}
-              disabled={formData.phoneNumber.length !== 13}
+              disabled={formData.phoneNumber.length !== 13 || isCodeSent} // 인증 요청 완료 후 비활성화
             >
-              인증 요청
+              {isCodeSent ? '요청 완료' : '인증 요청'}{' '}
+              {/* 인증 요청 완료 시 텍스트 변경 */}
             </button>
           </div>
 
@@ -424,7 +427,7 @@ const SignUpModal: React.FC = () => {
           )}
 
           {/* 비밀번호 입력 필드 */}
-          <div className="relative flex items-center">
+          <div className="relative flex items-center !mt-2">
             <input
               type={showPassword ? 'text' : 'password'}
               name="password"
@@ -442,16 +445,16 @@ const SignUpModal: React.FC = () => {
             </button>
             {formData.password &&
               (isPasswordValid(formData.password) ? (
-                <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
+                <FaCheckCircle className="absolute right-8 top-2 text-green-500" />
               ) : (
-                <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
+                <FaTimesCircle className="absolute right-8 top-2 text-red-500" />
               ))}
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 ml-1 !mt-1">
             8자 이상, 영문, 숫자 포함
           </p>
 
-          <div className="relative">
+          <div className="relative !mt-0">
             <input
               type={showPasswordConfirm ? 'text' : 'password'}
               value={passwordConfirm}
@@ -472,9 +475,9 @@ const SignUpModal: React.FC = () => {
             </button>
             {passwordConfirm &&
               (isPasswordMatch ? (
-                <FaCheckCircle className="absolute right-8 top-3 text-green-500" />
+                <FaCheckCircle className="absolute right-8 top-2 text-green-500" />
               ) : (
-                <FaTimesCircle className="absolute right-8 top-3 text-red-500" />
+                <FaTimesCircle className="absolute right-8 top-2 text-red-500" />
               ))}
           </div>
 

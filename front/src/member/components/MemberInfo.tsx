@@ -59,7 +59,7 @@ export const MemberInfo: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 w-[340px] text-center mb-0">
       {/* 제목과 버튼을 같은 줄에 배치 */}
-      <div className="relative flex items-center mb-4">
+      <div className="relative flex items-center mb-2">
         <h2 className="text-xl font-bold text-center flex-grow">회원 정보</h2>
         <button
           onClick={openUpdateProfileModal}
