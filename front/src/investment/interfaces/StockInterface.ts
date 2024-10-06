@@ -36,6 +36,18 @@ export interface StockChartDataResponse {
   acml_vol: string; // 거래량
 }
 
+// 주식 분봉 데이터
+export interface StockLiveData {
+  stockCode: string;
+  stck_bsop_date: string;
+  stock_bsop_time: string;
+  stck_clpr: string;
+  stck_oprc: string;
+  stck_hgpr: string;
+  stck_lwpr: string;
+  acml_vol: string;
+}
+
 // 전체 주식 목록
 export interface StockListResponse {
   stockName: string; // 종목명 (한국어)

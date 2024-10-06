@@ -55,8 +55,6 @@ const InvestmentPage: React.FC = () => {
             .reverse();
 
         setGoldWeeklyData(formatData(weeklyData));
-
-        console.log('금 주간 데이터:', weeklyData);
       } catch (error) {
         console.error('금 데이터 가져오는 중 에러 발생:', error);
       }
