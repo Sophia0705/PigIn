@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.coin.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
+import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.SecuritiesCoinTrade;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
@@ -70,9 +71,12 @@ public class CoinServiceImpl implements CoinService {
             coinItemMap.put(coinItem.getId(), coinItem.getName());
         }
 
-        return mongoCoinMinuteRepository.findLatestDataForEachCoin().stream()
-                .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
-                .toList();
+        List<FindCoinAllResponse> responses = mongoCoinMinuteRepository.findLatestDataForEachCoin()
+            .stream()
+            .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
+            .toList();
+        log.info(responses.toString());
+        return responses;
     }
 
     @Override
@@ -87,13 +91,14 @@ public class CoinServiceImpl implements CoinService {
         // 정규표현식 패턴 생성 (대소문자 구분 없이)
         Pattern pattern = Pattern.compile(keyword, Pattern.CASE_INSENSITIVE);
 
-        List<FindCoinAllResponse> responses = mongoCoinMinuteRepository.findLatestDataForEachCoin().stream()
-                .filter(mongoCoin -> {
-                    String coinName = coinItemMap.get(mongoCoin.getCoin());
-                    return coinName != null && pattern.matcher(coinName).find();
-                })
-                .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
-                .toList();
+        List<FindCoinAllResponse> responses = mongoCoinMinuteRepository.findLatestDataForEachCoin()
+            .stream()
+            .filter(mongoCoin -> {
+                String coinName = coinItemMap.get(mongoCoin.getCoin());
+                return coinName != null && pattern.matcher(coinName).find();
+            })
+            .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
+            .toList();
 
         log.info("Search results for '{}': {}", keyword, responses);
 
@@ -103,8 +108,9 @@ public class CoinServiceImpl implements CoinService {
     @Override
     @Transactional(readOnly = true)
     public FindCoinResponse findCoin(String coinCode) {
-        MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
-                .orElseThrow(); // 코인 데이터를 가져옴
+        MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(
+                coinCode)
+            .orElseThrow(); // 코인 데이터를 가져옴
 
         // 코인 이름 가져오기
         CoinItem coinItem = coinItemRepository.findById(coinCode).orElseThrow();
@@ -118,7 +124,8 @@ public class CoinServiceImpl implements CoinService {
     public List<MongoCoinHistory> findCoinChart(String coinCode, String interval, Integer count) {
         Pageable pageable = PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "date"));
         try {
-            return mongoCoinHistoryRepository.findByCoinAndIntervalOrderByDateDesc(coinCode, interval, pageable);
+            return mongoCoinHistoryRepository.findByCoinAndIntervalOrderByDateDesc(coinCode,
+                interval, pageable);
         } catch (Exception e) {
             log.error("Error fetching coin chart: ", e);
             throw new RuntimeException("Failed to fetch coin chart", e);
@@ -153,7 +160,7 @@ public class CoinServiceImpl implements CoinService {
         // 1. 입력 확인
         Long price = Math.round(dPrice);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
-                .orElseThrow(() -> new RuntimeException("No such coin"));
+            .orElseThrow(() -> new RuntimeException("No such coin"));
         Members member = memberService.findMemberById(userId);
 
         // 2. 잔고 확인 및 출금
@@ -165,18 +172,21 @@ public class CoinServiceImpl implements CoinService {
             SecuritiesCoinTrade tradeResult = SecuritiesCoinBuy(coinCode, price);
             // 4. 거래내역 저장
             log.info(tradeResult.toString());
-            saveTradeRecode(member, coinItem, tradeResult.getResult(), tradeResult.getTradePrice(), TradeMethod.BUY);
+            saveTradeRecode(member, coinItem, tradeResult.getResult(), tradeResult.getTradePrice(),
+                TradeMethod.BUY);
             // 5. 보유 주식 업데이트
-            Optional<CoinPortfolio> coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem, member);
+            Optional<CoinPortfolio> coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(
+                coinItem, member);
             if (coinPortfolio.isPresent()) {
-                buyCoinPortfolio(coinPortfolio.get(), tradeResult.getResult(), tradeResult.getTradePrice());
+                buyCoinPortfolio(coinPortfolio.get(), tradeResult.getResult(),
+                    tradeResult.getTradePrice());
             } else {
                 CoinPortfolio newPortfolio = CoinPortfolio.builder()
-                        .coinItem(coinItem)
-                        .member(member)
-                        .priceAvg(tradeResult.getTradePrice())
-                        .amount(tradeResult.getResult())
-                        .build();
+                    .coinItem(coinItem)
+                    .member(member)
+                    .priceAvg(tradeResult.getTradePrice())
+                    .amount(tradeResult.getResult())
+                    .build();
 //                log.info("새로운 저장 = {} : {}", newPortfolio.getPriceAvg(), newPortfolio.getAmount());
                 coinPortfolioRepository.save(newPortfolio);
             }
@@ -191,11 +201,12 @@ public class CoinServiceImpl implements CoinService {
         // 1. 입력 확인
 //        log.info("coinsell = {}, {}", userId, coinCode);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
-                .orElseThrow(() -> new RuntimeException("No such coin"));
+            .orElseThrow(() -> new RuntimeException("No such coin"));
         Members member = memberService.findMemberById(userId);
 
-        MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
-                .orElseThrow();
+        MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(
+                coinCode)
+            .orElseThrow();
 
         Double amount = price / mongoCoinMinute.getClose();
 
@@ -208,7 +219,8 @@ public class CoinServiceImpl implements CoinService {
             SecuritiesCoinTrade securitiesCoinTrade = SecuritiesCoinSell(coinCode, amount);
 //            log.info("거래 끝");
             // 4. 저장
-            saveTradeRecode(member, coinItem, amount, securitiesCoinTrade.getResult(), TradeMethod.SELL);
+            saveTradeRecode(member, coinItem, amount, securitiesCoinTrade.getResult(),
+                TradeMethod.SELL);
 //            log.info("저장 끝");
             // 5. 입금
             long salePrice = Math.round(securitiesCoinTrade.getResult());
@@ -229,40 +241,41 @@ public class CoinServiceImpl implements CoinService {
     @Transactional(readOnly = true)
     public CoinPortfolio findCoinPortfolioByCode(Long userId, String coinCode) {
         return coinPortfolioRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
-                .orElse(null);
+            .orElse(null);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId) {
         Map<String, MongoCoinMinute> coinMinuteMap = mongoCoinMinuteRepository.findLatestDataForEachCoin()
-                .stream()
-                .collect(Collectors.toMap(
-                        MongoCoinMinute::getCoin,
-                        Function.identity(),
-                        (existing, replacement) -> existing
-                ));
+            .stream()
+            .collect(Collectors.toMap(
+                MongoCoinMinute::getCoin,
+                Function.identity(),
+                (existing, replacement) -> existing
+            ));
 
         return coinPortfolioRepository.findByMember_Id(userId).stream()
-                .map(portfolio -> {
-                    String coinCode = portfolio.getCoinItem().getId();
-                    Double currentPrice = coinMinuteMap.get(coinCode).getClose();
-                    String name = portfolio.getCoinItem().getName();
-                    Double amount = portfolio.getAmount();
-                    Double price = amount * currentPrice;
-                    Double priceAvg = portfolio.getPriceAvg() == null ? 0.0 : portfolio.getPriceAvg();
-                    double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
+            .map(portfolio -> {
+                String coinCode = portfolio.getCoinItem().getId();
+                Double currentPrice = coinMinuteMap.get(coinCode).getClose();
+                String name = portfolio.getCoinItem().getName();
+                Double amount = portfolio.getAmount();
+                Double price = amount * currentPrice;
+                Double priceAvg = portfolio.getPriceAvg() == null ? 0.0 : portfolio.getPriceAvg();
+                double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
 
-                    return new FindCoinPortfolioResponse(coinCode, name, amount, price, profitRate);
-                })
-                .toList();
+                return new FindCoinPortfolioResponse(coinCode, name, amount, price, profitRate);
+            })
+            .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public PriceAndProfit calculateProfit(Double priceAvg, String coinCode) {
-        MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
-                .orElseThrow(() -> new RuntimeException("No such coin"));
+        MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(
+                coinCode)
+            .orElseThrow(() -> new RuntimeException("No such coin"));
         Double currentPrice = coinMinute.getClose();
 //        log.info("profit calc = ({} - {}) / {} = {}", currentPrice, priceAvg, priceAvg * 100, (currentPrice - priceAvg) / priceAvg * 100);
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
@@ -271,16 +284,16 @@ public class CoinServiceImpl implements CoinService {
 
     public void initializeCoinItems() {
         List<CoinItem> coinItems = Arrays.asList(
-                new CoinItem("KRW-BTC", "비트코인"),
-                new CoinItem("KRW-ETH", "이더리움"),
-                new CoinItem("KRW-USDT", "테더"),
-                new CoinItem("KRW-XLM", "스텔라루멘"),
-                new CoinItem("KRW-XRP", "리플"),
-                new CoinItem("BTC-ETC", "이더리움클래식"),
-                new CoinItem("BTC-BCH", "비트코인캐시"),
-                new CoinItem("KRW-LINK", "체인링크"),
-                new CoinItem("KRW-ADA", "에이다"),
-                new CoinItem("KRW-DOGE", "도지코인")
+            new CoinItem("KRW-BTC", "비트코인"),
+            new CoinItem("KRW-ETH", "이더리움"),
+            new CoinItem("KRW-USDT", "테더"),
+            new CoinItem("KRW-XLM", "스텔라루멘"),
+            new CoinItem("KRW-XRP", "리플"),
+            new CoinItem("BTC-ETC", "이더리움클래식"),
+            new CoinItem("BTC-BCH", "비트코인캐시"),
+            new CoinItem("KRW-LINK", "체인링크"),
+            new CoinItem("KRW-ADA", "에이다"),
+            new CoinItem("KRW-DOGE", "도지코인")
         );
         coinItemRepository.saveAll(coinItems);
     }
@@ -372,6 +385,27 @@ public class CoinServiceImpl implements CoinService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void updateAutoFunding(Long userId, List<CoinAutoSetting> autoSettings) {
+        coinAutoFundingRepository.deleteByMember_Id(userId);
+
+        for (CoinAutoSetting autoSetting : autoSettings) {
+            CoinAutoFunding coinAutoFunding = CoinAutoFunding.builder()
+                    .member(memberService.findMemberById(userId))
+                    .coinItem(coinItemRepository.findById(autoSetting.getCoinCode()).get())
+                    .rate(autoSetting.getPercent())
+                    .build();
+            coinAutoFundingRepository.save(coinAutoFunding);
+        }
+    }
+
+    @Override
+    public List<CoinAutoSetting> findAutoFunding(Long userId) {
+        return coinAutoFundingRepository.findByMember_Id(userId).stream()
+                .map(CoinAutoSetting::new)
+                .toList();
+    }
+
     // 출금
     public boolean withdraw(Long userId, Long price) {
         return accountService.withdrawAccount(userId, price);
@@ -397,10 +431,10 @@ public class CoinServiceImpl implements CoinService {
         log.info(entity.toString());
 
         ResponseEntity<SecuritiesCoinTrade> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                entity,
-                SecuritiesCoinTrade.class
+            url,
+            HttpMethod.POST,
+            entity,
+            SecuritiesCoinTrade.class
         );
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
@@ -422,10 +456,10 @@ public class CoinServiceImpl implements CoinService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<SecuritiesCoinTrade> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                entity,
-                SecuritiesCoinTrade.class
+            url,
+            HttpMethod.POST,
+            entity,
+            SecuritiesCoinTrade.class
         );
 
         log.info(response.toString());
@@ -437,15 +471,16 @@ public class CoinServiceImpl implements CoinService {
         return response.getBody();
     }
 
-    private void saveTradeRecode(Members members, CoinItem coinItem, Double amount, Double price, TradeMethod method) {
+    private void saveTradeRecode(Members members, CoinItem coinItem, Double amount, Double price,
+        TradeMethod method) {
         CoinTrade coinTrade = CoinTrade.builder()
-                .method(method)
-                .count(amount)
-                .price(price)
-                .tradeTime(LocalDateTime.now())
-                .coinItem(coinItem)
-                .member(members)
-                .build();
+            .method(method)
+            .count(amount)
+            .price(price)
+            .tradeTime(LocalDateTime.now())
+            .coinItem(coinItem)
+            .member(members)
+            .build();
         coinTradeRepository.save(coinTrade);
     }
 
@@ -462,9 +497,11 @@ public class CoinServiceImpl implements CoinService {
     }
 
     private CoinPortfolio valiateCoinPortfolio(CoinItem coinItem, Members members, Double amount) {
-        CoinPortfolio coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem, members)
-                .orElseThrow(() -> new RuntimeException("No such coin item"));
-        log.info("coinPortfolio = {} : {} - {}", coinPortfolio.getCoinItem().getName(), coinPortfolio.getAmount(), amount);
+        CoinPortfolio coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem,
+                members)
+            .orElseThrow(() -> new RuntimeException("No such coin item"));
+        log.info("coinPortfolio = {} : {} - {}", coinPortfolio.getCoinItem().getName(),
+            coinPortfolio.getAmount(), amount);
         if (amount > coinPortfolio.getAmount()) {
             throw new RuntimeException("보유 코인 수량 부족");
         }

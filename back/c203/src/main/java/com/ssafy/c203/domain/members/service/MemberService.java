@@ -44,4 +44,8 @@ public interface MemberService {
     Members findMemberById(Long id);
 
     void setMoney(int money, Long userId);
+
+    void updateAutoTrading(Long userId, boolean autoTrading, int price);
+
+    Long checkSavingAccount(Long memberId);
 }

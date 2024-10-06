@@ -6,6 +6,7 @@ import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
+import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
@@ -341,6 +342,28 @@ public class StockServiceImpl implements StockService {
         return allStockDetails.stream()
                 .filter(stock -> favoriteStockCodes.contains(stock.getStckShrnIscd()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void setStockAutoTrading(Long userId, List<StockAutoSetting> stockAutoSettings) {
+        Members member = memberService.findMemberById(userId);
+        stockAutoFundingRepository.deleteByMember_Id(userId);
+
+        for (StockAutoSetting autoSetting : stockAutoSettings) {
+            StockAutoFunding stockAutoFunding = StockAutoFunding.builder()
+                    .member(member)
+                    .stockItem(findStockItem(autoSetting.getStockCode()))
+                    .rate(autoSetting.getPercent())
+                    .build();
+            stockAutoFundingRepository.save(stockAutoFunding);
+        }
+    }
+
+    @Override
+    public List<StockAutoSetting> findStockAutoSetting(Long userId) {
+        return stockAutoFundingRepository.findByMember_Id(userId).stream()
+                .map(StockAutoSetting::new)
+                .toList();
     }
 
     // 해당 주식 판매 여부 검증

@@ -299,7 +299,6 @@ public class MemberController {
         //response
         response.setHeader("access", newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
-
         return ResponseEntity.ok().build();
     }
 
@@ -323,6 +322,13 @@ public class MemberController {
         Long userId = customUserDetails.getUserId();
         memberService.setMoney(autoFundingMoneyDto.getMoney(), userId);
         return ResponseEntity.ok("금액 설정 완료");
+    }
+
+    @GetMapping("/balance")
+    public ResponseEntity<?> getBalance(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        Long userBalance = memberService.checkSavingAccount(userId);
+        return ResponseEntity.ok(userBalance);
     }
 
     private Cookie createCookie(String key, String value) {
