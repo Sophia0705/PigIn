@@ -124,7 +124,7 @@ def crawlingGoldNews():
     client.close()
     return "success"
 
-async def getGoldNews():
+def getGoldNews():
     load_dotenv()
     mongodb_URI = os.getenv("MongoDBUrl")
     client = MongoClient(mongodb_URI)
@@ -211,7 +211,7 @@ def crawlingCoinNews():
     client.close()
     return "success"
 
-async def getCoinNews():
+def getCoinNews():
     load_dotenv()
     mongodb_URI = os.getenv("MongoDBUrl")
     client = MongoClient(mongodb_URI)

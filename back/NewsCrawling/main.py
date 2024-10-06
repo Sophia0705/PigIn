@@ -18,25 +18,25 @@ app.add_middleware(
 )
 
 @app.get("/news/health-check")
-async def root():
+def root():
     return {"message": "news Pong!!"}
 
 @app.get("/news/crawling")
-async def crawl_news():  # 함수 이름을 변경
+def crawl_news():  # 함수 이름을 변경
     return crawlingNews()
 
 @app.get("/news/gold-crawling")
-async def goldCrawling():
+def goldCrawling():
     return crawlingGoldNews()
 
 @app.get("/news/getgold")
-async def getGoldNews():
-    return await getGoldNews()
+def getGold():
+    return getGoldNews()
 
 @app.get("/news/getcoin")
-async def getCoinNews():
-    return await getCoinNews()
+def getCoin():
+    return getCoinNews()
 
 @app.get("/news/{stockId}")
-async def stock_news(stockId):
+def stock_news(stockId):
     return getStockNews(stockId)
