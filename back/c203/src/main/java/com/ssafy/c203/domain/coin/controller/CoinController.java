@@ -160,6 +160,25 @@ public class CoinController {
         return ResponseEntity.ok().body(responses);
     }
 
+    @PostMapping("/{coinCode}/auto-funding")
+    public ResponseEntity<?> addAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        return ResponseEntity.ok().body(makeResult("result", coinService.addAutoFunding(userId, coinCode)));
+    }
+
+    @DeleteMapping("/{coinCode}/auto-funding")
+    public ResponseEntity<?> deleteAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        coinService.deleteAutoFunding(userId, coinCode);
+        return ResponseEntity.ok().body(makeResult("result", true));
+    }
+
+    @GetMapping("/{coinCode}/auto-funding")
+    public ResponseEntity<?> isAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        Long userId = user.getUserId();
+        return ResponseEntity.ok().body(makeResult("result", coinService.isAutoFunding(userId, coinCode)));
+    }
+
     private Map<String, Boolean> makeResult(String key, Boolean value) {
         Map<String, Boolean> result = new HashMap<>();
         result.put(key, value);
