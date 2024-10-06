@@ -268,7 +268,9 @@ const GoldDetailPage: React.FC = () => {
       )}
 
       {/* 뉴스 */}
-      {selectedInfoType === '뉴스' && <GoldNews />}
+      {selectedInfoType === '뉴스' && (
+        <GoldNews Date={''} NewsCompany={''} NewsTitle={''} Link={''} />
+      )}
 
       {/* 매수, 매도 버튼 */}
       <div className="mt-6 flex justify-between w-10/12 mx-auto">

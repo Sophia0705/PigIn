@@ -253,7 +253,9 @@ const CryptoDetailPage: React.FC = () => {
       )}
 
       {/* 뉴스 */}
-      {selectedInfoType === '뉴스' && <CryptoNews />}
+      {selectedInfoType === '뉴스' && (
+        <CryptoNews Date={''} NewsCompany={''} NewsTitle={''} Link={''} />
+      )}
 
       {/* 매수, 매도 버튼 */}
 
