@@ -9,14 +9,12 @@ interface GoldSellModalProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
-  goldPrice: number;
 }
 
 const GoldSellModal: React.FC<GoldSellModalProps> = ({
   inputValue,
   setInputValue,
   onClose,
-  goldPrice,
 }) => {
   const [myGold, setMyGold] = useState<number>(0);
 
@@ -79,7 +77,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
   }, []);
 
   const inputAmount = parseFloat(inputValue) || 0;
-  const percentage = ((inputAmount / goldPrice) * 100).toFixed(2);
+  const percentage = ((inputAmount / myGold) * 100).toFixed(2);
 
   const handleSellClick = async () => {
     try {
@@ -89,6 +87,19 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
     } catch (error) {
       console.error('금 매도 실패핑:', error);
     }
+  };
+
+  const isTradingTime = () => {
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    const isWeekday = day >= 1 && day <= 5;
+    const isTradingHours =
+      hours >= 9 && (hours < 15 || (hours === 15 && minutes <= 30));
+
+    return isWeekday && isTradingHours;
   };
 
   return (
@@ -104,7 +115,14 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          금 현재 보유 : {Math.round(Number(myGold)).toLocaleString()}원
+          금 현재 보유 :{' '}
+          <span
+            className="text-2xl cursor-pointer"
+            onClick={() => setInputValue(Math.round(Number(myGold)).toString())}
+          >
+            {Math.round(Number(myGold)).toLocaleString()}
+          </span>
+          원
         </div>
 
         {/* 가격 표시 칸 */}
@@ -198,7 +216,7 @@ const GoldSellModal: React.FC<GoldSellModalProps> = ({
             disabled={inputValue === '00'}
             onClick={handleSellClick}
           >
-            매도하기
+            {isTradingTime() ? '매도하기' : '매도 예약'}
           </button>
         </div>
       </div>

@@ -50,3 +50,7 @@ export interface StockNews {
   NewsTitle: string;
   Link: string;
 }
+
+export interface StockFavorite {
+  result: boolean;
+}

@@ -38,3 +38,7 @@ export interface CryptoNews {
   NewsTitle: string;
   Link: string;
 }
+
+export interface CryptoFavorite {
+  result: boolean;
+}

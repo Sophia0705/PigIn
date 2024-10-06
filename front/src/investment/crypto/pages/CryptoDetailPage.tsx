@@ -4,6 +4,16 @@ import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
 import { CryptoItemData } from '../../interfaces/CryptoInterface';
 import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
+import {
+  checkIfFavorite,
+  addToFavorite,
+  removeFromFavorite,
+} from '../../../api/investment/crypto/CryptoFavorite';
+import {
+  checkIfAutoInvest,
+  addToAutoInvest,
+  removeFromAutoInvest,
+} from '../../../api/investment/crypto/CryptoAutoInvest';
 import CryptoPurchaseModal from '../components/modals/CryptoPurchaseModal';
 import CryptoDetailGraph from '../components/CryptoDetailGraph';
 import CryptoDetailInfo from '../components/CryptoDetailInfo';
@@ -41,17 +51,37 @@ const CryptoDetailPage: React.FC = () => {
     fetchBitcoinPrice();
   }, []);
 
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const favoriteStatus = await checkIfFavorite(cryptoData.coin);
+        setIsLiked(favoriteStatus.result);
+
+        const autoInvestStatus = await checkIfAutoInvest(cryptoData.coin);
+        setIsAdded(autoInvestStatus.result);
+      } catch (error) {
+        console.error('상태 확인 중 오류 발생:', error);
+      }
+    };
+
+    fetchStatus();
+  }, [cryptoData.coin]);
+
   const handleBackClick = () => {
     navigate(-1);
   };
 
-  const handleAddToPortfolio = () => {
-    setIsAdded((prevAdded) => !prevAdded);
-    console.log(
-      isAdded
-        ? `${cryptoData?.coinName} 제거 완료!`
-        : `${cryptoData?.coinName} 추가 완료!`
-    );
+  const handleAddToPortfolio = async () => {
+    try {
+      if (isAdded) {
+        await removeFromAutoInvest(cryptoData.coin);
+      } else {
+        await addToAutoInvest(cryptoData.coin);
+      }
+      setIsAdded((prev) => !prev);
+    } catch (error) {
+      console.error('자동투자 목록 수정 중 오류 발생:', error);
+    }
   };
 
   const handleTimeRangeChange = (option: string) => {
@@ -62,8 +92,17 @@ const CryptoDetailPage: React.FC = () => {
     setSelectedInfoType(option);
   };
 
-  const handleHeartClick = () => {
-    setIsLiked((prevLiked) => !prevLiked);
+  const handleHeartClick = async () => {
+    try {
+      if (isLiked) {
+        await removeFromFavorite(cryptoData.coin);
+      } else {
+        await addToFavorite(cryptoData.coin);
+      }
+      setIsLiked((prevLiked) => !prevLiked);
+    } catch (error) {
+      console.error('찜 목록 수정 중 오류 발생:', error);
+    }
   };
 
   const handleBuyClick = () => {

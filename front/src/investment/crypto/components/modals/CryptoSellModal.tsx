@@ -107,8 +107,14 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          현재 보유 금액 : <span className="text-2xl">{cryptoQuantity}</span> 원{' '}
-          <span className="text-sm">({profitRate} %)</span>
+          현재 보유 금액 :{' '}
+          <span
+            className="text-2xl"
+            onClick={() => setInputValue(cryptoQuantity.toString())}
+          >
+            {cryptoQuantity}
+          </span>{' '}
+          원 <span className="text-sm">({profitRate} %)</span>
         </div>
 
         {/* 가격 표시 칸 */}
