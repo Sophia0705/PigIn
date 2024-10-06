@@ -17,8 +17,8 @@ public interface StockService {
     public List<MongoStockHistory> findStockChart(String stockCode, String interval, Integer count);
     public List<MongoStockMinute> findStockMinute();
     public List<MongoStockMinute> findStockMinuteChart(String stockCode, Integer count);
-    public boolean buyStock(Long userId, String stockCode, Long price);
-    public boolean sellStock(Long userId, String stockCode, Double count);
+    public boolean buyStock(Long userId, String stockCode, Long price, boolean isAuto);
+    public boolean sellStock(Long userId, String stockCode, Double count, boolean isAuto);
     public StockPortfolio findStockPortfolioByCode(Long userId, String stockCode);
     public List<FindStockPortfolioResponse> findStockPortfolio(Long userId);
     public PriceAndProfit calculateProfit(Double priceAvg, String stockCode);

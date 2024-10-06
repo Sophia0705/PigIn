@@ -88,7 +88,7 @@ public class StockController {
     @PostMapping("/{stockId}/sell")
     public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 //        log.info("request = {}", request);
-        if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount())) {
+        if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount(), false)) {
             return ResponseEntity.ok().body("success");
         }
         return ResponseEntity.ok().body("wait");
@@ -97,7 +97,7 @@ public class StockController {
     @PostMapping("/{stockId}/buy")
     public ResponseEntity<?> buyStock(@RequestBody StockBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 //        log.info("request = {}", request);
-        if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice())) {
+        if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice(), false)) {
             log.info("구매 성공");
             return ResponseEntity.ok().body("success");
         }

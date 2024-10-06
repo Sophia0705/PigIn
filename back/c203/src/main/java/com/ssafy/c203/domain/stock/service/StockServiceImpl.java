@@ -128,7 +128,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public boolean buyStock(Long userId, String stockId, Long price) {
+    public boolean buyStock(Long userId, String stockId, Long price, boolean isAuto) {
         // 1. 입력 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
                 .orElseThrow(() -> new RuntimeException("Stock item not found: " + stockId));
@@ -160,9 +160,9 @@ public class StockServiceImpl implements StockService {
                     stockPortfolioRepository.save(newPortfolio);
                 }
                 return true;
-            } else {
+            } else if (!isAuto) {
                 // 6. 대기 큐에 저장
-                saveToWaitingQueue(member, stockItem, price.doubleValue(), TradeMethod.BUY);
+                saveToWaitingQueue(member, stockItem, 0.0, price.doubleValue(), TradeMethod.BUY);
                 return false;
             }
         } catch (Exception e) {
@@ -171,10 +171,11 @@ public class StockServiceImpl implements StockService {
             log.error("주식 매수 중 오류 발생: ", e);
             throw new RuntimeException("주식 매수 처리 중 오류가 발생했습니다.", e);
         }
+        return false;
     }
 
     @Override
-    public boolean sellStock(Long userId, String stockId, Double count) {
+    public boolean sellStock(Long userId, String stockId, Double count, boolean isAuto) {
         // 입력 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
                 .orElseThrow(() -> new RuntimeException("주식을 찾을 수 없습니다: " + stockId));
@@ -195,9 +196,9 @@ public class StockServiceImpl implements StockService {
                     throw new RuntimeException("매도 금액 입금 실패");
                 }
                 return true;
-            } else {
+            } else if(!isAuto) {
                 // 6. 대기 큐에 저장
-                saveToWaitingQueue(member, stockItem, count, TradeMethod.SELL);
+                saveToWaitingQueue(member, stockItem, count, 0.0, TradeMethod.SELL);
                 return false;
             }
         } catch (Exception e) {
@@ -205,6 +206,7 @@ public class StockServiceImpl implements StockService {
             subStockPortfolio(stockPortfolio, -count);
             throw new RuntimeException("주식 매도 처리 중 오류가 발생했습니다.", e);
         }
+        return false;
     }
 
     @Override
@@ -404,10 +406,11 @@ public class StockServiceImpl implements StockService {
     }
 
     // 대기 큐 삽입
-    private void saveToWaitingQueue(Members member, StockItem stockItem, Double count, TradeMethod method) {
+    private void saveToWaitingQueue(Members member, StockItem stockItem, Double count, Double price, TradeMethod method) {
         StockWaitingQueue stockWaitingQueue = StockWaitingQueue.builder()
                 .tradeTime(LocalDateTime.now())
                 .tradeAmount(count)
+                .tradePrice(Math.round(price))
                 .stockItem(stockItem)
                 .method(method)
                 .member(member)
