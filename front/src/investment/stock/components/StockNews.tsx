@@ -8,33 +8,19 @@ interface StockNewsProps {
 
 const StockNews: React.FC<StockNewsProps> = ({ stockId }) => {
   const [newsData, setNewsData] = useState<StockNewsType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        setLoading(true);
         const data = await getStockNews(stockId);
         setNewsData(data);
-        setLoading(false);
       } catch (error) {
         console.error('뉴스 가져오는 중 에러 발생:', error);
-        setError('뉴스 정보 가져오기 실패');
-        setLoading(false);
       }
     };
 
     fetchNews();
   }, [stockId]); // stockId 변경되면 발동
-
-  if (loading) {
-    return <p>Loading news...</p>; // 로딩 메시지
-  }
-
-  if (error) {
-    return <p>{error}</p>; // 에러 메시지
-  }
 
   return (
     <div className="w-10/12 max-w-md mx-auto p-4 bg-white rounded-2xl shadow-md h-80 overflow-y-auto">

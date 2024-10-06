@@ -31,3 +31,10 @@ export interface CryptoChartData {
   coin_lwpr: number; // 최저가 (해당 시간대의 최저 가격)
   acml_vol: number; // 누적 거래량 (해당 시간대 동안의 누적 거래량)
 }
+
+export interface CryptoNews {
+  Date: string;
+  NewsCompany: string;
+  NewsTitle: string;
+  Link: string;
+}
