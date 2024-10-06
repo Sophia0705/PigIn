@@ -1,6 +1,6 @@
 services:
   backend:
-    image: zzun73/pigin-be-main:latest
+    image: zzun73/pigin-be-main:main-latest
     container_name: pigin-be-main
     ports:
       - "8080:8080"

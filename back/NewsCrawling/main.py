@@ -19,7 +19,7 @@ app.add_middleware(
 
 @app.get("/news/health-check")
 async def root():
-    return {"message": "news Pong"}
+    return {"message": "news Pong!!"}
 
 @app.get("/news/crawling")
 async def crawl_news():  # 함수 이름을 변경

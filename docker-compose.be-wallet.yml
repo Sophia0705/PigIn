@@ -1,6 +1,6 @@
 services:
   backend-wallet:
-    image: zzun73/pigin-be-wallet:latest
+    image: zzun73/pigin-be-wallet:wallet-latest
     container_name: pigin-be-wallet
     ports:
       - "8088:8088"
