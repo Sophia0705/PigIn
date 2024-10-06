@@ -13,12 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/portfolio")
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
 
-    @GetMapping()
+    @GetMapping("/portfolio")
     public ResponseEntity<?> findUserPortfolio(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         return ResponseEntity.ok().body(portfolioService.findPortfolio(userId));
