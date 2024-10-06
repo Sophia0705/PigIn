@@ -5,14 +5,10 @@ import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.SecuritiesCoinTrade;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
-import com.ssafy.c203.domain.coin.entity.CoinItem;
-import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
-import com.ssafy.c203.domain.coin.entity.CoinTrade;
+import com.ssafy.c203.domain.coin.entity.*;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
-import com.ssafy.c203.domain.coin.repository.CoinItemRepository;
-import com.ssafy.c203.domain.coin.repository.CoinPortfolioRepository;
-import com.ssafy.c203.domain.coin.repository.CoinTradeRepository;
+import com.ssafy.c203.domain.coin.repository.*;
 import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinHistoryRepository;
 import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinMinuteRepository;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -49,6 +45,8 @@ public class CoinServiceImpl implements CoinService {
     private final CoinItemRepository coinItemRepository;
     private final CoinTradeRepository coinTradeRepository;
     private final CoinPortfolioRepository coinPortfolioRepository;
+    private final CoinFavoriteRepository coinFavoriteRepository;
+    private final CoinAutoFundingRepository coinAutoFundingRepository;
 
     private final MemberService memberService;
     private final AccountService accountService;
@@ -297,6 +295,93 @@ public class CoinServiceImpl implements CoinService {
             new CoinItem("KRW-DOGE", "도지코인")
         );
         coinItemRepository.saveAll(coinItems);
+    }
+
+    @Override
+    public boolean addCoinFavorite(Long userId, String coinCode) {
+        Optional<CoinFavorite> coinFavorite = coinFavoriteRepository.findByCoinItem_IdAndMember_Id(coinCode, userId);
+        if (coinFavorite.isPresent()) {
+            return false;
+        }
+        CoinFavorite result = CoinFavorite.builder()
+                .coinItem(coinItemRepository.findById(coinCode).get())
+                .member(memberService.findMemberById(userId))
+                .build();
+        coinFavoriteRepository.save(result);
+        return true;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isCoinFavorite(Long userId, String coinCode) {
+        Optional<CoinFavorite> coinFavorite = coinFavoriteRepository.findByCoinItem_IdAndMember_Id(coinCode, userId);
+        return coinFavorite.isPresent();
+    }
+
+    @Override
+    public void deleteCoinFavorite(Long userId, String coinCode) {
+        CoinFavorite coinFavorite = coinFavoriteRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
+                .orElseThrow(() -> new RuntimeException("No such coin"));
+
+        coinFavoriteRepository.delete(coinFavorite);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CoinItem> findRecommendCoin() {
+        return coinFavoriteRepository.findTopNMostFavoriteCoin(5);
+    }
+
+    @Override
+    public boolean addAutoFunding(Long userId, String coinCode) {
+        Optional<CoinAutoFunding> autoFunding = coinAutoFundingRepository.findByCoinItem_IdAndMember_Id(coinCode, userId);
+        if (autoFunding.isPresent()) {
+            return false;
+        }
+        CoinAutoFunding coinAutoFunding = CoinAutoFunding.builder()
+                .coinItem(coinItemRepository.findById(coinCode).get())
+                .member(memberService.findMemberById(userId))
+                .rate(0)
+                .build();
+        coinAutoFundingRepository.save(coinAutoFunding);
+        return true;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAutoFunding(Long userId, String coinCode) {
+        Optional<CoinAutoFunding> autoFunding = coinAutoFundingRepository.findByCoinItem_IdAndMember_Id(coinCode, userId);
+        return autoFunding.isPresent();
+    }
+
+    @Override
+    public void deleteAutoFunding(Long userId, String coinCode) {
+        CoinAutoFunding autoFunding = coinAutoFundingRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
+                .orElseThrow(() -> new RuntimeException("No such coin"));
+        coinAutoFundingRepository.delete(autoFunding);
+    }
+
+    @Override
+    public void setAutoFunding(Long userId, String coinCode, Integer percent) {
+        CoinAutoFunding autoFunding = coinAutoFundingRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
+                .orElseThrow(() -> new RuntimeException("No such coin"));
+        autoFunding.updateRate(percent);
+        coinAutoFundingRepository.save(autoFunding);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FindCoinAllResponse> findFavoriteCoin(Long userId) {
+        List<FindCoinAllResponse> allCoins = findAllCoins();
+        List<CoinItem> favoriteCoins = coinFavoriteRepository.findCoinItemsByMemberId(userId);
+
+        Set<String> favoriteCoinIds = favoriteCoins.stream()
+                .map(CoinItem::getId)
+                .collect(Collectors.toSet());
+
+        return allCoins.stream()
+                .filter(coin -> favoriteCoinIds.contains(coin.getCoin()))
+                .collect(Collectors.toList());
     }
 
     // 출금

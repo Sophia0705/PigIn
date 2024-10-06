@@ -378,6 +378,11 @@ public class GoldServiceImpl implements GoldService {
     public FindGoldPortfolioResponse findPortfolio(Long userId) {
         GoldPortfolio portfolio = goldPortfolioRepository.findByMember_Id(userId)
                 .orElse(null);
+
+        if (portfolio == null || portfolio.getAmount() <= 0) {
+            return null;
+        }
+
         int goldPrice = getGoldPrice();
 
         return new FindGoldPortfolioResponse(portfolio.getAmount(), portfolio.getAmount() * goldPrice, portfolio.getAmount() == 0 ? 0 : (goldPrice - portfolio.getPriceAvg()) / portfolio.getPriceAvg() * 100);

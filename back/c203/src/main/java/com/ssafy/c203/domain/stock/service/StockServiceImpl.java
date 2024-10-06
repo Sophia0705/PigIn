@@ -7,17 +7,11 @@ import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
-import com.ssafy.c203.domain.stock.entity.StockItem;
-import com.ssafy.c203.domain.stock.entity.StockPortfolio;
-import com.ssafy.c203.domain.stock.entity.StockTrade;
-import com.ssafy.c203.domain.stock.entity.StockWaitingQueue;
+import com.ssafy.c203.domain.stock.entity.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockMinute;
-import com.ssafy.c203.domain.stock.repository.StockItemRepository;
-import com.ssafy.c203.domain.stock.repository.StockPortfolioRepository;
-import com.ssafy.c203.domain.stock.repository.StockTradeRepository;
-import com.ssafy.c203.domain.stock.repository.StockWaitingQueueRepository;
+import com.ssafy.c203.domain.stock.repository.*;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockDetailRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockHistoryRepository;
 import com.ssafy.c203.domain.stock.repository.mongo.MongoStockMinuteRepository;
@@ -35,10 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,6 +45,8 @@ public class StockServiceImpl implements StockService {
     private final StockItemRepository stockItemRepository;
     private final StockTradeRepository stockTradeRepository; ;
     private final StockPortfolioRepository stockPortfolioRepository;
+    private final StockFavoriteRepository stockFavoriteRepository;
+    private final StockAutoFundingRepository stockAutoFundingRepository;
 
 
     private final MemberService memberService;
@@ -95,9 +88,14 @@ public class StockServiceImpl implements StockService {
         return mongoStockDetailRepository.findLatestByHtsKorIsnmContainingIgnoreCase(keyword);
     }
 
+    @Transactional(readOnly = true)
+    public StockItem findStockItem(String stockId) {
+        return stockItemRepository.findById(stockId).orElse(null);
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public MongoStockDetail findStock(String stockCode) {
+    public MongoStockDetail findStockDetail(String stockCode) {
         return mongoStockDetailRepository.findTopByStckShrnIscdOrderByStckBsopDateDesc(stockCode).orElseThrow();
     }
 
@@ -130,7 +128,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public boolean buyStock(Long userId, String stockId, Long price) {
+    public boolean buyStock(Long userId, String stockId, Long price, boolean isAuto) {
         // 1. 입력 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
                 .orElseThrow(() -> new RuntimeException("Stock item not found: " + stockId));
@@ -162,9 +160,9 @@ public class StockServiceImpl implements StockService {
                     stockPortfolioRepository.save(newPortfolio);
                 }
                 return true;
-            } else {
+            } else if (!isAuto) {
                 // 6. 대기 큐에 저장
-                saveToWaitingQueue(member, stockItem, price.doubleValue(), TradeMethod.BUY);
+                saveToWaitingQueue(member, stockItem, 0.0, price.doubleValue(), TradeMethod.BUY);
                 return false;
             }
         } catch (Exception e) {
@@ -173,10 +171,11 @@ public class StockServiceImpl implements StockService {
             log.error("주식 매수 중 오류 발생: ", e);
             throw new RuntimeException("주식 매수 처리 중 오류가 발생했습니다.", e);
         }
+        return false;
     }
 
     @Override
-    public boolean sellStock(Long userId, String stockId, Double count) {
+    public boolean sellStock(Long userId, String stockId, Double count, boolean isAuto) {
         // 입력 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
                 .orElseThrow(() -> new RuntimeException("주식을 찾을 수 없습니다: " + stockId));
@@ -197,9 +196,9 @@ public class StockServiceImpl implements StockService {
                     throw new RuntimeException("매도 금액 입금 실패");
                 }
                 return true;
-            } else {
+            } else if(!isAuto) {
                 // 6. 대기 큐에 저장
-                saveToWaitingQueue(member, stockItem, count, TradeMethod.SELL);
+                saveToWaitingQueue(member, stockItem, count, 0.0, TradeMethod.SELL);
                 return false;
             }
         } catch (Exception e) {
@@ -207,6 +206,7 @@ public class StockServiceImpl implements StockService {
             subStockPortfolio(stockPortfolio, -count);
             throw new RuntimeException("주식 매도 처리 중 오류가 발생했습니다.", e);
         }
+        return false;
     }
 
     @Override
@@ -234,7 +234,7 @@ public class StockServiceImpl implements StockService {
                     String name = portfolio.getStockItem().getName();
                     Double amount = portfolio.getAmount();
                     Double price = amount * currentPrice;
-                    Double priceAvg = portfolio.getPriceAvg();
+                    Double priceAvg = portfolio.getPriceAvg() == null ? price : portfolio.getPriceAvg();
                     double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
 
                     return new FindStockPortfolioResponse(stockCode, name, amount, price, profitRate);
@@ -243,6 +243,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PriceAndProfit calculateProfit(Double priceAvg, String stockCode) {
         MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElseThrow();
@@ -252,6 +253,94 @@ public class StockServiceImpl implements StockService {
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
         // 소수점 둘째 자리까지 반올림
         return new PriceAndProfit(currentPrice, Math.round(profitRate * 100.0) / 100.0);
+    }
+
+    @Override
+    public boolean addStockFavorite(Long userId, String stockCode) {
+        Optional<StockFavorite> stockFavorite = stockFavoriteRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        if (stockFavorite.isEmpty()) {
+            StockFavorite newStockFavorite = StockFavorite.builder()
+                    .stockItem(findStockItem(stockCode))
+                    .member(memberService.findMemberById(userId))
+                    .build();
+            stockFavoriteRepository.save(newStockFavorite);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isStockFavorite(Long userId, String stockCode) {
+        Optional<StockFavorite> stockFavorite = stockFavoriteRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        return stockFavorite.isPresent();
+    }
+
+    @Override
+    public void deleteStockFavorite(Long userId, String stockCode) {
+        StockFavorite stockFavorite = stockFavoriteRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElseThrow();
+        stockFavoriteRepository.delete(stockFavorite);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<StockItem> findRecommendStock() {
+        // 우선 Top 5
+        return stockFavoriteRepository.findTopNMostFavoriteStocks(5);
+    }
+
+    @Override
+    public boolean addAutoFunding(Long userId, String stockCode) {
+        Optional<StockAutoFunding> autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        if (autoFunding.isEmpty()) {
+            StockAutoFunding stockAutoFunding = StockAutoFunding.builder()
+                    .rate(0)
+                    .member(memberService.findMemberById(userId))
+                    .stockItem(findStockItem(stockCode))
+                    .build();
+            stockAutoFundingRepository.save(stockAutoFunding);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAutoFunding(Long userId, String stockCode) {
+        Optional<StockAutoFunding> autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId);
+        return autoFunding.isPresent();
+    }
+
+    @Override
+    public void deleteAutoFunding(Long userId, String stockCode) {
+        StockAutoFunding autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElseThrow();
+        stockAutoFundingRepository.delete(autoFunding);
+    }
+
+    @Override
+    public void setAutoFunding(Long userId, String stockCode, Integer percent) {
+        StockAutoFunding autoFunding = stockAutoFundingRepository.findByStockItem_IdAndMember_Id(stockCode, userId)
+                .orElseThrow();
+        autoFunding.updateRate(percent);
+        stockAutoFundingRepository.delete(autoFunding);
+    }
+
+    @Override
+    public List<MongoStockDetail> findFavoriteStock(Long userId) {
+        List<MongoStockDetail> allStockDetails = findAllStock();
+        List<StockItem> favoriteStockItems = stockFavoriteRepository.findStockItemsByMemberId(userId);
+
+        // 즐겨찾기한 주식의 코드 목록을 Set으로 만듭니다 (검색 효율성을 위해)
+        Set<String> favoriteStockCodes = favoriteStockItems.stream()
+                .map(StockItem::getId)
+                .collect(Collectors.toSet());
+
+        // 모든 주식 상세 정보 중 즐겨찾기한 주식만 필터링합니다
+        return allStockDetails.stream()
+                .filter(stock -> favoriteStockCodes.contains(stock.getStckShrnIscd()))
+                .collect(Collectors.toList());
     }
 
     // 해당 주식 판매 여부 검증
@@ -317,10 +406,11 @@ public class StockServiceImpl implements StockService {
     }
 
     // 대기 큐 삽입
-    private void saveToWaitingQueue(Members member, StockItem stockItem, Double count, TradeMethod method) {
+    private void saveToWaitingQueue(Members member, StockItem stockItem, Double count, Double price, TradeMethod method) {
         StockWaitingQueue stockWaitingQueue = StockWaitingQueue.builder()
                 .tradeTime(LocalDateTime.now())
                 .tradeAmount(count)
+                .tradePrice(Math.round(price))
                 .stockItem(stockItem)
                 .method(method)
                 .member(member)

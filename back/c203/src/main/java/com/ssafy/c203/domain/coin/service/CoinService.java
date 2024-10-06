@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.coin.service;
 
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
+import com.ssafy.c203.domain.coin.entity.CoinItem;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
@@ -33,4 +34,14 @@ public interface CoinService {
     public List<FindCoinPortfolioResponse> findCoinPortfolios(Long userId);
 
     public PriceAndProfit calculateProfit(Double priceAvg, String coinCode);
+
+    boolean addCoinFavorite(Long userId, String coinCode);
+    boolean isCoinFavorite(Long userId, String coinCode);
+    void deleteCoinFavorite(Long userId, String coinCode);
+    List<CoinItem> findRecommendCoin();
+    boolean addAutoFunding(Long userId, String coinCode);
+    boolean isAutoFunding(Long userId, String coinCode);
+    void deleteAutoFunding(Long userId, String coinCode);
+    void setAutoFunding(Long userId, String coinCode, Integer percent);
+    List<FindCoinAllResponse> findFavoriteCoin(Long userId);
 }

@@ -1,10 +1,12 @@
 package com.ssafy.c203.domain.stock.repository;
 
 import com.ssafy.c203.domain.stock.entity.StockAutoFunding;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StockAutoFundingRepository extends JpaRepository<StockAutoFunding, Long> {
-    List<StockAutoFunding> findAllByMember_Id(Long memberId);
+import java.util.Optional;
+import java.util.List;
 
+public interface StockAutoFundingRepository extends JpaRepository<StockAutoFunding, Long> {
+    Optional<StockAutoFunding> findByStockItem_IdAndMember_Id(String stockCode, Long userId);
+    List<StockAutoFunding> findAllByMember_Id(Long memberId);
 }
