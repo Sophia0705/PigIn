@@ -324,7 +324,7 @@ public class CoinServiceImpl implements CoinService {
     @Override
     @Transactional(readOnly = true)
     public List<CoinItem> findRecommendCoin() {
-        return List.of();
+        return coinFavoriteRepository.findTopNMostFavoriteCoin(5);
     }
 
     @Override

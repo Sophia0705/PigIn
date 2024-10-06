@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.coin.controller;
 
 import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
 import com.ssafy.c203.domain.coin.dto.response.*;
+import com.ssafy.c203.domain.coin.entity.CoinItem;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
@@ -139,9 +140,12 @@ public class CoinController {
     }
 
     @GetMapping("/favorite")
-    public ResponseEntity<?> findCoinFavorite(@AuthenticationPrincipal CustomUserDetails user) {
-        Long userId = user.getUserId();
-        return null;
+    public ResponseEntity<?> findCoinFavorite() {
+        List<CoinRecommendResponse> responses = coinService.findRecommendCoin().stream()
+                .map(CoinRecommendResponse::new)
+                .toList();
+
+        return ResponseEntity.ok().body(responses);
     }
 
     private Map<String, Boolean> makeResult(String key, Boolean value) {
