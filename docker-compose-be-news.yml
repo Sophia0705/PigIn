@@ -1,6 +1,6 @@
 services:
   backend-news:
-    image: zzun73/pigin-be-news:latest
+    image: zzun73/pigin-be-news:news-latest
     container_name: pigin-be-news
     ports:
       - "3000:3000"
