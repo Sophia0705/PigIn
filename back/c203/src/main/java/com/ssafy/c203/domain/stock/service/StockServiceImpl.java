@@ -29,10 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -326,6 +323,22 @@ public class StockServiceImpl implements StockService {
                 .orElseThrow();
         autoFunding.updateRate(percent);
         stockAutoFundingRepository.delete(autoFunding);
+    }
+
+    @Override
+    public List<MongoStockDetail> findFavoriteStock(Long userId) {
+        List<MongoStockDetail> allStockDetails = findAllStock();
+        List<StockItem> favoriteStockItems = stockFavoriteRepository.findStockItemsByMemberId(userId);
+
+        // 즐겨찾기한 주식의 코드 목록을 Set으로 만듭니다 (검색 효율성을 위해)
+        Set<String> favoriteStockCodes = favoriteStockItems.stream()
+                .map(StockItem::getId)
+                .collect(Collectors.toSet());
+
+        // 모든 주식 상세 정보 중 즐겨찾기한 주식만 필터링합니다
+        return allStockDetails.stream()
+                .filter(stock -> favoriteStockCodes.contains(stock.getStckShrnIscd()))
+                .collect(Collectors.toList());
     }
 
     // 해당 주식 판매 여부 검증

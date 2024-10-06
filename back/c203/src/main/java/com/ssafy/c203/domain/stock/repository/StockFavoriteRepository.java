@@ -18,4 +18,7 @@ public interface StockFavoriteRepository extends JpaRepository<StockFavorite, Lo
             "ORDER BY COUNT(sf) DESC " +
             "LIMIT :limit")
     List<StockItem> findTopNMostFavoriteStocks(@Param("limit") int limit);
+
+    @Query("SELECT sf.stockItem FROM StockFavorite sf WHERE sf.member.id = :memberId")
+    List<StockItem> findStockItemsByMemberId(@Param("memberId") Long memberId);
 }
