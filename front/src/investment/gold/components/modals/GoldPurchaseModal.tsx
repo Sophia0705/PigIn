@@ -192,7 +192,7 @@ const GoldPurchaseModal: React.FC<GoldPurchaseModalProps> = ({
             disabled={inputValue === '00'}
             onClick={handleBuyClick}
           >
-            {isTradingTime() ? '매수하기' : '매수 대기'}
+            {isTradingTime() ? '매수하기' : '매수 예약'}
           </button>
         </div>
       </div>

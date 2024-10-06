@@ -77,6 +77,19 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
     }
   };
 
+  const isTradingTime = () => {
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    const isWeekday = day >= 1 && day <= 5;
+    const isTradingHours =
+      hours >= 9 && (hours < 15 || (hours === 15 && minutes <= 30));
+
+    return isWeekday && isTradingHours;
+  };
+
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
@@ -185,7 +198,7 @@ const StockPurchaseModal: React.FC<StockPurchaseModalProps> = ({
             disabled={inputValue === '00'}
             onClick={handleBuyClick}
           >
-            매수하기
+            {isTradingTime() ? '매수하기' : '매수 예약'}
           </button>
         </div>
       </div>
