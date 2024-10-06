@@ -133,7 +133,7 @@ public class StockController {
     public ResponseEntity<?> addFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         stockService.addStockFavorite(userId, stockId);
-        return ResponseEntity.ok().body("success");
+        return ResponseEntity.ok().body(makeResult("result", true));
     }
 
     @GetMapping("{stockId}/favorite")
@@ -149,7 +149,7 @@ public class StockController {
     public ResponseEntity<?> deleteFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         stockService.deleteStockFavorite(userId, stockId);
-        return ResponseEntity.ok().body("success");
+        return ResponseEntity.ok().body(makeResult("result", true));
     }
 
     @GetMapping("/recommend-items")
@@ -164,19 +164,21 @@ public class StockController {
     @PostMapping("/{stockId}/auto-funding")
     public ResponseEntity<?> addAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        return ResponseEntity.ok().body("success");
+        return ResponseEntity.ok().body(makeResult("result", stockService.addAutoFunding(userId, stockId)));
     }
 
     @DeleteMapping("/{stockId}/auto-funding")
     public ResponseEntity<?> deleteAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        return null;
+        stockService.deleteAutoFunding(userId, stockId);
+
+        return ResponseEntity.ok().body(makeResult("result", true));
     }
 
     @GetMapping("/{stockId}/auto-funding")
     public ResponseEntity<?> isAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        return null;
+        return ResponseEntity.ok().body(makeResult("result", stockService.isAutoFunding(userId, stockId)));
     }
 
 //    @PutMapping("/{stockId}/auto-funding")
@@ -184,4 +186,10 @@ public class StockController {
 //        Long userId = customUserDetails.getUserId();
 //        return null;
 //    }
+
+    private Map<String, Boolean> makeResult(String key, Boolean value) {
+        Map<String, Boolean> result = new HashMap<>();
+        result.put(key, value);
+        return result;
+    }
 }
