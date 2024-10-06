@@ -69,9 +69,10 @@ public class GoldBatchConfig {
     public ItemProcessor<GoldWaitingQueue, GoldWaitingQueue> waitingGoldQueueProcessor() {
         return waitingQueue -> {
             try {
-                GoldTradeDto goldTradeDto = new GoldTradeDto();
-                goldTradeDto.setTradePrice(waitingQueue.getTradePrice());
-                goldTradeDto.setMethod(waitingQueue.getMethod().name());
+                GoldTradeDto goldTradeDto = GoldTradeDto.builder()
+                        .tradePrice(waitingQueue.getTradePrice())
+                        .method(waitingQueue.getMethod().name())
+                        .build();
 
                 log.info("금 거래 요청 : memberId: {}, method: {}, tradePrice: {}", waitingQueue.getMember().getId(), waitingQueue.getMethod(), waitingQueue.getTradePrice());
                 goldService.goldTradeRequest(goldTradeDto, waitingQueue.getMember().getId());
