@@ -157,7 +157,6 @@ public class StockController {
         List<StockRecommendResponse> responses = stockService.findRecommendStock().stream()
                 .map(StockRecommendResponse::new)
                 .toList();
-        log.info(responses.toString());
         return ResponseEntity.ok().body(responses);
     }
 

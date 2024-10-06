@@ -75,11 +75,9 @@ public class CoinServiceImpl implements CoinService {
             coinItemMap.put(coinItem.getId(), coinItem.getName());
         }
 
-        List<FindCoinAllResponse> responses = mongoCoinMinuteRepository.findLatestDataForEachCoin().stream()
+        return mongoCoinMinuteRepository.findLatestDataForEachCoin().stream()
                 .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
                 .toList();
-        log.info(responses.toString());
-        return responses;
     }
 
     @Override
@@ -351,7 +349,16 @@ public class CoinServiceImpl implements CoinService {
     @Override
     @Transactional(readOnly = true)
     public List<FindCoinAllResponse> findFavoriteCoin(Long userId) {
-        return List.of();
+        List<FindCoinAllResponse> allCoins = findAllCoins();
+        List<CoinItem> favoriteCoins = coinFavoriteRepository.findCoinItemsByMemberId(userId);
+
+        Set<String> favoriteCoinIds = favoriteCoins.stream()
+                .map(CoinItem::getId)
+                .collect(Collectors.toSet());
+
+        return allCoins.stream()
+                .filter(coin -> favoriteCoinIds.contains(coin.getCoin()))
+                .collect(Collectors.toList());
     }
 
     // 출금

@@ -11,7 +11,10 @@ import com.ssafy.c203.domain.coin.service.CoinService;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.response.FindMyStockAllResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockAllResponse;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
+import com.ssafy.c203.domain.stock.dto.response.StockRecommendResponse;
+import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -140,11 +143,20 @@ public class CoinController {
     }
 
     @GetMapping("/favorite")
-    public ResponseEntity<?> findCoinFavorite() {
+    public ResponseEntity<?> findCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @RequestParam Integer count) {
+        Long userId = user.getUserId();
+
+        List<FindCoinAllResponse> response = coinService.findFavoriteCoin(userId).stream()
+                .limit(count)
+                .toList();
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/recommend-items")
+    public ResponseEntity<?> recommendItems() {
         List<CoinRecommendResponse> responses = coinService.findRecommendCoin().stream()
                 .map(CoinRecommendResponse::new)
                 .toList();
-
         return ResponseEntity.ok().body(responses);
     }
 
