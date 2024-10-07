@@ -9,9 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Instant;
+import java.time.*;
 import java.util.Date;
 
 @Document(collection = "coinMinute")
@@ -56,5 +54,17 @@ public class CoinMinute {
 
         // ID 생성: [코인 코드 + 거래 날짜 + 거래 시간]
         this.id = this.coin + this.date + this.time.toString();
+    }
+
+    public void setTimeToKST() {
+        // UTC의 날짜와 시간 정보를 결합
+        LocalDateTime utcDateTime = LocalDateTime.of(date, time);
+
+        ZonedDateTime kstDateTime = utcDateTime.atZone(ZoneId.of("UTC"))
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+
+        // 변환된 KST 시간을 필드에 설정
+        this.date = kstDateTime.toLocalDate();
+        this.time = kstDateTime.toLocalTime();
     }
 }

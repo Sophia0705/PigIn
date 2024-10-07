@@ -23,6 +23,7 @@ public class CoinDataService {
     public void saveCoinData(CoinMinuteDTO coinMinuteDTO) {
 
         CoinMinute coinMinute = new CoinMinute(coinMinuteDTO);
+        coinMinute.setTimeToKST();
         coinMinuteRepository.save(coinMinute);
     }
 }
