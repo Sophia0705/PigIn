@@ -52,7 +52,8 @@ public class StockWebSocketService {
     private void subscribeToStocks() {
         stockCodes.forEach(stockCode -> {
             try {
-                webSocketClient.subscribeStock(stockCode, getApprovalKey());
+                String approvalKey = getApprovalKey();
+                webSocketClient.subscribeStock(stockCode, approvalKey);
             } catch (Exception e) {
                 log.error("Failed to subscribe to stock: {}", stockCode, e);
             }

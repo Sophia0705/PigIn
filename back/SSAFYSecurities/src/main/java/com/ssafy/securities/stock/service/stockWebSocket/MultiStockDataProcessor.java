@@ -29,7 +29,7 @@ public class MultiStockDataProcessor {
     }
 
     private void startScheduler() {
-        scheduler.scheduleAtFixedRate(this::processAndSaveData, 0, 10, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::processAndSaveData, 0, 1, TimeUnit.MINUTES);
     }
 
     private void processAndSaveData() {

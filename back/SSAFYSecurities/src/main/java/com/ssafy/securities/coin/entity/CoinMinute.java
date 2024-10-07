@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -31,6 +32,9 @@ public class CoinMinute {
     private Double low;
     private Double volume;
     private Double changePrice;
+
+    @Indexed(expireAfterSeconds = 172800) // 2 days in seconds
+    private Instant createdAt = Instant.now();
 
     // CoinMinuteDTO를 사용하여 CoinMinute 객체를 생성하는 생성자
     public CoinMinute(CoinMinuteDTO coinMinuteDTO) {

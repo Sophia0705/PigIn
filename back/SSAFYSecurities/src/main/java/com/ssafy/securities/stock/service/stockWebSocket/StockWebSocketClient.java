@@ -41,6 +41,7 @@ public class StockWebSocketClient extends TextWebSocketHandler {
 //        if (session != null && session.isOpen()) {
             try {
                 String subscriptionMessage = createSubscriptionMessage(stockCode, approvalKey);
+//                log.info("Subscribed to {}", subscriptionMessage);
                 session.sendMessage(new TextMessage(subscriptionMessage));
             } catch (Exception e) {
                 log.error("Failed to send subscription request for stock: {}", stockCode, e);
