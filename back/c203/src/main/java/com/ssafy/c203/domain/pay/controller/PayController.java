@@ -16,11 +16,11 @@ public class PayController {
     private final PayService payService;
 
     @PostMapping("/")
-    public ResponseEntity<?> ssafyPay(
+    public String ssafyPay(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         payService.payMoney(userId);
-        return ResponseEntity.ok("거래 완료!");
+        return "redirect:https://j11c203.p.ssafy.io/";
     }
 
 }

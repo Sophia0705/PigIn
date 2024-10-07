@@ -300,7 +300,7 @@ public class MemberServiceImpl implements MemberService {
         );
 
         HttpStatusCode statusCode = response.getStatusCode();
-        if (statusCode.equals(HttpStatus.OK)) {
+        if (statusCode.is2xxSuccessful()) {
             getOneWonInformation(userId, accountNo);
             return true;
         }
