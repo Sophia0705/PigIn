@@ -66,7 +66,7 @@ const AutoDashboard: React.FC = () => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {chartData.map((entry, index) => (
+                {chartData.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}

@@ -1,10 +1,11 @@
-import { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { XCircle } from 'lucide-react';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 
-const CATEGORIES = ['stocks', 'coins', 'golds'];
+const CATEGORIES = ['stocks', 'coins', 'golds'] as const;
+type Category = (typeof CATEGORIES)[number];
 
 interface AutoInvestmentControlProps {
   localInvestmentAmount: string;
@@ -50,11 +51,15 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
   const handleAllocationChange = useCallback(
     (id: string, value: number) => {
       const updateFunction = (items: any[]) =>
-        items.map((item) =>
-          item.stockCode === id || item.coinCode === id || item.gold === id
-            ? { ...item, percent: value }
-            : item
-        );
+        items.map((item) => {
+          if ('stockCode' in item && item.stockCode === id)
+            return { ...item, percent: value };
+          if ('coinCode' in item && item.coinCode === id)
+            return { ...item, percent: value };
+          if ('gold' in item && item.gold === id)
+            return { ...item, percent: value };
+          return item;
+        });
 
       switch (activeCategory) {
         case 'stocks':
@@ -76,7 +81,9 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
       const removeFunction = (items: any[]) =>
         items.filter(
           (item) =>
-            item.stockCode !== id && item.coinCode !== id && item.gold !== id
+            !('stockCode' in item && item.stockCode === id) &&
+            !('coinCode' in item && item.coinCode === id) &&
+            !('gold' in item && item.gold === id)
         );
 
       switch (activeCategory) {
@@ -100,7 +107,6 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
     (total, item) => total + (item.percent || 0),
     0
   );
-  const isSubmitEnabled = totalAllocatedPercentage === 100;
 
   const itemCount = memoizedAllocations.length + 1;
   const loadMoreItems = () => Promise.resolve();
@@ -128,9 +134,9 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
               </div>
               <button
                 onClick={handleSubmit}
-                disabled={!isSubmitEnabled}
+                disabled={totalAllocatedPercentage !== 100}
                 className={`py-2 px-6 rounded-md text-lg font-bold ${
-                  isSubmitEnabled
+                  totalAllocatedPercentage === 100
                     ? 'bg-customAqua text-customDarkGreen'
                     : 'bg-gray-400 text-gray-700 cursor-not-allowed'
                 }`}
@@ -148,13 +154,33 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
 
     const handleSliderChange = (e: React.FormEvent<HTMLInputElement>) => {
       const value = Number(e.currentTarget.value);
-      const id = allocation.stockCode || allocation.coinCode || allocation.gold;
+      const id =
+        'stockCode' in allocation
+          ? allocation.stockCode
+          : 'coinCode' in allocation
+            ? allocation.coinCode
+            : 'gold' in allocation
+              ? allocation.gold
+              : '';
       requestAnimationFrame(() => handleAllocationChange(id, value));
     };
 
     const name =
-      allocation.stockName || allocation.coinName || allocation.goldName;
-    const id = allocation.stockCode || allocation.coinCode || allocation.gold;
+      'stockName' in allocation
+        ? allocation.stockName
+        : 'coinName' in allocation
+          ? allocation.coinName
+          : 'goldName' in allocation
+            ? allocation.goldName
+            : '';
+    const id =
+      'stockCode' in allocation
+        ? allocation.stockCode
+        : 'coinCode' in allocation
+          ? allocation.coinCode
+          : 'gold' in allocation
+            ? allocation.gold
+            : '';
 
     return (
       <div style={style}>
