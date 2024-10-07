@@ -269,22 +269,13 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public double getMine(Long userId) {
-        Members member = membersRepository.findById(userId)
-            .orElseThrow(MemberNotFoundException::new);
-
-        Double buyCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
-            TradeMethod.BUY);
-        Double sellCnt = goldTradeRepository.sumCountByMemberIdAndMethod(member.getId(),
-            TradeMethod.SELL);
-
-        Double mineCnt = buyCnt;
-        if (sellCnt != null) {
-            mineCnt = buyCnt - sellCnt;
+        Optional<GoldPortfolio> ogp = portfolioRepository.findByMember_Id(userId);
+        if (ogp.isEmpty()) {
+            return 0;
+        } else {
+            GoldPortfolio goldPortfolio = ogp.get();
+            return goldPortfolio.getAmount() * getGoldPrice();
         }
-
-        int goldPrice = getGoldPrice();
-
-        return mineCnt * goldPrice;
     }
 
     @Transactional
@@ -376,7 +367,7 @@ public class GoldServiceImpl implements GoldService {
     @Override
     public FindGoldPortfolioResponse findPortfolio(Long userId) {
         GoldPortfolio portfolio = goldPortfolioRepository.findByMember_Id(userId)
-                .orElse(null);
+            .orElse(null);
 
         if (portfolio == null || portfolio.getAmount() <= 0) {
             return null;
@@ -384,18 +375,20 @@ public class GoldServiceImpl implements GoldService {
 
         int goldPrice = getGoldPrice();
 
-        return new FindGoldPortfolioResponse(portfolio.getAmount(), portfolio.getAmount() * goldPrice, portfolio.getAmount() == 0 ? 0 : (goldPrice - portfolio.getPriceAvg()) / portfolio.getPriceAvg() * 100);
+        return new FindGoldPortfolioResponse(portfolio.getAmount(),
+            portfolio.getAmount() * goldPrice, portfolio.getAmount() == 0 ? 0
+            : (goldPrice - portfolio.getPriceAvg()) / portfolio.getPriceAvg() * 100);
     }
 
     @Override
     public void setAutoFunding(Long userId, int percent) {
         GoldAutoFunding goldAutoFunding = goldAutoFundingRepository.findByMember_Id(userId)
-                .orElse(null);
+            .orElse(null);
         if (goldAutoFunding == null) {
             GoldAutoFunding newAutoFunding = GoldAutoFunding.builder()
-                    .rate(percent)
-                    .member(memberServiceImpl.findMemberById(userId))
-                    .build();
+                .rate(percent)
+                .member(memberServiceImpl.findMemberById(userId))
+                .build();
             goldAutoFundingRepository.save(newAutoFunding);
         } else {
             goldAutoFunding.updateRate(percent);
@@ -406,7 +399,7 @@ public class GoldServiceImpl implements GoldService {
     @Override
     public List<GoldAutoSetting> findAutoSetting(Long userId) {
         GoldAutoFunding goldAutoFunding = goldAutoFundingRepository.findByMember_Id(userId)
-                .orElse(null);
+            .orElse(null);
 
         List<GoldAutoSetting> goldAutoSettings = new ArrayList<>();
         if (goldAutoFunding != null) {

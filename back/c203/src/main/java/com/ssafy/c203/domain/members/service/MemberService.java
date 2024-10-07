@@ -33,7 +33,7 @@ public interface MemberService {
 
     UserInfoDto getUserInfo(Long userId);
 
-    boolean oneWonSend(String accountNo, String userKey);
+    boolean oneWonSend(String accountNo, String userKey, Long userId) throws Exception;
 
     String oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
 

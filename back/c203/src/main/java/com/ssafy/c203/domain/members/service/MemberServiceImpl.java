@@ -18,6 +18,8 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.OneWonHistoryDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.OneWonResponse;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserPortfolioResponse;
@@ -274,7 +276,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean oneWonSend(String accountNo, String userKey) {
+    public boolean oneWonSend(String accountNo, String userKey, Long userId) throws Exception {
         String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/accountAuth/openAccountAuth";
         Map<String, Object> requestBody = new HashMap<>();
         UserHeader userHeader = new UserHeader("openAccountAuth", apiKey, userKey);
@@ -297,6 +299,7 @@ public class MemberServiceImpl implements MemberService {
 
         HttpStatusCode statusCode = response.getStatusCode();
         if (statusCode.equals(HttpStatus.OK)) {
+            getOneWonInformation(userId, accountNo);
             return true;
         }
         return false;
@@ -415,5 +418,47 @@ public class MemberServiceImpl implements MemberService {
         );
         log.info(requestBody.toString());
         return Long.valueOf(response.getBody().getRec().getAccountBalance());
+    }
+
+    private void getOneWonInformation(Long userId, String accountNo) throws Exception {
+        Members member = membersRepository.findById(userId)
+            .orElseThrow(MemberNotFoundException::new);
+
+        String userKey = member.getUserKey();
+
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/inquireTransactionHistoryList";
+        UserHeader header = new UserHeader("inquireTransactionHistoryList", apiKey, userKey);
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("Header", header);
+        requestBody.put("accountNo", accountNo);
+        requestBody.put("startDate", "20240101");
+        requestBody.put("endDate", "20241231");
+        requestBody.put("transactionType", "A");
+        requestBody.put("orderByType", "DESC");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<OneWonResponse> response = restTemplate.exchange(
+            url,
+            HttpMethod.POST,
+            entity,
+            OneWonResponse.class
+        );
+
+        List<OneWonHistoryDto> history = response.getBody().getREC().getList();
+        for (OneWonHistoryDto oneWonHistoryDto : history) {
+            if (!oneWonHistoryDto.getTransactionTypeName().equals("입금")
+                || !oneWonHistoryDto.getTransactionBalance().equals("1")) {
+                continue;
+            }
+            if (oneWonHistoryDto.getTransactionSummary().matches("^SSAFY.*")) {
+                mmsService.sendMMS(oneWonHistoryDto.getTransactionSummary(),
+                    member.getPhoneNumber());
+                return;
+            }
+        }
     }
 }
