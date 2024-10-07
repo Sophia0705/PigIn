@@ -95,6 +95,19 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
     fetchStockQuantity();
   }, [stockId]);
 
+  const isTradingTime = () => {
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    const isWeekday = day >= 1 && day <= 5;
+    const isTradingHours =
+      hours >= 9 && (hours < 15 || (hours === 15 && minutes <= 30));
+
+    return isWeekday && isTradingHours;
+  };
+
   return (
     <div className="modal-content fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-end z-50">
       <div className="bg-white w-full h-3/4 rounded-t-3xl p-6 relative">
@@ -109,8 +122,14 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          현재 보유 금액 : <span className="text-2xl">{stockQuantity}</span> 원{' '}
-          <span className="text-sm">({profitRate} %)</span>
+          현재 보유 금액 :{' '}
+          <span
+            className="text-2xl"
+            onClick={() => setInputValue(stockQuantity.toString())}
+          >
+            {stockQuantity}
+          </span>{' '}
+          원 <span className="text-sm">({profitRate} %)</span>
         </div>
 
         {/* 가격 표시 칸 */}
@@ -204,7 +223,7 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
             disabled={inputValue === '00'}
             onClick={handleSellClick}
           >
-            매도하기
+            {isTradingTime() ? '매도하기' : '매도 예약'}
           </button>
         </div>
       </div>
