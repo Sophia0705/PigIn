@@ -176,10 +176,11 @@ public class MemberController {
         @ApiResponse(responseCode = "404", description = "등록된 계좌가 아닙니다.")
     })
     @PostMapping("/account-authentication")
-    public ResponseEntity<?> accountAuthentication(@RequestBody AccountNoDto accountNoDto,@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> accountAuthentication(@RequestBody AccountNoDto accountNoDto,@AuthenticationPrincipal CustomUserDetails customUserDetails)
+        throws Exception {
         String userKey = customUserDetails.getUserKey();
         Long userId = customUserDetails.getUserId();
-        boolean isSend = memberService.oneWonSend(accountNoDto.getAccountNo(), userKey);
+        boolean isSend = memberService.oneWonSend(accountNoDto.getAccountNo(), userKey, userId);
         if (isSend) {
             return ResponseEntity.ok("1원 송금 완료");
         }
@@ -329,14 +330,6 @@ public class MemberController {
         Long userId = customUserDetails.getUserId();
         Long userBalance = memberService.checkSavingAccount(userId);
         return ResponseEntity.ok(userBalance);
-    }
-
-    @GetMapping("/one-won-information")
-    public ResponseEntity<?> getOneWonInformation(@RequestBody AccountNoDto accountNoDto,
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception {
-        Long userId = customUserDetails.getUserId();
-        memberService.getOneWonInformation(userId, accountNoDto.getAccountNo());
-        return ResponseEntity.ok("인증번호 전송 성공");
     }
 
     private Cookie createCookie(String key, String value) {

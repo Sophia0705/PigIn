@@ -33,7 +33,7 @@ public interface MemberService {
 
     UserInfoDto getUserInfo(Long userId);
 
-    boolean oneWonSend(String accountNo, String userKey);
+    boolean oneWonSend(String accountNo, String userKey, Long userId) throws Exception;
 
     String oneWonAuthentication(AccountAuthenticationCompareDto accountAuthenticationCompareDto, String userKey);
 
@@ -48,6 +48,4 @@ public interface MemberService {
     void updateAutoTrading(Long userId, boolean autoTrading, int price);
 
     Long checkSavingAccount(Long memberId);
-
-    void getOneWonInformation(Long userId, String accountNo) throws Exception;
 }

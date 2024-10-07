@@ -276,7 +276,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean oneWonSend(String accountNo, String userKey) {
+    public boolean oneWonSend(String accountNo, String userKey, Long userId) throws Exception {
         String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/accountAuth/openAccountAuth";
         Map<String, Object> requestBody = new HashMap<>();
         UserHeader userHeader = new UserHeader("openAccountAuth", apiKey, userKey);
@@ -299,6 +299,7 @@ public class MemberServiceImpl implements MemberService {
 
         HttpStatusCode statusCode = response.getStatusCode();
         if (statusCode.equals(HttpStatus.OK)) {
+            getOneWonInformation(userId, accountNo);
             return true;
         }
         return false;
@@ -419,8 +420,7 @@ public class MemberServiceImpl implements MemberService {
         return Long.valueOf(response.getBody().getRec().getAccountBalance());
     }
 
-    @Override
-    public void getOneWonInformation(Long userId, String accountNo) throws Exception {
+    private void getOneWonInformation(Long userId, String accountNo) throws Exception {
         Members member = membersRepository.findById(userId)
             .orElseThrow(MemberNotFoundException::new);
 
