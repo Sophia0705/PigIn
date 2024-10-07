@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -7,12 +7,28 @@ import { Pagination, Navigation } from 'swiper/modules';
 import { FaPiggyBank, FaPlusCircle } from 'react-icons/fa';
 import { useSpendingAccountStore } from '../../store/SpendingAccountStore';
 import SpendingAccountRegisterModal from './modals/SpendingAccountRegisterModal';
+import { fetchAccountBalance } from '../../api/member/accountAPI';
 
 const AccountSlider: React.FC = () => {
   const {
     isSpendingAccountRegisterModalOpen,
     openSpendingAccountRegisterModal,
   } = useSpendingAccountStore();
+
+  const [balance, setBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    const loadBalance = async () => {
+      try {
+        const fetchedBalance = await fetchAccountBalance();
+        setBalance(fetchedBalance);
+      } catch (error) {
+        console.error('Failed to load account balance:', error);
+      }
+    };
+
+    loadBalance();
+  }, []);
 
   return (
     <div className="w-[400px] h-[350px] mx-auto mt-0 relative">
@@ -37,7 +53,12 @@ const AccountSlider: React.FC = () => {
             <p className="text-gray-700 text-base mb-2">
               계좌번호: 123-4567-8901
             </p>
-            <p className="text-gray-700 text-lg font-semibold">잔액: 3,620원</p>
+            <p className="text-gray-700 text-lg font-semibold">
+              잔액:{' '}
+              {balance !== null
+                ? `${balance.toLocaleString()}원`
+                : '로딩 중...'}
+            </p>
           </div>
         </SwiperSlide>
 
@@ -45,7 +66,7 @@ const AccountSlider: React.FC = () => {
         <SwiperSlide>
           <div
             className="p-8 bg-red-100 rounded-lg shadow-md w-[340px] h-[28vh] flex flex-col items-center justify-center"
-            onClick={openSpendingAccountRegisterModal} // Zustand의 전역 상태로 모달을 여는 함수 호출
+            onClick={openSpendingAccountRegisterModal}
           >
             <FaPlusCircle className="text-red-600 text-5xl mb-4" />
             <h2 className="text-xl font-bold text-red-800">소비 계좌 등록</h2>
