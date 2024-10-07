@@ -22,9 +22,14 @@ const MyPage: React.FC = () => {
   // 로그아웃 처리 함수
   const handleLogout = async () => {
     try {
-      await logoutAPI();
-      setSuccessMessage('로그아웃 성공하였습니다!');
-      setShowSuccessModal(true); // 성공 모달 띄우기
+      const success = await logoutAPI();
+      if (success) {
+        setSuccessMessage('로그아웃 성공하였습니다!');
+        setShowSuccessModal(true); // 성공 모달 띄우기
+      } else {
+        setFailMessage('로그아웃 실패하였습니다.');
+        setShowFailModal(true); // 실패 모달 띄우기
+      }
     } catch (error) {
       console.error('로그아웃 에러:', error);
       setFailMessage('로그아웃 실패하였습니다.');

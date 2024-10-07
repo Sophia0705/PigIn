@@ -3,7 +3,7 @@ import axiosInstance from '../axiosInstance';
 import { removeAccessToken } from '../../utils/localUtils';
 
 // 로그아웃 API 호출 함수
-export const logoutAPI = async (): Promise<void> => {
+export const logoutAPI = async (): Promise<boolean> => {
   try {
     // 로그아웃 요청 (POST 방식, application/json)
     const response = await axiosInstance.post('api/member/logout');
@@ -16,10 +16,12 @@ export const logoutAPI = async (): Promise<void> => {
       removeAccessToken();
 
       console.log('로그아웃 성공!');
+      return true;
     } else {
       // 응답 상태 코드가 200이 아닌 경우 처리
       console.error('로그아웃 실패, 상태 코드:', response.status);
       console.log('로그아웃에 실패했습니다.');
+      return false;
     }
   } catch (error) {
     // 오류 처리
@@ -28,9 +30,10 @@ export const logoutAPI = async (): Promise<void> => {
         '로그아웃 요청 실패:',
         error.response?.data || error.message
       );
+      return false;
     } else {
       console.error('로그아웃 요청 실패:', error);
+      return false;
     }
-    console.log('로그아웃에 실패했습니다.');
   }
 };
