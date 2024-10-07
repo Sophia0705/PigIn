@@ -7,6 +7,8 @@ import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
 import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
+import com.ssafy.c203.domain.stock.dto.response.FindStockChartAllResponse;
+import com.ssafy.c203.domain.stock.dto.response.FindStockNowResponse;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
@@ -30,6 +32,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -364,6 +368,34 @@ public class StockServiceImpl implements StockService {
         return stockAutoFundingRepository.findByMember_Id(userId).stream()
                 .map(StockAutoSetting::new)
                 .toList();
+    }
+
+    @Override
+    public FindStockNowResponse findLiveStock(String stockCode) {
+
+        FindStockNowResponse findStockNowResponse = new FindStockNowResponse();
+        findStockNowResponse.setLive(false);
+        MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
+                .orElse(null);
+        if (stockMinute != null)  {
+            findStockNowResponse.setData(new FindStockChartAllResponse(stockMinute));
+
+            if (stockMinute.getDate() != null && stockMinute.getTime() != null) {
+                String dateTimeString = stockMinute.getDate() + stockMinute.getTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                LocalDateTime stockDateTime = LocalDateTime.parse(dateTimeString, formatter);
+
+                // 현재 시간 가져오기
+                LocalDateTime now = LocalDateTime.now();
+                // 두 시간의 차이를 분으로 계산
+                long minutesDifference = ChronoUnit.MINUTES.between(stockDateTime, now);
+                // 차이가 3분 이내인지 확인
+                if (Math.abs(minutesDifference) <= 3) {
+                    findStockNowResponse.setLive(true);
+                }
+            }
+        }
+        return findStockNowResponse;
     }
 
     // 해당 주식 판매 여부 검증

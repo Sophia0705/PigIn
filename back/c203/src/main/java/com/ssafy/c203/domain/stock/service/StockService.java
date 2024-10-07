@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.stock.service;
 
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
+import com.ssafy.c203.domain.stock.dto.response.FindStockNowResponse;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
 import com.ssafy.c203.domain.stock.entity.StockItem;
 import com.ssafy.c203.domain.stock.entity.StockPortfolio;
@@ -33,7 +34,7 @@ public interface StockService {
     void setAutoFunding(Long userId, String stockCode, Integer percent);
     List<MongoStockDetail> findFavoriteStock(Long userId);
     void setStockAutoTrading(Long userId, List<StockAutoSetting> stockAutoSettings);
-
     List<StockAutoSetting> findStockAutoSetting(Long userId);
+    FindStockNowResponse findLiveStock(String stockCode);
 }
 
