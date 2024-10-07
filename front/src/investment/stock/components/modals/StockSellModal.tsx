@@ -8,6 +8,7 @@ interface StockSellModalProps {
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
   stockId: string;
+  stockPrice: number;
 }
 
 const StockSellModal: React.FC<StockSellModalProps> = ({
@@ -15,6 +16,7 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
   setInputValue,
   onClose,
   stockId,
+  stockPrice,
 }) => {
   const [stockQuantity, setStockQuantity] = useState<number>(0);
   const [profitRate, setProfitRate] = useState<number>(0);
@@ -69,11 +71,15 @@ const StockSellModal: React.FC<StockSellModalProps> = ({
     inputAmount === 0 || stockQuantity === 0
       ? 0.0
       : ((inputAmount / stockQuantity) * 100).toFixed(2);
+  const sendPercentage =
+    inputAmount === 0 || stockPrice === 0
+      ? 0.0
+      : (inputAmount / stockPrice) * 100;
 
   const handleSellClick = async () => {
     try {
-      console.log(stockId, percentage);
-      const response = await sellStock(stockId, Number(percentage) * 0.01);
+      console.log(stockId, Number(sendPercentage) * 0.01);
+      const response = await sellStock(stockId, Number(sendPercentage) * 0.01);
       console.log('매도 성공핑:', response);
       onClose();
     } catch (error) {

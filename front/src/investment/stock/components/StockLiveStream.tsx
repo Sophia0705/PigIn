@@ -21,9 +21,9 @@ const StockLiveStream: React.FC = () => {
 
     // Listen for incoming messages
     eventSource.onmessage = (event: MessageEvent) => {
-      const data: Stock[] = JSON.parse(event.data); // Expecting an array of Stock objects
-      console.log('Received SSE data:', data);
-      setStockData((prevData) => [...prevData, ...data]); // Update the state with new data
+      const newStockData: Stock = JSON.parse(event.data);
+      console.log('Received SSE data:', newStockData);
+      setStockData((prevData) => [...prevData, newStockData]); // Append each new stock data
     };
 
     eventSource.onerror = (error) => {
