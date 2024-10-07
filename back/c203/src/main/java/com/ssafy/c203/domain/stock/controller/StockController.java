@@ -193,6 +193,12 @@ public class StockController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/{stockId}/live")
+    public ResponseEntity<?> findNowData(@PathVariable String stockId) {
+        FindStockNowResponse response = stockService.findLiveStock(stockId);
+        return ResponseEntity.ok().body(response);
+    }
+
 //    @PutMapping("/{stockId}/auto-funding")
 //    public ResponseEntity<?> setAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 //        Long userId = customUserDetails.getUserId();
