@@ -9,6 +9,6 @@ public class FindCoinPortfolioResponse {
     private String coinCode;
     private String name;
     private Double amount;
-    private Double price;
+    private Integer price;
     private Double profitRate;
 }

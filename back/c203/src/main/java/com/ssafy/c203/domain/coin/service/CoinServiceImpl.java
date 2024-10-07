@@ -265,7 +265,7 @@ public class CoinServiceImpl implements CoinService {
                 Double priceAvg = portfolio.getPriceAvg() == null ? 0.0 : portfolio.getPriceAvg();
                 double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
 
-                return new FindCoinPortfolioResponse(coinCode, name, amount, price, profitRate);
+                return new FindCoinPortfolioResponse(coinCode, name, amount, (int) Math.floor(price), profitRate);
             })
             .toList();
     }
