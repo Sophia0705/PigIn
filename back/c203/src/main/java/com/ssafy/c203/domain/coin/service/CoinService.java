@@ -2,6 +2,7 @@ package com.ssafy.c203.domain.coin.service;
 
 import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinNowResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
@@ -36,4 +37,5 @@ public interface CoinService {
     List<FindCoinAllResponse> findFavoriteCoin(Long userId);
     void updateAutoFunding(Long userId, List<CoinAutoSetting> autoSettings);
     List<CoinAutoSetting> findAutoFunding(Long userId);
+    FindCoinNowResponse findLiveStock(String coinCode);
 }
