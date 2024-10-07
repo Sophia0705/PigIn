@@ -68,9 +68,16 @@ export const getYearlyStockChartData = async (
   }
 };
 
-export const getLiveStockChartData = async (): Promise<StockLiveData[]> => {
+export const getLiveStockChartData = async (
+  stockId: string,
+  interval: string,
+  count: number = 20
+): Promise<StockLiveData[]> => {
   try {
-    const response = await axiosInstance.get<StockLiveData[]>('api/stock/live');
+    const response = await axiosInstance.get<StockLiveData[]>(
+      `api/stock/${stockId}/chart/${interval}`,
+      { params: { count } }
+    );
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -79,5 +86,20 @@ export const getLiveStockChartData = async (): Promise<StockLiveData[]> => {
       console.error('axios 오류 아님:', error);
     }
     throw new Error('다시 해라');
+  }
+};
+
+export const getUpdatedLiveStockData = async (
+  stockId: string
+): Promise<{ data: StockLiveData; live: boolean }> => {
+  try {
+    const response = await axiosInstance.get<{
+      data: StockLiveData;
+      live: boolean;
+    }>(`api/stock/${stockId}/live`);
+    return response.data;
+  } catch (error) {
+    console.error('최신 1분봉 주식 데이터 가져오기 실패핑:', error);
+    throw error;
   }
 };

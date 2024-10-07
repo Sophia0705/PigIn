@@ -15,6 +15,10 @@ import {
   addToAutoInvest,
   removeFromAutoInvest,
 } from '../../../api/investment/stock/StockAutoInvest';
+import {
+  getLiveStockChartData,
+  getUpdatedLiveStockData,
+} from '../../../api/investment/stock/StockChartData';
 import StockDetailGraph from '../components/StockDetailGraph';
 import StockDetailInfo from '../components/StockDetailInfo';
 import StockPurchaseModal from '../components/modals/StockPurchaseModal';
@@ -24,6 +28,11 @@ import StockLiveStream from '../components/StockLiveStream';
 import AuthGuardClickable from '../../../member/components/AuthGuardClickable';
 
 const StockDetailPage: React.FC = () => {
+  interface LiveChartData {
+    name: string;
+    value: number;
+  }
+
   const navigate = useNavigate();
   const location = useLocation();
   const stockData = location.state?.item as StockItemData;
@@ -36,6 +45,9 @@ const StockDetailPage: React.FC = () => {
   const [buyInputValue, setBuyInputValue] = useState('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState('00');
+  const [liveChartData, setLiveChartData] = useState<LiveChartData[]>([]);
+  const [liveAdjustedMin, setLiveAdjustedMin] = useState<number | null>(null);
+  const [liveAdjustedMax, setLiveAdjustedMax] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -54,6 +66,67 @@ const StockDetailPage: React.FC = () => {
 
     fetchStatus();
   }, [stockData.stck_shrn_iscd]);
+
+  useEffect(() => {
+    if (selectedTimeRange === '실시간') {
+      const fetchLiveData = async () => {
+        try {
+          const liveData = await getLiveStockChartData(
+            stockData.stck_shrn_iscd,
+            'minute',
+            20
+          );
+
+          // Transform the liveData for chart display
+          const formattedData = liveData
+            .map((item) => ({
+              name: `${item.stock_bsop_time.slice(0, 2)}:${item.stock_bsop_time.slice(2, 4)}`, // Format HH:MM:SS
+              value: Number(item.stck_clpr),
+            }))
+            .reverse();
+
+          setLiveChartData(formattedData);
+
+          const prices = formattedData.map((data) => data.value);
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
+
+          const padding = (maxPrice - minPrice) * 0.1;
+          setLiveAdjustedMin(minPrice - padding);
+          setLiveAdjustedMax(maxPrice + padding);
+
+          const updateLiveData = async () => {
+            try {
+              const updatedData = await getUpdatedLiveStockData(
+                stockData.stck_shrn_iscd
+              );
+              if (updatedData.live) {
+                // 가장 최근 데이터 교체
+                setLiveChartData((prevData) => [
+                  ...prevData.slice(1),
+                  {
+                    name: `${updatedData.data.stock_bsop_time.slice(0, 2)}:${updatedData.data.stock_bsop_time.slice(2, 4)}`,
+                    value: Number(updatedData.data.stck_clpr),
+                  },
+                ]);
+              }
+            } catch (error) {
+              console.error('실시간 차트 업데이트 가져오기 실패:', error);
+            }
+          };
+
+          // 매 1분마다 업데이트 호출
+          const intervalId = setInterval(updateLiveData, 60000);
+
+          // interval 초기화
+          return () => clearInterval(intervalId);
+        } catch (error) {
+          console.error('Error fetching live stock chart data:', error);
+        }
+      };
+      fetchLiveData();
+    }
+  }, [selectedTimeRange, stockData.stck_shrn_iscd]);
 
   const countZeros = (str: string): number => {
     return (str.match(/0/g) || []).length;
@@ -241,9 +314,17 @@ const StockDetailPage: React.FC = () => {
 
       {/* 그래프 */}
       <StockDetailGraph
-        chartData={chartData}
-        adjustedMin={adjustedMin}
-        adjustedMax={adjustedMax}
+        chartData={selectedTimeRange === '실시간' ? liveChartData : chartData}
+        adjustedMin={
+          selectedTimeRange === '실시간'
+            ? (liveAdjustedMin ?? adjustedMin)
+            : adjustedMin
+        }
+        adjustedMax={
+          selectedTimeRange === '실시간'
+            ? (liveAdjustedMax ?? adjustedMax)
+            : adjustedMax
+        }
       />
 
       {/* 상세정보, 뉴스 선택 바 */}
