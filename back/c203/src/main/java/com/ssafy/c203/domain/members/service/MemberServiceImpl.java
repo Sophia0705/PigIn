@@ -301,9 +301,11 @@ public class MemberServiceImpl implements MemberService {
 
         HttpStatusCode statusCode = response.getStatusCode();
         if (statusCode.is2xxSuccessful()) {
+            log.info("SSAFY API에 1원인증 성공!");
             getOneWonInformation(userId, accountNo);
             return true;
         }
+        log.info("SSAFY API에 1원인증 실패!");
         return false;
     }
 
@@ -475,6 +477,8 @@ public class MemberServiceImpl implements MemberService {
         Members member = membersRepository.findById(userId)
             .orElseThrow(MemberNotFoundException::new);
 
+        log.info("문자보내기쪽 들어옴");
+
         String userKey = member.getUserKey();
 
         String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/inquireTransactionHistoryList";
@@ -499,13 +503,17 @@ public class MemberServiceImpl implements MemberService {
             OneWonResponse.class
         );
 
+        log.info("계좌 정보 불러오기 성공");
+
         List<OneWonHistoryDto> history = response.getBody().getREC().getList();
         for (OneWonHistoryDto oneWonHistoryDto : history) {
             if (!oneWonHistoryDto.getTransactionTypeName().equals("입금")
                 || !oneWonHistoryDto.getTransactionBalance().equals("1")) {
+                log.info("1원이나 입금이 아님");
                 continue;
             }
             if (oneWonHistoryDto.getTransactionSummary().matches("^SSAFY.*")) {
+                log.info("찾았다 보낼게 ~ {}", oneWonHistoryDto.getTransactionSummary());
                 mmsService.sendMMS(oneWonHistoryDto.getTransactionSummary(),
                     member.getPhoneNumber());
                 return;
