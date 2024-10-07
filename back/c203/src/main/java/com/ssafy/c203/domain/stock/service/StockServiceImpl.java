@@ -136,7 +136,7 @@ public class StockServiceImpl implements StockService {
         Members member = memberService.findMemberById(userId);
 
         // 2. 잔고 확인 및 출금
-        if (!withdraw(userId, price)) {
+        if (!isAuto && !withdraw(userId, price)) {
             throw new RuntimeException("잔액 부족");
         }
 
