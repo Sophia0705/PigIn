@@ -103,10 +103,10 @@ public class CoinController {
         log.info("userId = {}, coinCode = {}", userId, coinCode);
         CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
         if (portfolio == null) {
-            return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, coinService.findCoin(coinCode).getCoinName(),0.0, 0.0, 0.0));
+            return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, coinService.findCoin(coinCode).getCoinName(),0.0, 0, 0.0));
         }
         PriceAndProfit result  = coinService.calculateProfit(portfolio.getPriceAvg(), coinCode);
-        return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, portfolio.getCoinItem().getName(), portfolio.getAmount(), result.getPrice() * portfolio.getAmount(), result.getProfit()));
+        return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, portfolio.getCoinItem().getName(), portfolio.getAmount(), (int) Math.floor(result.getPrice() * portfolio.getAmount()), result.getProfit()));
     }
 
     @GetMapping("/my-coins")

@@ -110,10 +110,10 @@ public class StockController {
         StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);
 //        log.info("portfolio = {} : {}", portfolio.getStockItem().getName(), portfolio.getPriceAvg());
         if (portfolio == null) {
-            return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, stockService.findStockDetail(stockId).getHtsKorIsnm(), 0.0, 0.0, 0.0));
+            return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, stockService.findStockDetail(stockId).getHtsKorIsnm(), 0.0, 0, 0.0));
         }
         PriceAndProfit result = stockService.calculateProfit(portfolio.getPriceAvg(), stockId);
-        return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getStockItem().getName(), portfolio.getAmount(), result.getPrice() * portfolio.getAmount(), result.getProfit()));
+        return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, portfolio.getStockItem().getName(), portfolio.getAmount(), (int) Math.floor(result.getPrice() * portfolio.getAmount()), result.getProfit()));
     }
 
     @GetMapping("/my-stocks")

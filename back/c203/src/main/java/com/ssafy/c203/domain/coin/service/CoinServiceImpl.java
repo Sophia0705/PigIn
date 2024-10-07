@@ -265,7 +265,7 @@ public class CoinServiceImpl implements CoinService {
                 Double priceAvg = portfolio.getPriceAvg() == null ? 0.0 : portfolio.getPriceAvg();
                 double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
 
-                return new FindCoinPortfolioResponse(coinCode, name, amount, price, profitRate);
+                return new FindCoinPortfolioResponse(coinCode, name, amount, (int) Math.floor(price), profitRate);
             })
             .toList();
     }
@@ -284,16 +284,16 @@ public class CoinServiceImpl implements CoinService {
 
     public void initializeCoinItems() {
         List<CoinItem> coinItems = Arrays.asList(
-            new CoinItem("KRW-BTC", "비트코인"),
-            new CoinItem("KRW-ETH", "이더리움"),
-            new CoinItem("KRW-USDT", "테더"),
-            new CoinItem("KRW-XLM", "스텔라루멘"),
-            new CoinItem("KRW-XRP", "리플"),
-            new CoinItem("BTC-ETC", "이더리움클래식"),
-            new CoinItem("BTC-BCH", "비트코인캐시"),
-            new CoinItem("KRW-LINK", "체인링크"),
-            new CoinItem("KRW-ADA", "에이다"),
-            new CoinItem("KRW-DOGE", "도지코인")
+                new CoinItem("KRW-BTC", "비트코인"),
+                new CoinItem("KRW-ETH", "이더리움"),
+                new CoinItem("KRW-USDT", "테더"),
+                new CoinItem("KRW-XLM", "스텔라루멘"),
+                new CoinItem("KRW-XRP", "리플"),
+                new CoinItem("KRW-LINK", "체인링크"),
+                new CoinItem("KRW-ADA", "에이다"),
+                new CoinItem("KRW-DOGE", "도지코인"),
+                new CoinItem("KRW-SOL", "솔라나"),
+                new CoinItem("KRW-DOT", "폴카닷")
         );
         coinItemRepository.saveAll(coinItems);
     }
