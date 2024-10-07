@@ -238,7 +238,7 @@ public class StockServiceImpl implements StockService {
                     Double priceAvg = portfolio.getPriceAvg() == null ? price : portfolio.getPriceAvg();
                     double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
 
-                    return new FindStockPortfolioResponse(stockCode, name, amount, price, profitRate);
+                    return new FindStockPortfolioResponse(stockCode, name, amount, (int) Math.floor(price), profitRate);
                 })
                 .toList();
     }
