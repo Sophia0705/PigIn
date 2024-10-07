@@ -14,6 +14,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.MemberAccountResponseDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.SavingAccoungResponseDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.entity.Members;
@@ -326,12 +327,20 @@ public class MemberController {
         return ResponseEntity.ok("금액 설정 완료");
     }
 
-    @GetMapping("/balance")
+    @GetMapping("/saving-balance")
     public ResponseEntity<?> getBalance(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
         SavingAccoungResponseDto savingAccoungResponseDto = memberService.checkSavingAccount(
             userId);
         return ResponseEntity.ok(savingAccoungResponseDto);
+    }
+
+    @GetMapping("/member-balance")
+    public ResponseEntity<?> getMemberBalance(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        MemberAccountResponseDto memberAccountResponseDto = memberService.checkMemberAccount(
+            userId);
+        return ResponseEntity.ok(memberAccountResponseDto);
     }
 
     private Cookie createCookie(String key, String value) {

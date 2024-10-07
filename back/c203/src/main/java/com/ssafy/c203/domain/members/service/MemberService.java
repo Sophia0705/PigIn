@@ -8,6 +8,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.MemberAccountResponseDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.SavingAccoungResponseDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserPortfolioResponse;
@@ -49,4 +50,6 @@ public interface MemberService {
     void updateAutoTrading(Long userId, boolean autoTrading, int price);
 
     SavingAccoungResponseDto checkSavingAccount(Long memberId);
+
+    MemberAccountResponseDto checkMemberAccount(Long memberId);
 }

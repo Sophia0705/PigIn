@@ -18,6 +18,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MMSDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.MemberAccountResponseDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.OneWonHistoryDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.OneWonResponse;
 import com.ssafy.c203.domain.members.dto.ResponseDto.SavingAccoungResponseDto;
@@ -424,6 +425,49 @@ public class MemberServiceImpl implements MemberService {
             .builder()
             .accountNo(accountNo)
             .money(money)
+            .build();
+    }
+
+    @Override
+    public MemberAccountResponseDto checkMemberAccount(Long memberId) {
+        // 1. 계좌번호 가져오기
+        MemberAccount account = memberAccountRepository.findByMember_Id(memberId)
+            .orElseThrow(RuntimeException::new);
+        String accountNo = account.getAccountNo();
+
+        // 2. userKey 가져오기
+        Members member = membersRepository.findById(memberId)
+            .orElseThrow(MemberNotFoundException::new);
+        String userKey = member.getUserKey();
+
+        // 3. 메시지 생성
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/inquireDemandDepositAccountBalance";
+        UserHeader header = new UserHeader("inquireDemandDepositAccountBalance", apiKey, userKey);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("Header", header);
+        requestBody.put("accountNo", accountNo);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        // 4. 반환
+        ResponseEntity<FindBalanceResponse> response = restTemplate.exchange(
+            url,
+            HttpMethod.POST,
+            entity,
+            FindBalanceResponse.class
+        );
+        log.info(requestBody.toString());
+        Long money = Long.valueOf(response.getBody().getRec().getAccountBalance());
+
+        return MemberAccountResponseDto
+            .builder()
+            .accountNo(accountNo)
+            .money(money)
+            .bank(account.getBank())
             .build();
     }
 
