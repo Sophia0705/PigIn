@@ -8,6 +8,7 @@ import FailModal from './FailModal'; // 실패 모달 컴포넌트
 import {
   authenticateInvestmentAccount,
   verifyTransferAuthentication,
+  registerSpendingAccount,
 } from '../../../api/member/accountAPI';
 
 const bankOptions = [

@@ -26,7 +26,8 @@ const QRPaymentPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+    
+    <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           QR 결제 페이지
