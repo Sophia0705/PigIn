@@ -68,6 +68,8 @@ const StockDetailPage: React.FC = () => {
   }, [stockData.stck_shrn_iscd]);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (selectedTimeRange === '실시간') {
       const fetchLiveData = async () => {
         try {
@@ -77,10 +79,11 @@ const StockDetailPage: React.FC = () => {
             20
           );
 
-          // Transform the liveData for chart display
+          if (!isMounted) return;
+
           const formattedData = liveData
             .map((item) => ({
-              name: `${item.stock_bsop_time.slice(0, 2)}:${item.stock_bsop_time.slice(2, 4)}`, // Format HH:MM:SS
+              name: `${item.stock_bsop_time.slice(0, 2)}:${item.stock_bsop_time.slice(2, 4)}`,
               value: Number(item.stck_clpr),
             }))
             .reverse();
@@ -100,6 +103,8 @@ const StockDetailPage: React.FC = () => {
               const updatedData = await getUpdatedLiveStockData(
                 stockData.stck_shrn_iscd
               );
+              if (!isMounted) return;
+              console.log(updatedData);
               if (updatedData.live) {
                 // 가장 최근 데이터 교체
                 setLiveChartData((prevData) => [
@@ -111,7 +116,8 @@ const StockDetailPage: React.FC = () => {
                 ]);
               }
             } catch (error) {
-              console.error('실시간 차트 업데이트 가져오기 실패:', error);
+              if (isMounted)
+                console.error('실시간 차트 업데이트 가져오기 실패:', error);
             }
           };
 
@@ -119,13 +125,21 @@ const StockDetailPage: React.FC = () => {
           const intervalId = setInterval(updateLiveData, 60000);
 
           // interval 초기화
-          return () => clearInterval(intervalId);
+          return () => {
+            clearInterval(intervalId);
+            isMounted = false;
+          };
         } catch (error) {
-          console.error('Error fetching live stock chart data:', error);
+          if (isMounted)
+            console.error('실시간 차트 업데이트 가져오기 실패:', error);
         }
       };
       fetchLiveData();
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [selectedTimeRange, stockData.stck_shrn_iscd]);
 
   const countZeros = (str: string): number => {
