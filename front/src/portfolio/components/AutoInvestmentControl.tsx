@@ -58,17 +58,17 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
 
       switch (activeCategory) {
         case 'stocks':
-          setStocks(updateFunction);
+          setStocks(updateFunction(stocks));
           break;
         case 'coins':
-          setCoins(updateFunction);
+          setCoins(updateFunction(coins));
           break;
         case 'golds':
-          setGolds(updateFunction);
+          setGolds(updateFunction(golds));
           break;
       }
     },
-    [activeCategory, setStocks, setCoins, setGolds]
+    [activeCategory, setStocks, setCoins, setGolds, stocks, coins, golds]
   );
 
   const handleRemoveAllocation = useCallback(
@@ -81,26 +81,25 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
 
       switch (activeCategory) {
         case 'stocks':
-          setStocks(removeFunction);
+          setStocks(removeFunction(stocks));
           break;
         case 'coins':
-          setCoins(removeFunction);
+          setCoins(removeFunction(coins));
           break;
         case 'golds':
-          setGolds(removeFunction);
+          setGolds(removeFunction(golds));
           break;
       }
     },
-    [activeCategory, setStocks, setCoins, setGolds]
+    [activeCategory, setStocks, setCoins, setGolds, stocks, coins, golds]
   );
 
   const memoizedAllocations = getActiveData();
 
   const totalAllocatedPercentage = [...stocks, ...coins, ...golds].reduce(
-    (total, item) => total + item.percent,
+    (total, item) => total + (item.percent || 0),
     0
   );
-
   const isSubmitEnabled = totalAllocatedPercentage === 100;
 
   const itemCount = memoizedAllocations.length + 1;

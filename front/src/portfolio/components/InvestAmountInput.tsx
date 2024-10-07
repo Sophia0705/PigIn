@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Edit } from 'lucide-react';
+import { fetchInvestmentAccountInfo } from '../../api/portfolio/autoInvestment';
 
 interface InvestmentAmountInputProps {
   localInvestmentAmount: string;
@@ -12,6 +13,25 @@ const InvestmentAmountInput: React.FC<InvestmentAmountInputProps> = ({
 }) => {
   const [showInput, setShowInput] = useState(false);
   const [error, setError] = useState<string>('');
+  const [accountBalance, setAccountBalance] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      setIsLoading(true);
+      try {
+        const accountInfo = await fetchInvestmentAccountInfo();
+        setAccountBalance(accountInfo.balance);
+      } catch (err) {
+        console.error('Failed to fetch account balance:', err);
+        setError('계좌 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBalance();
+  }, []);
 
   const handleInvestmentAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -31,7 +51,13 @@ const InvestmentAmountInput: React.FC<InvestmentAmountInputProps> = ({
         <div className="flex flex-col mb-6 bg-white rounded-lg p-3">
           <div className="flex items-center">
             <div className="flex-grow mr-4">
-              <p className="p-2 text-black text-lg">투자가능금액 : xxxx원</p>
+              <p className="p-2 text-black text-lg">
+                {isLoading
+                  ? '잔액을 불러오는 중...'
+                  : error
+                    ? error
+                    : `투자가능금액 : ${accountBalance?.toLocaleString() ?? 'N/A'}원`}
+              </p>
               <input
                 type="text"
                 value={localInvestmentAmount}

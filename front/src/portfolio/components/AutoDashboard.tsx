@@ -19,11 +19,20 @@ const AutoDashboard: React.FC = () => {
   const { investmentAmount, stocks, coins, golds } = useAutoInvestmentStore();
 
   const chartData = useMemo(() => {
-    const calculateTotal = (items: any[]) =>
-      items.reduce(
+    const calculateTotal = (items: any[]) => {
+      if (!Array.isArray(items)) {
+        console.error('Expected an array, received:', items);
+        return 0;
+      }
+      return items.reduce(
         (sum, item) => sum + (item.percent / 100) * investmentAmount,
         0
       );
+    };
+
+    console.log('Stocks:', stocks);
+    console.log('Coins:', coins);
+    console.log('Golds:', golds);
 
     return [
       { name: '주식', value: calculateTotal(stocks) },
