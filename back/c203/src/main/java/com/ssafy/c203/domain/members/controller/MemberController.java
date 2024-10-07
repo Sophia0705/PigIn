@@ -331,6 +331,14 @@ public class MemberController {
         return ResponseEntity.ok(userBalance);
     }
 
+    @GetMapping("/one-won-information")
+    public ResponseEntity<?> getOneWonInformation(@RequestBody AccountNoDto accountNoDto,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception {
+        Long userId = customUserDetails.getUserId();
+        memberService.getOneWonInformation(userId, accountNoDto.getAccountNo());
+        return ResponseEntity.ok("인증번호 전송 성공");
+    }
+
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);

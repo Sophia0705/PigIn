@@ -48,4 +48,6 @@ public interface MemberService {
     void updateAutoTrading(Long userId, boolean autoTrading, int price);
 
     Long checkSavingAccount(Long memberId);
+
+    void getOneWonInformation(Long userId, String accountNo) throws Exception;
 }
