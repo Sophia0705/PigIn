@@ -14,6 +14,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.MemberAccountDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.SignUpDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
+import com.ssafy.c203.domain.members.dto.ResponseDto.SavingAccoungResponseDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.entity.WithDrawalStatus;
@@ -328,8 +329,9 @@ public class MemberController {
     @GetMapping("/balance")
     public ResponseEntity<?> getBalance(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        Long userBalance = memberService.checkSavingAccount(userId);
-        return ResponseEntity.ok(userBalance);
+        SavingAccoungResponseDto savingAccoungResponseDto = memberService.checkSavingAccount(
+            userId);
+        return ResponseEntity.ok(savingAccoungResponseDto);
     }
 
     private Cookie createCookie(String key, String value) {

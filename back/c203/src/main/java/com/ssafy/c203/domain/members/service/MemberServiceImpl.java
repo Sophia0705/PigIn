@@ -20,6 +20,7 @@ import com.ssafy.c203.domain.members.dto.RequestDto.RefreshPassowrdDto;
 import com.ssafy.c203.domain.members.dto.RequestDto.UpdateMemberDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.OneWonHistoryDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.OneWonResponse;
+import com.ssafy.c203.domain.members.dto.ResponseDto.SavingAccoungResponseDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserInfoDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserKeyDto;
 import com.ssafy.c203.domain.members.dto.ResponseDto.UserPortfolioResponse;
@@ -385,7 +386,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional(readOnly = true)
-    public Long checkSavingAccount(Long memberId) {
+    public SavingAccoungResponseDto checkSavingAccount(Long memberId) {
         // 1. 계좌번호 가져오기
         SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
             .orElseThrow(RuntimeException::new);
@@ -417,7 +418,13 @@ public class MemberServiceImpl implements MemberService {
             FindBalanceResponse.class
         );
         log.info(requestBody.toString());
-        return Long.valueOf(response.getBody().getRec().getAccountBalance());
+        Long money = Long.valueOf(response.getBody().getRec().getAccountBalance());
+
+        return SavingAccoungResponseDto
+            .builder()
+            .accountNo(accountNo)
+            .money(money)
+            .build();
     }
 
     private void getOneWonInformation(Long userId, String accountNo) throws Exception {
