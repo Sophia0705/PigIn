@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { PortfolioData } from '../../portfolio/interfaces/PortfolioInterface';
+import axiosInstance from '../axiosInstance';
+import { PortfolioState } from '../../portfolio/interfaces/PortfolioInterface';
 
-export const fetchPortfolioData = async (): Promise<PortfolioData> => {
+export const fetchPortfolioData = async (): Promise<PortfolioState> => {
   try {
-    const response = await axios.get<PortfolioData>('/api/portfolio');
+    const response = await axiosInstance.get<PortfolioState>('/api/portfolio');
     console.log('포트폴리오 res', response.data);
     return response.data;
   } catch (error) {

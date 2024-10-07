@@ -1,51 +1,49 @@
 import { create } from 'zustand';
 
-type Allocation = {
-  symbol: string;
-  percentage: number;
+type Stock = {
+  stockCode: string;
+  stockName: string;
+  percent: number;
 };
 
-type Allocations = {
-  [key: string]: Allocation[];
+type Coin = {
+  coinCode: string;
+  coinName: string;
+  percent: number;
+};
+
+type Gold = {
+  gold: string;
+  goldName: string;
+  percent: number;
 };
 
 type AutoInvestmentState = {
+  isEnabled: boolean;
   investmentAmount: number;
-  allocations: Allocations;
-  activeCategory: string;
-  isAutoInvestmentEnabled: boolean;
+  stocks: Stock[];
+  coins: Coin[];
+  golds: Gold[];
+  activeCategory: 'stocks' | 'coins' | 'golds';
+  setIsEnabled: (isEnabled: boolean) => void;
   setInvestmentAmount: (amount: number) => void;
-  setAllocations: (newAllocations: Allocations) => void;
-  setActiveCategory: (category: string) => void;
-  setIsAutoInvestmentEnabled: (isEnabled: boolean) => void;
+  setStocks: (stocks: Stock[]) => void;
+  setCoins: (coins: Coin[]) => void;
+  setGolds: (golds: Gold[]) => void;
+  setActiveCategory: (category: 'stocks' | 'coins' | 'golds') => void;
 };
 
 export const useAutoInvestmentStore = create<AutoInvestmentState>((set) => ({
+  isEnabled: false,
   investmentAmount: 0,
-  allocations: {
-    주식: [
-      { symbol: 'AAPL', percentage: 50 },
-      { symbol: '삼성전자', percentage: 50 },
-      { symbol: '삼성전자1', percentage: 50 },
-      { symbol: '삼성전자2', percentage: 50 },
-      { symbol: '삼성전자3', percentage: 50 },
-      { symbol: '삼성전자4', percentage: 50 },
-      { symbol: '삼성전자5', percentage: 50 },
-      { symbol: '삼성전자6', percentage: 50 },
-      { symbol: '삼성전자7', percentage: 50 },
-      { symbol: '삼성전자8', percentage: 50 },
-      { symbol: '삼성전자9', percentage: 50 },
-      { symbol: '삼성전자00', percentage: 50 },
-      { symbol: '삼성전자44', percentage: 50 },
-    ],
-    가상화폐: [{ symbol: '비트코인', percentage: 50 }],
-    금: [{ symbol: '금', percentage: 50 }],
-  },
-  activeCategory: '주식',
-  isAutoInvestmentEnabled: false,
+  stocks: [],
+  coins: [],
+  golds: [],
+  activeCategory: 'stocks',
+  setIsEnabled: (isEnabled) => set({ isEnabled }),
   setInvestmentAmount: (amount) => set({ investmentAmount: amount }),
-  setAllocations: (newAllocations) => set({ allocations: newAllocations }),
+  setStocks: (stocks) => set({ stocks }),
+  setCoins: (coins) => set({ coins }),
+  setGolds: (golds) => set({ golds }),
   setActiveCategory: (category) => set({ activeCategory: category }),
-  setIsAutoInvestmentEnabled: (isEnabled) =>
-    set({ isAutoInvestmentEnabled: isEnabled }),
 }));

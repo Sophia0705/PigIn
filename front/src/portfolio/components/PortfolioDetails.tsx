@@ -2,125 +2,131 @@ import { useMemo, useRef } from 'react';
 import { usePortfolioStore } from '../../store/portfolioStore';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { AssetItem } from '../interfaces/PortfolioInterface';
+import DetailLink from '../../hooks/DetailLink';
 
-const PortfolioDetails = () => {
+interface ItemData {
+  name: string;
+  price: number;
+  amount?: number;
+  quantity?: number;
+  profitRate: number | string;
+  stockCode?: string;
+  coinCode?: string;
+}
+
+const PortfolioDetails: React.FC = () => {
   const {
     stocks,
     cryptocurrencies,
     gold,
     activeIndex,
-    showAllItems,
     isLoading,
     error,
+    showAllItems,
   } = usePortfolioStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const items: (AssetItem & { categoryName: string })[] = useMemo(() => {
+  const items: ItemData[] = useMemo(() => {
     if (showAllItems) {
       return [
-        ...stocks.map((item) => ({ ...item, categoryName: '주식' })),
-        ...cryptocurrencies.map((item) => ({
-          ...item,
-          categoryName: '가상화폐',
-        })),
-        ...gold.map((item) => ({ ...item, categoryName: '금' })),
+        ...stocks,
+        ...cryptocurrencies,
+        ...(Array.isArray(gold) ? gold : [gold]),
       ];
-    } else {
-      switch (activeIndex) {
-        case 0:
-          return stocks.map((item) => ({ ...item, categoryName: '주식' }));
-        case 1:
-          return cryptocurrencies.map((item) => ({
-            ...item,
-            categoryName: '가상화폐',
-          }));
-        case 2:
-          return gold.map((item) => ({ ...item, categoryName: '금' }));
-        default:
-          return [];
-      }
+    }
+    switch (activeIndex) {
+      case 0:
+        return stocks;
+      case 1:
+        return cryptocurrencies;
+      case 2:
+        return Array.isArray(gold) ? gold : [gold];
+      default:
+        return [];
     }
   }, [stocks, cryptocurrencies, gold, activeIndex, showAllItems]);
 
-  if (isLoading) return <div className="text-center py-4">로딩중...</div>;
-  if (error)
+  if (isLoading) {
+    return <div className="text-center py-4">Loading details...</div>;
+  }
+  if (error) {
     return (
       <div className="text-center py-4 text-red-500">
         Error loading details: {error}
       </div>
     );
-
-  if (items.length === 0)
-    return (
-      <div className="text-center text-xl py-10">투자한 내역이 없습니다.</div>
-    );
+  }
 
   const itemCount = items.length;
   const isItemLoaded = (index: number) => index < items.length;
-  const loadMoreItems = (_startIndex: number, _stopIndex: number) => {
-    return Promise.resolve();
-  };
+  const loadMoreItems = (_startIndex: number, _stopIndex: number) =>
+    Promise.resolve();
 
-  const Row = ({
+  const Row: React.FC<{ index: number; style: React.CSSProperties }> = ({
     index,
     style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
   }) => {
-    const calculateTotalValue = (price: number, amount: number) => {
-      return (Number(price) * Number(amount)).toLocaleString('ko-KR', {
-        maximumFractionDigits: 2,
-      });
-    };
-
     const item = items[index];
+    const totalValue = item.price * (item.amount || item.quantity || 0);
     const profitRate =
       typeof item.profitRate === 'string'
         ? parseFloat(item.profitRate)
         : item.profitRate;
 
+    let type: 'stock' | 'crypto' | 'gold';
+    let itemId: string | undefined;
+
+    if ('stockCode' in item && item.stockCode) {
+      type = 'stock';
+      itemId = item.stockCode;
+    } else if ('coinCode' in item && item.coinCode) {
+      type = 'crypto';
+      itemId = item.coinCode;
+    } else {
+      type = 'gold';
+    }
+
     return (
       <div style={style} className="flex items-center border-b px-4">
-        <div className="w-1/5 py-2 text-sm font-medium">
-          {item.categoryName}
-        </div>
-        <div className="w-1/5 py-2 text-base font-semibold">{item.name}</div>
-        <div className="w-1/5 py-2 font-medium text-base text-center">
-          {calculateTotalValue(item.price, item.amount)}원
-        </div>
-        <div className="w-1/5 py-2 font-medium text-base text-center">
-          {item.amount.toFixed(4)}{' '}
-          {item.categoryName === '주식'
-            ? '주'
-            : item.categoryName === '가상화폐'
-              ? '개'
-              : 'kg'}
+        {showAllItems && (
+          <div className="w-1/4 py-2 text-sm font-medium">
+            {type === 'stock' ? '주식' : type === 'crypto' ? '암호화폐' : '금'}
+          </div>
+        )}
+        <DetailLink
+          type={type}
+          itemId={itemId}
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 text-base font-semibold hover:text-blue-600`}
+        >
+          {item.name}
+        </DetailLink>
+        <div
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-right`}
+        >
+          {totalValue.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원
         </div>
         <div
-          className={`w-1/5 py-2 font-medium text-base text-center ${
-            profitRate >= 0 ? 'text-green-500' : 'text-red-500'
-          }`}
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-right ${profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
         >
-          {profitRate.toFixed(2)}% {profitRate >= 0 ? '▲' : '▼'}
+          {profitRate.toFixed(2)}%
         </div>
       </div>
     );
   };
 
   return (
-    <div className="bg-gray-100 relative h-full pt-6 pb-24">
-      <div className="w-11/12 mx-auto h-4 bg-customDarkGreen absolute top-2 left-0 right-0"></div>
-
-      <div className="absolute top-4 left-0 right-0 bottom-24 mx-auto w-10/12">
+    <div className="bg-gray-100 relative h-full pt-6 pb-24 font-suite">
+      <div className="w-11/12 mx-auto h-5 bg-customDarkGreen absolute top-2 left-0 right-0"></div>
+      <div className="absolute top-5 left-0 right-0 bottom-24 mx-auto w-10/12">
         <div
           ref={containerRef}
           className="bg-white overflow-hidden relative"
           style={{ height: 'calc(100% - 24px)' }}
         >
           <h2 className="text-xl font-bold pt-4 mb-1 px-4">
-            {showAllItems ? '전체 포트폴리오' : items[0]?.categoryName}
+            {showAllItems
+              ? '전체'
+              : ['주식', '암호화폐', '금'][activeIndex ?? 0]}
           </h2>
           <div className="h-full pt-4 pb-10 overflow-y-auto">
             <InfiniteLoader
@@ -128,7 +134,13 @@ const PortfolioDetails = () => {
               itemCount={itemCount}
               loadMoreItems={loadMoreItems}
             >
-              {({ onItemsRendered, ref }: any) => (
+              {({
+                onItemsRendered,
+                ref,
+              }: {
+                onItemsRendered: any;
+                ref: any;
+              }) => (
                 <List
                   height={
                     containerRef.current
@@ -146,7 +158,6 @@ const PortfolioDetails = () => {
               )}
             </InfiniteLoader>
           </div>
-
           <div
             className="absolute bottom-0 left-0 right-0 px-3"
             style={{ transform: 'translateY(50%)' }}

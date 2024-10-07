@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { PieChart, Pie, Cell, Label, ResponsiveContainer } from 'recharts';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 
@@ -16,30 +16,26 @@ interface ViewBox {
 }
 
 const AutoDashboard: React.FC = () => {
-  const { investmentAmount, allocations } = useAutoInvestmentStore();
-  const [chartData, setChartData] = useState<{ name: string; value: number }[]>(
-    []
+  const { investmentAmount, stocks, coins, golds } = useAutoInvestmentStore();
+
+  const chartData = useMemo(() => {
+    const calculateTotal = (items: any[]) =>
+      items.reduce(
+        (sum, item) => sum + (item.percent / 100) * investmentAmount,
+        0
+      );
+
+    return [
+      { name: '주식', value: calculateTotal(stocks) },
+      { name: '가상화폐', value: calculateTotal(coins) },
+      { name: '금', value: calculateTotal(golds) },
+    ].filter((item) => item.value > 0);
+  }, [stocks, coins, golds, investmentAmount]);
+
+  const totalValue = useMemo(
+    () => chartData.reduce((sum, item) => sum + item.value, 0),
+    [chartData]
   );
-
-  useEffect(() => {
-    const newChartData = Object.entries(allocations).map(
-      ([category, items]) => {
-        const categoryTotal = items.reduce(
-          (sum, item) => sum + (item.percentage / 100) * investmentAmount,
-          0
-        );
-        return { name: category, value: categoryTotal };
-      }
-    );
-
-    setChartData(newChartData);
-  }, [allocations, investmentAmount]);
-
-  const totalValue = useMemo(() => {
-    const total = chartData.reduce((sum, item) => sum + item.value, 0);
-
-    return total;
-  }, [chartData]);
 
   if (chartData.length === 0) {
     return <div>Loading...</div>;
@@ -61,7 +57,7 @@ const AutoDashboard: React.FC = () => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {chartData.map((_entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
