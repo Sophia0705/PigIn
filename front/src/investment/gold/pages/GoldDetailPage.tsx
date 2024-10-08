@@ -135,11 +135,9 @@ const GoldDetailPage: React.FC = () => {
       if (isFavorite) {
         await removeGoldFromFavorite();
         setIsFavorite(false);
-        alert('즐겨찾기에서 제거됨');
       } else {
         await addGoldToFavorite();
         setIsFavorite(true);
-        alert('즐겨찾기에 추가됨');
       }
     } catch (error) {
       console.error('즐겨찾기 추가/삭제 오류:', error);

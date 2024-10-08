@@ -11,7 +11,7 @@ export interface StockItemData {
   stck_prdy_clpr: number; // 전일 종가
   stck_hgpr: number; // 당일 최고가
   stck_lwpr: number; // 당일 최저가
-  marketCap: string; // 시가총액
+  hts_avls: string; // 시가총액
   acml_vol: string; // 누적 거래량
   stck_mxpr: number; // 역대 최고가
   stck_llam: number; // 역대 최저가
@@ -34,6 +34,18 @@ export interface StockChartDataResponse {
   stck_hgpr: string; // 최고가
   stck_lwpr: string; // 최저가
   acml_vol: string; // 거래량
+}
+
+// 주식 분봉 데이터
+export interface StockLiveData {
+  stockCode: string;
+  stck_bsop_date: string;
+  stock_bsop_time: string;
+  stck_clpr: string;
+  stck_oprc: string;
+  stck_hgpr: string;
+  stck_lwpr: string;
+  acml_vol: string;
 }
 
 // 전체 주식 목록

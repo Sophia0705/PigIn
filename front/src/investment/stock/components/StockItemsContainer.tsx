@@ -84,7 +84,7 @@ const StockItemsContainer: React.FC<StockItemsContainerProps> = () => {
     const sorted = [...data].sort((a, b) => {
       switch (option) {
         case '시가총액':
-          return parseInt(b.marketCap) - parseInt(a.marketCap);
+          return parseInt(b.hts_avls) - parseInt(a.hts_avls);
         case '거래량':
           return parseInt(b.acml_vol) - parseInt(a.acml_vol);
         case '등락률':

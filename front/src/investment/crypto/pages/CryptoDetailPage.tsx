@@ -14,6 +14,10 @@ import {
   addToAutoInvest,
   removeFromAutoInvest,
 } from '../../../api/investment/crypto/CryptoAutoInvest';
+import {
+  getLiveCryptoChartData,
+  getUpdatedLiveCryptoData,
+} from '../../../api/investment/crypto/CryptoChartData';
 import CryptoPurchaseModal from '../components/modals/CryptoPurchaseModal';
 import CryptoDetailGraph from '../components/CryptoDetailGraph';
 import CryptoDetailInfo from '../components/CryptoDetailInfo';
@@ -24,6 +28,11 @@ import { getIndividualCryptoData } from '../../../api/investment/crypto/Individu
 import AuthGuardClickable from '../../../member/components/AuthGuardClickable';
 
 const CryptoDetailPage: React.FC = () => {
+  interface LiveChartData {
+    name: string;
+    value: number;
+  }
+
   const navigate = useNavigate();
   const location = useLocation();
   const [cryptoData] = useState<CryptoItemData>(location.state?.item);
@@ -37,6 +46,9 @@ const CryptoDetailPage: React.FC = () => {
   const [buyInputValue, setBuyInputValue] = useState<string>('00');
   const [isSellModalVisible, setIsSellModalVisible] = useState(false);
   const [sellInputValue, setSellInputValue] = useState<string>('00');
+  const [liveChartData, setLiveChartData] = useState<LiveChartData[]>([]);
+  const [liveAdjustedMin, setLiveAdjustedMin] = useState<number | null>(null);
+  const [liveAdjustedMax, setLiveAdjustedMax] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchBitcoinPrice = async () => {
@@ -66,6 +78,81 @@ const CryptoDetailPage: React.FC = () => {
 
     fetchStatus();
   }, [cryptoData.coin]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (selectedTimeRange === '실시간') {
+      const fetchLiveData = async () => {
+        try {
+          const liveData = await getLiveCryptoChartData(
+            cryptoData.coin,
+            'minute',
+            20
+          );
+
+          if (!isMounted) return;
+
+          const formattedData = liveData
+            .map((item) => ({
+              name: `${item.coin_bsop_time.slice(0, 2)}:${item.coin_bsop_time.slice(2, 4)}`,
+              value: Number(item.coin_clpr),
+            }))
+            .reverse();
+
+          setLiveChartData(formattedData);
+
+          const prices = formattedData.map((data) => data.value);
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
+
+          const padding = (maxPrice - minPrice) * 0.1;
+          setLiveAdjustedMin(minPrice - padding);
+          setLiveAdjustedMax(maxPrice + padding);
+
+          const updateLiveData = async () => {
+            try {
+              const updatedData = await getUpdatedLiveCryptoData(
+                cryptoData.coin
+              );
+              if (!isMounted) return;
+              console.log(updatedData);
+              if (updatedData.live) {
+                // 가장 최근 데이터 교체
+                setLiveChartData((prevData) => [
+                  ...prevData.slice(1),
+                  {
+                    name: `${updatedData.data.coin_bsop_time.slice(0, 2)}:${updatedData.data.coin_bsop_time.slice(2, 4)}`,
+                    value: Number(updatedData.data.coin_clpr),
+                  },
+                ]);
+              }
+            } catch (error) {
+              if (isMounted)
+                console.error('실시간 차트 업데이트 가져오기 실패:', error);
+            }
+          };
+
+          // 매 1분마다 업데이트 호출
+          const intervalId = setInterval(updateLiveData, 60000);
+
+          // interval 초기화
+          return () => {
+            clearInterval(intervalId);
+            isMounted = false;
+          };
+        } catch (error) {
+          if (isMounted)
+            console.error('실시간 차트 업데이트 가져오기 실패:', error);
+        }
+      };
+      fetchLiveData();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedTimeRange, cryptoData.coin]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -164,7 +251,9 @@ const CryptoDetailPage: React.FC = () => {
           : adjustedWeeklyPrices;
 
   const chartData = selectedData
-    ?.map((price, index) => {
+    .slice()
+    .reverse()
+    .map((price, index) => {
       const currentDate = new Date();
       if (selectedTimeRange === '1년') {
         const pastDate = new Date(
@@ -221,7 +310,11 @@ const CryptoDetailPage: React.FC = () => {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white text-left ml-4">
-            {Number(cryptoData.price).toLocaleString()}
+            {liveChartData.length > 0
+              ? Number(
+                  liveChartData[liveChartData.length - 1].value
+                ).toLocaleString()
+              : Number(latestValue).toLocaleString()}
             <span className="text-lg"> 원</span>
           </h1>
           <span
@@ -264,9 +357,17 @@ const CryptoDetailPage: React.FC = () => {
 
       {/* 그래프 */}
       <CryptoDetailGraph
-        chartData={chartData}
-        adjustedMin={adjustedMin}
-        adjustedMax={adjustedMax}
+        chartData={selectedTimeRange === '실시간' ? liveChartData : chartData}
+        adjustedMin={
+          selectedTimeRange === '실시간'
+            ? (liveAdjustedMin ?? adjustedMin)
+            : adjustedMin
+        }
+        adjustedMax={
+          selectedTimeRange === '실시간'
+            ? (liveAdjustedMax ?? adjustedMax)
+            : adjustedMax
+        }
       />
 
       {/* 상세정보, 뉴스 선택 바 */}
@@ -325,7 +426,11 @@ const CryptoDetailPage: React.FC = () => {
           onClose={handleBuyModalClose}
           cryptoId={cryptoData.coin}
           cryptoName={cryptoData.coinName}
-          cryptoPrice={cryptoData.price}
+          cryptoPrice={
+            liveChartData.length > 0
+              ? Number(liveChartData[liveChartData.length - 1].value)
+              : Number(cryptoData.price)
+          }
         />
       )}
 
@@ -336,6 +441,11 @@ const CryptoDetailPage: React.FC = () => {
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
           cryptoId={cryptoData.coin}
+          cryptoPrice={
+            liveChartData.length > 0
+              ? Number(liveChartData[liveChartData.length - 1].value)
+              : Number(cryptoData.price)
+          }
         />
       )}
     </div>

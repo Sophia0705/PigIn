@@ -8,6 +8,7 @@ interface CryptoSellModalProps {
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   onClose: () => void;
   cryptoId: string;
+  cryptoPrice: number;
 }
 
 const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
@@ -15,6 +16,7 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
   setInputValue,
   onClose,
   cryptoId,
+  cryptoPrice,
 }) => {
   const [cryptoQuantity, setCryptoQuantity] = useState<number>(0);
   const [profitRate, setProfitRate] = useState<number>(0);
@@ -69,10 +71,17 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
     inputAmount === 0 || cryptoQuantity === 0
       ? 0.0
       : ((inputAmount / cryptoQuantity) * 100).toFixed(2);
+  const sendPercentage =
+    inputAmount === 0 || cryptoPrice === 0
+      ? 0.0
+      : (inputAmount / cryptoPrice) * 100;
 
   const handleSellClick = async () => {
     try {
-      const response = await sellCrypto(cryptoId, parseFloat(inputValue));
+      const response = await sellCrypto(
+        cryptoId,
+        Number(sendPercentage) * 0.01
+      );
       console.log('가상화폐 매도 성공핑:', response);
       onClose();
     } catch (error) {
