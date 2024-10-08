@@ -199,6 +199,11 @@ public class StockController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/rank")
+    public ResponseEntity<?> getStockRank(){
+        return ResponseEntity.ok(stockService.getStockRank());
+    }
+
 //    @PutMapping("/{stockId}/auto-funding")
 //    public ResponseEntity<?> setAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 //        Long userId = customUserDetails.getUserId();
