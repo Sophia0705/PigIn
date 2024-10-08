@@ -68,6 +68,27 @@ export const getYearlyCryptoChartData = async (
   }
 };
 
+export const getLiveCryptoChartData = async (
+  coinCode: string,
+  interval: string,
+  count: number = 20
+): Promise<CryptoLiveData[]> => {
+  try {
+    const response = await axiosInstance.get<CryptoLiveData[]>(
+      `/api/coin/${coinCode}/chart/${interval}`,
+      { params: { count } }
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error('axios의 오류임:', error.response?.data);
+    } else {
+      console.error('axios 오류 아님:', error);
+    }
+    throw new Error('다시 해라');
+  }
+};
+
 export const getUpdatedLiveCryptoData = async (
   coinCode: string
 ): Promise<{ data: CryptoLiveData; live: boolean }> => {

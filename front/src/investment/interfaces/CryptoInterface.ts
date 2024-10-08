@@ -15,14 +15,14 @@ export interface CryptoItemData {
 }
 
 export interface CryptoLiveData {
-  coin: string;
-  coinName: string;
-  date: string;
-  open: number;
-  close: number;
-  high: number;
-  low: number;
-  volume: number;
+  acml_vol: number;
+  coinCode: string;
+  coin_bsop_date: string;
+  coin_bsop_time: string;
+  coin_clpr: number;
+  coin_hgpr: number;
+  coin_lwpr: number;
+  coin_oprc: number;
 }
 
 export interface CryptoListData {

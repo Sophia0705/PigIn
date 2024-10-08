@@ -24,7 +24,6 @@ import StockDetailInfo from '../components/StockDetailInfo';
 import StockPurchaseModal from '../components/modals/StockPurchaseModal';
 import StockNews from '../components/StockNews';
 import StockSellModal from '../components/modals/StockSellModal';
-import StockLiveStream from '../components/StockLiveStream';
 import AuthGuardClickable from '../../../member/components/AuthGuardClickable';
 
 const StockDetailPage: React.FC = () => {
@@ -279,6 +278,7 @@ const StockDetailPage: React.FC = () => {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white text-left ml-4">
+            {/* {Number(liveChartData[0].value).toLocaleString()} */}
             {Number(stockData.stck_prpr).toLocaleString()}
             <span className="text-lg"> 원</span>
           </h1>
@@ -302,8 +302,6 @@ const StockDetailPage: React.FC = () => {
           </span>
         </div>
       </div>
-
-      {selectedTimeRange === '실시간' && <StockLiveStream />}
 
       {/* 시간 범위 선택 바 */}
       <div className="relative flex justify-center mt-6 mb-4 w-fit bg-green-100 rounded-full mx-auto">
@@ -391,7 +389,7 @@ const StockDetailPage: React.FC = () => {
           onClose={handleBuyModalClose}
           stockId={stockData.stck_shrn_iscd}
           stockName={stockData.hts_kor_isnm}
-          stockPrice={stockData.stck_prpr}
+          stockPrice={Number(liveChartData[0].value)}
         />
       )}
 
@@ -402,7 +400,7 @@ const StockDetailPage: React.FC = () => {
           inputValue={sellInputValue}
           setInputValue={setSellInputValue}
           onClose={handleSellModalClose}
-          stockPrice={stockData.stck_prpr}
+          stockPrice={Number(liveChartData[0].value)}
         />
       )}
     </div>

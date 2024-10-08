@@ -91,7 +91,7 @@ const CryptoPurchaseModal: React.FC<CryptoPurchaseModalProps> = ({
         </div>
 
         <div className="text-lg text-center text-black mb-4">
-          {cryptoName} 현재가 : {Number(cryptoPrice).toLocaleString()}원
+          {cryptoName} 현재가 : {cryptoPrice.toLocaleString()}원
         </div>
 
         {/* 가격 표시 칸 */}
