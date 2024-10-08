@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FindCoinNowResponse {
     private boolean isLive;
-    private FindCoinResponse data;
+    private FindCoinChartAllResponse data;
 }
