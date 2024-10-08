@@ -82,6 +82,7 @@ const CryptoSellModal: React.FC<CryptoSellModalProps> = ({
         cryptoId,
         Number(sendPercentage) * 0.01
       );
+      console.log(Number(sendPercentage) * 0.01);
       console.log('가상화폐 매도 성공핑:', response);
       onClose();
     } catch (error) {

@@ -36,7 +36,7 @@ const CryptoDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [cryptoData] = useState<CryptoItemData>(location.state?.item);
-  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('실시간');
   const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
   const [bitcoinPrice, setBitcoinPrice] = useState<number>(0);
 
