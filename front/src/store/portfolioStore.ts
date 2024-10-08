@@ -28,7 +28,7 @@ export const usePortfolioStore = create<PortfolioState>((set) => ({
       });
     } catch (error) {
       set({
-        error: '포트폴리오 데이터를 불러오는 데 실패했습니다.',
+        error: '포트폴리오 데이터를 불러오는 데 실패핑.',
         isLoading: false,
       });
     }
