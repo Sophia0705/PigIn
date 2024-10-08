@@ -22,9 +22,14 @@ const MyPage: React.FC = () => {
   // 로그아웃 처리 함수
   const handleLogout = async () => {
     try {
-      await logoutAPI();
-      setSuccessMessage('로그아웃 성공하였습니다!');
-      setShowSuccessModal(true); // 성공 모달 띄우기
+      const success = await logoutAPI();
+      if (success) {
+        setSuccessMessage('로그아웃 성공하였습니다!');
+        setShowSuccessModal(true); // 성공 모달 띄우기
+      } else {
+        setFailMessage('로그아웃 실패하였습니다.');
+        setShowFailModal(true); // 실패 모달 띄우기
+      }
     } catch (error) {
       console.error('로그아웃 에러:', error);
       setFailMessage('로그아웃 실패하였습니다.');
@@ -41,18 +46,18 @@ const MyPage: React.FC = () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center ">
       {/* MyPage 타이틀 및 회원 탈퇴 버튼 */}
-      <div className="relative w-[340px] px-0 flex items-center justify-end p-4 bg-customDarkGreen">
+      <div className="relative w-full px-0 flex items-center justify-end p-4 bg-customDarkGreen">
         <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-white">
-          MyPage
+          마이 페이지
         </h1>
         {/* 로그아웃 버튼: 로그인 상태일 때만 렌더링 */}
         {isLoggedIn && (
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded"
+            className="flex items-center bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded mt-2 mr-4"
           >
-            <FiLogOut className="text-lg" />
-            <span className="text-sm">Logout</span>
+            <FiLogOut className="text-md" />
+            <span className="text-sm">로그아웃</span>
           </button>
         )}
       </div>

@@ -3,6 +3,13 @@ import { useSpendingAccountStore } from '../../../store/SpendingAccountStore'; /
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // 눈 모양 아이콘
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 import { AiOutlineClose } from 'react-icons/ai'; // X 아이콘
+import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
+import FailModal from './FailModal'; // 실패 모달 컴포넌트
+import {
+  authenticateInvestmentAccount,
+  verifyTransferAuthentication,
+  registerSpendingAccount,
+} from '../../../api/member/accountAPI';
 
 const bankOptions = [
   '싸피뱅크',
@@ -31,6 +38,10 @@ const SpendingAccountRegisterModal: React.FC = () => {
   const [isAccountVerified, setIsAccountVerified] = useState(false); // 1원 인증 여부
   const [isCodeInputVisible, setIsCodeInputVisible] = useState(false); // 인증번호 입력 필드 표시 여부
   const [verificationCode, setVerificationCode] = useState(''); // 인증번호
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // 성공 모달
+  const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
+  const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
+  const [failMessage, setFailMessage] = useState(''); // 실패 메시지
 
   // 비밀번호 유효성 검사 함수
   const isPasswordValid = (password: string) => {
@@ -49,6 +60,11 @@ const SpendingAccountRegisterModal: React.FC = () => {
       setFormData({ accountNumber: value });
     } else if (value.length <= 8) {
       setFormData({ accountNumber: value.slice(0, 4) + '-' + value.slice(4) });
+    } else if (value.length <= 12) {
+      setFormData({
+        accountNumber:
+          value.slice(0, 4) + '-' + value.slice(4, 8) + '-' + value.slice(8),
+      });
     } else {
       setFormData({
         accountNumber:
@@ -56,17 +72,87 @@ const SpendingAccountRegisterModal: React.FC = () => {
           '-' +
           value.slice(4, 8) +
           '-' +
-          value.slice(8, 14),
+          value.slice(8, 12) +
+          '-' +
+          value.slice(12, 16),
       });
     }
   };
 
   // 계좌번호 1원 인증 함수
-  const handleAccountVerification = () => {
-    // 실제 1원 인증 API 요청 로직을 여기에 추가
-    setIsAccountVerified(true); // 1원 인증 성공 상태로 설정
-    setIsCodeInputVisible(true); // 인증번호 입력 필드 표시
-    alert('1원 인증 번호가 전송되었습니다. 계좌 내역을 확인하세요.');
+  const handleAccountVerification = async () => {
+    try {
+      // 하이픈 제거 후 계좌번호 출력 및 인증 요청
+      const accountNumberWithoutHyphen = formData.accountNumber.replace(
+        /-/g,
+        ''
+      );
+      console.log('1원 인증 정보 (하이픈 제거) : ', accountNumberWithoutHyphen);
+
+      const isVerified = await authenticateInvestmentAccount(
+        accountNumberWithoutHyphen
+      );
+      if (isVerified) {
+        setIsAccountVerified(true);
+        setIsCodeInputVisible(true);
+        setSuccessMessage(
+          '1원 인증 번호가 전송되었습니다. 계좌 내역을 확인하세요.'
+        );
+        setShowSuccessModal(true);
+      } else {
+        setFailMessage('계좌 인증에 실패했습니다. 계좌 번호를 확인해주세요.');
+        setShowFailModal(true);
+      }
+    } catch (error) {
+      setFailMessage('계좌 인증 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setShowFailModal(true);
+    }
+  };
+
+  // 인증 확인 함수
+  const handleVerificationSubmit = async () => {
+    try {
+      const isVerified = await verifyTransferAuthentication(
+        formData.accountNumber,
+        verificationCode
+      );
+      if (isVerified) {
+        setSuccessMessage('계좌 인증이 완료되었습니다.');
+        setShowSuccessModal(true);
+      } else {
+        setFailMessage('인증번호가 올바르지 않습니다.');
+        setShowFailModal(true);
+      }
+    } catch (error) {
+      setFailMessage('인증 확인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setShowFailModal(true);
+    }
+  };
+
+  // 계좌 등록 함수
+  const handleRegisterAccount = async () => {
+    try {
+      // 하이픈 제거 후 계좌번호를 API에 전송
+      const accountNumberWithoutHyphen = formData.accountNumber.replace(
+        /-/g,
+        ''
+      );
+      const isSuccess = await registerSpendingAccount(
+        formData.bankName,
+        accountNumberWithoutHyphen
+      );
+
+      if (isSuccess) {
+        setSuccessMessage('소비 계좌가 성공적으로 등록되었습니다.');
+        setShowSuccessModal(true);
+      } else {
+        setFailMessage('계좌 등록에 실패했습니다. 다시 시도해주세요.');
+        setShowFailModal(true);
+      }
+    } catch (error) {
+      setFailMessage('계좌 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setShowFailModal(true);
+    }
   };
 
   // 입력 필드가 변경될 때 호출되는 핸들러 함수
@@ -96,28 +182,18 @@ const SpendingAccountRegisterModal: React.FC = () => {
     setIsPasswordMatch(formData.password === value);
   };
 
-  // 인증 확인 버튼을 눌렀을 때 실행되는 함수
-  const handleVerificationSubmit = () => {
-    if (verificationCode === '123456') {
-      // 가상 인증 코드 "123456"
-      alert('계좌 인증이 완료되었습니다.');
-    } else {
-      alert('인증번호가 올바르지 않습니다.');
-    }
-  };
-
   // 폼 제출 시 호출되는 핸들러 함수 (계좌 등록 처리)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작을 방지하여 페이지 새로고침을 막습니다.
 
     if (!isPasswordMatch) {
-      alert('비밀번호가 일치하지 않습니다.');
+      setFailMessage('비밀번호가 일치하지 않습니다.');
+      setShowFailModal(true);
       return;
     }
 
     console.log('계좌 등록 정보:', formData);
-    // 계좌 등록 API 요청을 여기에 추가
-    alert('소비 계좌가 성공적으로 등록되었습니다.');
+    handleRegisterAccount(); // 계좌 등록 함수 호출
   };
 
   // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
@@ -182,6 +258,8 @@ const SpendingAccountRegisterModal: React.FC = () => {
               </option>
             ))}
           </select>
+
+          {/* 계좌번호 입력 필드 및 1원 인증 버튼 */}
           <div className="flex items-center space-x-2 w-full">
             <input
               type="text"
@@ -190,7 +268,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
               onChange={handleAccountNumberChange}
               placeholder="계좌번호"
               className="flex-1 p-2 border-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              maxLength={14} // 예시: 하이픈 포함 최대 14자리로 제한
+              maxLength={19}
             />
             <button
               type="button"
@@ -300,6 +378,27 @@ const SpendingAccountRegisterModal: React.FC = () => {
           </button>
         </form>
       </div>
+      {/* 성공 모달 */}
+      {showSuccessModal && (
+        <SuccessModal
+          setShowModal={setShowSuccessModal}
+          title={successMessage}
+          buttonText="확인"
+          buttonColor="bg-customAqua"
+          buttonHoverColor="hover:bg-[#7ee9ce]"
+        />
+      )}
+
+      {/* 실패 모달 */}
+      {showFailModal && (
+        <FailModal
+          setShowModal={setShowFailModal}
+          title={failMessage}
+          buttonText="확인"
+          buttonColor="bg-customRed"
+          buttonHoverColor="hover:bg-[#FF2414]"
+        />
+      )}
     </div>
   );
 };

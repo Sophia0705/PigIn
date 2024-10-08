@@ -88,7 +88,7 @@ const LoginModal: React.FC = () => {
         />
 
         {/* 모달 제목 */}
-        <h3 className="text-center text-4xl font-bold text-gray-900">Login</h3>
+        <h3 className="text-center text-3xl font-bold text-gray-900">로그인</h3>
 
         {/* 로그인 폼 */}
         <form onSubmit={handleSubmit}>
@@ -142,7 +142,7 @@ const LoginModal: React.FC = () => {
               ) : (
                 <FaTimesCircle className="absolute right-10 top-2/4 text-red-500" />
               ))}
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-1">
               8자 이상, 영문, 숫자 포함
             </p>
           </div>

@@ -1,8 +1,8 @@
-import React from "react";
-import DetailHeader from "../../components/DetailHeader";
-import DetailPageGraph from "../../components/DetailPageGraph";
-import KospiData from "../../../data/KospiData.json";
-import StockItemsContainer from "../components/StockItemsContainer";
+import React from 'react';
+import DetailHeader from '../../components/DetailHeader';
+import DetailPageGraph from '../../components/DetailPageGraph';
+import KospiData from '../../../data/KospiData.json';
+import StockItemsContainer from '../components/StockItemsContainer';
 
 const StockMainPage: React.FC = () => {
   const latestValue = KospiData[KospiData.length - 1].value;

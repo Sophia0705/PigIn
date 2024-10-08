@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setAccessToken } from '../../utils/localUtils';
+import { setAccessToken, removeAccessToken } from '../../utils/localUtils';
 
 // reissue API 호출 함수
 export const reissueAccessTokenAPI = async (): Promise<string> => {
@@ -42,6 +42,16 @@ export const reissueAccessTokenAPI = async (): Promise<string> => {
     } else {
       console.error('재발급API 오류 발생:', error);
     }
+
+    // 재발급 실패 시 액세스 토큰 삭제 및 메인 페이지로 리디렉션
+    alert(
+      '리프레시 토큰이 만료되었거나 재발급에 실패했습니다. 메인 페이지로 이동합니다.'
+    );
+    removeAccessToken(); // 액세스 토큰 삭제
+
+    // 메인 페이지로 리디렉션
+    window.location.href = '/';
+
     throw new Error('재발급API 토큰 재발급에 실패했습니다.');
   }
 };
