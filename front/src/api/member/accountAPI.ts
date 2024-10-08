@@ -89,13 +89,15 @@ export const verifyTransferAuthentication = async (
   accountNo: string,
   authCode: string
 ): Promise<boolean> => {
+  const submittedData = {
+    accountNo: accountNo,
+    authCode: authCode,
+  };
+  console.log('제출 데이터 : ', submittedData);
   try {
     const response = await axiosInstance.post(
       'api/member/account-authentication-compare',
-      {
-        accountNo: accountNo,
-        authCode: authCode,
-      }
+      submittedData
     );
     console.log('1원 송금 인증 확인 response : ', response);
     return response.status === 200; // 성공 시 true 반환
