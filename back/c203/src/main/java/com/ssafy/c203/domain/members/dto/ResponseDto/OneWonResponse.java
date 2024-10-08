@@ -1,11 +1,14 @@
 package com.ssafy.c203.domain.members.dto.ResponseDto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class OneWonResponse {
 
-    private OneWonHeader Header;
-    private OneWonRec REC;
+    @JsonProperty("Header")
+    private OneWonHeader header;
+    @JsonProperty("REC")
+    private OneWonRec rec;
 
 }

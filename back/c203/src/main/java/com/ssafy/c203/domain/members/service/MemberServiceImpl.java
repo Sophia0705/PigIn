@@ -502,10 +502,14 @@ public class MemberServiceImpl implements MemberService {
             entity,
             OneWonResponse.class
         );
+        log.info(response.getBody().getRec().toString());
+
+        String responseMessage = response.getBody().getHeader().getResponseMessage();
+        log.info("{}", responseMessage);
 
         log.info("계좌 정보 불러오기 성공");
 
-        List<OneWonHistoryDto> history = response.getBody().getREC().getList();
+        List<OneWonHistoryDto> history = response.getBody().getRec().getList();
         for (OneWonHistoryDto oneWonHistoryDto : history) {
             if (!oneWonHistoryDto.getTransactionTypeName().equals("입금")
                 || !oneWonHistoryDto.getTransactionBalance().equals("1")) {
