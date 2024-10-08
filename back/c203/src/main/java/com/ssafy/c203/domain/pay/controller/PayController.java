@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PayController {
     private final PayService payService;
 
-    @PostMapping("/")
-    public String ssafyPay(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    @PostMapping()
+    public ResponseEntity ssafyPay(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception {
         Long userId = customUserDetails.getUserId();
         payService.payMoney(userId);
-        return "redirect:https://j11c203.p.ssafy.io/";
+        return ResponseEntity.ok("결제 완료!");
     }
 
 }

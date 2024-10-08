@@ -13,12 +13,15 @@ import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
 import com.ssafy.c203.domain.members.repository.MemberAccountRepository;
 import com.ssafy.c203.domain.members.repository.MembersRepository;
+import com.ssafy.c203.domain.members.service.MMSService;
 import com.ssafy.c203.domain.pay.exception.BuyErrorException;
 import com.ssafy.c203.domain.pay.exception.DepositErrorException;
 import com.ssafy.c203.domain.pay.exception.MemberAccountNotFoundException;
 import com.ssafy.c203.domain.stock.entity.StockAutoFunding;
 import com.ssafy.c203.domain.stock.repository.StockAutoFundingRepository;
 import com.ssafy.c203.domain.stock.service.StockService;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,7 @@ public class PayServiceImpl implements PayService {
     private final GoldAutoFundingRepository goldAutoFundingRepository;
     private final CoinAutoFundingRepository coinAutoFundingRepository;
     private final StockAutoFundingRepository stockAutoFundingRepository;
+    private final MMSService mmsService;
     private final GoldService goldService;
     private final CoinService coinService;
     private final StockService stockService;
@@ -41,7 +45,7 @@ public class PayServiceImpl implements PayService {
     private final int PRICE = 100000;
 
     @Override
-    public void payMoney(Long userId) {
+    public void payMoney(Long userId) throws Exception {
         Members member = membersRepository.findById(userId)
             .orElseThrow(MemberNotFoundException::new);
 
@@ -58,6 +62,8 @@ public class PayServiceImpl implements PayService {
         if (!isWithdraw) {
             throw new BuyErrorException();
         }
+
+        mmsService.sendMMS(getMessage(member.getName(), memberAccount.getBank(), memberAccount.getAccountNo()), member.getPhoneNumber());
 
         //투자 계좌 입금하기
         int money = PRICE * (savingRate / 100);
@@ -116,5 +122,17 @@ public class PayServiceImpl implements PayService {
                 .tradePrice(goldPrice)
                 .build(), member.getId());
         }
+    }
+
+    private String getMessage(String memberName, String bankName, String accountNo) {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd HH:mm");
+        String formattedDateTime = now.format(formatter);
+
+        String message = bankName + "(" + accountNo.substring(accountNo.length() - 4) + ") 승인 \n"
+            + memberName.substring(0, 1) + "*" + memberName.substring(2) + "\n" + PRICE + "원\n"
+            + formattedDateTime + "\n" + "PigIn 주식회사";
+
+        return message;
     }
 }
