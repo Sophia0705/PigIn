@@ -2,7 +2,6 @@ import { useMemo, useRef } from 'react';
 import { usePortfolioStore } from '../../store/portfolioStore';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import DetailLink from '../../hooks/DetailLink';
 
 interface ItemData {
   name: string;
@@ -14,7 +13,7 @@ interface ItemData {
   coinCode?: string;
 }
 
-const PortfolioDetails: React.FC = () => {
+const PortfolioDetails = () => {
   const {
     stocks,
     cryptocurrencies,
@@ -62,9 +61,12 @@ const PortfolioDetails: React.FC = () => {
   const loadMoreItems = (_startIndex: number, _stopIndex: number) =>
     Promise.resolve();
 
-  const Row: React.FC<{ index: number; style: React.CSSProperties }> = ({
+  const Row = ({
     index,
     style,
+  }: {
+    index: number;
+    style: React.CSSProperties;
   }) => {
     const item = items[index];
     const totalValue = item.price * (item.amount || item.quantity || 0);
@@ -74,14 +76,11 @@ const PortfolioDetails: React.FC = () => {
         : item.profitRate;
 
     let type: 'stock' | 'crypto' | 'gold';
-    let itemId: string | undefined;
 
     if ('stockCode' in item && item.stockCode) {
       type = 'stock';
-      itemId = item.stockCode;
     } else if ('coinCode' in item && item.coinCode) {
       type = 'crypto';
-      itemId = item.coinCode;
     } else {
       type = 'gold';
     }
@@ -93,13 +92,11 @@ const PortfolioDetails: React.FC = () => {
             {type === 'stock' ? '주식' : type === 'crypto' ? '암호화폐' : '금'}
           </div>
         )}
-        <DetailLink
-          type={type}
-          itemId={itemId}
-          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 text-base font-semibold hover:text-blue-600`}
+        <div
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 text-base font-semibold`}
         >
           {item.name}
-        </DetailLink>
+        </div>
         <div
           className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-right`}
         >

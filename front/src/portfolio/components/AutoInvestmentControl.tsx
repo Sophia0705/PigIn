@@ -5,7 +5,6 @@ import { XCircle } from 'lucide-react';
 import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 
 const CATEGORIES = ['stocks', 'coins', 'golds'] as const;
-type Category = (typeof CATEGORIES)[number];
 
 interface AutoInvestmentControlProps {
   localInvestmentAmount: string;

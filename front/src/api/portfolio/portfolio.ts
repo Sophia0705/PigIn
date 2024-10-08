@@ -7,7 +7,7 @@ export const fetchPortfolioData = async (): Promise<PortfolioState> => {
     console.log('포트폴리오 res', response.data);
     return response.data;
   } catch (error) {
-    console.error('포트폴리오 데이터를 가져오기 실패:', error);
+    console.error('포트폴리오 가져오기 실패핑:', error);
     throw new Error('Failed to fetch portfolio data');
   }
 };
