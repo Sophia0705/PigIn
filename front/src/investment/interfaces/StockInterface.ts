@@ -11,7 +11,7 @@ export interface StockItemData {
   stck_prdy_clpr: number; // 전일 종가
   stck_hgpr: number; // 당일 최고가
   stck_lwpr: number; // 당일 최저가
-  marketCap: string; // 시가총액
+  hts_avls: string; // 시가총액
   acml_vol: string; // 누적 거래량
   stck_mxpr: number; // 역대 최고가
   stck_llam: number; // 역대 최저가

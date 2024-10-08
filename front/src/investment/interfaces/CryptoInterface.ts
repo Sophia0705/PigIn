@@ -14,6 +14,17 @@ export interface CryptoItemData {
   yearlyPrices: number[]; // 연간 데이터
 }
 
+export interface CryptoLiveData {
+  coin: string;
+  coinName: string;
+  date: string;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  volume: number;
+}
+
 export interface CryptoListData {
   coinName: string;
   coin: string;

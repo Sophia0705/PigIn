@@ -205,10 +205,6 @@ const StockDetailPage: React.FC = () => {
     setSellInputValue('00');
   };
 
-  if (!stockData) {
-    return <div>로딩중...</div>;
-  }
-
   const selectedData =
     selectedTimeRange === '7일'
       ? stockData.weeklyPrices
