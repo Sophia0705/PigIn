@@ -334,8 +334,8 @@ public class MemberServiceImpl implements MemberService {
         );
 
         HttpStatusCode statusCode = response.getStatusCode();
-        if (statusCode.equals(HttpStatus.OK)) {
-            if (response.getBody().getREC().getStatus().equals("SUCCESS")) {
+        if (statusCode.is2xxSuccessful()) {
+            if (response.getBody().getRec().getStatus().equals("SUCCESS")) {
                 return "SUCCESS";
             } else {
                 return "FAIL";
