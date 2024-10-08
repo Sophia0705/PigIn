@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { reissueAccessTokenAPI } from './member/reissueAccessTokenAPI';
-import { setAccessToken, getAccessToken } from '../utils/localUtils';
+import {
+  setAccessToken,
+  getAccessToken,
+  // removeAccessToken,
+} from '../utils/localUtils';
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
