@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { PieChart, Pie, Cell, Label, ResponsiveContainer } from 'recharts';
 import { usePortfolioStore } from '../../store/portfolioStore';
 
@@ -6,15 +6,37 @@ const COLORS = ['#BBF5E2', '#6183EE', '#ECCD4A', '#FF6B6B'];
 
 interface CustomLabelProps {
   viewBox?: { cx: number; cy: number };
-  totalValue: number;
+  totalPrice: number;
   totalProfit: number;
   totalProfitRate: number;
   onClick: () => void;
 }
 
+const calculateCategoryProfit = (items: any[]) => {
+  return items.reduce((total, item) => {
+    const currentValue = item.price * (item.amount || item.quantity);
+    const initialValue = currentValue / (1 + Number(item.profitRate) / 100);
+    return total + (currentValue - initialValue);
+  }, 0);
+};
+
+const useTotalProfitAndRate = () => {
+  const { stocks, cryptocurrencies, gold, totalPrice } = usePortfolioStore();
+
+  const stockProfit = calculateCategoryProfit(stocks);
+  const cryptoProfit = calculateCategoryProfit(cryptocurrencies);
+  const goldProfit = calculateCategoryProfit(gold);
+
+  const totalProfit = stockProfit + cryptoProfit + goldProfit;
+  const totalInitialValue = totalPrice - totalProfit;
+  const totalProfitRate = (totalProfit / totalInitialValue) * 100;
+
+  return { totalProfit, totalProfitRate };
+};
+
 const CustomLabel: React.FC<CustomLabelProps> = ({
   viewBox = { cx: 0, cy: 0 },
-  totalValue,
+  totalPrice,
   totalProfit,
   totalProfitRate,
   onClick,
@@ -22,7 +44,6 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
   const { cx, cy } = viewBox;
   return (
     <g onClick={onClick} style={{ cursor: 'pointer' }}>
-      {/* 가운데 금액 & 퍼센트 --> 이거 클릭하면 전체 목록으로 나오게! */}
       <text
         x={cx}
         y={cy - 20}
@@ -30,7 +51,7 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
         dominantBaseline="central"
         className="text-xl font-bold"
       >
-        {totalValue.toLocaleString()}원
+        {totalPrice.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원
       </text>
       <text
         x={cx}
@@ -57,8 +78,10 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
 
 const Dashboard: React.FC = () => {
   const {
-    categories,
-    totalValue,
+    stockPrice,
+    cryptoPrice,
+    goldPrice,
+    totalPrice,
     activeIndex,
     setActiveIndex,
     setShowAllItems,
@@ -66,25 +89,16 @@ const Dashboard: React.FC = () => {
     error,
   } = usePortfolioStore();
 
-  const calculatePortfolioMetrics = useMemo(() => {
-    const calculateCategoryInitialInvestment = (items: any[]) =>
-      items.reduce((sum, item) => {
-        const currentValue = item.quantity * item.price;
-        const initialInvestment = currentValue / (1 + item.profitRate);
-        return sum + initialInvestment;
-      }, 0);
+  const { totalProfit, totalProfitRate } = useTotalProfitAndRate();
 
-    const totalInitialInvestment = categories.reduce(
-      (sum, category) =>
-        sum + calculateCategoryInitialInvestment(category.items),
-      0
-    );
-
-    const totalProfit = totalValue - totalInitialInvestment;
-    const totalProfitRate = (totalProfit / totalInitialInvestment) * 100;
-
-    return { totalProfit, totalProfitRate };
-  }, [categories, totalValue]);
+  const categories = useMemo(
+    () => [
+      { name: '주식', value: stockPrice },
+      { name: '암호화폐', value: cryptoPrice },
+      { name: '금', value: goldPrice },
+    ],
+    [stockPrice, cryptoPrice, goldPrice]
+  );
 
   const handleCenterClick = () => {
     setShowAllItems(true);
@@ -94,15 +108,13 @@ const Dashboard: React.FC = () => {
   if (isLoading) return <div>Loading dashboard...</div>;
   if (error) return <div>Error loading dashboard: {error}</div>;
 
-  const { totalProfit, totalProfitRate } = calculatePortfolioMetrics;
-
   return (
     <div className="bg-white h-full rounded-2xl p-4">
       <h2 className="text-3xl font-bold font-rix-reg mb-2">My Portfolio</h2>
-      <p className="text-base text-gray-500 mb-1">
+      <p className="text-base text-gray-500 font-suite mb-1">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
       </p>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center font-suite">
         <div className="w-1/2">
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
@@ -114,7 +126,7 @@ const Dashboard: React.FC = () => {
                 outerRadius={80}
                 fill="#8884d8"
                 paddingAngle={5}
-                dataKey="totalValue"
+                dataKey="value"
                 onClick={(_, index) => {
                   setActiveIndex(index);
                   setShowAllItems(false);
@@ -131,7 +143,7 @@ const Dashboard: React.FC = () => {
                 <Label
                   content={
                     <CustomLabel
-                      totalValue={totalValue}
+                      totalPrice={totalPrice}
                       totalProfit={totalProfit}
                       totalProfitRate={totalProfitRate}
                       onClick={handleCenterClick}
@@ -156,11 +168,15 @@ const Dashboard: React.FC = () => {
                 </span>
               </div>
               <div className="pl-3 font-medium text-base">
-                <span className="">
-                  {((category.totalValue / totalValue) * 100).toFixed(1)}%{' '}
+                <span>
+                  {((category.value / totalPrice) * 100).toFixed(2)}%{' '}
                 </span>
                 <span className="font-medium">
-                  ({category.totalValue.toLocaleString()}원)
+                  (
+                  {category.value.toLocaleString('ko-KR', {
+                    maximumFractionDigits: 2,
+                  })}
+                  원)
                 </span>
               </div>
             </div>

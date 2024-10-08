@@ -4,49 +4,57 @@ import { useAutoInvestmentStore } from '../../store/autoInvestmentStore';
 
 const COLORS = ['#BBF5E2', '#6183EE', '#ECCD4A', '#FF6B6B'];
 
-interface CustomLabelProps {
-  viewBox?: { cx: number; cy: number };
-  totalValue: number;
+interface ViewBox {
+  cx: number;
+  cy: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  width: number;
+  height: number;
 }
 
-const CustomLabel = ({
-  viewBox = { cx: 0, cy: 0 },
-  totalValue,
-}: CustomLabelProps) => {
-  const { cx, cy } = viewBox;
-  return (
-    <g>
-      <text
-        x={cx}
-        y={cy}
-        textAnchor="middle"
-        dominantBaseline="central"
-        className="text-xl font-bold"
-      >
-        {totalValue.toLocaleString()}원
-      </text>
-    </g>
-  );
-};
-
-const AutoDashboard = () => {
-  const { investmentAmount, allocations } = useAutoInvestmentStore();
+const AutoDashboard: React.FC = () => {
+  const { investmentAmount, stocks, coins, golds } = useAutoInvestmentStore();
 
   const chartData = useMemo(() => {
-    return Object.entries(allocations).map(([category, items]) => ({
-      name: category,
-      value: items.reduce(
-        (sum, item) => sum + (item.percentage / 100) * investmentAmount,
+    const calculateTotal = (items: any[]) => {
+      if (!Array.isArray(items)) {
+        console.error('Expected an array, received:', items);
+        return 0;
+      }
+      return items.reduce(
+        (sum, item) => sum + (item.percent / 100) * investmentAmount,
         0
-      ),
-    }));
-  }, [allocations, investmentAmount]);
+      );
+    };
+
+    console.log('Stocks:', stocks);
+    console.log('Coins:', coins);
+    console.log('Golds:', golds);
+
+    return [
+      { name: '주식', value: calculateTotal(stocks) },
+      { name: '가상화폐', value: calculateTotal(coins) },
+      { name: '금', value: calculateTotal(golds) },
+    ].filter((item) => item.value > 0);
+  }, [stocks, coins, golds, investmentAmount]);
+
+  const totalValue = useMemo(
+    () => chartData.reduce((sum, item) => sum + item.value, 0),
+    [chartData]
+  );
+
+  if (chartData.length === 0) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="bg-white h-full rounded-lg p-4">
+    <div className="bg-white h-3/7 rounded-lg p-4 w-[95%] mx-auto">
       <div className="flex justify-between items-center">
         <div className="w-1/2">
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={190}>
             <PieChart>
               <Pie
                 data={chartData}
@@ -65,7 +73,27 @@ const AutoDashboard = () => {
                   />
                 ))}
                 <Label
-                  content={<CustomLabel totalValue={investmentAmount} />}
+                  content={({ viewBox }) => {
+                    const { cx, cy } = viewBox as ViewBox;
+                    return (
+                      <text
+                        x={cx}
+                        y={cy}
+                        fill="#000000"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        <tspan
+                          x={cx}
+                          dy="-0.5em"
+                          fontSize="20"
+                          fontWeight="bold"
+                        >
+                          {totalValue.toLocaleString()}원
+                        </tspan>
+                      </text>
+                    );
+                  }}
                   position="center"
                 />
               </Pie>
@@ -73,27 +101,31 @@ const AutoDashboard = () => {
           </ResponsiveContainer>
         </div>
         <div className="w-1/2 pl-8">
-          {chartData.map((category, index) => (
-            <div key={category.name} className="mb-2">
-              <div className="flex items-center mb-1">
-                <div
-                  className="w-3 h-3 rounded-full mr-2"
-                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                ></div>
-                <span className="text-gray-700 text-sm font-medium">
-                  {category.name}
-                </span>
+          {chartData.map((category, index) => {
+            const percentage =
+              totalValue > 0
+                ? ((category.value / totalValue) * 100).toFixed(1)
+                : '0.0';
+            return (
+              <div key={category.name} className="mb-2">
+                <div className="flex items-center mb-1">
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  />
+                  <span className="text-gray-700 text-sm font-medium">
+                    {category.name}
+                  </span>
+                </div>
+                <div className="pl-5 text-black text-base">
+                  <span>{percentage}% </span>
+                  <span className="ml-2">
+                    ({category.value.toLocaleString()}원)
+                  </span>
+                </div>
               </div>
-              <div className="pl-5 text-sm">
-                <span className="">
-                  {((category.value / investmentAmount) * 100).toFixed(1)}%{' '}
-                </span>
-                <span className="ml-2">
-                  ({category.value.toLocaleString()}원)
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

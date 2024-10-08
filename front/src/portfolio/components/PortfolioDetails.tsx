@@ -2,91 +2,122 @@ import { useMemo, useRef } from 'react';
 import { usePortfolioStore } from '../../store/portfolioStore';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { AssetItem } from '../interfaces/PortfolioInterface';
+import DetailLink from '../../hooks/DetailLink';
+
+interface ItemData {
+  name: string;
+  price: number;
+  amount?: number;
+  quantity?: number;
+  profitRate: number | string;
+  stockCode?: string;
+  coinCode?: string;
+}
 
 const PortfolioDetails: React.FC = () => {
-  const { categories, activeIndex, isLoading, error, showAllItems } =
-    usePortfolioStore();
+  const {
+    stocks,
+    cryptocurrencies,
+    gold,
+    activeIndex,
+    isLoading,
+    error,
+    showAllItems,
+  } = usePortfolioStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const items: (AssetItem & { categoryName?: string })[] = useMemo(() => {
-    if (!categories || categories.length === 0) return [];
-
+  const items: ItemData[] = useMemo(() => {
     if (showAllItems) {
-      return categories.flatMap((category) =>
-        category.items.map((item) => ({ ...item, categoryName: category.name }))
-      );
+      return [
+        ...stocks,
+        ...cryptocurrencies,
+        ...(Array.isArray(gold) ? gold : [gold]),
+      ];
     }
-    return activeIndex !== undefined && categories[activeIndex]
-      ? categories[activeIndex].items
-      : [];
-  }, [categories, activeIndex, showAllItems]);
+    switch (activeIndex) {
+      case 0:
+        return stocks;
+      case 1:
+        return cryptocurrencies;
+      case 2:
+        return Array.isArray(gold) ? gold : [gold];
+      default:
+        return [];
+    }
+  }, [stocks, cryptocurrencies, gold, activeIndex, showAllItems]);
 
-  if (isLoading)
+  if (isLoading) {
     return <div className="text-center py-4">Loading details...</div>;
-  if (error)
+  }
+  if (error) {
     return (
       <div className="text-center py-4 text-red-500">
         Error loading details: {error}
       </div>
     );
-
-  if (!categories || categories.length === 0)
-    return <div className="text-center py-4">No portfolio data available.</div>;
+  }
 
   const itemCount = items.length;
   const isItemLoaded = (index: number) => index < items.length;
-  const loadMoreItems = (_startIndex: number, _stopIndex: number) => {
-    return Promise.resolve();
-  };
+  const loadMoreItems = (_startIndex: number, _stopIndex: number) =>
+    Promise.resolve();
 
-  const Row = ({
+  const Row: React.FC<{ index: number; style: React.CSSProperties }> = ({
     index,
     style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
   }) => {
-    const calculateTotalValue = (price: number, quantity: number) => {
-      return (Number(price) * Number(quantity)).toLocaleString();
-    };
-
     const item = items[index];
+    const totalValue = item.price * (item.amount || item.quantity || 0);
+    const profitRate =
+      typeof item.profitRate === 'string'
+        ? parseFloat(item.profitRate)
+        : item.profitRate;
+
+    let type: 'stock' | 'crypto' | 'gold';
+    let itemId: string | undefined;
+
+    if ('stockCode' in item && item.stockCode) {
+      type = 'stock';
+      itemId = item.stockCode;
+    } else if ('coinCode' in item && item.coinCode) {
+      type = 'crypto';
+      itemId = item.coinCode;
+    } else {
+      type = 'gold';
+    }
+
     return (
       <div style={style} className="flex items-center border-b px-4">
-        {showAllItems && 'categoryName' in item && (
+        {showAllItems && (
           <div className="w-1/4 py-2 text-sm font-medium">
-            {item.categoryName}
+            {type === 'stock' ? '주식' : type === 'crypto' ? '암호화폐' : '금'}
           </div>
         )}
-        <div
-          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 text-base font-semibold`}
+        <DetailLink
+          type={type}
+          itemId={itemId}
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 text-base font-semibold hover:text-blue-600`}
         >
           {item.name}
+        </DetailLink>
+        <div
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-right`}
+        >
+          {totalValue.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원
         </div>
         <div
-          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-center`}
+          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-right ${profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
         >
-          {calculateTotalValue(item.price, item.quantity)}원
-        </div>
-        <div
-          className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-center ${item.profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
-        >
-          {(item.profitRate * 100).toFixed(1)}%{' '}
-          {item.profitRate >= 0 ? '▲' : '▼'}
+          {profitRate.toFixed(2)}%
         </div>
       </div>
     );
   };
 
   return (
-    <div className="bg-gray-100 relative h-full pt-6 pb-24">
-      {/* 얇은 녹색 막대 */}
-      <div className="w-11/12 mx-auto h-4 bg-customDarkGreen absolute top-2 left-0 right-0"></div>
-
-      {/* 흰색 박스와 회색 원들을 포함하는 컨테이너 */}
-      <div className="absolute top-4 left-0 right-0 bottom-24 mx-auto w-10/12">
-        {/* 흰색 박스 */}
+    <div className="bg-gray-100 relative h-full pt-6 pb-24 font-suite">
+      <div className="w-11/12 mx-auto h-5 bg-customDarkGreen absolute top-2 left-0 right-0"></div>
+      <div className="absolute top-5 left-0 right-0 bottom-24 mx-auto w-10/12">
         <div
           ref={containerRef}
           className="bg-white overflow-hidden relative"
@@ -95,16 +126,21 @@ const PortfolioDetails: React.FC = () => {
           <h2 className="text-xl font-bold pt-4 mb-1 px-4">
             {showAllItems
               ? '전체'
-              : categories[activeIndex!]?.name || '포트폴리오'}
+              : ['주식', '암호화폐', '금'][activeIndex ?? 0]}
           </h2>
-          {/* 안쪽만 스크롤 */}
           <div className="h-full pt-4 pb-10 overflow-y-auto">
             <InfiniteLoader
               isItemLoaded={isItemLoaded}
               itemCount={itemCount}
               loadMoreItems={loadMoreItems}
             >
-              {({ onItemsRendered, ref }: any) => (
+              {({
+                onItemsRendered,
+                ref,
+              }: {
+                onItemsRendered: any;
+                ref: any;
+              }) => (
                 <List
                   height={
                     containerRef.current
@@ -122,8 +158,6 @@ const PortfolioDetails: React.FC = () => {
               )}
             </InfiniteLoader>
           </div>
-
-          {/* 회색 원 8개 */}
           <div
             className="absolute bottom-0 left-0 right-0 px-3"
             style={{ transform: 'translateY(50%)' }}

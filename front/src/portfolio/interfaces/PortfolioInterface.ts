@@ -1,27 +1,42 @@
-export interface AssetItem {
+export interface StockItem {
+  stockCode: string;
+  name: string;
+  amount: number;
+  price: number;
+  profitRate: number;
+}
+
+export interface CryptoItem {
+  coinCode: string;
+  name: string;
+  amount: number;
+  price: number;
+  profitRate: number | string; // API에서 "Infinity"를 반환할수도 있어서 string
+}
+
+export interface GoldItem {
   name: string;
   quantity: number;
   price: number;
   profitRate: number;
-  categoryName?: string;
 }
 
-export interface AssetCategory {
-  name: string;
-  totalValue: number;
-  items: AssetItem[];
+export interface PortfolioData {
+  stockPrice: number;
+  cryptoPrice: number;
+  goldPrice: number;
+  totalPrice: number;
+  stocks: StockItem[];
+  cryptocurrencies: CryptoItem[];
+  gold: GoldItem[];
 }
 
-export interface PortfolioState {
-  categories: AssetCategory[];
-  totalValue: number;
-  totalProfit: number;
-  totalProfitRate: number;
+export interface PortfolioState extends PortfolioData {
   activeIndex: number | undefined;
   showAllItems: boolean;
-  setShowAllItems: (show: boolean) => void;
   isLoading: boolean;
   error: string | null;
+  setShowAllItems: (show: boolean) => void;
   setActiveIndex: (index: number | undefined) => void;
   fetchPortfolioData: () => Promise<void>;
 }

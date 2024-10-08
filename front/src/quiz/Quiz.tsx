@@ -24,24 +24,26 @@ const ResultModal: React.FC<ModalProps> = ({
   onClose,
 }) => (
   <div className="fixed inset-0 bg-gray-600 bg-opacity-40 overflow-y-auto h-full w-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
-    <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md h-3/5">
+    <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md min-h-0">
       <div className="flex items-center justify-center mb-4">
         <img
           src={result ? OImg : XImg}
           alt={result ? 'Correct' : 'Incorrect'}
         />
       </div>
-      <p className="text-3xl font-semibold mb-4">
+      <p className="text-3xl font-bold mb-4">
         {result ? '정답입니다!' : '틀렸습니다.'}
       </p>
       <p
         className="text-xl text-gray-600 mb-6"
         dangerouslySetInnerHTML={{ __html: description }}
       ></p>
-      <p>{result ? `${reward}원을 획득했어요!` : '다음에는 맞춰봐요!'}</p>
+      <p className="text-lg font-semibold">
+        {result ? `${reward}원을 획득했어요!` : '다음에는 맞춰봐요!'}
+      </p>
       <button
         onClick={onClose}
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="mt-4 bg-customAqua text-white font-bold py-2 px-4 rounded"
       >
         확인
       </button>

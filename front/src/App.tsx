@@ -22,6 +22,7 @@ import CryptoDetailPage from './investment/crypto/pages/CryptoDetailPage';
 import MyPortfolio from './portfolio/pages/MyPortfolio';
 import AutoInvestment from './portfolio/pages/AutoInvestment';
 import Quiz from './quiz/Quiz';
+import FlowQuiz from './quiz/FlowQuiz';
 import LandingPage from './member/pages/LandingPage';
 import MyPage from './member/pages/MyPage';
 import FavoritePage from './member/pages/FavoritePage';
@@ -72,6 +73,7 @@ const App: React.FC = () => {
             <Route path="/myportfolio" element={<MyPortfolio />} />
             <Route path="/auto-invest" element={<AutoInvestment />} />
             <Route path="/quiz" element={<Quiz />} />
+            <Route path="/flow-quiz" element={<FlowQuiz />} />
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/favorite" element={<FavoritePage />} />
             <Route path="/stock-favorites" element={<StockFavoritesPage />} />
@@ -84,7 +86,6 @@ const App: React.FC = () => {
   );
 };
 
-// Navbar를 포함하는 새로운 컴포넌트
 const NavbarWrapper: React.FC = () => {
   return (
     <>

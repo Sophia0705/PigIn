@@ -1,39 +1,29 @@
 import { create } from 'zustand';
 import { fetchPortfolioData } from '../api/portfolio/portfolio';
-import {
-  AssetCategory,
-  PortfolioState,
-} from '../portfolio/interfaces/PortfolioInterface';
+import { PortfolioState } from '../portfolio/interfaces/PortfolioInterface';
 
 export const usePortfolioStore = create<PortfolioState>((set) => ({
-  categories: [],
-  totalValue: 0,
-  totalProfit: 0,
-  totalProfitRate: 0,
-  activeIndex: undefined,
+  stockPrice: 0,
+  cryptoPrice: 0,
+  goldPrice: 0,
+  totalPrice: 0,
+  stocks: [],
+  cryptocurrencies: [],
+  gold: [],
+  activeIndex: 0,
   showAllItems: false,
-  setShowAllItems: (show) => set({ showAllItems: show }),
   isLoading: false,
   error: null,
+
+  setShowAllItems: (show) => set({ showAllItems: show }),
   setActiveIndex: (index) => set({ activeIndex: index }),
+
   fetchPortfolioData: async () => {
     set({ isLoading: true, error: null });
     try {
       const data = await fetchPortfolioData();
-
-      const newCategories: AssetCategory[] = [
-        { name: '주식', totalValue: data.stockPrice, items: data.stocks },
-        { name: '금', totalValue: data.goldPrice, items: data.gold },
-        {
-          name: '가상화폐',
-          totalValue: data.cryptoPrice,
-          items: data.cryptocurrencies,
-        },
-      ];
-
       set({
-        categories: newCategories,
-        totalValue: data.totalPrice,
+        ...data,
         isLoading: false,
       });
     } catch (error) {

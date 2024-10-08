@@ -1,37 +1,49 @@
 import { create } from 'zustand';
 
-type Allocation = {
-  symbol: string;
-  percentage: number;
+type Stock = {
+  stockCode: string;
+  stockName: string;
+  percent: number;
 };
 
-type Allocations = {
-  [key: string]: Allocation[];
+type Coin = {
+  coinCode: string;
+  coinName: string;
+  percent: number;
+};
+
+type Gold = {
+  gold: string;
+  goldName: string;
+  percent: number;
 };
 
 type AutoInvestmentState = {
+  isEnabled: boolean;
   investmentAmount: number;
-  allocations: Allocations;
-  activeCategory: string;
-  isAutoInvestmentEnabled: boolean;
+  stocks: Stock[];
+  coins: Coin[];
+  golds: Gold[];
+  activeCategory: 'stocks' | 'coins' | 'golds';
+  setIsEnabled: (isEnabled: boolean) => void;
   setInvestmentAmount: (amount: number) => void;
-  setAllocations: (newAllocations: Allocations) => void;
-  setActiveCategory: (category: string) => void;
-  setIsAutoInvestmentEnabled: (isEnabled: boolean) => void;
+  setStocks: (stocks: Stock[]) => void;
+  setCoins: (coins: Coin[]) => void;
+  setGolds: (golds: Gold[]) => void;
+  setActiveCategory: (category: 'stocks' | 'coins' | 'golds') => void;
 };
 
 export const useAutoInvestmentStore = create<AutoInvestmentState>((set) => ({
+  isEnabled: false,
   investmentAmount: 0,
-  allocations: {
-    주식: [{ symbol: 'AAPL', percentage: 50 }],
-    가상화폐: [],
-    금: [],
-  },
-  activeCategory: '주식',
-  isAutoInvestmentEnabled: false,
+  stocks: [],
+  coins: [],
+  golds: [],
+  activeCategory: 'stocks',
+  setIsEnabled: (isEnabled) => set({ isEnabled }),
   setInvestmentAmount: (amount) => set({ investmentAmount: amount }),
-  setAllocations: (newAllocations) => set({ allocations: newAllocations }),
+  setStocks: (stocks) => set({ stocks }),
+  setCoins: (coins) => set({ coins }),
+  setGolds: (golds) => set({ golds }),
   setActiveCategory: (category) => set({ activeCategory: category }),
-  setIsAutoInvestmentEnabled: (isEnabled) =>
-    set({ isAutoInvestmentEnabled: isEnabled }),
 }));
