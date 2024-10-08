@@ -179,6 +179,12 @@ public class CoinController {
         return ResponseEntity.ok().body(makeResult("result", coinService.isAutoFunding(userId, coinCode)));
     }
 
+    @GetMapping("/{coinCode}/live")
+    public ResponseEntity<?> findCoinNow(@PathVariable String coinCode) {
+        FindCoinNowResponse response = coinService.findLiveStock(coinCode);
+        return ResponseEntity.ok().body(response);
+    }
+
     private Map<String, Boolean> makeResult(String key, Boolean value) {
         Map<String, Boolean> result = new HashMap<>();
         result.put(key, value);

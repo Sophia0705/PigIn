@@ -5,6 +5,7 @@ import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
 import com.ssafy.c203.domain.coin.dto.SecuritiesCoinTrade;
+import com.ssafy.c203.domain.coin.dto.response.FindCoinNowResponse;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.*;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -405,7 +407,30 @@ public class CoinServiceImpl implements CoinService {
                 .map(CoinAutoSetting::new)
                 .toList();
     }
+    
+    @Override
+    public FindCoinNowResponse findLiveStock(String coinCode) {
+        MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
+                .orElse(null);
 
+        FindCoinNowResponse findCoinNowResponse = new FindCoinNowResponse();
+        findCoinNowResponse.setLive(false);
+
+        if (coinMinute != null) {
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime coinDateTime = LocalDateTime.of(coinMinute.getDate(), coinMinute.getTime());
+
+            Duration duration = Duration.between(coinDateTime, currentDateTime);
+
+            // 3분 이내인 경우에만 true
+            if (duration.getSeconds() <= 180) {
+                findCoinNowResponse.setLive(true);
+            }
+
+            findCoinNowResponse.setData(new FindCoinResponse(coinMinute, coinItemRepository.findById(coinCode).get().getName()));
+        }
+        return findCoinNowResponse;
+    }
     // 출금
     public boolean withdraw(Long userId, Long price) {
         return accountService.withdrawAccount(userId, price);
