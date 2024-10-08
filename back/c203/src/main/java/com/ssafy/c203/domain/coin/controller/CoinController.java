@@ -185,6 +185,11 @@ public class CoinController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/rank")
+    public ResponseEntity<?> getCoinRank(){
+        return ResponseEntity.ok(coinService.getCoinRank());
+    }
+
     private Map<String, Boolean> makeResult(String key, Boolean value) {
         Map<String, Boolean> result = new HashMap<>();
         result.put(key, value);

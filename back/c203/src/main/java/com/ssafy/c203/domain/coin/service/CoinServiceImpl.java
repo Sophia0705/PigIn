@@ -428,6 +428,12 @@ public class CoinServiceImpl implements CoinService {
         }
         return findCoinNowResponse;
     }
+
+    @Override
+    public List<CoinRankDto> getCoinRank() {
+        return coinPortfolioRepository.getCoinRankDto();
+    }
+
     // 출금
     public boolean withdraw(Long userId, Long price) {
         return accountService.withdrawAccount(userId, price);

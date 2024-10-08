@@ -10,6 +10,7 @@ import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
 import com.ssafy.c203.domain.stock.dto.response.FindStockChartAllResponse;
 import com.ssafy.c203.domain.stock.dto.response.FindStockNowResponse;
 import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
+import com.ssafy.c203.domain.stock.dto.response.StockRankDto;
 import com.ssafy.c203.domain.stock.entity.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
@@ -396,6 +397,11 @@ public class StockServiceImpl implements StockService {
             }
         }
         return findStockNowResponse;
+    }
+
+    @Override
+    public List<StockRankDto> getStockRank() {
+        return stockPortfolioRepository.findTop5ByStockItemIdGroupByAmount();
     }
 
     // 해당 주식 판매 여부 검증
