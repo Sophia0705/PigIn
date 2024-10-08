@@ -1,14 +1,11 @@
 package com.ssafy.c203.domain.coin.service;
 
 import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinNowResponse;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
+import com.ssafy.c203.domain.coin.dto.response.*;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
 import com.ssafy.c203.domain.coin.entity.CoinPortfolio;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 
 import java.util.List;

@@ -3,10 +3,8 @@ package com.ssafy.c203.domain.coin.service;
 import com.ssafy.c203.common.entity.TradeMethod;
 import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinAllResponse;
+import com.ssafy.c203.domain.coin.dto.response.*;
 import com.ssafy.c203.domain.coin.dto.SecuritiesCoinTrade;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinNowResponse;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinResponse;
 import com.ssafy.c203.domain.coin.entity.*;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinHistory;
 import com.ssafy.c203.domain.coin.entity.mongo.MongoCoinMinute;
@@ -15,7 +13,6 @@ import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinHistoryRepository;
 import com.ssafy.c203.domain.coin.repository.mongo.MongoCoinMinuteRepository;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
-import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -407,7 +404,7 @@ public class CoinServiceImpl implements CoinService {
                 .map(CoinAutoSetting::new)
                 .toList();
     }
-    
+
     @Override
     public FindCoinNowResponse findLiveStock(String coinCode) {
         MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(coinCode)
@@ -427,7 +424,7 @@ public class CoinServiceImpl implements CoinService {
                 findCoinNowResponse.setLive(true);
             }
 
-            findCoinNowResponse.setData(new FindCoinResponse(coinMinute, coinItemRepository.findById(coinCode).get().getName()));
+            findCoinNowResponse.setData(new FindCoinChartAllResponse(coinMinute));
         }
         return findCoinNowResponse;
     }
