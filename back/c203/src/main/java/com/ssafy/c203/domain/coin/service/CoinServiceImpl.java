@@ -196,7 +196,7 @@ public class CoinServiceImpl implements CoinService {
     }
 
     @Override
-    public void sellCoin(Long userId, String coinCode, Double price) {
+    public void sellCoin(Long userId, String coinCode, Double amount) {
         // 1. 입력 확인
 //        log.info("coinsell = {}, {}", userId, coinCode);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
@@ -207,7 +207,7 @@ public class CoinServiceImpl implements CoinService {
                 coinCode)
             .orElseThrow();
 
-        Double amount = price / mongoCoinMinute.getClose();
+//        Double amount = price / mongoCoinMinute.getClose();
 
         CoinPortfolio coinPortfolio = valiateCoinPortfolio(coinItem, member, amount);
 
