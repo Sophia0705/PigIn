@@ -1,5 +1,6 @@
 package com.ssafy.securities.stock.entity;
 
+import com.ssafy.securities.stock.dto.KospiHistoryDTO;
 import com.ssafy.securities.stock.dto.apiResponse.StockDataDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,18 @@ public class StockHistory {
         this.low = String.valueOf(dto.getStockLowPrice());
         this.close = String.valueOf(dto.getStockClosingPrice());
         this.volume = String.valueOf(dto.getAccumulatedVolume());
+    }
+
+    public StockHistory(KospiHistoryDTO dto) {
+
+        this.stockCode = "0001";
+        this.date = dto.getTradingDate();
+        this.close = dto.getClosingPrice().toString();
+        this.open = dto.getOpeningPrice().toString();
+        this.high = dto.getHighPrice().toString();
+        this.low = dto.getLowPrice().toString();
+        this.volume = dto.getAccumulatedVolume().toString();
+        this.interval = "D";
     }
 
 }
