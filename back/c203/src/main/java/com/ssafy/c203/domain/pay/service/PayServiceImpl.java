@@ -25,10 +25,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PayServiceImpl implements PayService {
 
     private final MembersRepository membersRepository;
@@ -64,10 +66,11 @@ public class PayServiceImpl implements PayService {
         }
 
         mmsService.sendMMS(getMessage(member.getName(), memberAccount.getBank(), memberAccount.getAccountNo()), member.getPhoneNumber());
-
+        log.info("문자 발송 후");
         //투자 계좌 입금하기
-        int money = PRICE * (savingRate / 100);
+        int money = PRICE * savingRate / 100;
         Boolean isSaving = accountService.depositAccount(userId, Long.valueOf(money));
+        log.info("isSaving = " + isSaving);
         if (!isSaving) {
             throw new DepositErrorException();
         }
@@ -90,7 +93,7 @@ public class PayServiceImpl implements PayService {
             String stockId = stock.getStockItem().getId();
             int stockRate = stock.getRate();
 
-            int stockMoney = memberSavingAmount * (stockRate / 100);
+            int stockMoney = memberSavingAmount * stockRate / 100;
 
             stockService.buyStock(member.getId(), stockId, (long) stockMoney, false);
         }
@@ -103,7 +106,7 @@ public class PayServiceImpl implements PayService {
             String coinName = coin.getCoinItem().getName();
             int coinRate = coin.getRate();
 
-            int coinMoney = memberSavingAmount * (coinRate / 100);
+            int coinMoney = memberSavingAmount * coinRate / 100;
 
             coinService.buyCoin(member.getId(), coinName, (double) coinMoney);
         }
@@ -115,7 +118,7 @@ public class PayServiceImpl implements PayService {
             GoldAutoFunding goldAutoFunding = ogf.get();
             int goldRate = goldAutoFunding.getRate();
 
-            int goldPrice = memberSavingAmount * (goldRate / 100);
+            int goldPrice = memberSavingAmount * goldRate / 100;
             goldService.goldTradeRequest(GoldTradeDto
                 .builder()
                 .method("BUY")
