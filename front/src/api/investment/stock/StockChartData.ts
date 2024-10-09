@@ -103,3 +103,22 @@ export const getUpdatedLiveStockData = async (
     throw error;
   }
 };
+
+export const getKospiChartData = async (
+  count: 20
+): Promise<StockLiveData[]> => {
+  try {
+    const response = await axiosInstance.get<StockLiveData[]>(
+      `/api/stock/0001/chart/day`,
+      { params: { count } }
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error('axios의 오류임:', error.response?.data);
+    } else {
+      console.error('axios 오류 아님:', error);
+    }
+    throw new Error('다시 해라');
+  }
+};

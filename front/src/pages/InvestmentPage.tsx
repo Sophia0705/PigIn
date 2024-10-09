@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import InvestMainHeader from '../investment/components/InvestMainHeader';
 import InvestmentCard from '../investment/components/InvestmentCard';
-import KospiData from '../data/KospiData.json';
+import { getKospiChartData } from '../api/investment/stock/StockChartData';
 import { getWeeklyCryptoChartData } from '../api/investment/crypto/CryptoChartData';
 import { getWeeklyGoldChartData } from '../api/investment/gold/GoldChartData';
 import { GoldChartDataResponse } from '../investment/interfaces/GoldInterface';
@@ -22,12 +22,30 @@ const getCurrentValue = (data: { name: string; value: number }[]) => {
 };
 
 const InvestmentPage: React.FC = () => {
+  const [kospiData, setKospiData] = useState<{ name: string; value: number }[]>(
+    []
+  );
   const [btcData, setBtcData] = useState<{ name: string; value: number }[]>([]);
   const [goldWeeklyData, setGoldWeeklyData] = useState<
     { name: string; value: number }[]
   >([]);
 
   useEffect(() => {
+    const fetchKospiData = async () => {
+      try {
+        const apiData = await getKospiChartData(20);
+        const formattedData = apiData
+          .map((item) => ({
+            name: item.stck_bsop_date,
+            value: parseFloat(item.stck_clpr),
+          }))
+          .reverse();
+        setKospiData(formattedData);
+      } catch (error) {
+        console.error('KOSPI 데이터 가져오는 중 에러 발생:', error);
+      }
+    };
+
     const fetchBTCData = async () => {
       try {
         const weeklyData = await getWeeklyCryptoChartData('KRW-BTC', 'day');
@@ -60,17 +78,18 @@ const InvestmentPage: React.FC = () => {
       }
     };
 
+    fetchKospiData();
     fetchBTCData();
     fetchGoldData();
   }, []);
 
-  const kospiPercentageChange = calculatePercentageChange(KospiData);
+  const kospiPercentageChange = calculatePercentageChange(kospiData);
   const goldPercentageChange = calculatePercentageChange(goldWeeklyData);
   const btcPercentageChange = btcData.length
     ? calculatePercentageChange(btcData)
     : '0.00%';
 
-  const kospiCurrentValue = getCurrentValue(KospiData);
+  const kospiCurrentValue = getCurrentValue(kospiData);
   const goldCurrentValue = getCurrentValue(goldWeeklyData);
   const btcCurrentValue = btcData.length ? getCurrentValue(btcData) : '0';
 
@@ -85,7 +104,7 @@ const InvestmentPage: React.FC = () => {
           value={kospiCurrentValue}
           percentageChange={kospiPercentageChange}
           headerColor="bg-customAqua"
-          data={KospiData}
+          data={kospiData}
         />
 
         {/* 가상화폐 */}

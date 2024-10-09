@@ -1,12 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import DetailHeader from '../../components/DetailHeader';
 import DetailPageGraph from '../../components/DetailPageGraph';
-import KospiData from '../../../data/KospiData.json';
+import { getKospiChartData } from '../../../api/investment/stock/StockChartData';
 import StockItemsContainer from '../components/StockItemsContainer';
 
 const StockMainPage: React.FC = () => {
-  const latestValue = KospiData[KospiData.length - 1].value;
-  const previousValue = KospiData[KospiData.length - 2]?.value || 0;
+  const [kospiData, setKospiData] = useState<{ name: string; value: number }[]>(
+    []
+  );
+
+  useEffect(() => {
+    const fetchKospiData = async () => {
+      try {
+        const apiData = await getKospiChartData(20);
+        console.log(apiData);
+        const formattedData = apiData
+          .map((item) => ({
+            name: item.stck_bsop_date,
+            value: parseFloat(item.stck_clpr),
+          }))
+          .reverse();
+        setKospiData(formattedData);
+      } catch (error) {
+        console.error('KOSPI 데이터 가져오는 중 에러 발생:', error);
+      }
+    };
+
+    fetchKospiData();
+  }, []);
+
+  const latestValue =
+    kospiData.length > 0 ? kospiData[kospiData.length - 1].value : 0;
+  const previousValue =
+    kospiData.length > 1 ? kospiData[kospiData.length - 2].value : 0;
+
   const percentageChange = (
     ((latestValue - previousValue) / previousValue) *
     100
@@ -23,7 +50,7 @@ const StockMainPage: React.FC = () => {
       <div className="p-4 w-full max-w-md">
         {/* 그래프 */}
         <DetailPageGraph
-          data={KospiData}
+          data={kospiData}
           subject="KOSPI"
           value={latestValue.toString()}
           percentageChange={formattedPercentageChange}
