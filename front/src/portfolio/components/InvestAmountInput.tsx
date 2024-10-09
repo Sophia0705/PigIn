@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Edit } from 'lucide-react';
-import { fetchInvestmentAccountInfo } from '../../api/portfolio/autoInvestment';
+import { fetchInvestmentAccountInfo } from '../../api/member/accountAPI';
 
 interface InvestmentAmountInputProps {
   localInvestmentAmount: string;
