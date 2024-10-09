@@ -2,12 +2,14 @@ import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchInvestmentAccountInfo } from '../api/member/accountAPI';
 import { fetchPortfolioData } from '../api/portfolio/portfolio';
+import { useMemberStore } from '../store/memberStore';
 import QuizCard from '../components/QuizCard';
 import InvestmentInfoCard from '../components/InvestmentInfoCard';
 import Top5Lists from '../components/Top5Lists';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, checkLoginStatus } = useMemberStore();
   const [portfolioData, setPortfolioData] = useState({
     stockPrice: 0,
     cryptoPrice: 0,
@@ -23,7 +25,16 @@ const MainPage: React.FC = () => {
   };
 
   useEffect(() => {
+    checkLoginStatus();
+  }, [checkLoginStatus]);
+
+  useEffect(() => {
     const fetchData = async () => {
+      if (!isLoggedIn) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const [accountInfo, portfolioInfo] = await Promise.all([
           fetchInvestmentAccountInfo(),
@@ -40,9 +51,16 @@ const MainPage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isLoggedIn]);
 
   const categories = useMemo(() => {
+    if (!isLoggedIn) {
+      return [
+        { name: '주식', value: 33.3333 },
+        { name: '암호화폐', value: 33.3333 },
+        { name: '금', value: 33.3333 },
+      ];
+    }
     const { stockPrice, cryptoPrice, goldPrice } = portfolioData;
     const data = [
       { name: '주식', value: stockPrice },
@@ -50,25 +68,22 @@ const MainPage: React.FC = () => {
       { name: '금', value: goldPrice },
     ];
     return data.filter((item) => item.value > 0);
-  }, [portfolioData]);
+  }, [isLoggedIn, portfolioData]);
 
   if (isLoading) return <div>로딩중...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="min-h-screen p-6 font-gmarket-sans">
-      <QuizCard />
-      {totalAsset > 0 ? (
-        <InvestmentInfoCard
-          subject="내 투자"
-          categories={categories}
-          totalAsset={totalAsset}
-          portfolioTotal={portfolioData.totalPrice}
-          onAuthSuccess={handleAuthSuccess}
-        />
-      ) : (
-        <div>투자를 시작해보세요!</div>
-      )}
+      <QuizCard isLoggedIn={isLoggedIn} />
+      <InvestmentInfoCard
+        subject="내 투자"
+        categories={categories}
+        totalAsset={isLoggedIn ? totalAsset : 0}
+        portfolioTotal={isLoggedIn ? portfolioData.totalPrice : 100}
+        onAuthSuccess={handleAuthSuccess}
+        isLoggedIn={isLoggedIn}
+      />
       <Top5Lists />
     </div>
   );

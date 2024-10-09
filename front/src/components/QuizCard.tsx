@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, Smile } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
-const QuizCard = () => {
+interface QuizCardProps {
+  isLoggedIn: boolean;
+}
+
+const QuizCard: React.FC<QuizCardProps> = ({ isLoggedIn }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -20,12 +24,23 @@ const QuizCard = () => {
       </div>
       {isOpen && (
         <div className="bg-white text-black p-4">
-          <NavLink to="/quiz">
-            <h3 className="text-black font-semibold mb-2">금융 상식 퀴즈</h3>
-          </NavLink>
-          <NavLink to="/flow-quiz">
-            <h3>주가 Up Down?!</h3>
-          </NavLink>
+          {isLoggedIn ? (
+            <>
+              <NavLink to="/quiz">
+                <h3 className="text-black font-semibold mb-2">
+                  금융 상식 퀴즈
+                </h3>
+              </NavLink>
+              <NavLink to="/flow-quiz">
+                <h3>주가 Up Down?!</h3>
+              </NavLink>
+            </>
+          ) : (
+            <div className="flex items-center">
+              <p>로그인 하고 퀴즈를 풀어보세요</p>
+              <Smile size={30} color="pink" className="ml-2" />
+            </div>
+          )}
         </div>
       )}
     </div>

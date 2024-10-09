@@ -24,7 +24,6 @@ export const fetchTopCryptos = async () => {
   }
 };
 
-// Top5Lists 컴포넌트
 interface TopItemProps {
   id: string;
   name: string;
@@ -115,10 +114,11 @@ const Top5Lists: React.FC = () => {
 
   return (
     <div>
-      <div className="flex gap-1 p-2">
-        <ThumbsUp size={24} color="#FFD700" />
+      <div className="flex item-center gap-2 p-2">
+        <ThumbsUp size={45} color="#FFD700" className="ml-2" />
         <p className="text-white text-xl font-semibold pl-4">
-          이용자들이 많이 찜한 Top5 종목
+          이용자들이 <br />
+          많이 찜한 Top5 종목
         </p>
       </div>
 

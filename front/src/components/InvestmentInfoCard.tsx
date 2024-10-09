@@ -36,13 +36,16 @@ interface InvestmentInfoCardProps {
   totalAsset: number;
   portfolioTotal: number;
   onAuthSuccess: (path: string) => void;
+  isLoggedIn: boolean;
 }
+
 const InvestmentInfoCard: React.FC<InvestmentInfoCardProps> = ({
   subject,
   categories,
   totalAsset,
   portfolioTotal,
   onAuthSuccess,
+  isLoggedIn,
 }) => {
   return (
     <div className="bg-blue-600 text-white pt-2 rounded-xl mb-4">
@@ -56,10 +59,18 @@ const InvestmentInfoCard: React.FC<InvestmentInfoCardProps> = ({
         </AuthGuardClickable>
       </div>
       <div className="bg-white text-black p-4 rounded-xl mb-4">
-        <p className="text-xl text-right font-bold mb-4">
-          총 자산: {totalAsset.toLocaleString()}원
-        </p>
-        <hr />
+        {isLoggedIn ? (
+          <>
+            <p className="text-xl text-right font-bold mb-4">
+              총 자산: {totalAsset.toLocaleString()}원
+            </p>
+            <hr />
+          </>
+        ) : (
+          <p className="text-xl text-center font-bold mb-4">
+            PigIn과 함께 투자를 시작해보세요!
+          </p>
+        )}
         <div className="pt-2 flex justify-between items-center">
           <div className="w-1/2">
             <ResponsiveContainer width="100%" height={170}>
@@ -80,10 +91,12 @@ const InvestmentInfoCard: React.FC<InvestmentInfoCardProps> = ({
                       fill={COLORS[index % COLORS.length]}
                     />
                   ))}
-                  <Label
-                    content={<CustomLabel totalPrice={portfolioTotal} />}
-                    position="center"
-                  />
+                  {isLoggedIn && (
+                    <Label
+                      content={<CustomLabel totalPrice={portfolioTotal} />}
+                      position="center"
+                    />
+                  )}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
@@ -104,9 +117,11 @@ const InvestmentInfoCard: React.FC<InvestmentInfoCardProps> = ({
                   <span>
                     {((category.value / portfolioTotal) * 100).toFixed(1)}%{' '}
                   </span>
-                  <span className="ml-2">
-                    ({category.value.toLocaleString()}원)
-                  </span>
+                  {isLoggedIn && (
+                    <span className="ml-2">
+                      ({category.value.toLocaleString()}원)
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
