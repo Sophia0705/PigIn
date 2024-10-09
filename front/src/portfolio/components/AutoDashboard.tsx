@@ -47,7 +47,9 @@ const AutoDashboard: React.FC = () => {
   );
 
   if (chartData.length === 0) {
-    return <div>Loading...</div>;
+    return (
+      <div className="text-center text-white">투자 금액을 설정해주세요!</div>
+    );
   }
 
   return (

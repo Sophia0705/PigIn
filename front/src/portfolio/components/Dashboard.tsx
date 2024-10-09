@@ -11,12 +11,12 @@ interface CustomLabelProps {
   onClick: () => void;
 }
 
-const CustomLabel: React.FC<CustomLabelProps> = ({
+const CustomLabel = ({
   viewBox = { cx: 0, cy: 0 },
   totalPrice,
   totalProfitRate,
   onClick,
-}) => {
+}: CustomLabelProps) => {
   const { cx, cy } = viewBox;
   return (
     <g onClick={onClick} style={{ cursor: 'pointer' }}>
@@ -42,7 +42,7 @@ const CustomLabel: React.FC<CustomLabelProps> = ({
   );
 };
 
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   const {
     stockPrice,
     cryptoPrice,
@@ -67,25 +67,23 @@ const Dashboard: React.FC = () => {
     [stockPrice, cryptoPrice, goldPrice]
   );
 
-  const { totalProfit, totalProfitRate } = useMemo(() => {
+  const { totalProfitRate } = useMemo(() => {
     const allItems = [...stocks, ...cryptocurrencies, ...gold];
     let validItemsProfit = 0;
     let validItemsInitialValue = 0;
 
     allItems.forEach((item) => {
-      if (isFinite(item.profitRate) && item.profitRate !== 0) {
-        const profit = item.price * (item.profitRate / 100);
-        const initialValue = item.price / (1 + item.profitRate / 100);
+      if (isFinite(Number(item.profitRate)) && Number(item.profitRate) !== 0) {
+        const profit = item.price * (Number(item.profitRate) / 100);
+        const initialValue = item.price / (1 + Number(item.profitRate) / 100);
         validItemsProfit += profit;
         validItemsInitialValue += initialValue;
       }
     });
 
-    const totalProfit = validItemsProfit;
     const totalProfitRate = (validItemsProfit / validItemsInitialValue) * 100;
 
     return {
-      totalProfit,
       totalProfitRate: isFinite(totalProfitRate) ? totalProfitRate : 0,
     };
   }, [stocks, cryptocurrencies, gold]);
@@ -101,10 +99,10 @@ const Dashboard: React.FC = () => {
   return (
     <div className="bg-white h-full rounded-2xl p-4">
       <h2 className="text-3xl font-bold font-rix-reg mb-2">My Portfolio</h2>
-      <p className="text-base text-gray-500 font-suite mb-1">
+      <p className="text-base text-gray-500 font-gmarket-sans mb-1">
         투자 항목을 보고싶으면 그래프를 눌러주세요.
       </p>
-      <div className="flex justify-between items-center font-suite">
+      <div className="flex justify-between items-center font-gmarket-sans">
         <div className="w-1/2">
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
@@ -134,7 +132,6 @@ const Dashboard: React.FC = () => {
                   content={
                     <CustomLabel
                       totalPrice={totalPrice}
-                      totalProfit={totalProfit}
                       totalProfitRate={totalProfitRate}
                       onClick={handleCenterClick}
                     />

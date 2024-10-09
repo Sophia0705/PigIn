@@ -95,7 +95,7 @@ const AutoInvestment: React.FC = () => {
   };
 
   return (
-    <div className="bg-customDarkGreen h-screen flex flex-col overflow-hidden">
+    <div className="bg-customDarkGreen h-screen flex flex-col overflow-hidden font-gmarket-sans">
       <div className="flex justify-between items-center p-3">
         <button
           onClick={() => nav(-1)}
