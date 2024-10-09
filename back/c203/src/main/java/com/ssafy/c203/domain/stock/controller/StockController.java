@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.stock.controller;
 
+import com.ssafy.c203.common.exception.ExceptionService;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
@@ -32,6 +33,7 @@ public class StockController {
 
     private final StockService stockService;
     private final StockEmitterService stockEmitterService;
+    private final ExceptionService exceptionService;
 
     @GetMapping
     public ResponseEntity<?> findAllStock() {
@@ -87,7 +89,8 @@ public class StockController {
 
     @PostMapping("/{stockId}/sell")
     public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-//        log.info("request = {}", request);
+        exceptionService.UserIdException(customUserDetails);
+        //        log.info("request = {}", request);
         if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount(), false)) {
             return ResponseEntity.ok().body("success");
         }
@@ -96,6 +99,7 @@ public class StockController {
 
     @PostMapping("/{stockId}/buy")
     public ResponseEntity<?> buyStock(@RequestBody StockBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
 //        log.info("request = {}", request);
         if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice(), false)) {
             log.info("구매 성공");
@@ -106,6 +110,7 @@ public class StockController {
 
     @GetMapping("/{stockId}/quantity")
     public ResponseEntity<?> findStockQuantity(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
 //        log.info("findStockQuantity: stockId = {}", stockId);
         StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);
 //        log.info("portfolio = {} : {}", portfolio.getStockItem().getName(), portfolio.getPriceAvg());
@@ -118,6 +123,7 @@ public class StockController {
 
     @GetMapping("/my-stocks")
     public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
 //        log.info("findMyStocks: userId = {}", userId);
         List<FindStockPortfolioResponse> stocks = stockService.findStockPortfolio(userId);
@@ -131,6 +137,7 @@ public class StockController {
 
     @PostMapping("{stockId}/favorite")
     public ResponseEntity<?> addFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         stockService.addStockFavorite(userId, stockId);
         return ResponseEntity.ok().body(makeResult("result", true));
@@ -138,6 +145,7 @@ public class StockController {
 
     @GetMapping("{stockId}/favorite")
     public ResponseEntity<?> isFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         Map<String, Boolean> result = new HashMap<>();
         result.put("result", stockService.isStockFavorite(userId, stockId));
@@ -147,6 +155,7 @@ public class StockController {
 
     @DeleteMapping("{stockId}/favorite")
     public ResponseEntity<?> deleteFavoriteStock(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         stockService.deleteStockFavorite(userId, stockId);
         return ResponseEntity.ok().body(makeResult("result", true));
@@ -162,12 +171,14 @@ public class StockController {
 
     @PostMapping("/{stockId}/auto-funding")
     public ResponseEntity<?> addAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         return ResponseEntity.ok().body(makeResult("result", stockService.addAutoFunding(userId, stockId)));
     }
 
     @DeleteMapping("/{stockId}/auto-funding")
     public ResponseEntity<?> deleteAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         stockService.deleteAutoFunding(userId, stockId);
 
@@ -176,12 +187,14 @@ public class StockController {
 
     @GetMapping("/{stockId}/auto-funding")
     public ResponseEntity<?> isAutoFunding(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         return ResponseEntity.ok().body(makeResult("result", stockService.isAutoFunding(userId, stockId)));
     }
 
     @GetMapping("/favorite")
     public ResponseEntity<?> getFavoriteStocks(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestParam Integer count) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
 
         List<MongoStockDetail> stockDetails = stockService.findFavoriteStock(userId);
