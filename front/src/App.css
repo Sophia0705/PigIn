@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-family: theme('fontFamily.gmarket-sans');
+  }
+}
+
 :root {
   --app-width: 100%;
 }
