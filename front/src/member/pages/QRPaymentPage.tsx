@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import QRCode from 'react-qr-code'; // QR 코드 생성 라이브러리
-import { processPaymentAPI } from '../../api/member/processPaymentAPI '; // 결제 API 호출
+import { processPaymentAPI } from '../../api/member/processPaymentAPI'; // 결제 API 호출
 
 const QRPaymentPage = () => {
   const [qrUrl] = useState(`${import.meta.env.VITE_BASE_URL}api/pay`); // 고정된 URL 설정
