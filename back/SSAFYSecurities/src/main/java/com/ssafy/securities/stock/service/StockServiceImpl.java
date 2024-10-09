@@ -1,6 +1,7 @@
 package com.ssafy.securities.stock.service;
 
 import com.ssafy.securities.stock.dto.AccessTokenDTO;
+import com.ssafy.securities.stock.dto.apiResponse.KOSPIAPIResponse;
 import com.ssafy.securities.stock.dto.apiResponse.StockResponse;
 import com.ssafy.securities.stock.dto.apiResponse.StockTradeResponse;
 import com.ssafy.securities.stock.entity.StockDetail;
@@ -23,6 +24,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +38,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class StockServiceImpl implements StockService{
 
     @Value("${koreainvestment.PROD}")
@@ -64,6 +68,7 @@ public class StockServiceImpl implements StockService{
         scheduler.scheduleAtFixedRate(this::getMonthlyBar, 0, 24 * 28, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getWeeklyBar, 0, 24 * 7, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getDailyBar, 0, 24, TimeUnit.HOURS);
+        scheduler.scheduleAtFixedRate(this::getKospiStockData, 0, 24 * 28, TimeUnit.HOURS);
     }
 
     @Override
@@ -206,6 +211,56 @@ public class StockServiceImpl implements StockService{
 
         // 반환
         return new StockTradeResponse(quantity, Double.parseDouble(stockMinute.getClose()));
+    }
+
+    @Override
+    public void getKospiStockData() {
+        String baseUrl = "https://openapi.koreainvestment.com:9443";
+        String apiPath = "/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice";
+
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(3); // 1개월 전 데이터부터 조회
+
+        String url = UriComponentsBuilder
+                .fromHttpUrl(baseUrl)
+                .path(apiPath)
+                .queryParam("fid_cond_mrkt_div_code", "U")
+                .queryParam("fid_input_iscd", "0001")
+                .queryParam("fid_input_date_1", startDate.format(DateTimeFormatter.BASIC_ISO_DATE))
+                .queryParam("fid_input_date_2", endDate.format(DateTimeFormatter.BASIC_ISO_DATE))
+                .queryParam("fid_period_div_code", "D")
+                .build()
+                .toUriString();
+
+//        System.out.println("Request URL: " + url);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("content-type", "application/json");
+        headers.add("appKey", appKey);
+        headers.add("appsecret", appSecret);
+        headers.add("authorization", "Bearer " + accessToken);
+        headers.add("tr_id", "FHKUP03500100");
+        HttpEntity<Object> request = new HttpEntity(headers);
+
+        try {
+            HttpEntity<KOSPIAPIResponse> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    request,
+                    KOSPIAPIResponse.class
+            );
+
+            log.info(response.getBody().toString());
+            List<StockHistory> stockMinutes = response.getBody().getOutput2().stream()
+                    .map(StockHistory::new)
+                    .toList();
+
+            stockHistoryRepository.saveAll(stockMinutes);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
     }
 
 }

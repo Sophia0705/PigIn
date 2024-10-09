@@ -32,9 +32,9 @@ public class MultiCoinDataProcessor {
     }
 
     private void processAndSaveData() {
-        log.info("Processing data... {}", latestDataMap.size());
+//        log.info("Processing data... {}", latestDataMap.size());
         latestDataMap.forEach((coinCode, coinMinuteDTO) -> {
-            log.info("Processing data for coinCode: {}", coinCode);
+//            log.info("Processing data for coinCode: {} = {}", coinCode, coinMinuteDTO);
             coinDataService.saveCoinData(coinMinuteDTO);
         });
         latestDataMap.clear();

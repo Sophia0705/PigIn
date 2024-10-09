@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.coin.controller;
 
+import com.ssafy.c203.common.exception.ExceptionService;
 import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
 import com.ssafy.c203.domain.coin.dto.response.*;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
@@ -35,6 +36,7 @@ public class CoinController {
 
     private final CoinService coinService;
     private final CoinEmitterService coinEmitterService;
+    private final ExceptionService exceptionService;
 
     // 코인 리스트 조회
     @GetMapping()
@@ -84,7 +86,8 @@ public class CoinController {
 
     @PostMapping("/{coinCode}/sell")
     public ResponseEntity<?> sellCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        log.info("request = {}", request);
+//        log.info("request = {}", request);
+        exceptionService.UserIdException(customUserDetails);
         coinService.sellCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getPrice());
         return ResponseEntity.ok().body("success");
 
@@ -92,15 +95,17 @@ public class CoinController {
 
     @PostMapping("/{coinCode}/buy")
     public ResponseEntity<?> buyCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        log.info("request = {}", request);
+//        log.info("request = {}", request);
+        exceptionService.UserIdException(customUserDetails);
         coinService.buyCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getPrice());
         return ResponseEntity.ok().body("success");
     }
 
     @GetMapping("/{coinCode}/quantity")
     public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
-        log.info("userId = {}, coinCode = {}", userId, coinCode);
+//        log.info("userId = {}, coinCode = {}", userId, coinCode);
         CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
         if (portfolio == null) {
             return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, coinService.findCoin(coinCode).getCoinName(),0.0, 0, 0.0));
@@ -111,6 +116,7 @@ public class CoinController {
 
     @GetMapping("/my-coins")
     public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
 //        log.info("findMyCoins: userId = {}", userId);
         List<FindCoinPortfolioResponse> coins = coinService.findCoinPortfolios(userId);
@@ -124,12 +130,14 @@ public class CoinController {
 
     @PostMapping("/{coinCode}/favorite")
     public ResponseEntity<?> addCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
         return ResponseEntity.ok().body(makeResult("result", coinService.addCoinFavorite(userId, coinCode)));
     }
 
     @DeleteMapping("/{coinCode}/favorite")
     public ResponseEntity<?> deleteCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
         coinService.deleteCoinFavorite(userId, coinCode);
 
@@ -138,12 +146,14 @@ public class CoinController {
 
     @GetMapping("/{coinCode}/favorite")
     public ResponseEntity<?> isCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
         return ResponseEntity.ok().body(makeResult("result", coinService.isCoinFavorite(userId, coinCode)));
     }
 
     @GetMapping("/favorite")
     public ResponseEntity<?> findCoinFavorite(@AuthenticationPrincipal CustomUserDetails user, @RequestParam Integer count) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
 
         List<FindCoinAllResponse> response = coinService.findFavoriteCoin(userId).stream()
@@ -162,12 +172,14 @@ public class CoinController {
 
     @PostMapping("/{coinCode}/auto-funding")
     public ResponseEntity<?> addAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
         return ResponseEntity.ok().body(makeResult("result", coinService.addAutoFunding(userId, coinCode)));
     }
 
     @DeleteMapping("/{coinCode}/auto-funding")
     public ResponseEntity<?> deleteAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
         coinService.deleteAutoFunding(userId, coinCode);
         return ResponseEntity.ok().body(makeResult("result", true));
@@ -175,6 +187,7 @@ public class CoinController {
 
     @GetMapping("/{coinCode}/auto-funding")
     public ResponseEntity<?> isAutoFunding(@AuthenticationPrincipal CustomUserDetails user, @PathVariable String coinCode) {
+        exceptionService.UserIdException(user);
         Long userId = user.getUserId();
         return ResponseEntity.ok().body(makeResult("result", coinService.isAutoFunding(userId, coinCode)));
     }

@@ -1,5 +1,9 @@
 package com.ssafy.c203.common.exception;
 
+import com.ssafy.c203.common.exception.exceptions.BadRequestException;
+import com.ssafy.c203.common.exception.exceptions.InsufficientAmountException;
+import com.ssafy.c203.common.exception.exceptions.InsufficientBalanceException;
+import com.ssafy.c203.common.exception.exceptions.UserNotFoundException;
 import com.ssafy.c203.domain.gold.exception.AutoFundingNotFoundException;
 import com.ssafy.c203.domain.gold.exception.GoldFavoriteNotFoundException;
 import com.ssafy.c203.domain.gold.exception.MoreSellException;
@@ -16,6 +20,7 @@ import com.ssafy.c203.domain.pay.exception.DepositErrorException;
 import com.ssafy.c203.domain.pay.exception.MemberAccountNotFoundException;
 import com.ssafy.c203.domain.quiz.exception.QuizAlreadySolvedException;
 import com.ssafy.c203.domain.quiz.exception.QuizNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -116,4 +121,30 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDepositErrorException(DepositErrorException e) {
         return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> handleBadRequestException(BadRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InsufficientAmountException.class)
+    public ResponseEntity<String> handleInsufficientAmountException(InsufficientAmountException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<String> handleInsufficientBalanceException(InsufficientBalanceException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InternalError.class)
+    public ResponseEntity<String> handleInternalError(InternalError e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
 }
