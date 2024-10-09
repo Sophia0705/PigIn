@@ -46,8 +46,8 @@ const InvestmentInfoCard: React.FC<InvestmentInfoCardProps> = ({
 }) => {
   return (
     <div className="bg-blue-600 text-white pt-2 rounded-xl mb-4">
-      <div className="flex justify-between items-center mb-4 px-2">
-        <h2 className="text-lg font-semibold">{subject}</h2>
+      <div className="flex justify-between items-center mb-3 px-2">
+        <h2 className="text-xl m-1 font-semibold">{subject}</h2>
         <AuthGuardClickable onAuthSuccess={() => onAuthSuccess('/myportfolio')}>
           <NavLink to="/myportfolio">
             {' '}

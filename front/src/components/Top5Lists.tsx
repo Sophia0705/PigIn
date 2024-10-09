@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ThumbsUp } from 'lucide-react';
 
 export const fetchTopStocks = async () => {
   try {
@@ -50,8 +50,10 @@ const Top5List: React.FC<Top5ListProps> = ({
   isLoading,
   error,
 }) => (
-  <div className="bg-blue-600 rounded-xl p-3 w-64">
-    <h2 className="text-white font-bold mb-2">{title}</h2>
+  <div className="bg-blue-600 rounded-xl p-3 w-64 flex flex-col">
+    <div className="flex-grow flex justify-center">
+      <h2 className="text-white text-lg font-bold text-center mb-2">{title}</h2>
+    </div>
     <div className="bg-white rounded-lg p-2">
       {isLoading && <p>로딩 중...</p>}
       {error && <p className="text-red-500">에러: {error}</p>}
@@ -112,19 +114,28 @@ const Top5Lists: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex gap-9 p-2 bg-customDarkGreen">
-      <Top5List
-        title="주식 찜 Top5"
-        items={topStocks}
-        isLoading={isLoadingStocks}
-        error={errorStocks}
-      />
-      <Top5List
-        title="가상화폐 찜 Top5"
-        items={topCryptos}
-        isLoading={isLoadingCryptos}
-        error={errorCryptos}
-      />
+    <div>
+      <div className="flex gap-1 p-2">
+        <ThumbsUp size={24} color="#FFD700" />
+        <p className="text-white text-xl pl-4">
+          이용자들이 많이 찜한 Top5 종목
+        </p>
+      </div>
+
+      <div className="flex gap-9 p-2 bg-customDarkGreen">
+        <Top5List
+          title="주식 Top5"
+          items={topStocks}
+          isLoading={isLoadingStocks}
+          error={errorStocks}
+        />
+        <Top5List
+          title="가상화폐 Top5"
+          items={topCryptos}
+          isLoading={isLoadingCryptos}
+          error={errorCryptos}
+        />
+      </div>
     </div>
   );
 };
