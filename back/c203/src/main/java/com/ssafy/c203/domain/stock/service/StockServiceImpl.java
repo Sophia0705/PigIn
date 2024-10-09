@@ -1,6 +1,10 @@
 package com.ssafy.c203.domain.stock.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
+import com.ssafy.c203.common.exception.exceptions.BadRequestException;
+import com.ssafy.c203.common.exception.exceptions.InsufficientAmountException;
+import com.ssafy.c203.common.exception.exceptions.InsufficientBalanceException;
+import com.ssafy.c203.common.exception.exceptions.InternalServerException;
 import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.service.MemberService;
@@ -84,7 +88,7 @@ public class StockServiceImpl implements StockService {
             return mongoStockDetailRepository.findLatestForAllStocks();
         } catch (Exception e) {
             log.error("Error fetching all stocks: ", e);
-            throw new RuntimeException("Failed to fetch stocks from database", e);
+            throw new InternalServerException("Failed to fetch stocks from database");
         }
     }
 
@@ -114,7 +118,7 @@ public class StockServiceImpl implements StockService {
             return tmp;
         } catch (Exception e) {
             log.error("Error fetching stock chart: ", e);
-            throw new RuntimeException("Failed to fetch stock chart", e);
+            throw new InternalServerException("Failed to fetch stock chart", e);
         }
 //        log.info("tmp = {}", tmp);
     }
@@ -137,12 +141,12 @@ public class StockServiceImpl implements StockService {
     public boolean buyStock(Long userId, String stockId, Long price, boolean isAuto) {
         // 1. 입력 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
-                .orElseThrow(() -> new RuntimeException("Stock item not found: " + stockId));
+                .orElseThrow(() -> new BadRequestException("Stock item not found: " + stockId));
         Members member = memberService.findMemberById(userId);
 
         // 2. 잔고 확인 및 출금
         if (!isAuto && !withdraw(userId, price)) {
-            throw new RuntimeException("잔액 부족");
+            throw new InsufficientBalanceException("잔액 부족");
         }
 
         try {
@@ -175,13 +179,13 @@ public class StockServiceImpl implements StockService {
             // 7. 예외 발생 시 출금 취소
             deposit(userId, price);
             log.error("주식 매수 중 오류 발생: ", e);
-            throw new RuntimeException("주식 매수 처리 중 오류가 발생했습니다.", e);
+            throw new InternalServerException("주식 매수 처리 중 오류가 발생했습니다.", e);
         }
         return false;
     }
 
     @Override
-    public boolean sellStock(Long userId, String stockId, Double count, boolean isAuto) {
+    public boolean sellStock(Long userId, String stockId, Double count, boolean isAuto) throws InsufficientAmountException {
         // 입력 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
                 .orElseThrow(() -> new RuntimeException("주식을 찾을 수 없습니다: " + stockId));
@@ -405,11 +409,11 @@ public class StockServiceImpl implements StockService {
     }
 
     // 해당 주식 판매 여부 검증
-    private StockPortfolio validateStockPortfolio(String stockId, Long userId, Double count) {
+    private StockPortfolio validateStockPortfolio(String stockId, Long userId, Double count) throws InsufficientAmountException {
         StockPortfolio stockPortfolio = stockPortfolioRepository.findByStockItem_IdAndMember_Id(stockId, userId)
-                .orElseThrow(() -> new RuntimeException("해당 주식 포트폴리오를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BadRequestException("해당 주식 포트폴리오를 찾을 수 없습니다."));
         if (stockPortfolio.getAmount() < count) {
-            throw new RuntimeException("보유 주식 수량이 부족합니다.");
+            throw new InsufficientAmountException("보유 주식 수량이 부족합니다.");
         }
         return stockPortfolio;
     }
@@ -434,7 +438,7 @@ public class StockServiceImpl implements StockService {
         );
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new RuntimeException("증권사 API 호출 실패");
+            throw new InternalServerException("증권사 API 호출 실패");
         }
 
         return response.getBody();
@@ -518,7 +522,7 @@ public class StockServiceImpl implements StockService {
         );
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new RuntimeException("증권사 API 호출 실패");
+            throw new InternalServerException("증권사 API 호출 실패");
         }
 
         return response.getBody();

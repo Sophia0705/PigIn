@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.stock.service;
 
+import com.ssafy.c203.common.exception.exceptions.InsufficientAmountException;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
 import com.ssafy.c203.domain.stock.dto.response.FindStockNowResponse;
@@ -29,7 +30,7 @@ public interface StockService {
 
     boolean buyStock(Long userId, String stockCode, Long price, boolean isAuto);
 
-    boolean sellStock(Long userId, String stockCode, Double count, boolean isAuto);
+    boolean sellStock(Long userId, String stockCode, Double count, boolean isAuto) throws InsufficientAmountException;
 
     StockPortfolio findStockPortfolioByCode(Long userId, String stockCode);
 
