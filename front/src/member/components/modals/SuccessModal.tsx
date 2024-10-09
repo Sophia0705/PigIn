@@ -27,7 +27,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
       >
         {/* 모달의 제목을 표시, 줄바꿈을 허용하는 스타일 적용 */}
         <h2
-          className="text-xl font-bold mt-5 mb-10 text-center"
+          className="text-xl font-bold text-black mt-5 mb-10 text-center"
           style={{ whiteSpace: 'pre-wrap' }} // 텍스트 내에서 줄바꿈을 유지
         >
           {title} {/* 부모로부터 전달받은 제목 표시 */}
