@@ -83,7 +83,7 @@ public class PortfolioService {
         boolean flag = goldService.isAutoFundingGold(userId);
         if (percent == 0 && flag) {
             log.info("delete");
-            goldService.cancelFavoriteGold(userId);
+            goldService.cancelAutoFunding(userId);
         } else if (percent != 0) {
             log.info("update");
             goldService.setAutoFunding(userId, percent);
