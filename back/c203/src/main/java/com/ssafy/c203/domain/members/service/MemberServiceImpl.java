@@ -360,7 +360,31 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean emailCheck(String email) {
         Members member = membersRepository.findByEmail(email);
-        return member != null;
+        if (member != null) {
+            return true;
+        }
+
+        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/member/search";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("userId", email);
+        requestBody.put("apiKey", apiKey);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                String.class
+            );
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
