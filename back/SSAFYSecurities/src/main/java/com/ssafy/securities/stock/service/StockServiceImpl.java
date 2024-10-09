@@ -61,9 +61,9 @@ public class StockServiceImpl implements StockService{
     @PostConstruct
     public void init() {
         // MongoDB 싹다 지우기 일봉, 주봉, 월봉 데이터를 MongoDB에 저장
-//        stockHistoryRepository.deleteAll();
+        stockHistoryRepository.deleteAll();
 //        stockMinuteRepository.deleteAll();
-//        stockDetailRepository.deleteAll();
+        stockDetailRepository.deleteAll();
         scheduler.scheduleAtFixedRate(this::getToken, 0, 23, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getMonthlyBar, 0, 24 * 28, TimeUnit.HOURS);
         scheduler.scheduleAtFixedRate(this::getWeeklyBar, 0, 24 * 7, TimeUnit.HOURS);
