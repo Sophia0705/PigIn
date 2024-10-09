@@ -103,12 +103,12 @@ public class PayServiceImpl implements PayService {
             member.getId());
 
         for (CoinAutoFunding coin : coins) {
-            String coinName = coin.getCoinItem().getName();
+            String coinCode = coin.getCoinItem().getId();
             int coinRate = coin.getRate();
 
             int coinMoney = memberSavingAmount * coinRate / 100;
 
-            coinService.buyCoin(member.getId(), coinName, (double) coinMoney);
+            coinService.buyCoin(member.getId(), coinCode, (double) coinMoney);
         }
 
         //금
