@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.coin.controller;
 
 import com.ssafy.c203.common.exception.ExceptionService;
+import com.ssafy.c203.common.exception.exceptions.InsufficientAmountException;
 import com.ssafy.c203.domain.coin.dto.request.CoinTradeRequest;
 import com.ssafy.c203.domain.coin.dto.response.*;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
@@ -85,7 +86,7 @@ public class CoinController {
     }
 
     @PostMapping("/{coinCode}/sell")
-    public ResponseEntity<?> sellCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> sellCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws InsufficientAmountException {
 //        log.info("request = {}", request);
         exceptionService.UserIdException(customUserDetails);
         coinService.sellCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getPrice());

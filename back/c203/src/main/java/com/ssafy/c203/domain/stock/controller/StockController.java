@@ -1,6 +1,7 @@
 package com.ssafy.c203.domain.stock.controller;
 
 import com.ssafy.c203.common.exception.ExceptionService;
+import com.ssafy.c203.common.exception.exceptions.InsufficientAmountException;
 import com.ssafy.c203.domain.coin.dto.response.FindCoinPortfolioResponse;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
@@ -88,7 +89,7 @@ public class StockController {
     }
 
     @PostMapping("/{stockId}/sell")
-    public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws InsufficientAmountException {
         exceptionService.UserIdException(customUserDetails);
         //        log.info("request = {}", request);
         if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount(), false)) {
