@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.members.controller;
 
+import com.ssafy.c203.common.exception.ExceptionService;
 import com.ssafy.c203.domain.members.dto.CustomUserDetails;
 import com.ssafy.c203.domain.members.dto.AutoTradingSetting;
 import com.ssafy.c203.domain.members.service.PortfolioService;
@@ -18,9 +19,11 @@ import java.util.Map;
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
+    private final ExceptionService exceptionService;
 
     @GetMapping("/portfolio")
     public ResponseEntity<?> findUserPortfolio(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         return ResponseEntity.ok().body(portfolioService.findPortfolio(userId));
     }
@@ -28,6 +31,7 @@ public class PortfolioController {
     @PostMapping("/auto-funding")
     public ResponseEntity<?> setAutoFunding(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                             @RequestBody AutoTradingSetting request) {
+        exceptionService.UserIdException(customUserDetails);
         log.info("setAutoFunding {}", request);
 
         Long userId = customUserDetails.getUserId();
@@ -45,6 +49,7 @@ public class PortfolioController {
 
     @GetMapping("/auto-funding")
     public ResponseEntity<?> getAutoFunding(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
         return ResponseEntity.ok().body(portfolioService.findAutoTrading(userId));
     }

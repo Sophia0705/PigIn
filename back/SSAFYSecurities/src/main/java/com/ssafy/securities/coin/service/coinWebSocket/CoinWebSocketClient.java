@@ -102,6 +102,7 @@ public class CoinWebSocketClient extends AbstractWebSocketHandler {
         }
 
         sb.append("]}]");
+        log.info(sb.toString());
         return sb.toString();
     }
 
