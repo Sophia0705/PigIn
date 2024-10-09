@@ -24,6 +24,11 @@ import {
   GoldItemData,
   GoldChartDataResponse,
 } from '../../interfaces/GoldInterface';
+import {
+  addGoldToAutoInvestment,
+  cancelGoldFromAutoInvestment,
+  isGoldInAutoInvestment,
+} from '../../../api/investment/gold/GoldAutoInvest';
 import AuthGuardClickable from '../../../member/components/AuthGuardClickable';
 
 const GoldDetailPage: React.FC = () => {
@@ -52,17 +57,20 @@ const GoldDetailPage: React.FC = () => {
       }
     };
 
-    const checkFavoriteStatus = async () => {
+    const checkStatus = async () => {
       try {
         const isFav = await checkIfFavorite();
         setIsFavorite(isFav);
+
+        const isAuto = await isGoldInAutoInvestment();
+        setIsAdded(isAuto);
       } catch (error) {
         console.error('즐겨찾기 상태 확인 오류핑:', error);
       }
     };
 
     fetchGoldData();
-    checkFavoriteStatus();
+    checkStatus();
   }, []);
 
   useEffect(() => {
@@ -118,8 +126,16 @@ const GoldDetailPage: React.FC = () => {
   };
 
   const handleAddToPortfolio = () => {
-    setIsAdded((prevAdded) => !prevAdded);
-    alert(isAdded ? '금 제거 완료!' : '금 추가 완료!');
+    try {
+      if (isAdded) {
+        cancelGoldFromAutoInvestment();
+      } else {
+        addGoldToAutoInvestment();
+      }
+      setIsAdded((prev) => !prev);
+    } catch (error) {
+      console.error('금 자동투자 등록 중 오류 발생:', error);
+    }
   };
 
   const handleTimeRangeChange = (option: string) => {
