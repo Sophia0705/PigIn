@@ -103,12 +103,12 @@ public class PayServiceImpl implements PayService {
             member.getId());
 
         for (CoinAutoFunding coin : coins) {
-            String coinName = coin.getCoinItem().getName();
+            String coinCode = coin.getCoinItem().getId();
             int coinRate = coin.getRate();
 
             int coinMoney = memberSavingAmount * coinRate / 100;
 
-            coinService.buyCoin(member.getId(), coinName, (double) coinMoney);
+            coinService.buyCoin(member.getId(), coinCode, (double) coinMoney);
         }
 
         //금
@@ -132,8 +132,10 @@ public class PayServiceImpl implements PayService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd HH:mm");
         String formattedDateTime = now.format(formatter);
 
+        String formattedPrice = String.format("%,d", PRICE);
+
         String message = bankName + "(" + accountNo.substring(accountNo.length() - 4) + ") 승인 \n"
-            + memberName.substring(0, 1) + "*" + memberName.substring(2) + "\n" + PRICE + "원\n"
+            + memberName.substring(0, 1) + "*" + memberName.substring(2) + "\n" + formattedPrice + "원\n"
             + formattedDateTime + "\n" + "PigIn 주식회사";
 
         return message;

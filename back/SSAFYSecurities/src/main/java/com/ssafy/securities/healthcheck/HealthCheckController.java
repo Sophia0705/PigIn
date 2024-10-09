@@ -14,7 +14,7 @@ public class HealthCheckController {
 
     @GetMapping
     public ResponseEntity<String> healthCheck() {
-        log.info("securities Health Check!!!");
+        log.info("securities Health Check!!");
         return ResponseEntity.ok("securities Pong!");
     }
 }

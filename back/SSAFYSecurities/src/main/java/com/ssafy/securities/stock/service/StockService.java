@@ -5,15 +5,17 @@ import com.ssafy.securities.stock.dto.apiResponse.StockTradeResponse;
 public interface StockService {
 
     // 2. 월봉 받아오기
-    public void getMonthlyBar();
+    void getMonthlyBar();
 
     // 3. 주봉 받아오기
-    public void getWeeklyBar();
+    void getWeeklyBar();
 
     // 4. 일봉 받아오기
-    public void getDailyBar();
+    void getDailyBar();
 
-    public StockTradeResponse buyStock(double price, String stockCode);
+    StockTradeResponse buyStock(double price, String stockCode);
 
-    public StockTradeResponse sellStock(double price, String stockCode);
+    StockTradeResponse sellStock(double price, String stockCode);
+
+    void getKospiStockData();
 }
