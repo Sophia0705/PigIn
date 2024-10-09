@@ -1,5 +1,6 @@
 package com.ssafy.c203.domain.coin.service;
 
+import com.ssafy.c203.common.exception.exceptions.InsufficientAmountException;
 import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
 import com.ssafy.c203.domain.coin.dto.response.*;
 import com.ssafy.c203.domain.coin.entity.CoinItem;
@@ -24,7 +25,7 @@ public interface CoinService {
 
     List<MongoCoinMinute> findCoinMinuteChart(String stockCode, Integer count);
 
-    void sellCoin(Long userId, String coinCode, Double price);
+    void sellCoin(Long userId, String coinCode, Double price) throws InsufficientAmountException;
 
     void buyCoin(Long userId, String coinCode, Double price);
 

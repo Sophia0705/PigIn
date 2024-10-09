@@ -118,7 +118,7 @@ public class StockServiceImpl implements StockService {
             return tmp;
         } catch (Exception e) {
             log.error("Error fetching stock chart: ", e);
-            throw new InternalServerException("Failed to fetch stock chart", e);
+            throw new InternalServerException("Failed to fetch stock chart");
         }
 //        log.info("tmp = {}", tmp);
     }
@@ -179,7 +179,7 @@ public class StockServiceImpl implements StockService {
             // 7. 예외 발생 시 출금 취소
             deposit(userId, price);
             log.error("주식 매수 중 오류 발생: ", e);
-            throw new InternalServerException("주식 매수 처리 중 오류가 발생했습니다.", e);
+            throw new InternalServerException("주식 매수 처리 중 오류가 발생했습니다.");
         }
         return false;
     }

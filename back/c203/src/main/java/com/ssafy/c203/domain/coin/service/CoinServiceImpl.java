@@ -1,6 +1,10 @@
 package com.ssafy.c203.domain.coin.service;
 
 import com.ssafy.c203.common.entity.TradeMethod;
+import com.ssafy.c203.common.exception.exceptions.BadRequestException;
+import com.ssafy.c203.common.exception.exceptions.InsufficientAmountException;
+import com.ssafy.c203.common.exception.exceptions.InsufficientBalanceException;
+import com.ssafy.c203.common.exception.exceptions.InternalServerException;
 import com.ssafy.c203.domain.account.service.AccountService;
 import com.ssafy.c203.domain.coin.dto.CoinAutoSetting;
 import com.ssafy.c203.domain.coin.dto.response.*;
@@ -99,7 +103,7 @@ public class CoinServiceImpl implements CoinService {
             .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
             .toList();
 
-        log.info("Search results for '{}': {}", keyword, responses);
+//        log.info("Search results for '{}': {}", keyword, responses);
 
         return responses;
     }
@@ -109,7 +113,7 @@ public class CoinServiceImpl implements CoinService {
     public FindCoinResponse findCoin(String coinCode) {
         MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(
                 coinCode)
-            .orElseThrow(); // 코인 데이터를 가져옴
+            .orElseThrow(() -> new BadRequestException("없는 코인")); // 코인 데이터를 가져옴
 
         // 코인 이름 가져오기
         CoinItem coinItem = coinItemRepository.findById(coinCode).orElseThrow();
@@ -127,7 +131,7 @@ public class CoinServiceImpl implements CoinService {
                 interval, pageable);
         } catch (Exception e) {
             log.error("Error fetching coin chart: ", e);
-            throw new RuntimeException("Failed to fetch coin chart", e);
+            throw new InternalServerException("Failed to fetch coin chart");
         }
     }
 
@@ -139,7 +143,7 @@ public class CoinServiceImpl implements CoinService {
             return mongoCoinMinuteRepository.findByCoinOrderByDateDescTimeDesc(coinCode, pageable);
         } catch (Exception e) {
             log.error("Error fetching coin minute chart: ", e);
-            throw new RuntimeException("Failed to fetch coin minute chart", e);
+            throw new InternalServerException("Failed to fetch coin minute chart");
         }
     }
 
@@ -149,7 +153,7 @@ public class CoinServiceImpl implements CoinService {
             return mongoCoinMinuteRepository.findLatestDataForEachCoin();
         } catch (Exception e) {
             log.error("Error fetching coin minute: ", e);
-            throw new RuntimeException("Failed to fetch coin minute", e);
+            throw new InternalServerException("Failed to fetch coin minute");
         }
     }
 
@@ -159,12 +163,12 @@ public class CoinServiceImpl implements CoinService {
         // 1. 입력 확인
         Long price = Math.round(dPrice);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
-            .orElseThrow(() -> new RuntimeException("No such coin"));
+            .orElseThrow(() -> new BadRequestException("No such coin"));
         Members member = memberService.findMemberById(userId);
 
         // 2. 잔고 확인 및 출금
         if (!withdraw(userId, price)) {
-            throw new RuntimeException("잔액 부족");
+            throw new InsufficientBalanceException("잔액 부족");
         }
         try {
             // 3. 거래
@@ -192,15 +196,16 @@ public class CoinServiceImpl implements CoinService {
         } catch (Exception e) {
             deposit(userId, price);
             log.error("Error fetching coin: ", e);
+            throw new InternalServerException("거래중 에러 발생");
         }
     }
 
     @Override
-    public void sellCoin(Long userId, String coinCode, Double amount) {
+    public void sellCoin(Long userId, String coinCode, Double amount) throws InsufficientAmountException {
         // 1. 입력 확인
 //        log.info("coinsell = {}, {}", userId, coinCode);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
-            .orElseThrow(() -> new RuntimeException("No such coin"));
+            .orElseThrow(() -> new BadRequestException("No such coin"));
         Members member = memberService.findMemberById(userId);
 
         MongoCoinMinute mongoCoinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(
@@ -227,12 +232,12 @@ public class CoinServiceImpl implements CoinService {
 
 //            log.info("입금 끝");
             if (!deposit(userId, salePrice)) {
-                throw new RuntimeException("입금 실패");
+                throw new InternalServerException("입금 실패");
             }
         } catch (Exception e) {
             log.error("Error fetching coin: ", e);
             sellCoinPortfolio(coinPortfolio, amount);
-            throw new RuntimeException("코인 매도 오류");
+            throw new InternalServerException("코인 매도 오류");
         }
     }
 
@@ -274,7 +279,7 @@ public class CoinServiceImpl implements CoinService {
     public PriceAndProfit calculateProfit(Double priceAvg, String coinCode) {
         MongoCoinMinute coinMinute = mongoCoinMinuteRepository.findTopByCoinOrderByDateDescTimeDesc(
                 coinCode)
-            .orElseThrow(() -> new RuntimeException("No such coin"));
+            .orElseThrow(() -> new BadRequestException("No such coin"));
         Double currentPrice = coinMinute.getClose();
 //        log.info("profit calc = ({} - {}) / {} = {}", currentPrice, priceAvg, priceAvg * 100, (currentPrice - priceAvg) / priceAvg * 100);
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
@@ -321,7 +326,7 @@ public class CoinServiceImpl implements CoinService {
     @Override
     public void deleteCoinFavorite(Long userId, String coinCode) {
         CoinFavorite coinFavorite = coinFavoriteRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
-                .orElseThrow(() -> new RuntimeException("No such coin"));
+                .orElseThrow(() -> new BadRequestException("No such coin"));
 
         coinFavoriteRepository.delete(coinFavorite);
     }
@@ -357,14 +362,14 @@ public class CoinServiceImpl implements CoinService {
     @Override
     public void deleteAutoFunding(Long userId, String coinCode) {
         CoinAutoFunding autoFunding = coinAutoFundingRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
-                .orElseThrow(() -> new RuntimeException("No such coin"));
+                .orElseThrow(() -> new BadRequestException("No such coin"));
         coinAutoFundingRepository.delete(autoFunding);
     }
 
     @Override
     public void setAutoFunding(Long userId, String coinCode, Integer percent) {
         CoinAutoFunding autoFunding = coinAutoFundingRepository.findByCoinItem_IdAndMember_Id(coinCode, userId)
-                .orElseThrow(() -> new RuntimeException("No such coin"));
+                .orElseThrow(() -> new BadRequestException("No such coin"));
         autoFunding.updateRate(percent);
         coinAutoFundingRepository.save(autoFunding);
     }
@@ -466,7 +471,7 @@ public class CoinServiceImpl implements CoinService {
         );
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new RuntimeException("증권사 API 호출 실패");
+            throw new InternalServerException("증권사 API 호출 실패");
         }
         return response.getBody();
     }
@@ -493,7 +498,7 @@ public class CoinServiceImpl implements CoinService {
         log.info(response.toString());
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new RuntimeException("증권사 API 호출 실패");
+            throw new InternalServerException("증권사 API 호출 실패");
         }
 
         return response.getBody();
@@ -520,18 +525,18 @@ public class CoinServiceImpl implements CoinService {
     private void buyCoinPortfolio(CoinPortfolio coinPortfolio, Double amount, Double price) {
         coinPortfolio.addAmount(amount);
         coinPortfolio.updatePriceAve(price, amount);
-        log.info("추가 매수 저장 = {} : {}", coinPortfolio.getPriceAvg(), coinPortfolio.getAmount());
+//        log.info("추가 매수 저장 = {} : {}", coinPortfolio.getPriceAvg(), coinPortfolio.getAmount());
         coinPortfolioRepository.save(coinPortfolio);
     }
 
-    private CoinPortfolio valiateCoinPortfolio(CoinItem coinItem, Members members, Double amount) {
+    private CoinPortfolio valiateCoinPortfolio(CoinItem coinItem, Members members, Double amount) throws InsufficientAmountException {
         CoinPortfolio coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem,
                 members)
-            .orElseThrow(() -> new RuntimeException("No such coin item"));
-        log.info("coinPortfolio = {} : {} - {}", coinPortfolio.getCoinItem().getName(),
-            coinPortfolio.getAmount(), amount);
+            .orElseThrow(() -> new BadRequestException("No such coin item"));
+//        log.info("coinPortfolio = {} : {} - {}", coinPortfolio.getCoinItem().getName(),
+//                coinPortfolio.getAmount(), amount);
         if (amount > coinPortfolio.getAmount()) {
-            throw new RuntimeException("보유 코인 수량 부족");
+            throw new InsufficientAmountException("보유 코인 수량 부족");
         }
         return coinPortfolio;
     }
