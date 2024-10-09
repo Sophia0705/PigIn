@@ -113,7 +113,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
   const handleVerificationSubmit = async () => {
     try {
       const isVerified = await verifyTransferAuthentication(
-        formData.accountNumber,
+        formData.accountNumber.replace(/-/g, ''),
         verificationCode
       );
       if (isVerified) {
@@ -298,7 +298,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
               <button
                 type="button"
                 onClick={handleVerificationSubmit}
-                className="px-3 py-2 mt-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-3 py-2 mt-2 bg-[#9CF8E1] text-white rounded"
               >
                 인증 확인
               </button>

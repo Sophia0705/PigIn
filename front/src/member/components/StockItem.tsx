@@ -38,9 +38,9 @@ const StockItem: React.FC<StockItemProps> = ({
   const formattedPrice = typeof price === 'string' ? parseFloat(price) : price;
 
   // 디버깅을 위한 로그
-  console.log('Stock Name:', name);
-  console.log('Stock Code:', code);
-  console.log('Price:', formattedPrice.toLocaleString()); // 여기서도 확인
+  // console.log('Stock Name:', name);
+  // console.log('Stock Code:', code);
+  // console.log('Price:', formattedPrice.toLocaleString()); // 여기서도 확인
 
   return (
     <div className="flex justify-between items-center p-0 border-b pt-0 pb-0">
