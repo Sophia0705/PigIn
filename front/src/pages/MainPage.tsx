@@ -2,12 +2,13 @@ import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchInvestmentAccountInfo } from '../api/member/accountAPI';
 import { fetchPortfolioData } from '../api/portfolio/portfolio';
+import { fetchQuizStatus } from '../api/quiz/quizStatus';
 import { useMemberStore } from '../store/memberStore';
 import QuizCard from '../components/QuizCard';
 import InvestmentInfoCard from '../components/InvestmentInfoCard';
 import Top5Lists from '../components/Top5Lists';
 
-const MainPage: React.FC = () => {
+const MainPage = () => {
   const navigate = useNavigate();
   const { isLoggedIn, checkLoginStatus } = useMemberStore();
   const [portfolioData, setPortfolioData] = useState({
@@ -19,6 +20,10 @@ const MainPage: React.FC = () => {
   const [totalAsset, setTotalAsset] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [quizStatus, setQuizStatus] = useState({
+    oxQuizSolved: false,
+    stockQuizSolved: false,
+  });
 
   const handleAuthSuccess = (path: string) => {
     navigate(path);
@@ -36,12 +41,14 @@ const MainPage: React.FC = () => {
       }
 
       try {
-        const [accountInfo, portfolioInfo] = await Promise.all([
+        const [accountInfo, portfolioInfo, quizStatusInfo] = await Promise.all([
           fetchInvestmentAccountInfo(),
           fetchPortfolioData(),
+          fetchQuizStatus(),
         ]);
         setTotalAsset(accountInfo.balance);
         setPortfolioData(portfolioInfo);
+        setQuizStatus(quizStatusInfo);
         setIsLoading(false);
       } catch (err) {
         console.error('Failed to fetch data:', err);
@@ -75,7 +82,10 @@ const MainPage: React.FC = () => {
 
   return (
     <div className="min-h-screen p-6 font-gmarket-sans">
-      <QuizCard isLoggedIn={isLoggedIn} />
+      <QuizCard
+        isLoggedIn={isLoggedIn}
+        fetchQuizStatus={() => Promise.resolve(quizStatus)}
+      />
       <InvestmentInfoCard
         subject="내 투자"
         categories={categories}

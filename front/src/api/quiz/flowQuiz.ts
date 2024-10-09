@@ -1,32 +1,31 @@
+import axiosInstance from '../axiosInstance';
+
 export interface FlowQuizData {
-  id: string;
+  stockCode: string;
   stockName: string;
   currentPrice: number;
 }
 
-export interface FlowQuizResult {
-  id: string;
-  prediction: 'UP' | 'DOWN';
+export interface FlowQuizRequest {
+  stockCode: number;
+  memberAnswer: 'O' | 'X';
 }
 
 export const fetchQuizData = async (): Promise<FlowQuizData> => {
-  // 임시데이터
-  return new Promise((resolve) =>
-    setTimeout(
-      () =>
-        resolve({
-          id: '1',
-          stockName: '삼성전자',
-          currentPrice: 70000,
-        }),
-      1000
-    )
+  const response = await axiosInstance.get<FlowQuizData>(
+    'api/quiz/fluctuation'
   );
+  console.log('퀴즈 get!', response.data);
+  return response.data;
 };
 
 export const submitQuizResult = async (
-  _result: FlowQuizResult
-): Promise<void> => {
-  // 임시 데이터 반환
-  return new Promise((resolve) => setTimeout(resolve, 1000));
+  FlowQuizRequest: FlowQuizRequest
+): Promise<FlowQuizRequest> => {
+  const response = await axiosInstance.post<FlowQuizRequest>(
+    '/api/quiz/fluctuation',
+    FlowQuizRequest
+  );
+  console.log('퀴즈 결과 req', FlowQuizRequest);
+  return response.data;
 };
