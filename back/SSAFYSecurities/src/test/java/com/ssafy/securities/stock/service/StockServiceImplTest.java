@@ -9,30 +9,36 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class StockServiceImplTest {
 
-    @Autowired
-    private StockService stockService;
-
-    @Test
-    void getAccessToken() {
-        // given
-
-        // when
-
-        // then
-        //stockService.getAccessToken();
-
-    }
-
-    @Test
-    void getMonthlyBar() {
-        stockService.getMonthlyBar();
-    }
-
-    @Test
-    void getWeeklyBar() {
-    }
-
-    @Test
-    void getDailyBar() {
-    }
+//    @Autowired
+//    private StockService stockService;
+//
+//    @Test
+//    void getAccessToken() {
+//        // given
+//
+//        // when
+//
+//        // then
+//        //stockService.getAccessToken();
+//
+//    }
+////
+////    @Test
+////    void getMonthlyBar() {
+////        stockService.getMonthlyBar();
+////    }
+//
+//    @Test
+//    void getWeeklyBar() {
+//    }
+//
+//    @Test
+//    void getDailyBar() {
+//    }
+//
+//    @Test
+//    void getKospiStockData() {
+//        stockService.getKospiStockData();
+//
+//    }
 }

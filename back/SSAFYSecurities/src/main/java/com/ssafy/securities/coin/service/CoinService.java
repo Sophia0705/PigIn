@@ -44,8 +44,8 @@ public class CoinService {
 
     @PostConstruct
     public void init() throws InterruptedException {
-        coinHistoryRepository.deleteAll();
-        coinMinuteRepository.deleteAll();
+//        coinHistoryRepository.deleteAll();
+//        coinMinuteRepository.deleteAll();
         scheduler.scheduleAtFixedRate(this::startMonthData, 0, 24 * 28, TimeUnit.HOURS);
         try {
             Thread.sleep(1000);
