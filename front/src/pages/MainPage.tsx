@@ -81,20 +81,22 @@ const MainPage = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="min-h-screen p-6 font-gmarket-sans">
-      <QuizCard
-        isLoggedIn={isLoggedIn}
-        fetchQuizStatus={() => Promise.resolve(quizStatus)}
-      />
-      <InvestmentInfoCard
-        subject="내 투자"
-        categories={categories}
-        totalAsset={isLoggedIn ? totalAsset : 0}
-        portfolioTotal={isLoggedIn ? portfolioData.totalPrice : 100}
-        onAuthSuccess={handleAuthSuccess}
-        isLoggedIn={isLoggedIn}
-      />
-      <Top5Lists />
+    <div className="h-[calc(100vh-60px)] overflow-y-auto scrollbar-hide">
+      <div className="min-h-full p-6 font-gmarket-sans">
+        <QuizCard
+          isLoggedIn={isLoggedIn}
+          fetchQuizStatus={() => Promise.resolve(quizStatus)}
+        />
+        <InvestmentInfoCard
+          subject="내 투자"
+          categories={categories}
+          totalAsset={isLoggedIn ? totalAsset : 0}
+          portfolioTotal={isLoggedIn ? portfolioData.totalPrice : 100}
+          onAuthSuccess={handleAuthSuccess}
+          isLoggedIn={isLoggedIn}
+        />
+        <Top5Lists />
+      </div>
     </div>
   );
 };

@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import { ChevronRight, ThumbsUp } from 'lucide-react';
+import {
+  getWeeklyStockChartData,
+  getMonthlyStockChartData,
+  getYearlyStockChartData,
+} from '../api/investment/stock/StockChartData';
+import {
+  getWeeklyCryptoChartData,
+  getMonthlyCryptoChartData,
+  getYearlyCryptoChartData,
+} from '../api/investment/crypto/CryptoChartData';
+import { getIndividualStockData } from '../api/investment/stock/IndividualStockData';
+import { getIndividualCryptoData } from '../api/investment/crypto/IndividualCryptoData';
 
 export const fetchTopStocks = async () => {
   try {
@@ -27,20 +40,76 @@ export const fetchTopCryptos = async () => {
 interface TopItemProps {
   id: string;
   name: string;
+  type: 'stock' | 'crypto';
 }
 
-const TopItem: React.FC<TopItemProps> = ({ id: _id, name }) => (
-  <div className="flex justify-between items-center py-2 border-b border-blue-200 last:border-b-0">
-    <span className="text-black">{name}</span>
-    <ChevronRight className="w-4 h-4 text-gray-400" />
-  </div>
-);
+const TopItem: React.FC<TopItemProps> = ({ id, name, type }) => {
+  const navigate = useNavigate();
+
+  const handleClick = async () => {
+    try {
+      let completeData;
+      if (type === 'stock') {
+        const stockData = await getIndividualStockData(id);
+        const weeklyPrices = await getWeeklyStockChartData(id, 'day');
+        const monthlyPrices = await getMonthlyStockChartData(id, 'day');
+        const yearlyPrices = await getYearlyStockChartData(id, 'month');
+
+        completeData = {
+          ...stockData,
+          weeklyPrices: weeklyPrices.map((data) => Number(data.stck_clpr)),
+          monthlyPrices: monthlyPrices.map((data) => Number(data.stck_clpr)),
+          yearlyPrices: yearlyPrices.map((data) => Number(data.stck_clpr)),
+        };
+
+        navigate(`/investment/stock/${id}`, { state: { item: completeData } });
+      } else {
+        const cryptoData = await getIndividualCryptoData(id);
+        const weeklyChartData = await getWeeklyCryptoChartData(id, 'day');
+        const monthlyChartData = await getMonthlyCryptoChartData(id, 'day');
+        const yearlyChartData = await getYearlyCryptoChartData(id, 'month');
+
+        completeData = {
+          ...cryptoData,
+          weeklyPrices: weeklyChartData.map((data) => data.coin_clpr),
+          monthlyPrices: monthlyChartData.map((data) => data.coin_clpr),
+          yearlyPrices: yearlyChartData.map((data) => data.coin_clpr),
+        };
+
+        // 비트코인캐시, 이더리움클래식 가격 재조정
+        if (id === 'BTC-BCH' || id === 'BTC-ETC') {
+          const bitcoinData = await getIndividualCryptoData('KRW-BTC');
+          const adjustedPrice = completeData.price * bitcoinData.price;
+          completeData.price = Number(adjustedPrice.toFixed(0));
+        }
+
+        navigate(`/investment/cryptocurrency/${id}`, {
+          state: { item: completeData },
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      // 에러 처리 (예: 에러 메시지 표시)
+    }
+  };
+
+  return (
+    <div
+      className="flex justify-between items-center py-2 border-b border-blue-200 last:border-b-0 cursor-pointer hover:bg-gray-100"
+      onClick={handleClick}
+    >
+      <span className="text-black">{name}</span>
+      <ChevronRight className="w-4 h-4 text-gray-400" />
+    </div>
+  );
+};
 
 interface Top5ListProps {
   title: string;
   items: TopItemProps[];
   isLoading: boolean;
   error: string | null;
+  type: 'stock' | 'crypto';
 }
 
 const Top5List: React.FC<Top5ListProps> = ({
@@ -48,6 +117,7 @@ const Top5List: React.FC<Top5ListProps> = ({
   items,
   isLoading,
   error,
+  type,
 }) => (
   <div className="bg-blue-600 rounded-xl p-3 w-64 flex flex-col">
     <div className="flex-grow flex justify-center">
@@ -59,7 +129,7 @@ const Top5List: React.FC<Top5ListProps> = ({
       {!isLoading &&
         !error &&
         items.map((item) => (
-          <TopItem key={item.id} id={item.id} name={item.name} />
+          <TopItem key={item.id} id={item.id} name={item.name} type={type} />
         ))}
     </div>
   </div>
@@ -81,6 +151,7 @@ const Top5Lists: React.FC = () => {
           data.map((stock: any) => ({
             id: stock.stockItemId,
             name: stock.stockItemName,
+            type: 'stock' as const,
           }))
         );
         setIsLoadingStocks(false);
@@ -98,6 +169,7 @@ const Top5Lists: React.FC = () => {
           data.map((crypto: any) => ({
             id: crypto.coinItemId,
             name: crypto.coinItemName,
+            type: 'crypto' as const,
           }))
         );
         setIsLoadingCryptos(false);
@@ -128,12 +200,14 @@ const Top5Lists: React.FC = () => {
           items={topStocks}
           isLoading={isLoadingStocks}
           error={errorStocks}
+          type="stock"
         />
         <Top5List
           title="가상화폐 Top5"
           items={topCryptos}
           isLoading={isLoadingCryptos}
           error={errorCryptos}
+          type="crypto"
         />
       </div>
     </div>
