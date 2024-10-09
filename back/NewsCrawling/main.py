@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from crawling import crawlingNews, getStockNews, crawlingGoldNews, getGoldNews, getCoinNews
+from crawling import getStockNews, crawlingGoldNews, getGoldNews, getCoinNews
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -20,14 +20,6 @@ app.add_middleware(
 @app.get("/news/health-check")
 def root():
     return {"message": "news Pong!!"}
-
-@app.get("/news/crawling")
-def crawl_news():  # 함수 이름을 변경
-    return crawlingNews()
-
-@app.get("/news/gold-crawling")
-def goldCrawling():
-    return crawlingGoldNews()
 
 @app.get("/news/getgold")
 def getGold():
