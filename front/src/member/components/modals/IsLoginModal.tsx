@@ -22,7 +22,7 @@ const IsLoginModal: React.FC = () => {
       onClick={closeIsLoginModal}
     >
       <div
-        className="bg-white p-6 rounded-lg animate-slide-up"
+        className="bg-white p-6 text-black rounded-lg animate-slide-up"
         onClick={(e) => e.stopPropagation()} // 이벤트 전파 방지
       >
         <h2 className="text-lg font-semibold mb-4">로그인이 필요합니다</h2>

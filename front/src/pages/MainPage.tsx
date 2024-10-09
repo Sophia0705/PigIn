@@ -200,7 +200,7 @@ const Top5List: React.FC<Top5ListProps> = ({
   isLoading,
   error,
 }) => (
-  <div className="bg-blue-500 rounded-xl p-4 w-64">
+  <div className="bg-blue-600 rounded-xl p-3 w-64">
     <h2 className="text-white font-bold mb-2">{title}</h2>
     <div className="bg-white rounded-lg p-2">
       {isLoading && <p>로딩 중...</p>}
@@ -262,7 +262,7 @@ const Top5Lists: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex gap-4 p-4 bg-customDarkGreen">
+    <div className="flex gap-9 p-2 bg-customDarkGreen">
       <Top5List
         title="주식 찜 Top5"
         items={topStocks}
@@ -329,7 +329,7 @@ const MainPage: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-6">
       <QuizCard />
       {totalAsset > 0 ? (
         <InvestmentCard

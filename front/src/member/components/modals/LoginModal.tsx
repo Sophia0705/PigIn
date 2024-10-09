@@ -78,7 +78,7 @@ const LoginModal: React.FC = () => {
       onClick={closeLoginModal}
     >
       <div
-        className="relative bg-white rounded-lg w-full max-w-md px-6 py-6 animate-slide-up"
+        className="relative bg-white font-black rounded-lg w-full max-w-md px-6 py-6 animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 닫기 버튼 */}
