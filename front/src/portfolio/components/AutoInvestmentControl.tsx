@@ -152,7 +152,7 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
     if (!allocation) return null;
 
     const handleSliderChange = (e: React.FormEvent<HTMLInputElement>) => {
-      const value = Number(e.currentTarget.value);
+      const value = Math.round(Number(e.currentTarget.value) / 5) * 5; // 5의 배수로 반올림
       const id =
         'stockCode' in allocation
           ? allocation.stockCode
@@ -183,25 +183,31 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
 
     return (
       <div style={style}>
-        <div className="p-2 w-[90%] mx-auto rounded-lg bg-white mb-2">
+        <div className="p-2.5 w-[90%] mx-auto rounded-lg bg-white mb-1">
           <div className="flex items-center justify-between">
-            <div className="flex-grow ml-2 mr-1">
-              <span className="text-black text-lg mb-1 block">{name}</span>
+            <div className="flex-grow mr-2 w-3/5">
+              {' '}
+              <span className="text-black text-lg mb-1 block truncate">
+                {name}
+              </span>{' '}
               <input
                 type="range"
                 min="0"
                 max="100"
+                step="5"
                 value={allocation.percent}
                 onInput={handleSliderChange}
-                className="w-5/6 accent-customAqua"
+                className="w-[90%] accent-customAqua"
               />
             </div>
-            <div className="flex w-1/5 mr-3 items-center">
-              <div className="flex flex-col items-end mr-1">
+            <div className="flex items-center">
+              <div className="flex flex-col items-end mr-2">
+                {' '}
                 <span className="text-black text-medium">
                   {allocation.percent}%
                 </span>
                 <span className="text-black text-base">
+                  {' '}
                   {(
                     (allocation.percent / 100) *
                     Number(localInvestmentAmount)
@@ -211,9 +217,9 @@ const AutoInvestmentControl: React.FC<AutoInvestmentControlProps> = ({
               </div>
               <button
                 onClick={() => handleRemoveAllocation(id)}
-                className="text-red-500 p-2"
+                className="text-red-500 p-1"
               >
-                <XCircle className="w-6 h-6" />
+                <XCircle className="w-6 h-6" />{' '}
               </button>
             </div>
           </div>

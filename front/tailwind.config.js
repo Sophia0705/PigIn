@@ -1,11 +1,10 @@
-// tailwind.config.js
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'], // Tailwind가 스타일을 적용할 파일 경로
   theme: {
     extend: {
       colors: {
-        customAqua: '#9CF8E1', // 커스텀 색상 추가
-        customDarkGreen: '#1F3F42', // 커스텀 색상 추가
+        customAqua: '#9CF8E1',
+        customDarkGreen: '#1F3F42',
         customGreen: '#00C99D',
         customRed: '#FF2414',
       },

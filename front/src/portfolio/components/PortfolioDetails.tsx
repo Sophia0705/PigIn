@@ -1,7 +1,20 @@
-import { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePortfolioStore } from '../../store/portfolioStore';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
+import {
+  getWeeklyStockChartData,
+  getMonthlyStockChartData,
+  getYearlyStockChartData,
+} from '../../api/investment/stock/StockChartData';
+import {
+  getWeeklyCryptoChartData,
+  getMonthlyCryptoChartData,
+  getYearlyCryptoChartData,
+} from '../../api/investment/crypto/CryptoChartData';
+import { getIndividualStockData } from '../../api/investment/stock/IndividualStockData';
+import { getIndividualCryptoData } from '../../api/investment/crypto/IndividualCryptoData';
 
 interface ItemData {
   name: string;
@@ -13,7 +26,7 @@ interface ItemData {
   coinCode?: string;
 }
 
-const PortfolioDetails = () => {
+const PortfolioDetails: React.FC = () => {
   const {
     stocks,
     cryptocurrencies,
@@ -24,6 +37,8 @@ const PortfolioDetails = () => {
     showAllItems,
   } = usePortfolioStore();
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [loadingItem, setLoadingItem] = useState<boolean>(false);
 
   const items: ItemData[] = useMemo(() => {
     if (showAllItems) {
@@ -45,16 +60,77 @@ const PortfolioDetails = () => {
     }
   }, [stocks, cryptocurrencies, gold, activeIndex, showAllItems]);
 
-  if (isLoading) {
-    return <div className="text-center py-4">Loading details...</div>;
-  }
-  if (error) {
-    return (
-      <div className="text-center py-4 text-red-500">
-        Error loading details: {error}
-      </div>
-    );
-  }
+  const handleItemClick = async (item: ItemData) => {
+    setLoadingItem(true);
+    try {
+      if ('stockCode' in item && item.stockCode) {
+        const stockData = await getIndividualStockData(item.stockCode);
+        const weeklyPrices = await getWeeklyStockChartData(
+          item.stockCode,
+          'day'
+        );
+        const monthlyPrices = await getMonthlyStockChartData(
+          item.stockCode,
+          'day'
+        );
+        const yearlyPrices = await getYearlyStockChartData(
+          item.stockCode,
+          'month'
+        );
+
+        const completeStockData = {
+          ...stockData,
+          weeklyPrices: weeklyPrices.map((data) => Number(data.stck_clpr)),
+          monthlyPrices: monthlyPrices.map((data) => Number(data.stck_clpr)),
+          yearlyPrices: yearlyPrices.map((data) => Number(data.stck_clpr)),
+        };
+
+        navigate(`/investment/stock/${item.stockCode}`, {
+          state: { item: completeStockData },
+        });
+      } else if ('coinCode' in item && item.coinCode) {
+        const cryptoData = await getIndividualCryptoData(item.coinCode);
+        const weeklyChartData = await getWeeklyCryptoChartData(
+          item.coinCode,
+          'day'
+        );
+        const monthlyChartData = await getMonthlyCryptoChartData(
+          item.coinCode,
+          'day'
+        );
+        const yearlyChartData = await getYearlyCryptoChartData(
+          item.coinCode,
+          'month'
+        );
+
+        const completeCryptoData = {
+          ...cryptoData,
+          weeklyPrices: weeklyChartData.map((data) => data.coin_clpr),
+          monthlyPrices: monthlyChartData.map((data) => data.coin_clpr),
+          yearlyPrices: yearlyChartData.map((data) => data.coin_clpr),
+        };
+
+        // 비트코인캐시, 이더리움클래식 가격 재조정
+        if (item.coinCode === 'BTC-BCH' || item.coinCode === 'BTC-ETC') {
+          const bitcoinData = await getIndividualCryptoData('KRW-BTC');
+          const adjustedPrice = completeCryptoData.price * bitcoinData.price;
+          completeCryptoData.price = Number(adjustedPrice.toFixed(0));
+        }
+
+        navigate(`/investment/cryptocurrency/${item.coinCode}`, {
+          state: { item: completeCryptoData },
+        });
+      } else {
+        // 금의 경우 추가 데이터 로딩 없이 직접 페이지로 이동
+        navigate('/investment/gold');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // 에러 처리 (예: 에러 메시지 표시)
+    } finally {
+      setLoadingItem(false);
+    }
+  };
 
   const itemCount = items.length;
   const isItemLoaded = (index: number) => index < items.length;
@@ -85,7 +161,11 @@ const PortfolioDetails = () => {
     }
 
     return (
-      <div style={style} className="flex items-center border-b px-4">
+      <div
+        style={style}
+        className="flex items-center border-b px-4 cursor-pointer hover:bg-gray-100"
+        onClick={() => handleItemClick(item)}
+      >
         {showAllItems && (
           <div className="w-1/4 py-2 text-sm font-medium">
             {type === 'stock' ? '주식' : type === 'crypto' ? '암호화폐' : '금'}
@@ -109,6 +189,14 @@ const PortfolioDetails = () => {
       </div>
     );
   };
+
+  if (isLoading || loadingItem) {
+    return <div className="text-center py-4">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-4 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="bg-gray-100 relative h-full pt-6 pb-24 font-gmarket-sans">
