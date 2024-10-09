@@ -47,7 +47,9 @@ const AutoDashboard: React.FC = () => {
   );
 
   if (chartData.length === 0) {
-    return <div>Loading...</div>;
+    return (
+      <div className="text-center text-white">투자 금액을 설정해주세요!</div>
+    );
   }
 
   return (
@@ -83,12 +85,7 @@ const AutoDashboard: React.FC = () => {
                         textAnchor="middle"
                         dominantBaseline="central"
                       >
-                        <tspan
-                          x={cx}
-                          dy="-0.5em"
-                          fontSize="20"
-                          fontWeight="bold"
-                        >
+                        <tspan x={cx} y={cy} fontSize="20" fontWeight="bold">
                           {totalValue.toLocaleString()}원
                         </tspan>
                       </text>

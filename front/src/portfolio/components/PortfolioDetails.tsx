@@ -69,7 +69,6 @@ const PortfolioDetails = () => {
     style: React.CSSProperties;
   }) => {
     const item = items[index];
-    const totalValue = item.price * (item.amount || item.quantity || 0);
     const profitRate =
       typeof item.profitRate === 'string'
         ? parseFloat(item.profitRate)
@@ -100,7 +99,7 @@ const PortfolioDetails = () => {
         <div
           className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-right`}
         >
-          {totalValue.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원
+          {item.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원
         </div>
         <div
           className={`${showAllItems ? 'w-1/4' : 'w-1/3'} py-2 font-medium text-base text-right ${profitRate >= 0 ? 'text-green-500' : 'text-red-500'}`}
@@ -112,7 +111,7 @@ const PortfolioDetails = () => {
   };
 
   return (
-    <div className="bg-gray-100 relative h-full pt-6 pb-24 font-suite">
+    <div className="bg-gray-100 relative h-full pt-6 pb-24 font-gmarket-sans">
       <div className="w-11/12 mx-auto h-5 bg-customDarkGreen absolute top-2 left-0 right-0"></div>
       <div className="absolute top-5 left-0 right-0 bottom-24 mx-auto w-10/12">
         <div

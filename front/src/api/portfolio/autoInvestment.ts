@@ -1,36 +1,5 @@
 import axiosInstance from '../axiosInstance';
 
-// 투자 계좌 정보 인터페이스
-interface InvestmentAccountInfo {
-  accountNo: string;
-  balance: number;
-}
-
-// 투자 계좌 정보 불러오는 함수
-export const fetchInvestmentAccountInfo =
-  async (): Promise<InvestmentAccountInfo> => {
-    try {
-      const response = await axiosInstance.get('api/member/saving-balance');
-      console.log('투자 계좌 응답 전체:', response);
-      if (response.status === 200) {
-        const { accountNo, money } = response.data;
-        console.log('투자 계좌 정보 : ', { accountNo, balance: money });
-        return {
-          accountNo: accountNo,
-          balance: money,
-        };
-      } else {
-        console.error(
-          'Failed to fetch investment account information: Status not 200'
-        );
-        throw new Error('Failed to fetch investment account information');
-      }
-    } catch (error) {
-      console.error('Failed to fetch investment account information:', error);
-      throw error;
-    }
-  };
-
 export const fetchAutoInvestment = async () => {
   try {
     const response = await axiosInstance.get('/api/auto-funding');

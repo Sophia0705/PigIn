@@ -78,7 +78,7 @@ const LoginModal: React.FC = () => {
       onClick={closeLoginModal}
     >
       <div
-        className="relative bg-white rounded-lg w-full max-w-md px-6 py-6 animate-slide-up"
+        className="relative bg-white font-black rounded-lg w-full max-w-md px-6 py-6 animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 닫기 버튼 */}
@@ -105,7 +105,7 @@ const LoginModal: React.FC = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-xl rounded-lg block w-full p-2.5"
+              className="bg-gray-50 border border-gray-300 text-xl text-gray-700 rounded-lg block w-full p-2.5"
               placeholder="ssafy@samsung.com"
               required
             />
@@ -124,7 +124,7 @@ const LoginModal: React.FC = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-xl rounded-lg block w-full p-2.5 pr-12" // pr-12을 추가하여 오른쪽 여백 확보
+              className="bg-gray-50 border border-gray-300 text-xl text-gray-700 rounded-lg block w-full p-2.5 pr-12" // pr-12을 추가하여 오른쪽 여백 확보
               required
             />
             {/* 비밀번호 보이기/숨기기 아이콘 */}

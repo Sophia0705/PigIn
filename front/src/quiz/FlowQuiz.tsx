@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { create } from 'zustand';
+import { useNavigate } from 'react-router-dom';
 import ShadowButton from '../components/ShadowButton';
 import QImg from '../assets/Q_image.svg?url';
 import {
   FlowQuizData,
-  FlowQuizResult,
+  FlowQuizRequest,
   fetchQuizData,
   submitQuizResult,
 } from '../api/quiz/flowQuiz';
@@ -14,7 +15,7 @@ interface FlowQuizStore {
   loading: boolean;
   error: string | null;
   fetchQuizData: () => Promise<void>;
-  submitQuizResult: (result: FlowQuizResult) => Promise<void>;
+  submitQuizResult: (result: FlowQuizRequest) => Promise<void>;
 }
 
 const useFlowQuizStore = create<FlowQuizStore>((set) => ({
@@ -41,26 +42,26 @@ const useFlowQuizStore = create<FlowQuizStore>((set) => ({
   },
 }));
 
-interface ModalProps {
-  onClose: () => void;
-}
+const ResultModal = () => {
+  const navigate = useNavigate();
 
-const ResultModal = ({ onClose }: ModalProps) => (
-  <div className="fixed inset-0 bg-gray-600 bg-opacity-40 overflow-y-auto h-full w-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
-    <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md">
-      <p className="text-2xl font-semibold mb-4">내일을 기대하세요!</p>
-      <p className="text-xl text-gray-600 mb-6">
-        결과는 내일 확인할 수 있습니다.
-      </p>
-      <button
-        onClick={onClose}
-        className="mt-4 bg-customAqua text-white font-bold py-2 px-4 rounded"
-      >
-        확인
-      </button>
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-40 overflow-y-auto h-full w-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
+      <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md">
+        <p className="text-2xl font-semibold mb-4">내일을 기대하세요!</p>
+        <p className="text-xl text-gray-600 mb-6">
+          결과는 내일 확인할 수 있습니다.
+        </p>
+        <button
+          onClick={() => navigate('/main')}
+          className="mt-4 bg-customAqua text-white font-bold py-2 px-4 rounded"
+        >
+          확인
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const FlowQuizPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -74,13 +75,12 @@ const FlowQuizPage = () => {
   const handleAnswer = async (prediction: 'UP' | 'DOWN') => {
     if (!quizData) return;
 
-    const result: FlowQuizResult = { id: quizData.id, prediction };
+    const result: FlowQuizRequest = {
+      stockCode: Number(quizData.stockCode),
+      memberAnswer: prediction === 'UP' ? 'O' : 'X',
+    };
     await submitQuizResult(result);
     setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
   };
 
   if (loading) {
@@ -120,7 +120,7 @@ const FlowQuizPage = () => {
           <ShadowButton text="DOWN" onClick={() => handleAnswer('DOWN')} />
         </div>
       </div>
-      {showModal && <ResultModal onClose={closeModal} />}
+      {showModal && <ResultModal />}
     </div>
   );
 };
