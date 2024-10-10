@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface GoldService {
 
-    void goldTradeRequest(GoldTradeDto buyGoldDto, Long userId);
+    void goldTradeRequest(GoldTradeDto buyGoldDto, Long userId, boolean isAutoFund);
 
     List<GoldYearDto> goldYearList();
 
