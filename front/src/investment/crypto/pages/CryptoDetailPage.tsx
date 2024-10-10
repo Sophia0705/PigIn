@@ -264,7 +264,7 @@ const CryptoDetailPage: React.FC = () => {
           value: price,
         };
       } else {
-        const pastDate = subDays(currentDate, index);
+        const pastDate = subDays(currentDate, index + 1);
         return {
           name: format(pastDate, 'yyyy-MM-dd'),
           value: price,

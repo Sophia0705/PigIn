@@ -50,7 +50,7 @@ const InvestmentPage: React.FC = () => {
       try {
         const weeklyData = await getWeeklyCryptoChartData('KRW-BTC', 'day');
 
-        const formattedData = weeklyData.reverse().map((data) => ({
+        const formattedData = weeklyData.map((data) => ({
           name: data.coin_bsop_date,
           value: data.coin_clpr,
         }));
