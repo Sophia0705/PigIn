@@ -60,9 +60,9 @@ const Dashboard = () => {
 
   const categories = useMemo(
     () => [
-      { name: '주식', value: stockPrice },
-      { name: '암호화폐', value: cryptoPrice },
-      { name: '금', value: goldPrice },
+      { name: '주식', value: isNaN(stockPrice) ? 0 : stockPrice },
+      { name: '암호화폐', value: isNaN(cryptoPrice) ? 0 : cryptoPrice },
+      { name: '금', value: isNaN(goldPrice) ? 0 : goldPrice },
     ],
     [stockPrice, cryptoPrice, goldPrice]
   );
