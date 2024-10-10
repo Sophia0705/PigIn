@@ -28,7 +28,7 @@ const StockNews: React.FC<StockNewsProps> = ({ stockId }) => {
         <p>뉴스 없음</p>
       ) : (
         newsData.map((news, index) => {
-          const formattedDate = news.Date.slice(6, 11);
+          const formattedDate = news.Date.slice(5, 10);
           return (
             <div key={index} className="border-b pt-1 pb-2 border-gray-300">
               <div className="flex justify-between items-center">
