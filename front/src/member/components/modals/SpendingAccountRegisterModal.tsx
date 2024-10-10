@@ -241,14 +241,14 @@ const SpendingAccountRegisterModal: React.FC = () => {
           className="flex flex-col space-y-3 w-full"
         >
           {/* 이름 입력 필드 */}
-          <input
+          {/* <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             placeholder="이름"
             className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-          />
+          /> */}
           <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 은행 선택 필드 */}
           <select
