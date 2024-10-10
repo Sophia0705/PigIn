@@ -65,7 +65,9 @@ public class PayServiceImpl implements PayService {
             throw new BuyErrorException();
         }
 
-        mmsService.sendMMS(getMessage(member.getName(), memberAccount.getBank(), memberAccount.getAccountNo()), member.getPhoneNumber());
+        mmsService.sendMMS(
+            getMessage(member.getName(), memberAccount.getBank(), memberAccount.getAccountNo()),
+            member.getPhoneNumber());
         log.info("문자 발송 후");
 
         //비율이 없으면 아래 로직 설정 필요 x
@@ -131,7 +133,7 @@ public class PayServiceImpl implements PayService {
                 .builder()
                 .method("BUY")
                 .tradePrice(goldPrice)
-                .build(), member.getId());
+                .build(), member.getId(), false);
         }
     }
 
@@ -143,7 +145,8 @@ public class PayServiceImpl implements PayService {
         String formattedPrice = String.format("%,d", PRICE);
 
         String message = bankName + "(" + accountNo.substring(accountNo.length() - 4) + ") 승인 \n"
-            + memberName.substring(0, 1) + "*" + memberName.substring(2) + "\n" + formattedPrice + "원\n"
+            + memberName.substring(0, 1) + "*" + memberName.substring(2) + "\n" + formattedPrice
+            + "원\n"
             + formattedDateTime + "\n" + "PigIn 주식회사";
 
         return message;
