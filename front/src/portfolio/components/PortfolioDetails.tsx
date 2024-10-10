@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePortfolioStore } from '../../store/portfolioStore';
 import { FixedSizeList as List } from 'react-window';
@@ -35,37 +35,12 @@ const PortfolioDetails: React.FC = () => {
     isLoading,
     error,
     showAllItems,
-    fetchPortfolioData,
   } = usePortfolioStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [loadingItem, setLoadingItem] = useState<boolean>(false);
-  const [dataFetched, setDataFetched] = useState<boolean>(false);
-
-  useEffect(() => {
-    const loadData = async () => {
-      console.log('Fetching portfolio data...');
-      await fetchPortfolioData();
-      setDataFetched(true);
-      console.log('Portfolio data fetched.');
-    };
-
-    if (!dataFetched) {
-      loadData();
-    }
-  }, [fetchPortfolioData, dataFetched]);
 
   const items: ItemData[] = useMemo(() => {
-    console.log(
-      'Calculating items. activeIndex:',
-      activeIndex,
-      'showAllItems:',
-      showAllItems
-    );
-    console.log('Current stocks:', stocks);
-    console.log('Current cryptocurrencies:', cryptocurrencies);
-    console.log('Current gold:', gold);
-
     if (showAllItems) {
       return [
         ...stocks,
@@ -215,24 +190,12 @@ const PortfolioDetails: React.FC = () => {
     );
   };
 
-  if (isLoading || loadingItem || !dataFetched) {
-    return <div className="text-center py-4">Loading portfolio data...</div>;
+  if (isLoading || loadingItem) {
+    return <div className="text-center py-4">Loading...</div>;
   }
 
   if (error) {
-    return (
-      <div className="text-center py-4 text-red-500">
-        Error loading portfolio: {error}
-      </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="text-center py-4">
-        No items to display. Please check your portfolio.
-      </div>
-    );
+    return <div className="text-center py-4 text-red-500">Error: {error}</div>;
   }
 
   return (
