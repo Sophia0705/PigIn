@@ -203,7 +203,6 @@ public class CoinServiceImpl implements CoinService {
     @Override
     public void sellCoin(Long userId, String coinCode, Double amount) throws InsufficientAmountException {
         // 1. 입력 확인
-//        log.info("coinsell = {}, {}", userId, coinCode);
         CoinItem coinItem = coinItemRepository.findById(coinCode)
             .orElseThrow(() -> new BadRequestException("No such coin"));
         Members member = memberService.findMemberById(userId);
@@ -212,26 +211,21 @@ public class CoinServiceImpl implements CoinService {
                 coinCode)
             .orElseThrow();
 
-//        Double amount = price / mongoCoinMinute.getClose();
-
-        CoinPortfolio coinPortfolio = valiateCoinPortfolio(coinItem, member, amount);
+        CoinPortfolio coinPortfolio = valiateCoinPortfolio(coinItem, member);
+        amount = setMaxCount(amount, coinPortfolio);
 
         // 2. 코인 보유량 감소
         sellCoinPortfolio(coinPortfolio, -amount);
         try {
             // 3. 거래
             SecuritiesCoinTrade securitiesCoinTrade = SecuritiesCoinSell(coinCode, amount);
-//            log.info("거래 끝");
             // 4. 저장
             saveTradeRecode(member, coinItem, amount, securitiesCoinTrade.getResult(),
                 TradeMethod.SELL);
-//            log.info("저장 끝");
             // 5. 입금
             long salePrice = Math.round(securitiesCoinTrade.getResult());
-//            log.info("거래내역:{}", securitiesCoinTrade);
 
-//            log.info("입금 끝");
-            if (!deposit(userId, salePrice)) {
+            if (salePrice > 0 && !deposit(userId, salePrice)) {
                 throw new InternalServerException("입금 실패");
             }
         } catch (Exception e) {
@@ -519,7 +513,11 @@ public class CoinServiceImpl implements CoinService {
 
     private void sellCoinPortfolio(CoinPortfolio coinPortfolio, Double amount) {
         coinPortfolio.addAmount(amount);
-        coinPortfolioRepository.save(coinPortfolio);
+        if (coinPortfolio.getAmount() == 0) {
+            coinPortfolioRepository.delete(coinPortfolio);
+        } else {
+            coinPortfolioRepository.save(coinPortfolio);
+        }
     }
 
     private void buyCoinPortfolio(CoinPortfolio coinPortfolio, Double amount, Double price) {
@@ -529,15 +527,16 @@ public class CoinServiceImpl implements CoinService {
         coinPortfolioRepository.save(coinPortfolio);
     }
 
-    private CoinPortfolio valiateCoinPortfolio(CoinItem coinItem, Members members, Double amount) throws InsufficientAmountException {
-        CoinPortfolio coinPortfolio = coinPortfolioRepository.findByCoinItemAndMember(coinItem,
+    private CoinPortfolio valiateCoinPortfolio(CoinItem coinItem, Members members) throws InsufficientAmountException {
+        return coinPortfolioRepository.findByCoinItemAndMember(coinItem,
                 members)
             .orElseThrow(() -> new BadRequestException("No such coin item"));
-//        log.info("coinPortfolio = {} : {} - {}", coinPortfolio.getCoinItem().getName(),
-//                coinPortfolio.getAmount(), amount);
-        if (amount > coinPortfolio.getAmount()) {
-            throw new InsufficientAmountException("보유 코인 수량 부족");
+    }
+
+    private Double setMaxCount(Double count, CoinPortfolio coinPortfolio) {
+        if (coinPortfolio.getAmount() < count) {
+            return coinPortfolio.getAmount();
         }
-        return coinPortfolio;
+        return count;
     }
 }

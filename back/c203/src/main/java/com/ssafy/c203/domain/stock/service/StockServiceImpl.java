@@ -417,7 +417,6 @@ public class StockServiceImpl implements StockService {
 
     private Double setMaxCount(Double count, StockPortfolio stockPortfolio) {
         if (stockPortfolio.getAmount() < count) {
-//            stockPortfolioRepository.delete(stockPortfolio);
             return stockPortfolio.getAmount();
         }
         return count;
