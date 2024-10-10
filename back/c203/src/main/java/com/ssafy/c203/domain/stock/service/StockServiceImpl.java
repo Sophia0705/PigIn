@@ -11,10 +11,7 @@ import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
 import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
-import com.ssafy.c203.domain.stock.dto.response.FindStockChartAllResponse;
-import com.ssafy.c203.domain.stock.dto.response.FindStockNowResponse;
-import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
-import com.ssafy.c203.domain.stock.dto.response.StockRankDto;
+import com.ssafy.c203.domain.stock.dto.response.*;
 import com.ssafy.c203.domain.stock.entity.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
@@ -53,16 +50,15 @@ public class StockServiceImpl implements StockService {
     private final MongoStockHistoryRepository mongoStockHistoryRepository;
     private final MongoStockMinuteRepository mongoStockMinuteRepository;
     private final StockItemRepository stockItemRepository;
-    private final StockTradeRepository stockTradeRepository; ;
+    private final StockTradeRepository stockTradeRepository;
     private final StockPortfolioRepository stockPortfolioRepository;
     private final StockFavoriteRepository stockFavoriteRepository;
     private final StockAutoFundingRepository stockAutoFundingRepository;
-
+    private final StockWaitingQueueRepository stockWaitingQueueRepository;
 
     private final MemberService memberService;
     private final AccountService accountService;
     private final RestTemplate restTemplate;
-    private final StockWaitingQueueRepository stockWaitingQueueRepository;
     private Map<String, String> intervals;
 
     @Value("${ssafy.securities.url}")
@@ -186,15 +182,18 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public boolean sellStock(Long userId, String stockId, Double count, boolean isAuto) throws InsufficientAmountException {
+    public boolean sellStock(Long userId, String stockId, Double count, boolean isAuto)  {
         // 입력 검증
         StockItem stockItem = stockItemRepository.findById(stockId)
                 .orElseThrow(() -> new RuntimeException("주식을 찾을 수 없습니다: " + stockId));
         Members member = memberService.findMemberById(userId);
-        StockPortfolio stockPortfolio = validateStockPortfolio(stockId, userId, count);
+        StockPortfolio stockPortfolio = validateStockPortfolio(stockId, userId);
+        count = setMaxCount(count, stockPortfolio);
 
         // 1. 보유 주식 수량 감소
-        subStockPortfolio(stockPortfolio, count);
+        if (!isAuto) {
+            subStockPortfolio(stockPortfolio, count);
+        }
         try {
 //            if (isBusinessHours()) {
             if (true) {
@@ -204,11 +203,11 @@ public class StockServiceImpl implements StockService {
                 saveTradeRecord(member, stockItem, count, tradeResult.getTradePrice(), TradeMethod.SELL);
                 // 4. 입금 처리
                 long saleAmount = Math.round(tradeResult.getResult());
-                if (!deposit(userId, saleAmount)) {
+                if (saleAmount > 0 && !deposit(userId, saleAmount)) {
                     throw new RuntimeException("매도 금액 입금 실패");
                 }
                 return true;
-            } else if(!isAuto) {
+            } else if (!isAuto) {
                 // 6. 대기 큐에 저장
                 saveToWaitingQueue(member, stockItem, count, 0.0, TradeMethod.SELL);
                 return false;
@@ -384,7 +383,7 @@ public class StockServiceImpl implements StockService {
         findStockNowResponse.setLive(false);
         MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElse(null);
-        if (stockMinute != null)  {
+        if (stockMinute != null) {
             findStockNowResponse.setData(new FindStockChartAllResponse(stockMinute));
 
             if (stockMinute.getDate() != null && stockMinute.getTime() != null) {
@@ -411,13 +410,17 @@ public class StockServiceImpl implements StockService {
     }
 
     // 해당 주식 판매 여부 검증
-    private StockPortfolio validateStockPortfolio(String stockId, Long userId, Double count) throws InsufficientAmountException {
-        StockPortfolio stockPortfolio = stockPortfolioRepository.findByStockItem_IdAndMember_Id(stockId, userId)
+    private StockPortfolio validateStockPortfolio(String stockId, Long userId) {
+        return stockPortfolioRepository.findByStockItem_IdAndMember_Id(stockId, userId)
                 .orElseThrow(() -> new BadRequestException("해당 주식 포트폴리오를 찾을 수 없습니다."));
+    }
+
+    private Double setMaxCount(Double count, StockPortfolio stockPortfolio) {
         if (stockPortfolio.getAmount() < count) {
-            throw new InsufficientAmountException("보유 주식 수량이 부족합니다.");
+//            stockPortfolioRepository.delete(stockPortfolio);
+            return stockPortfolio.getAmount();
         }
-        return stockPortfolio;
+        return count;
     }
 
     // Securities 에 판매 요청
@@ -469,7 +472,11 @@ public class StockServiceImpl implements StockService {
     // 주식 보유량 감소
     private void subStockPortfolio(StockPortfolio stockPortfolio, Double amount) {
         stockPortfolio.subAmount(amount);
-        stockPortfolioRepository.save(stockPortfolio);
+        if (stockPortfolio.getAmount() == 0) {
+            stockPortfolioRepository.delete(stockPortfolio);
+        } else {
+            stockPortfolioRepository.save(stockPortfolio);
+        }
     }
 
     // 대기 큐 삽입

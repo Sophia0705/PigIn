@@ -69,7 +69,7 @@ public class GoldServiceImpl implements GoldService {
 
 
     @Override
-    public void goldTradeRequest(GoldTradeDto buyGoldDto, Long userId) {
+    public void goldTradeRequest(GoldTradeDto buyGoldDto, Long userId, boolean isAutoFund) {
         log.info("{} 거래 들어옴", buyGoldDto.getMethod());
         Members member = membersRepository.findById(userId)
             .orElseThrow(MemberNotFoundException::new);
@@ -90,6 +90,13 @@ public class GoldServiceImpl implements GoldService {
                         throw new MoreSellException();
                     }
 
+                    GoldPortfolio goldPortfolio = goldPortfolioRepository.findByMember_Id(userId)
+                        .get();
+
+                    if (!isAutoFund) {
+                        goldPortfolio.minusAmount(getGoldCount(tradePrice, getGoldPrice()));
+                    }
+
                     goldWaitingQueueRepository.save(GoldWaitingQueue
                         .builder()
                         .member(member)
@@ -101,7 +108,7 @@ public class GoldServiceImpl implements GoldService {
                     throw new TradeErrorExeption();
                 }
                 //통장에 돈 넣어주기
-                accountService.depositAccount(member.getId(), (long) tradePrice);
+//                accountService.depositAccount(member.getId(), (long) tradePrice);
                 log.info("거래완료");
                 return;
             } else {
@@ -113,8 +120,10 @@ public class GoldServiceImpl implements GoldService {
                     }
 
                     //돈 빼기
-                    accountService.withdrawAccount(member.getId(), (long) tradePrice);
-                    log.info("돈빼기 완료 ~");
+                    if (!isAutoFund) {
+                        accountService.withdrawAccount(member.getId(), (long) tradePrice);
+                        log.info("돈빼기 완료 ~");
+                    }
                 } catch (Exception e) {
                     log.info("돈빼다 오류 발생 삐용삐용");
                     throw new TradeErrorExeption();
@@ -129,7 +138,7 @@ public class GoldServiceImpl implements GoldService {
             }
         }
 
-        tradeGold(buyGoldDto, member);
+        tradeGold(buyGoldDto, member, isAutoFund);
     }
 
     @Override
@@ -280,7 +289,7 @@ public class GoldServiceImpl implements GoldService {
     }
 
     @Transactional
-    void tradeGold(GoldTradeDto goldTradeDto, Members member) {
+    void tradeGold(GoldTradeDto goldTradeDto, Members member, boolean isAutoFunding) {
         log.info("장내 {} 거래 들어옴", goldTradeDto.getMethod());
         int goldPrice = getGoldPrice();
         log.info("금 가격 : {}", goldPrice);
@@ -291,22 +300,24 @@ public class GoldServiceImpl implements GoldService {
         TradeMethod tradeMethod = null;
         if (goldTradeDto.getMethod().equals("SELL")) {
             try {
-                //거래 가능 검증
-                log.info("SELL 요청 들어옴");
-                boolean canSell = compareGold(member, count);
-                if (!canSell) {
-                    log.info("장 내 팔수 없다 마 걔쉐이야!");
-                    throw new MoreSellException();
+
+                if(!isAutoFunding) {
+                    //거래 가능 검증
+                    log.info("SELL 요청 들어옴");
+                    boolean canSell = compareGold(member, count);
+                    if (!canSell) {
+                        log.info("장 내 팔수 없다 마 걔쉐이야!");
+                        throw new MoreSellException();
+                    }
+
+                    tradeMethod = TradeMethod.SELL;
+
+                    //보유량 업데이트
+                    goldPortfolioRepository.findByMember_Id(
+                            member.getId()).orElseThrow(
+                            PortfolioNotFoundException::new).minusAmount(count);
+//                    goldPortfolio.minusAmount(count);
                 }
-
-                tradeMethod = TradeMethod.SELL;
-
-                //보유량 업데이트
-                GoldPortfolio goldPortfolio = goldPortfolioRepository.findByMember_Id(
-                    member.getId()).orElseThrow(
-                    PortfolioNotFoundException::new);
-
-                goldPortfolio.minusAmount(count);
 
                 goldTradeRepository.save(GoldTrade
                     .builder()
@@ -323,13 +334,15 @@ public class GoldServiceImpl implements GoldService {
             accountService.depositAccount(member.getId(), (long) tradePrice);
         } else {
             try {
-                //통장 돈 검증
-                boolean canBuy = checkAccount(member, tradePrice);
-                if (!canBuy) {
-                    throw new NoMoneyException();
+                //통장 돈 검증 돈 빼기
+                if (!isAutoFunding) {
+                    boolean canBuy = checkAccount(member, tradePrice);
+                    if (!canBuy) {
+                        throw new NoMoneyException();
+                    }
+
+                    accountService.withdrawAccount(member.getId(), (long) tradePrice);
                 }
-                //돈 빼기
-                accountService.withdrawAccount(member.getId(), (long) tradePrice);
             } catch (Exception e) {
                 throw new TradeErrorExeption();
             }
