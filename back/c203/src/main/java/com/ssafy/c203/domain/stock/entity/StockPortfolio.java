@@ -37,6 +37,6 @@ public class StockPortfolio {
     }
 
     public void updatePriceAvg(Double priceAvg, Double newAmount) {
-        this.priceAvg = (priceAvg * amount + priceAvg * newAmount) / (amount * newAmount);
+        this.priceAvg = (priceAvg * amount + priceAvg * newAmount) / (amount + newAmount);
     }
 }
