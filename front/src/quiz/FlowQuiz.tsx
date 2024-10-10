@@ -76,7 +76,7 @@ const FlowQuizPage = () => {
     if (!quizData) return;
 
     const result: FlowQuizRequest = {
-      stockCode: Number(quizData.stockCode),
+      stockCode: quizData.stockCode,
       memberAnswer: prediction === 'UP' ? 'O' : 'X',
     };
     await submitQuizResult(result);
@@ -105,10 +105,16 @@ const FlowQuizPage = () => {
         >
           <h2 className="text-3xl font-bold mb-4">{quizData.stockName}</h2>
           <p className="text-xl mb-4">
-            현재 가격: {quizData.currentPrice.toLocaleString()}원
+            가격:{' '}
+            {quizData.currentPrice.toLocaleString('ko-KR', {
+              style: 'decimal',
+            })}
+            원
           </p>
           <p className="text-2xl text-gray-800 font-semibold text-center">
-            내일 이 주식의 가격이 오를까요, 내릴까요?
+            내일 이 주식의 가격이
+            <br />
+            오를까요, 내릴까요?
           </p>
         </div>
       </div>

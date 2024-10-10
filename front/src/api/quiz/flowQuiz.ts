@@ -7,7 +7,7 @@ export interface FlowQuizData {
 }
 
 export interface FlowQuizRequest {
-  stockCode: number;
+  stockCode: string;
   memberAnswer: 'O' | 'X';
 }
 
