@@ -81,6 +81,12 @@ public class PayServiceImpl implements PayService {
             throw new DepositErrorException();
         }
 
+        Boolean isWithdrawal = accountService.withdrawTradeAccount(member, tradeAccountNo,
+            Long.valueOf(money));
+        if (!isWithdrawal) {
+            throw new DepositErrorException();
+        }
+
         //잔액확인
         Long remindMoney = accountService.findDAccountBalanceByMemberId(
             member.getId());
