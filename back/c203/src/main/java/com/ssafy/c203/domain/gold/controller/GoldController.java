@@ -28,7 +28,7 @@ public class GoldController {
         @AuthenticationPrincipal
         CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUserId();
-        goldService.goldTradeRequest(buyGoldDto, userId);
+        goldService.goldTradeRequest(buyGoldDto, userId, false);
         return ResponseEntity.ok("거래 완료");
     }
 
