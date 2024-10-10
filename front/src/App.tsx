@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { registerServiceWorker, getDeviceToken } from './utils/notification';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -31,22 +30,14 @@ import CryptoFavoritesPage from './member/pages/CryptoFavoritesPage';
 import TestPage from './member/pages/TestPage';
 import QRPaymentPage from './member/pages/QRPaymentPage';
 
+if (process.env.NODE_ENV === 'production') {
+  const console = window.console || {};
+  console.log = function no_console() {};
+  console.warn = function no_console() {};
+  console.error = function () {};
+}
+
 const App: React.FC = () => {
-  useEffect(() => {
-    const setupPushNotifications = async () => {
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        await registerServiceWorker();
-        const token = await getDeviceToken();
-        console.log('FCM Token:', token);
-      } else {
-        console.log('Notification permission denied');
-      }
-    };
-
-    setupPushNotifications();
-  }, []);
-
   return (
     <Router>
       <Layout>
