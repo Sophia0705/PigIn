@@ -1,85 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CryptoItem from './CryptoItem';
-import {
-  CryptoListData,
-  CryptoItemData,
-  CryptoChartData,
-} from '../../investment/interfaces/CryptoInterface';
-import { getCryptoList } from '../../api/investment/crypto/CryptoList';
+import { CryptoItemData } from '../../investment/interfaces/CryptoInterface';
 import {
   getWeeklyCryptoChartData,
   getMonthlyCryptoChartData,
   getYearlyCryptoChartData,
 } from '../../api/investment/crypto/CryptoChartData';
 import { getIndividualCryptoData } from '../../api/investment/crypto/IndividualCryptoData';
+import { fetchCryptoFavoriteAPI } from '../../api/member/fetchCryptoFavoriteAPI';
 
 interface CryptoListProps {
   limit?: number; // 표시할 암호화폐 항목의 최대 개수 (선택적)
   showTitle?: boolean; // 제목과 "더 보기" 버튼 표시 여부 (기본값은 true)
 }
 
-const CryptoList: React.FC<CryptoListProps> = ({ limit, showTitle = true }) => {
+const CryptoList: React.FC<CryptoListProps> = ({
+  limit = 5,
+  showTitle = true,
+}) => {
   const [cryptoData, setCryptoData] = useState<CryptoItemData[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // API 호출 함수
   const fetchCryptoData = async () => {
-    const cryptoList: CryptoListData[] = await getCryptoList();
+    try {
+      // fetchCryptoFavoriteAPI를 사용하여 찜한 가상화폐 목록만 가져오기
+      const favoriteCryptoList = await fetchCryptoFavoriteAPI(limit);
 
-    const detailedCryptoData = await Promise.all(
-      cryptoList.map(async (crypto) => {
-        const details = await getIndividualCryptoData(crypto.coin);
+      const detailedCryptoData = await Promise.all(
+        favoriteCryptoList.map(async (crypto: any) => {
+          const { coin } = crypto;
 
-        // 주간, 월간, 연간 차트 데이터 가져오기
-        const weeklyChartData: CryptoChartData[] =
-          await getWeeklyCryptoChartData(crypto.coin, 'day');
-        const monthlyChartData: CryptoChartData[] =
-          await getMonthlyCryptoChartData(crypto.coin, 'day');
-        const yearlyChartData: CryptoChartData[] =
-          await getYearlyCryptoChartData(crypto.coin, 'month');
+          // 개별 가상화폐 상세 정보와 차트 데이터 가져오기
+          const details = await getIndividualCryptoData(coin);
+          const weeklyChartData = await getWeeklyCryptoChartData(coin, 'day');
+          const monthlyChartData = await getMonthlyCryptoChartData(coin, 'day');
+          const yearlyChartData = await getYearlyCryptoChartData(coin, 'month');
 
-        // 주간, 월간, 연간 종가 데이터 추출 (배열 순서 유지)
-        const weeklyPrices = weeklyChartData.map((data) => data.coin_clpr);
-        const monthlyPrices = monthlyChartData.map((data) => data.coin_clpr);
-        const yearlyPrices = yearlyChartData.map((data) => data.coin_clpr);
+          // 주간, 월간, 연간 종가 데이터 추출 (배열 순서 유지)
+          const weeklyPrices = weeklyChartData.map((data) => data.coin_clpr);
+          const monthlyPrices = monthlyChartData.map((data) => data.coin_clpr);
+          const yearlyPrices = yearlyChartData.map((data) => data.coin_clpr);
 
-        // price와 priceChange를 CryptoListData에서 가져와 설정
-        let price = parseFloat(crypto.price);
-        const priceChange = crypto.priceChange;
+          // price와 priceChange를 fetchCryptoFavoriteAPI에서 가져와 설정
+          const price = parseFloat(crypto.price);
+          const priceChange = crypto.priceChange;
 
-        // 비트코인 가격 가져오기
-        const bitcoinPriceData = cryptoList.find(
-          (item) => item.coin === 'KRW-BTC'
-        );
-        const bitcoinPrice = bitcoinPriceData
-          ? parseFloat(bitcoinPriceData.price)
-          : 0;
+          return {
+            ...details,
+            price,
+            priceChange,
+            weeklyPrices,
+            monthlyPrices,
+            yearlyPrices,
+          };
+        })
+      );
 
-        // 비트코인캐시와 이더리움클래식의 가격 재조정 (price만)
-        if (crypto.coin === 'BTC-BCH' || crypto.coin === 'BTC-ETC') {
-          if (bitcoinPrice) {
-            price = parseFloat((price * bitcoinPrice).toFixed(0));
-          }
-        }
-
-        return {
-          ...details,
-          price,
-          priceChange,
-          weeklyPrices,
-          monthlyPrices,
-          yearlyPrices,
-        };
-      })
-    );
-
-    const filteredCryptoData = detailedCryptoData.filter(
-      (crypto) => crypto !== null
-    ) as CryptoItemData[];
-
-    setCryptoData(filteredCryptoData);
-    setLoading(false);
+      setCryptoData(detailedCryptoData);
+    } catch (error) {
+      console.error('가상화폐 찜 목록 불러오기 실패:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -92,7 +77,7 @@ const CryptoList: React.FC<CryptoListProps> = ({ limit, showTitle = true }) => {
     });
   };
 
-  if (loading) return null;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="bg-white rounded-lg shadow-md w-[352px] mx-auto p-4 mb-0">
@@ -113,7 +98,7 @@ const CryptoList: React.FC<CryptoListProps> = ({ limit, showTitle = true }) => {
       )}
 
       <div className="p-0">
-        {cryptoData.slice(0, limit).map((crypto) => (
+        {cryptoData.map((crypto) => (
           <div
             key={crypto.coin}
             onClick={() => handleItemClick(crypto)}

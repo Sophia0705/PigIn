@@ -30,9 +30,12 @@ export const logoutAPI = async (): Promise<boolean> => {
         '로그아웃 요청 실패:',
         error.response?.data || error.message
       );
+      removeAccessToken();
+
       return false;
     } else {
       console.error('로그아웃 요청 실패:', error);
+      removeAccessToken();
       return false;
     }
   }
