@@ -29,10 +29,10 @@
         navigator.serviceWorker
           .register('/sw.js')
           .then((registration) => {
-            console.log('Service worker 등록 성공:', registration);
+            // console.log('Service worker 등록 성공:', registration);
           })
           .catch((err) => {
-            console.log('Service worker 등록 실패:', err);
+            // console.log('Service worker 등록 실패:', err);
           });
       } else {
         console.log('Service worker 지원 불가');
