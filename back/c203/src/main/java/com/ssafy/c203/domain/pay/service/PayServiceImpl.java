@@ -8,6 +8,7 @@ import com.ssafy.c203.domain.gold.dto.request.GoldTradeDto;
 import com.ssafy.c203.domain.gold.entity.GoldAutoFunding;
 import com.ssafy.c203.domain.gold.repository.GoldAutoFundingRepository;
 import com.ssafy.c203.domain.gold.service.GoldService;
+import com.ssafy.c203.domain.members.entity.AutoFundingStatus;
 import com.ssafy.c203.domain.members.entity.MemberAccount;
 import com.ssafy.c203.domain.members.entity.Members;
 import com.ssafy.c203.domain.members.exceprtion.MemberNotFoundException;
@@ -85,6 +86,10 @@ public class PayServiceImpl implements PayService {
             Long.valueOf(money));
         if (!isWithdrawal) {
             throw new DepositErrorException();
+        }
+
+        if (member.getAutoFundingStatus().equals(AutoFundingStatus.INACTIVE)) {
+            return;
         }
 
         //잔액확인
