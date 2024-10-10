@@ -22,7 +22,7 @@ public class StockSchedule {
 
 
     //    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 31 9 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 33 10 * * *", zone = "Asia/Seoul")
     public void runStockJob() {
         try {
             log.info("StockSchedule schedule start");
