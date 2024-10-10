@@ -62,7 +62,7 @@ const InvestmentInfoCard: React.FC<InvestmentInfoCardProps> = ({
         {isLoggedIn ? (
           <>
             <p className="text-xl text-right font-bold mb-4">
-              총 자산: {totalAsset.toLocaleString()}원
+              투자 자산: {totalAsset.toLocaleString()}원
             </p>
             <hr />
           </>
