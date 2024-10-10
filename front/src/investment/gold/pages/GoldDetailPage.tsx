@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 import { CgChevronLeft, CgCheckR, CgAddR } from 'react-icons/cg';
 import GoldPurchaseModal from '../components/modals/GoldPurchaseModal';
@@ -15,11 +14,6 @@ import {
   getThreeMonthlyGoldChartData,
   getYearlyGoldChartData,
 } from '../../../api/investment/gold/GoldChartData';
-import {
-  addGoldToFavorite,
-  removeGoldFromFavorite,
-  checkIfFavorite,
-} from '../../../api/investment/gold/GoldFavorite';
 import {
   GoldItemData,
   GoldChartDataResponse,
@@ -39,7 +33,6 @@ const GoldDetailPage: React.FC = () => {
   );
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('7일');
   const [selectedInfoType, setSelectedInfoType] = useState<string>('상세정보');
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isBuyModalVisible, setIsBuyModalVisible] = useState(false);
   const [buyInputValue, setBuyInputValue] = useState<string>('00');
@@ -59,9 +52,6 @@ const GoldDetailPage: React.FC = () => {
 
     const checkStatus = async () => {
       try {
-        const isFav = await checkIfFavorite();
-        setIsFavorite(isFav);
-
         const isAuto = await isGoldInAutoInvestment();
         setIsAdded(isAuto);
       } catch (error) {
@@ -146,20 +136,6 @@ const GoldDetailPage: React.FC = () => {
     setSelectedInfoType(option);
   };
 
-  const handleHeartClick = async () => {
-    try {
-      if (isFavorite) {
-        await removeGoldFromFavorite();
-        setIsFavorite(false);
-      } else {
-        await addGoldToFavorite();
-        setIsFavorite(true);
-      }
-    } catch (error) {
-      console.error('즐겨찾기 추가/삭제 오류:', error);
-    }
-  };
-
   const handleBuyClick = () => {
     setIsBuyModalVisible(true);
   };
@@ -195,11 +171,6 @@ const GoldDetailPage: React.FC = () => {
         </div>
         <h1 className="text-xl font-bold text-center text-white">금</h1>
         <div className="flex items-center space-x-4 text-white">
-          <AuthGuardClickable onAuthSuccess={handleHeartClick}>
-            <div onClick={handleHeartClick}>
-              {isFavorite ? <FaHeart size={26} /> : <FaRegHeart size={26} />}
-            </div>
-          </AuthGuardClickable>
           <AuthGuardClickable onAuthSuccess={handleAddToPortfolio}>
             <div onClick={handleAddToPortfolio}>
               {isAdded ? <CgCheckR size={28} /> : <CgAddR size={28} />}
