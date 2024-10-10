@@ -10,6 +10,7 @@ import {
   verifyTransferAuthentication,
   registerSpendingAccount,
 } from '../../../api/member/accountAPI';
+import SubmissionCompleteModal from './SubmissionCompleteModal';
 
 const bankOptions = [
   '싸피뱅크',
@@ -42,6 +43,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
   const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
   const [failMessage, setFailMessage] = useState(''); // 실패 메시지
+  const [isSubmissionComplete, setIsSubmissionComplete] = useState(false); // 제출 완료 상태
 
   // 비밀번호 유효성 검사 함수
   const isPasswordValid = (password: string) => {
@@ -144,7 +146,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
 
       if (isSuccess) {
         setSuccessMessage('소비 계좌가 성공적으로 등록되었습니다.');
-        setShowSuccessModal(true);
+        setIsSubmissionComplete(true);
       } else {
         setFailMessage('계좌 등록에 실패했습니다. 다시 시도해주세요.');
         setShowFailModal(true);
@@ -210,6 +212,10 @@ const SpendingAccountRegisterModal: React.FC = () => {
     );
   };
 
+  const handleSuccessModalClose = () => {
+    window.location.reload();
+  };
+
   return (
     <div
       className="modal-content fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50"
@@ -259,52 +265,58 @@ const SpendingAccountRegisterModal: React.FC = () => {
             ))}
           </select>
 
-          {/* 계좌번호 입력 필드 및 1원 인증 버튼 */}
-          <div className="flex items-center space-x-2 w-full">
+          <div className="relative flex items-center space-x-2 w-full">
             <input
               type="text"
               name="accountNumber"
               value={formData.accountNumber}
               onChange={handleAccountNumberChange}
               placeholder="계좌번호"
-              className="flex-1 p-2 border-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="flex-1 p-2 border-b border-gray-300 rounded-none focus:outline-none focus:ring-0 focus:border-green-300" // 밑줄 추가
               maxLength={19}
             />
             <button
               type="button"
               onClick={handleAccountVerification}
               className={`px-3 py-2 rounded w-auto justify-center ${
-                formData.accountNumber
-                  ? 'bg-[#9CF8E1] text-gray-900'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                isCodeInputVisible
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' // 요청 완료 시 회색으로 변경
+                  : formData.accountNumber
+                    ? 'bg-[#9CF8E1] text-gray-900'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={!formData.accountNumber}
             >
-              1원 인증
+              {isCodeInputVisible ? '요청 완료' : '1원 인증'}
             </button>
           </div>
 
-          {/* 인증번호 입력 필드 및 인증 확인 버튼 */}
-          {isCodeInputVisible && (
-            <>
-              <input
-                type="text"
-                name="verificationCode"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                placeholder="인증번호"
-                className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              />
-              <button
-                type="button"
-                onClick={handleVerificationSubmit}
-                className="px-3 py-2 mt-2 bg-[#9CF8E1] text-white rounded"
-              >
-                인증 확인
-              </button>
-            </>
-          )}
-          <hr className="w-[270px] mr-auth border-t border-gray-300 relative top-[-11px]" />
+          <div className="relative flex items-center space-x-2 w-full">
+            {isCodeInputVisible && (
+              <>
+                <input
+                  type="text"
+                  name="verificationCode"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  placeholder="인증번호"
+                  className="flex-1 p-2 border-b border-gray-300 rounded-none focus:outline-none focus:ring-0 focus:border-green-300" // 밑줄 추가
+                />
+                <button
+                  type="button"
+                  onClick={handleVerificationSubmit}
+                  className={`px-3 py-2 rounded ${
+                    isAccountVerified
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' // 인증 완료 시 회색으로 변경
+                      : 'bg-[#9CF8E1] text-gray-700'
+                  }`}
+                  disabled={isAccountVerified} // 인증 완료 시 버튼 비활성화
+                >
+                  {isAccountVerified ? '확인 완료' : '인증 확인'}
+                </button>
+              </>
+            )}
+          </div>
 
           {/* 비밀번호 입력 필드 */}
           <div className="relative flex items-center">
@@ -397,6 +409,13 @@ const SpendingAccountRegisterModal: React.FC = () => {
           buttonText="확인"
           buttonColor="bg-customRed"
           buttonHoverColor="hover:bg-[#FF2414]"
+        />
+      )}
+      {/* 제출 성공 모달 */}
+      {isSubmissionComplete && (
+        <SubmissionCompleteModal
+          onConfirm={handleSuccessModalClose}
+          title={successMessage}
         />
       )}
     </div>

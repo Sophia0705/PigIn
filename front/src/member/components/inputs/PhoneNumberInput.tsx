@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useMemberStore } from '../../../store/memberStore'; // Zustand 스토어 가져오기
 import { requestPhoneNumberVerificationAPI } from '../../../api/member/requestPhoneNumberVerificationAPI'; // 인증 요청 API
 import { compareVerificationCodeAPI } from '../../../api/member/compareVerificationCodeAPI'; // 인증 확인 API
+import SuccessModal from '../modals/SuccessModal'; // 성공 모달 컴포넌트
+import FailModal from '../modals/FailModal'; // 실패 모달 컴포넌트
+import { FaCheckCircle } from 'react-icons/fa';
 
 const PhoneNumberInput: React.FC = () => {
   const { formData, setFormData } = useMemberStore(); // formData와 setFormData 가져오기
@@ -12,7 +15,10 @@ const PhoneNumberInput: React.FC = () => {
   const [isRequestDisabled, setIsRequestDisabled] = useState(false); // 요청 버튼 비활성화
   const [isVerifyDisabled, setIsVerifyDisabled] = useState(false); // 확인 버튼 비활성화
   const [authenticationNumber, setAuthenticationNumber] = useState(''); // 인증번호 입력 상태
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // 성공 모달
+  const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
+  const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
+  const [failMessage, setFailMessage] = useState(''); // 실패 메시지
 
   // 전화번호 하이픈 자동 추가 로직
   const formatPhoneNumber = (value: string) => {
@@ -37,9 +43,8 @@ const PhoneNumberInput: React.FC = () => {
     setAuthenticationNumber(e.target.value); // 인증번호 입력 상태 업데이트
   };
 
-  // SMS 인증 요청 함수
+  // 인증번호 요청 함수
   const requestVerificationCode = async () => {
-    setIsLoading(true);
     const sanitizedPhoneNumber = phoneNumber.replace(/-/g, ''); // 하이픈 제거
     const name = formData.name; // formData에서 이름 가져옴
 
@@ -51,11 +56,12 @@ const PhoneNumberInput: React.FC = () => {
     if (success) {
       setIsCodeSent(true); // 인증 코드 전송 여부 업데이트
       setIsRequestDisabled(true); // 요청 버튼 비활성화
-      console.log('인증 요청 성공');
+      setSuccessMessage('인증 요청이 성공하였습니다.'); // 성공 메시지 설정
+      setShowSuccessModal(true); // 성공 모달 표시
     } else {
-      console.log('인증 요청 실패');
+      setFailMessage('인증 요청에 실패하였습니다.'); // 실패 메시지 설정
+      setShowFailModal(true); // 실패 모달 표시
     }
-    setIsLoading(false); // 로딩 상태 해제
   };
 
   // 인증번호 확인 함수
@@ -70,25 +76,27 @@ const PhoneNumberInput: React.FC = () => {
     if (success) {
       setFormData({ isPhoneVerified: true }); // Zustand 스토어에 인증 여부 true로 업데이트
       setIsVerified(true);
-      console.log();
       setIsVerifyDisabled(true); // 확인 버튼 비활성화
-      console.log('인증 성공');
+      setSuccessMessage('인증이 완료되었습니다.'); // 성공 메시지 설정
+      setShowSuccessModal(true); // 성공 모달 표시
     } else {
-      console.log('인증 실패');
+      setFailMessage('인증번호가 일치하지 않습니다.'); // 실패 메시지 설정
+      setShowFailModal(true); // 실패 모달 표시
     }
   };
 
   // 인증 완료 시 alert 메시지 출력
   useEffect(() => {
     if (isVerified) {
-      alert('인증이 완료되었습니다.');
+      setSuccessMessage('인증이 완료되었습니다.'); // 성공 메시지 설정
+      setShowSuccessModal(true); // 성공 모달 표시
     }
   }, [isVerified]);
 
   return (
     <>
       {/* 전화번호 입력 및 인증 요청 */}
-      <div className="flex md:flex-row space-x-2 items-center">
+      <div className="relative flex space-x-2 items-center">
         <input
           type="text"
           name="phoneNumber"
@@ -98,21 +106,21 @@ const PhoneNumberInput: React.FC = () => {
           className="flex-1 p-2 border-b border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
           maxLength={13} // 하이픈 포함 13자리 제한
         />
+        {/* 인증번호가 입력되고 인증 완료 시 체크 아이콘 표시 */}
+        {authenticationNumber.length === 6 && isVerified && (
+          <FaCheckCircle className="absolute right-[6.5rem] top-1/2 transform -translate-y-1/2 text-green-500" />
+        )}
         <button
           type="button"
           onClick={requestVerificationCode}
-          className={`p-2 rounded ${
-            phoneNumber.length === 13 && !isRequestDisabled && !isLoading
-              ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
+          className={`p-2 rounded w-24 ${
+            phoneNumber.length === 13 && !isRequestDisabled
+              ? 'bg-[#9CF8E1] text-gray-700 hover:bg-[#9CF8E1]'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
-          disabled={phoneNumber.length !== 13 || isRequestDisabled || isLoading}
+          disabled={phoneNumber.length !== 13 || isRequestDisabled}
         >
-          {isRequestDisabled
-            ? '요청 완료'
-            : isLoading
-              ? '요청 중...'
-              : '인증 요청'}
+          {isRequestDisabled ? '요청 완료' : '인증 요청'}
         </button>
       </div>
 
@@ -122,28 +130,55 @@ const PhoneNumberInput: React.FC = () => {
           <p className="text-sm text-green-500 mt-2">
             인증번호가 전송되었습니다.
           </p>
-          <input
-            type="text"
-            name="authenticationNumber"
-            value={authenticationNumber}
-            onChange={handleAuthNumberChange}
-            placeholder="인증번호 입력"
-            className="mt-2 p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-            maxLength={6} // 인증번호는 6자리로 제한
-          />
-          <button
-            type="button"
-            onClick={verifyAuthenticationCode}
-            className={`w-full mt-2 p-2 rounded ${
-              authenticationNumber.length === 6 && !isVerifyDisabled
-                ? 'bg-green-500 text-white hover:bg-green-600'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-            disabled={authenticationNumber.length !== 6 || isVerifyDisabled}
-          >
-            {isVerifyDisabled ? '확인 완료' : '인증 확인'}
-          </button>
+          <div className="relative flex space-x-2 items-center">
+            <input
+              type="text"
+              name="authenticationNumber"
+              value={authenticationNumber}
+              onChange={handleAuthNumberChange}
+              placeholder="인증번호 입력"
+              className="flex-1 p-2 border-b border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+              maxLength={6} // 인증번호는 6자리로 제한
+            />
+            {/* 인증번호가 입력되고 인증 완료 시 체크 아이콘 표시 */}
+            {authenticationNumber.length === 6 && isVerified && (
+              <FaCheckCircle className="absolute right-[6.5rem] top-1/2 transform -translate-y-1/2 text-green-500" />
+            )}
+            <button
+              type="button"
+              onClick={verifyAuthenticationCode}
+              className={`w-24 mt-2 p-2 rounded ${
+                authenticationNumber.length === 6 && !isVerifyDisabled
+                  ? 'bg-customAqua text-gray-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              disabled={authenticationNumber.length !== 6 || isVerifyDisabled}
+            >
+              {isVerifyDisabled ? '확인 완료' : '인증 확인'}
+            </button>
+          </div>
         </>
+      )}
+      {/* 성공 모달 */}
+      {showSuccessModal && (
+        <SuccessModal
+          setShowModal={setShowSuccessModal}
+          title={successMessage}
+          buttonText="확인"
+          buttonColor="bg-customAqua"
+          buttonHoverColor="hover:bg-[#7ee9ce]"
+        />
+      )}
+
+      {/* 실패 모달 */}
+      {showFailModal && (
+        <FailModal
+          setShowModal={setShowFailModal}
+          title={failMessage}
+          buttonText="확인"
+          buttonColor="bg-customRed"
+          buttonHoverColor="hover:bg-[#FF2414]"
+        />
       )}
     </>
   );

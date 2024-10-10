@@ -1,24 +1,101 @@
-// CryptoList 컴포넌트
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 useNavigate 훅
-import CryptoItem from './CryptoItem'; // 개별 암호화폐 항목을 나타내는 컴포넌트
-import CryptoData from '../../data/CryptoCurrenciesData.json'; // 암호화폐 데이터를 불러옴
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CryptoItem from './CryptoItem';
+import {
+  CryptoListData,
+  CryptoItemData,
+  CryptoChartData,
+} from '../../investment/interfaces/CryptoInterface';
+import { getCryptoList } from '../../api/investment/crypto/CryptoList';
+import {
+  getWeeklyCryptoChartData,
+  getMonthlyCryptoChartData,
+  getYearlyCryptoChartData,
+} from '../../api/investment/crypto/CryptoChartData';
+import { getIndividualCryptoData } from '../../api/investment/crypto/IndividualCryptoData';
 
-// CryptoList 컴포넌트의 props 타입 정의
 interface CryptoListProps {
-  limit?: number; // 리스트에 표시할 항목의 개수 (옵션)
-  showTitle?: boolean; // 리스트 상단에 타이틀을 표시할지 여부 (옵션)
+  limit?: number; // 표시할 암호화폐 항목의 최대 개수 (선택적)
+  showTitle?: boolean; // 제목과 "더 보기" 버튼 표시 여부 (기본값은 true)
 }
 
-// CryptoList 컴포넌트 정의
 const CryptoList: React.FC<CryptoListProps> = ({ limit, showTitle = true }) => {
-  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 함수
-  // 표시할 데이터를 limit 값에 따라 자름. limit가 있으면 해당 개수만큼 슬라이스
-  const displayData = limit ? CryptoData.slice(0, limit) : CryptoData;
+  const [cryptoData, setCryptoData] = useState<CryptoItemData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const fetchCryptoData = async () => {
+    const cryptoList: CryptoListData[] = await getCryptoList();
+
+    const detailedCryptoData = await Promise.all(
+      cryptoList.map(async (crypto) => {
+        const details = await getIndividualCryptoData(crypto.coin);
+
+        // 주간, 월간, 연간 차트 데이터 가져오기
+        const weeklyChartData: CryptoChartData[] =
+          await getWeeklyCryptoChartData(crypto.coin, 'day');
+        const monthlyChartData: CryptoChartData[] =
+          await getMonthlyCryptoChartData(crypto.coin, 'day');
+        const yearlyChartData: CryptoChartData[] =
+          await getYearlyCryptoChartData(crypto.coin, 'month');
+
+        // 주간, 월간, 연간 종가 데이터 추출 (배열 순서 유지)
+        const weeklyPrices = weeklyChartData.map((data) => data.coin_clpr);
+        const monthlyPrices = monthlyChartData.map((data) => data.coin_clpr);
+        const yearlyPrices = yearlyChartData.map((data) => data.coin_clpr);
+
+        // price와 priceChange를 CryptoListData에서 가져와 설정
+        let price = parseFloat(crypto.price);
+        const priceChange = crypto.priceChange;
+
+        // 비트코인 가격 가져오기
+        const bitcoinPriceData = cryptoList.find(
+          (item) => item.coin === 'KRW-BTC'
+        );
+        const bitcoinPrice = bitcoinPriceData
+          ? parseFloat(bitcoinPriceData.price)
+          : 0;
+
+        // 비트코인캐시와 이더리움클래식의 가격 재조정 (price만)
+        if (crypto.coin === 'BTC-BCH' || crypto.coin === 'BTC-ETC') {
+          if (bitcoinPrice) {
+            price = parseFloat((price * bitcoinPrice).toFixed(0));
+          }
+        }
+
+        return {
+          ...details,
+          price,
+          priceChange,
+          weeklyPrices,
+          monthlyPrices,
+          yearlyPrices,
+        };
+      })
+    );
+
+    const filteredCryptoData = detailedCryptoData.filter(
+      (crypto) => crypto !== null
+    ) as CryptoItemData[];
+
+    setCryptoData(filteredCryptoData);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCryptoData();
+  }, [limit]);
+
+  const handleItemClick = (item: CryptoItemData) => {
+    navigate(`/investment/cryptocurrency/${item.coin}`, {
+      state: { item },
+    });
+  };
+
+  if (loading) return null;
 
   return (
-    <div className="bg-white rounded-lg shadow-md w-[352px] mx-auto p-4 mt-0 mb-0">
-      {/* showTitle 값에 따라 타이틀과 "더 보기" 버튼을 표시 */}
+    <div className="bg-white rounded-lg shadow-md w-[352px] mx-auto p-4 mb-0">
       {showTitle && (
         <div className="flex justify-between items-center mb-0 px-0">
           <h2 className="text-3xl pl-0 pb-2 font-bold text-gray-900">
@@ -26,25 +103,37 @@ const CryptoList: React.FC<CryptoListProps> = ({ limit, showTitle = true }) => {
           </h2>
           {limit && (
             <button
-              className="text-sm text-gray-500 border border-gray-300 rounded-full pt-0 px-4 py-1 hover:bg-gray-200"
-              onClick={() => navigate('/crypto-favorites')} // "더 보기" 버튼 클릭 시 /crypto-favorites 페이지로 이동
+              className="text-sm text-gray-500 border border-gray-300 rounded-full pt-0 px-2 py-1 hover:bg-gray-200"
+              onClick={() => navigate('/crypto-favorites')}
             >
               더 보기
             </button>
           )}
         </div>
       )}
-      {/* 암호화폐 데이터 목록을 렌더링. 각 항목은 CryptoItem으로 표시 */}
+
       <div className="p-0">
-        {displayData.map((crypto) => (
-          <CryptoItem
-            key={crypto.symbol} // 각 암호화폐 항목의 고유 symbol을 key로 사용
-            name={crypto.name} // 암호화폐 이름
-            symbol={crypto.symbol} // 암호화폐 심볼
-            price={crypto.price} // 현재 가격
-            percentageChange={crypto.percentageChange} // 등락률
-            weeklyPrices={crypto.weeklyPrices} // 일주일 동안의 가격 데이터
-          />
+        {cryptoData.slice(0, limit).map((crypto) => (
+          <div
+            key={crypto.coin}
+            onClick={() => handleItemClick(crypto)}
+            className="cursor-pointer"
+          >
+            <CryptoItem
+              name={crypto.coinName}
+              symbol={crypto.coin}
+              price={crypto.price}
+              priceChange={crypto.priceChange}
+              weeklyPrices={crypto.weeklyPrices}
+              monthlyPrices={crypto.monthlyPrices}
+              yearlyPrices={crypto.yearlyPrices}
+              open={crypto.open}
+              close={crypto.close}
+              high={crypto.high}
+              low={crypto.low}
+              volume={crypto.volume}
+            />
+          </div>
         ))}
       </div>
     </div>
