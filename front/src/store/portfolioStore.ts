@@ -10,7 +10,7 @@ export const usePortfolioStore = create<PortfolioState>((set) => ({
   stocks: [],
   cryptocurrencies: [],
   gold: [],
-  activeIndex: 0,
+  activeIndex: 1,
   showAllItems: false,
   isLoading: false,
   error: null,
