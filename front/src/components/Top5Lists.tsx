@@ -190,7 +190,7 @@ const Top5Lists: React.FC = () => {
         <ThumbsUp size={45} color="#FFD700" className="ml-2" />
         <p className="text-white text-xl font-semibold pl-4">
           이용자들이 <br />
-          많이 찜한 Top5 종목
+          많이 거래한 Top5 종목
         </p>
       </div>
 

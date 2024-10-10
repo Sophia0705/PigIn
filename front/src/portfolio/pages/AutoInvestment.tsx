@@ -59,14 +59,12 @@ const AutoInvestment: React.FC = () => {
       });
       if (result.result) {
         setInvestmentAmount(numericAmount);
-        alert('설정이 성공적으로 저장되었습니다.');
         setAutoDashboardKey((prev) => prev + 1);
       } else {
-        alert('설정 저장에 실패했습니다.');
+        console.log('설정 저장에 실패했습니다.');
       }
     } catch (error) {
       console.error('자동 투자 설정 저장 중 오류:', error);
-      alert('설정 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -82,15 +80,14 @@ const AutoInvestment: React.FC = () => {
       });
       if (result.result) {
         setIsEnabled(newIsEnabled);
-        alert(
+        console.log(
           `자동화 투자가 ${newIsEnabled ? '활성화' : '비활성화'}되었습니다.`
         );
       } else {
-        alert('설정 변경에 실패했습니다.');
+        console.log('설정 변경에 실패했습니다.');
       }
     } catch (error) {
       console.error('자동 투자 설정 변경 중 오류:', error);
-      alert('설정 변경 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 
