@@ -250,7 +250,7 @@ public class QuizServiceImpl implements QuizService {
 //        }
 //    }
 
-    @Scheduled(cron = "0 33 10 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 40 10 * * *", zone = "Asia/Seoul")
     public void judgeStockQuizResults() {
         try {
             // Step 1: RedisConnectionFactory 확인 및 RedisConnection 얻기
