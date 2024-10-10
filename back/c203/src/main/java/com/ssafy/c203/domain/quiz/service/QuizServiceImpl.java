@@ -116,8 +116,8 @@ public class QuizServiceImpl implements QuizService {
 
 
     // 매일 오전 9시에 Daily Quiz 풀이 여부 초기화
-    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
-//    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Seoul") // 2분마다
+//    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 43 10 * * *", zone = "Asia/Seoul")
     public void resetDailyQuizKeys() {
         int retryCount = 0;
 
@@ -206,49 +206,116 @@ public class QuizServiceImpl implements QuizService {
     }
 
 
-    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
-//    @Scheduled(cron = "0 */1 * * * *", zone = "Asia/Seoul")
+//    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
+////    @Scheduled(cron = "0 */1 * * * *", zone = "Asia/Seoul")
+//    public void judgeStockQuizResults() {
+//        try {
+//            Set<String> keys = redisTemplate.keys("STOCK_FLUCTUATION_QUIZ_ANSWER:*");
+//            if (keys == null || keys.isEmpty()) {
+//                log.info("주가예측퀴즈 내역 없음");
+//                return;
+//            }
+//
+//            for (String key : keys) {
+//                String[] keyParts = key.split(":");
+//                Long memberId = Long.parseLong(keyParts[1]);
+//                String stockId = keyParts[2];
+//
+//                // 사용자 답안 조회
+//                String memberAnswer = (String) redisTemplate.opsForValue().get(key);
+//                MongoStockDetail stockDetail = stockService.findStockDetail(stockId);
+//
+//                // 등락률 기반 판별
+//                boolean isCorrect = stockDetail.getPrdyCtrt().startsWith("+")
+//                        ? memberAnswer.equals("O")
+//                        : memberAnswer.equals("X");
+//
+//                log.info("Judging answer for member {}: stockCode {}, memberAnswer {}, prdyCtrt {}", memberId, stockId, memberAnswer, stockDetail.getPrdyCtrt());
+//
+//                // 보상 처리
+//                if (isCorrect) {
+//                    Long rewardPrice = generateRewardPrice();
+//                    accountService.depositAccount(memberId, rewardPrice);
+//                    log.info("회원 {}에게 {}원의 보상 지급", memberId, rewardPrice);
+//                } else {
+//                    log.info("회원 {}의 퀴즈 오답 처리", memberId);
+//                }
+//
+//                // 처리 후 Redis에서 키 삭제
+//                redisTemplate.delete(key);
+//                redisTemplate.delete("STOCK_FLUCTUATION_QUIZ_SOLVED:" + memberId); // 다시 퀴즈 풀 수 있게 설정
+//            }
+//        } catch (Exception e) {
+//            log.error("Error while judging stock quiz results: ", e);
+//        }
+//    }
+
+    @Scheduled(cron = "0 40 10 * * *", zone = "Asia/Seoul")
     public void judgeStockQuizResults() {
         try {
-            Set<String> keys = redisTemplate.keys("STOCK_FLUCTUATION_QUIZ_ANSWER:*");
-            if (keys == null || keys.isEmpty()) {
-                log.info("주가예측퀴즈 내역 없음");
+            // Step 1: RedisConnectionFactory 확인 및 RedisConnection 얻기
+            RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+            if (connectionFactory == null) {
+                log.error("RedisConnectionFactory is null. Cannot perform scan operation.");
                 return;
             }
 
-            for (String key : keys) {
-                String[] keyParts = key.split(":");
-                Long memberId = Long.parseLong(keyParts[1]);
-                String stockId = keyParts[2];
+            try (Cursor<byte[]> cursor = connectionFactory.getConnection().scan(
+                    ScanOptions.scanOptions().match("STOCK_FLUCTUATION_QUIZ_ANSWER:*").build())) {
 
-                // 사용자 답안 조회
-                String memberAnswer = (String) redisTemplate.opsForValue().get(key);
-                MongoStockDetail stockDetail = stockService.findStockDetail(stockId);
+                // Step 2: 조회된 키 처리
+                while (cursor.hasNext()) {
+                    String key = new String(cursor.next());
+                    try {
+                        // 키에서 회원 ID와 주식 ID 추출
+                        String[] keyParts = key.split(":");
+                        Long memberId = Long.parseLong(keyParts[1]);
+                        String stockId = keyParts[2];
 
-                // 등락률 기반 판별
-                boolean isCorrect = stockDetail.getPrdyCtrt().startsWith("+")
-                        ? memberAnswer.equals("O")
-                        : memberAnswer.equals("X");
+                        // 사용자 답안 조회
+                        String memberAnswer = (String) redisTemplate.opsForValue().get(key);
+                        MongoStockDetail stockDetail = stockService.findStockDetail(stockId);
 
-                log.info("Judging answer for member {}: stockCode {}, memberAnswer {}, prdyCtrt {}", memberId, stockId, memberAnswer, stockDetail.getPrdyCtrt());
+                        // Step 3: 등락률 기반 판별
+                        boolean isCorrect = stockDetail.getPrdyCtrt().startsWith("+")
+                                ? memberAnswer.equals("O")
+                                : memberAnswer.equals("X");
 
-                // 보상 처리
-                if (isCorrect) {
-                    Long rewardPrice = generateRewardPrice();
-                    accountService.depositAccount(memberId, rewardPrice);
-                    log.info("회원 {}에게 {}원의 보상 지급", memberId, rewardPrice);
-                } else {
-                    log.info("회원 {}의 퀴즈 오답 처리", memberId);
+                        log.info("Judging answer for member {}: stockCode {}, memberAnswer {}, prdyCtrt {}",
+                                memberId, stockId, memberAnswer, stockDetail.getPrdyCtrt());
+
+                        // Step 4: 보상 처리 및 Redis 키 삭제
+                        if (isCorrect) {
+                            Long rewardPrice = generateRewardPrice();
+                            accountService.depositAccount(memberId, rewardPrice);
+                            log.info("회원 {}에게 {}원의 보상 지급", memberId, rewardPrice);
+                        } else {
+                            log.info("회원 {}의 퀴즈 오답 처리", memberId);
+                        }
+
+                        // Step 5: 처리 후 Redis에서 키 삭제
+                        redisTemplate.delete(key);
+                        redisTemplate.delete("STOCK_FLUCTUATION_QUIZ_SOLVED:" + memberId);
+                        log.info("Deleted Redis Key: {}", key);
+
+                    } catch (NumberFormatException e) {
+                        log.error("Member ID 파싱 중 오류 발생: {}", key, e);
+                    } catch (Exception e) {
+                        log.error("퀴즈 결과 처리 중 오류 발생: {}", key, e);
+                    }
                 }
 
-                // 처리 후 Redis에서 키 삭제
-                redisTemplate.delete(key);
-                redisTemplate.delete("STOCK_FLUCTUATION_QUIZ_SOLVED:" + memberId); // 다시 퀴즈 풀 수 있게 설정
+            } catch (Exception e) {
+                log.error("Error while scanning Redis keys: ", e);
             }
+
+            log.info("주가 예측 퀴즈 판별 작업 완료");
+
         } catch (Exception e) {
             log.error("Error while judging stock quiz results: ", e);
         }
     }
+
 
     @Override
     public QuizStatusDto getQuizStatus(Long memberId) {

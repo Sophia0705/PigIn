@@ -21,7 +21,7 @@ public class GoldSchedule {
     private final JobRegistry jobRegistry;
 
     //    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Seoul")
-    @Scheduled(cron = "0 31 9 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 41 10 * * *", zone = "Asia/Seoul")
     public void runGoldJob() {
         try {
             log.info("GoldSchedule schedule start");
