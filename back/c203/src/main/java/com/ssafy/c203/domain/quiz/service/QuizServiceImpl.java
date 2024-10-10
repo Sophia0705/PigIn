@@ -250,7 +250,7 @@ public class QuizServiceImpl implements QuizService {
 //        }
 //    }
 
-    @Scheduled(cron = "0 40 10 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 40 11 * * *", zone = "Asia/Seoul")
     public void judgeStockQuizResults() {
         try {
             // Step 1: RedisConnectionFactory 확인 및 RedisConnection 얻기
@@ -272,9 +272,14 @@ public class QuizServiceImpl implements QuizService {
                         Long memberId = Long.parseLong(keyParts[1]);
                         String stockId = keyParts[2];
 
+                        log.info("Parsed Key: {}, Member ID: {}, Stock ID: {}", key, memberId, stockId);
+
                         // 사용자 답안 조회
                         String memberAnswer = (String) redisTemplate.opsForValue().get(key);
                         MongoStockDetail stockDetail = stockService.findStockDetail(stockId);
+
+
+                        log.info("@@@ stockDetail: {}", stockDetail);
 
                         // Step 3: 등락률 기반 판별
                         boolean isCorrect = stockDetail.getPrdyCtrt().startsWith("+")

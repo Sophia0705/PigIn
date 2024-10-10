@@ -299,23 +299,23 @@ public class GoldServiceImpl implements GoldService {
         TradeMethod tradeMethod = null;
         if (goldTradeDto.getMethod().equals("SELL")) {
             try {
-                //거래 가능 검증
-                log.info("SELL 요청 들어옴");
-                boolean canSell = compareGold(member, count);
-                if (!canSell) {
-                    log.info("장 내 팔수 없다 마 걔쉐이야!");
-                    throw new MoreSellException();
-                }
-
-                tradeMethod = TradeMethod.SELL;
-
-                //보유량 업데이트
-                GoldPortfolio goldPortfolio = goldPortfolioRepository.findByMember_Id(
-                    member.getId()).orElseThrow(
-                    PortfolioNotFoundException::new);
 
                 if(!isAutoFunding) {
-                    goldPortfolio.minusAmount(count);
+                    //거래 가능 검증
+                    log.info("SELL 요청 들어옴");
+                    boolean canSell = compareGold(member, count);
+                    if (!canSell) {
+                        log.info("장 내 팔수 없다 마 걔쉐이야!");
+                        throw new MoreSellException();
+                    }
+
+                    tradeMethod = TradeMethod.SELL;
+
+                    //보유량 업데이트
+                    goldPortfolioRepository.findByMember_Id(
+                            member.getId()).orElseThrow(
+                            PortfolioNotFoundException::new).minusAmount(count);
+//                    goldPortfolio.minusAmount(count);
                 }
 
                 goldTradeRepository.save(GoldTrade
@@ -333,13 +333,13 @@ public class GoldServiceImpl implements GoldService {
             accountService.depositAccount(member.getId(), (long) tradePrice);
         } else {
             try {
-                //통장 돈 검증
-                boolean canBuy = checkAccount(member, tradePrice);
-                if (!canBuy) {
-                    throw new NoMoneyException();
-                }
-                //돈 빼기
+                //통장 돈 검증 돈 빼기
                 if (!isAutoFunding) {
+                    boolean canBuy = checkAccount(member, tradePrice);
+                    if (!canBuy) {
+                        throw new NoMoneyException();
+                    }
+
                     accountService.withdrawAccount(member.getId(), (long) tradePrice);
                 }
             } catch (Exception e) {
