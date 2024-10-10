@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMemberStore } from '../../../store/memberStore'; // Zustand로 관리되는 상태를 가져옴
 import axiosInstance from '../../../api/axiosInstance';
 import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
 import FailModal from './FailModal'; // 실패 모달 컴포넌트
+import SubmissionCompleteModal from './SubmissionCompleteModal'; // 새로운 모달 추가
 import { X } from 'lucide-react';
 import { CgChevronLeft } from 'react-icons/cg'; // 뒤로 가기 아이콘
-
+import { FaCheckCircle } from 'react-icons/fa'; // 확인 아이콘 및 일치하지 않을 때 빨간 체크 아이콘
 const FindEmailModal: React.FC = () => {
   const {
     isFindEmailModalOpen,
@@ -23,6 +24,18 @@ const FindEmailModal: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
   const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
   const [failMessage, setFailMessage] = useState(''); // 실패 메시지
+  const [isSubmissionComplete, setIsSubmissionComplete] = useState(false); // 제출 완료 상태
+
+  useEffect(() => {
+    if (isFindEmailModalOpen) {
+      // formData 초기화
+      setFormData({
+        name: '',
+        email: '',
+        phoneNumber: '',
+      });
+    }
+  }, [isFindEmailModalOpen, setFormData]);
 
   if (!isFindEmailModalOpen) return null; // 모달이 닫혀있으면 렌더링하지 않음
 
@@ -144,13 +157,9 @@ const FindEmailModal: React.FC = () => {
         data // 데이터를 request body로 전송
       );
       if (response.status === 200) {
-        setSuccessMessage('이메일 찾기가 성공적으로 완료되었습니다.');
-        alert(`찾은 이메일 : ${response.data}`);
-        console.log(response.data);
+        setSuccessMessage(`찾은 이메일 : ${response.data}`);
         formData.email = response.data;
-        setShowSuccessModal(true);
-        closeFindEmailModal();
-        openLoginModal();
+        setIsSubmissionComplete(true); // 제출 완료 상태 설정
       } else {
         console.log('이메일 찾기 실패!');
         setFailMessage('이메일을 찾을 수 없습니다.');
@@ -161,6 +170,11 @@ const FindEmailModal: React.FC = () => {
       setFailMessage('이메일 찾기 요청이 실패했습니다.');
       setShowFailModal(true);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    openLoginModal(); // 로그인 모달 열기
+    closeFindEmailModal();
   };
 
   // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
@@ -203,7 +217,6 @@ const FindEmailModal: React.FC = () => {
           onClick={closeFindEmailModal}
           className="absolute top-6 right-5 w-8 h-8 text-gray-400 hover:text-gray-600"
         />
-        {/* 회원가입 폼 */}
         <form
           onSubmit={handleSubmit}
           className="flex flex-col space-y-3 w-full"
@@ -215,61 +228,67 @@ const FindEmailModal: React.FC = () => {
             value={formData.name}
             onChange={handleChange}
             placeholder="이름"
-            className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="flex-1 p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
           />
+
           {/* 전화번호 입력 필드와 인증 버튼 */}
-          <div className="flex md:flex-row space-x-2 items-center">
+          <div className="relative flex space-x-2 items-center">
             <input
               type="text"
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="전화번호 (예: 01012345678)"
-              className="flex-1 p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-              maxLength={14} // 하이픈 포함 길이, 수정 가능
+              className="flex-1 p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
+              maxLength={13}
             />
+            {isPhoneNumberVerified && (
+              <FaCheckCircle className="absolute right-[6.5rem] top-1/2 transform -translate-y-1/2 text-green-500" />
+            )}
             <button
               type="button"
               onClick={requestVerificationCode}
-              className={`p-2 rounded ${
-                formData.phoneNumber.length === 13
+              className={`p-2 rounded ml-2 text-md ${
+                formData.phoneNumber.length === 13 && !isCodeSent
                   ? 'bg-[#9CF8E1] text-gray-900 hover:bg-[#9CF8E1]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
-              disabled={formData.phoneNumber.length !== 13}
+              disabled={formData.phoneNumber.length !== 13 || isCodeSent}
             >
-              인증 요청
+              {isCodeSent ? '요청 완료' : '인증 요청'}
             </button>
           </div>
-          <hr className="w-[240px] ml-0 border-t border-gray-300 relative top-[-12px]" />
 
           {/* 인증번호 입력 필드 */}
           {isCodeSent && (
-            <>
+            <div className="relative flex space-x-2 items-center">
               <input
                 type="text"
                 value={authenticationNumber} // authenticationNumber 상태를 사용
                 onChange={handleAuthNumberChange} // 입력 변경 시 상태 업데이트
                 placeholder="인증번호 입력"
-                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
+                className="flex-1 p-2 border-b border-gray-300 focus:outline-none focus:border-green-300"
                 maxLength={6} // 인증번호는 6자리로 제한
               />
-              {/* 인증 버튼 */}
+              {/* 인증이 완료되었을 때 체크 아이콘 표시 */}
+              {isPhoneNumberVerified && (
+                <FaCheckCircle className="absolute right-[6.5rem] top-1/2 transform -translate-y-1/2 text-green-500" />
+              )}
               <button
                 type="button"
                 onClick={verifyAuthenticationCode} // 인증번호 검증 핸들러 호출
-                className={`w-full mt-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-300 ${
+                className={`p-2 ml-2 rounded ${
                   isPhoneNumberVerified
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed' // 인증 완료 시 비활성화
-                    : 'bg-green-500 text-white hover:bg-green-600'
+                    : 'bg-customAqua text-gray-700'
                 }`}
                 disabled={isPhoneNumberVerified} // 인증 완료 시 버튼 비활성화
               >
-                {isPhoneNumberVerified ? '인증 완료' : '인증 확인'}{' '}
-                {/* 인증 완료 여부에 따라 텍스트 변경 */}
+                {isPhoneNumberVerified ? '인증 완료' : '인증 확인'}
               </button>
-            </>
+            </div>
           )}
+
           <button
             type="submit"
             className={`w-full py-2 rounded ${
@@ -305,6 +324,14 @@ const FindEmailModal: React.FC = () => {
           />
         )}
       </div>
+
+      {/* 제출 성공 모달 */}
+      {isSubmissionComplete && (
+        <SubmissionCompleteModal
+          onConfirm={handleSuccessModalClose}
+          title={successMessage}
+        />
+      )}
     </div>
   );
 };

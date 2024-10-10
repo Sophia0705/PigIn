@@ -9,6 +9,9 @@ import { updateMemberInfoAPI } from '../../../api/member/updateMemberInfoAPI';
 import { getMemberInfoAPI } from '../../../api/member/getMemberInfoAPI';
 import { useMemberStore } from '../../../store/memberStore'; // 상태 관리
 import SignOutModal from './SignOutModal';
+import SuccessModal from './SuccessModal'; // 성공 모달 컴포넌트
+import FailModal from './FailModal'; // 실패 모달 컴포넌트
+import SubmissionCompleteModal from './SubmissionCompleteModal'; // 최종 제출 성공 모달 컴포넌트
 
 const UpdateProfileModal: React.FC = () => {
   const {
@@ -22,6 +25,11 @@ const UpdateProfileModal: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState(''); // 기존 비밀번호
   const [showCurrentPassword, setShowCurrentPassword] = useState(false); // 기존 비밀번호 표시 여부
   const [isPasswordEditEnabled, setIsPasswordEditEnabled] = useState(false); // 비밀번호 수정 여부
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // 성공 모달
+  const [successMessage, setSuccessMessage] = useState(''); // 성공 메시지
+  const [showFailModal, setShowFailModal] = useState(false); // 실패 모달
+  const [failMessage, setFailMessage] = useState(''); // 실패 메시지
+  const [isSubmissionComplete, setIsSubmissionComplete] = useState(false); // 제출 완료 상태
 
   useEffect(() => {
     const fetchMemberInfo = async () => {
@@ -30,6 +38,9 @@ const UpdateProfileModal: React.FC = () => {
         setFormData({
           phoneNumber: formatPhoneNumber(memberInfo.phoneNumber), // 전화번호 설정
           savingRate: memberInfo.savingRate, // 저축률 설정
+          password: '', // 비밀번호 초기화
+          newPassword: '', // 새 비밀번호 초기화
+          newPasswordConfirm: '', // 새 비밀번호 확인 초기화
         });
       } catch (error) {
         console.error('회원 정보 불러오기 실패:', error);
@@ -58,7 +69,8 @@ const UpdateProfileModal: React.FC = () => {
     e.preventDefault();
 
     if (!formIsValid()) {
-      alert('입력한 정보를 확인해 주세요.');
+      setFailMessage('입력한 정보를 확인해 주세요.');
+      setShowFailModal(true);
       return;
     }
 
@@ -82,11 +94,13 @@ const UpdateProfileModal: React.FC = () => {
     try {
       const response = await updateMemberInfoAPI(updateData);
       if (response) {
-        alert('회원 정보 수정 완료!');
+        setSuccessMessage('회원 정보 수정 완료!');
+        setIsSubmissionComplete(true); // 제출 완료 상태 변경
       }
     } catch (error) {
       console.error('회원 정보 수정 실패:', error);
-      alert('회원 정보 수정 중 오류가 발생했습니다.');
+      setFailMessage('회원 정보 수정 중 오류가 발생했습니다.');
+      setShowFailModal(true);
     }
   };
 
@@ -131,6 +145,10 @@ const UpdateProfileModal: React.FC = () => {
     console.log(4);
 
     return true; // 모든 검증을 통과한 경우 true 반환
+  };
+
+  const handleSuccessModalClose = () => {
+    window.location.reload();
   };
 
   return (
@@ -183,9 +201,9 @@ const UpdateProfileModal: React.FC = () => {
               </button>
               {currentPassword &&
                 (currentPassword.length >= 8 ? (
-                  <FaCheckCircle className="absolute right-2 top-2 text-green-500" />
+                  <FaCheckCircle className="absolute right-8 top-2 text-green-500" />
                 ) : (
-                  <FaTimesCircle className="absolute right-2 top-2 text-red-500" />
+                  <FaTimesCircle className="absolute right-8 top-2 text-red-500" />
                 ))}
             </div>
             <p className="text-xs text-left text-gray-500 mt-1 ml-1">
@@ -229,7 +247,7 @@ const UpdateProfileModal: React.FC = () => {
               type="submit"
               className={`w-full py-2 rounded ${
                 formIsValid()
-                  ? 'bg-green-500 text-white'
+                  ? 'bg-customAqua text-gray-700'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={!formIsValid()}
@@ -246,6 +264,35 @@ const UpdateProfileModal: React.FC = () => {
           </div>
         </form>
         {isSignOutModalOpen && <SignOutModal />}
+        {/* 성공 모달 */}
+        {showSuccessModal && (
+          <SuccessModal
+            setShowModal={setShowSuccessModal}
+            title={successMessage}
+            buttonText="확인"
+            buttonColor="bg-customAqua"
+            buttonHoverColor="hover:bg-[#7ee9ce]"
+          />
+        )}
+
+        {/* 실패 모달 */}
+        {showFailModal && (
+          <FailModal
+            setShowModal={setShowFailModal}
+            title={failMessage}
+            buttonText="확인"
+            buttonColor="bg-customRed"
+            buttonHoverColor="hover:bg-[#FF2414]"
+          />
+        )}
+
+        {/* 제출 성공 모달 */}
+        {isSubmissionComplete && (
+          <SubmissionCompleteModal
+            onConfirm={handleSuccessModalClose}
+            title={successMessage}
+          />
+        )}
       </div>
     </div>
   );

@@ -26,7 +26,6 @@ interface StockListProps {
 const StockList: React.FC<StockListProps> = ({ limit, showTitle = true }) => {
   const navigate = useNavigate();
   const [stocks, setStocks] = useState<StockItemData[]>([]); // API에서 불러온 주식 목록
-  const [loading, setLoading] = useState(true); // 로딩 상태 관리
   const [error, setError] = useState(''); // 에러 메시지 관리
 
   useEffect(() => {
@@ -96,8 +95,6 @@ const StockList: React.FC<StockListProps> = ({ limit, showTitle = true }) => {
         setStocks(filteredStocks); // 상태에 저장
       } catch (error) {
         setError('주식 목록을 불러오지 못했습니다.');
-      } finally {
-        setLoading(false); // 로딩 완료
       }
     };
 
@@ -110,17 +107,16 @@ const StockList: React.FC<StockListProps> = ({ limit, showTitle = true }) => {
     });
   };
 
-  if (loading) return <p>로딩 중...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <p>{error}</p>; // 에러 메시지만 표시
 
   return (
-    <div className="bg-white rounded-lg shadow-md w-[352px] mx-auto p-4 mt-8 mb-0">
+    <div className="bg-white rounded-lg shadow-md w-[352px] mx-auto p-4 mt- mb-0">
       {showTitle && (
         <div className="flex justify-between items-center mb-0 px-0">
           <h2 className="text-3xl pl-0 pb-2 font-bold text-gray-900">주식</h2>
           {limit && (
             <button
-              className="text-sm text-gray-500 border border-gray-300 rounded-full pt-0 px-4 py-1 hover:bg-gray-200"
+              className="text-sm text-gray-500 border border-gray-300 rounded-full pt-0 px-2 py-1 hover:bg-gray-200"
               onClick={() => navigate('/stock-favorites')}
             >
               더 보기

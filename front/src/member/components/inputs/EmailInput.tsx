@@ -19,7 +19,7 @@ const EmailInput: React.FC = () => {
         value={formData.email} // Zustand에서 관리하는 email 값 사용
         onChange={handleChange} // 입력 필드 변경 시 상태 업데이트
         placeholder="이메일"
-        className={`w-full p-2 border-none rounded focus:outline-none focus:ring-2 ${
+        className={`w-full p-2 border-b border-gray-300 focus:outline-none ${
           isValidEmail
             ? 'border-gray-300 focus:ring-green-300'
             : 'border-red-500 focus:ring-red-500'

@@ -159,7 +159,7 @@ const LoginModal: React.FC = () => {
         {/* 이메일 찾기 및 비밀번호 찾기, 회원가입 버튼 */}
         <div className="flex flex-col items-center mt-4">
           <div className="flex items-center">
-            <p>처음 이용하시나요?</p>
+            <p className="text-gray-900">처음 이용하시나요?</p>
             <button
               className="ml-2 text-md font-semibold text-blue-600 hover:underline"
               onClick={handleSignUpClick}
@@ -168,7 +168,7 @@ const LoginModal: React.FC = () => {
             </button>
           </div>
           <div className="flex items-center mt-2">
-            <p>기억나지 않으세요?</p>
+            <p className="text-gray-900">기억나지 않으세요?</p>
             <button
               className="ml-2 text-md font-semibold text-blue-600 hover:underline"
               onClick={handleFindEmailClick}
