@@ -34,9 +34,17 @@ const CustomLabel = ({
         y={cy + 15}
         textAnchor="middle"
         dominantBaseline="central"
-        className={`text-sm font-semibold ${totalProfitRate >= 0 ? 'fill-green-500' : 'fill-red-500'}`}
+        className={`text-sm font-semibold ${
+          totalProfitRate >= 0 ? 'fill-green-500' : 'fill-red-500'
+        }`}
       >
-        ({totalProfitRate.toFixed(2)}%{totalProfitRate >= 0 ? '▲' : '▼'})
+        {isFinite(totalProfitRate) ? (
+          <>
+            ({totalProfitRate.toFixed(2)}%{totalProfitRate >= 0 ? '▲' : '▼'})
+          </>
+        ) : (
+          '(0.00%)'
+        )}
       </text>
     </g>
   );
@@ -81,7 +89,10 @@ const Dashboard = () => {
       }
     });
 
-    const totalProfitRate = (validItemsProfit / validItemsInitialValue) * 100;
+    const totalProfitRate =
+      validItemsInitialValue !== 0
+        ? (validItemsProfit / validItemsInitialValue) * 100
+        : 0;
 
     return {
       totalProfitRate: isFinite(totalProfitRate) ? totalProfitRate : 0,
