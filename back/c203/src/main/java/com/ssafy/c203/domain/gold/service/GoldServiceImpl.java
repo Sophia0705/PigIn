@@ -78,7 +78,8 @@ public class GoldServiceImpl implements GoldService {
         LocalTime now = LocalTime.now();
 
         //장시간 외이면
-        if (now.isAfter(GOLD_END_TIME) || now.isBefore(GOLD_START_TIME)) {
+//        if (now.isAfter(GOLD_END_TIME) || now.isBefore(GOLD_START_TIME)) {
+        if (false) {
             log.info("장 외 시간 거래 들어옴");
             if (buyGoldDto.getMethod().equals("SELL")) {
                 try {

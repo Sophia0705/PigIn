@@ -150,7 +150,8 @@ public class StockServiceImpl implements StockService {
         }
 
         try {
-            if (isBusinessHours()) {
+//            if (isBusinessHours()) {
+            if (true) {
                 // 3. 주식 매수 처리
                 SecuritiesStockTrade tradeResult = SecuritiesStockBuy(stockId, price);
                 // 4. 거래 기록 저장
@@ -195,7 +196,8 @@ public class StockServiceImpl implements StockService {
         // 1. 보유 주식 수량 감소
         subStockPortfolio(stockPortfolio, count);
         try {
-            if (isBusinessHours()) {
+//            if (isBusinessHours()) {
+            if (true) {
                 // 2. 주식 매도 처리
                 SecuritiesStockTrade tradeResult = SecuritiesStockSell(stockId, count);
                 // 3. 거래 기록 저장
