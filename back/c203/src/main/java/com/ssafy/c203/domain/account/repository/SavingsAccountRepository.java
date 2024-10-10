@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface SavingsAccountRepository extends JpaRepository<SavingsAccount, Integer> {
     Optional<SavingsAccount> findByMember_Id(Long memberId);
+    
 }
