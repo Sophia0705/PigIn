@@ -23,7 +23,6 @@ public class StockEmitterService {
 
     @Scheduled(fixedRate = 1000) // 1초(1000ms)마다 실행
     public void sendStockUpdates() {
-//        log.info("스케줄러 실행");
         List<FindStockChartAllResponse> stockData = getStockData();
         // 제거해야 할 emitter
         List<SseEmitter> deadEmitters = new ArrayList<>();
@@ -31,7 +30,6 @@ public class StockEmitterService {
         // 모든 emitter 대해 반복
         emitters.forEach(emitter -> {
             try {
-//                log.info("send stock emitter : {}", emitter);
                 emitter.send(SseEmitter.event().name("stock-update").data(stockData));
             } catch (Exception e) {
                 deadEmitters.add(emitter);
@@ -53,7 +51,6 @@ public class StockEmitterService {
 
     private List<FindStockChartAllResponse> getStockData() {
         List<MongoStockMinute> stockDetails = stockService.findStockMinute();
-//        log.info("stockDetails: {}", stockDetails);
         return stockDetails.stream()
                 .map(FindStockChartAllResponse::new)
                 .toList();

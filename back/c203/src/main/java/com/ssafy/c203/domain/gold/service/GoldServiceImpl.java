@@ -70,7 +70,6 @@ public class GoldServiceImpl implements GoldService {
 
     @Override
     public void goldTradeRequest(GoldTradeDto buyGoldDto, Long userId, boolean isAutoFund) {
-        log.info("{} 거래 들어옴", buyGoldDto.getMethod());
         Members member = membersRepository.findById(userId)
             .orElseThrow(MemberNotFoundException::new);
 
@@ -80,12 +79,10 @@ public class GoldServiceImpl implements GoldService {
         //장시간 외이면
 //        if (now.isAfter(GOLD_END_TIME) || now.isBefore(GOLD_START_TIME)) {
         if (false) {
-            log.info("장 외 시간 거래 들어옴");
             if (buyGoldDto.getMethod().equals("SELL")) {
                 try {
                     //거래 가능 검증
                     boolean canSell = compareGold(member, getGoldCount(tradePrice, getGoldPrice()));
-                    log.info("장 외 SELL일때 팔 수 있냐? : {}", canSell);
                     if (!canSell) {
                         throw new MoreSellException();
                     }
@@ -104,12 +101,9 @@ public class GoldServiceImpl implements GoldService {
                         .method(TradeMethod.SELL)
                         .build());
                 } catch (Exception e) {
-                    log.info("초 비상 거래 안됨");
                     throw new TradeErrorExeption();
                 }
                 //통장에 돈 넣어주기
-//                accountService.depositAccount(member.getId(), (long) tradePrice);
-                log.info("거래완료");
                 return;
             } else {
                 try {
@@ -122,10 +116,8 @@ public class GoldServiceImpl implements GoldService {
                     //돈 빼기
                     if (!isAutoFund) {
                         accountService.withdrawAccount(member.getId(), (long) tradePrice);
-                        log.info("돈빼기 완료 ~");
                     }
                 } catch (Exception e) {
-                    log.info("돈빼다 오류 발생 삐용삐용");
                     throw new TradeErrorExeption();
                 }
                 goldWaitingQueueRepository.save(GoldWaitingQueue
@@ -290,23 +282,17 @@ public class GoldServiceImpl implements GoldService {
 
     @Transactional
     void tradeGold(GoldTradeDto goldTradeDto, Members member, boolean isAutoFunding) {
-        log.info("장내 {} 거래 들어옴", goldTradeDto.getMethod());
         int goldPrice = getGoldPrice();
-        log.info("금 가격 : {}", goldPrice);
         int tradePrice = goldTradeDto.getTradePrice();
-        log.info("거래 가격 : {}", tradePrice);
         double count = getGoldCount(goldTradeDto.getTradePrice(), goldPrice);
-        log.info("거래 개수 : {}", count);
         TradeMethod tradeMethod = null;
         if (goldTradeDto.getMethod().equals("SELL")) {
             try {
 
                 if(!isAutoFunding) {
                     //거래 가능 검증
-                    log.info("SELL 요청 들어옴");
                     boolean canSell = compareGold(member, count);
                     if (!canSell) {
-                        log.info("장 내 팔수 없다 마 걔쉐이야!");
                         throw new MoreSellException();
                     }
 

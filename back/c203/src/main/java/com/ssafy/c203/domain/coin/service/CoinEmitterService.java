@@ -23,7 +23,6 @@ public class CoinEmitterService {
 
     @Scheduled(fixedRate = 1000) // 1초(1000ms)마다 실행
     public void sendCoinUpdates() {
-//        log.info("스케줄러 실행");
         List<FindCoinChartAllResponse> CoinData = getCoinData();
         // 제거해야 할 emitter
         List<SseEmitter> deadEmitters = new ArrayList<>();
@@ -52,7 +51,6 @@ public class CoinEmitterService {
 
     private List<FindCoinChartAllResponse> getCoinData() {
         List<MongoCoinMinute> CoinDetails = coinService.findCoinMinute();
-//        log.info("CoinDetails: {}", CoinDetails);
         return CoinDetails.stream()
                 .map(FindCoinChartAllResponse::new)
                 .toList();

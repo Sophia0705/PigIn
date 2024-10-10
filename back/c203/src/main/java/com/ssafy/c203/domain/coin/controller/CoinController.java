@@ -81,13 +81,11 @@ public class CoinController {
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamCoins() {
-//        log.info("streamStocks");
         return coinEmitterService.addEmitter();
     }
 
     @PostMapping("/{coinCode}/sell")
     public ResponseEntity<?> sellCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws InsufficientAmountException {
-//        log.info("request = {}", request);
         exceptionService.UserIdException(customUserDetails);
         coinService.sellCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getPrice());
         return ResponseEntity.ok().body("success");
@@ -96,7 +94,6 @@ public class CoinController {
 
     @PostMapping("/{coinCode}/buy")
     public ResponseEntity<?> buyCoin(@RequestBody CoinTradeRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-//        log.info("request = {}", request);
         exceptionService.UserIdException(customUserDetails);
         coinService.buyCoin(customUserDetails.getUserId(), request.getCoinCode(), request.getPrice());
         return ResponseEntity.ok().body("success");
@@ -106,7 +103,6 @@ public class CoinController {
     public ResponseEntity<?> findCoinQuantity(@PathVariable String coinCode, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         exceptionService.UserIdException(customUserDetails);
         Long userId = customUserDetails.getUserId();
-//        log.info("userId = {}, coinCode = {}", userId, coinCode);
         CoinPortfolio portfolio = coinService.findCoinPortfolioByCode(userId, coinCode);
         if (portfolio == null) {
             return ResponseEntity.ok().body(new FindCoinPortfolioResponse(coinCode, coinService.findCoin(coinCode).getCoinName(),0.0, 0, 0.0));
@@ -119,7 +115,6 @@ public class CoinController {
     public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
         exceptionService.UserIdException(user);
         Long userId = user.getUserId();
-//        log.info("findMyCoins: userId = {}", userId);
         List<FindCoinPortfolioResponse> coins = coinService.findCoinPortfolios(userId);
 
         Double price = Math.round(coins.stream()

@@ -82,10 +82,8 @@ public class PortfolioService {
     public void updateGoldAutoTrading(Long userId, int percent) {
         boolean flag = goldService.isAutoFundingGold(userId);
         if (percent == 0 && flag) {
-            log.info("delete");
             goldService.cancelAutoFunding(userId);
         } else if (percent != 0) {
-            log.info("update");
             goldService.setAutoFunding(userId, percent);
         }
     }

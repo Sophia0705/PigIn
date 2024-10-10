@@ -94,8 +94,6 @@ public class MemberServiceImpl implements MemberService {
         String password = bCryptPasswordEncoder.encode(members.getPassword());
         members.updatePassword(password);
 
-        log.info("member : {}", members.toString());
-
         //userkey 지정
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("email", members.getEmail());
@@ -174,7 +172,6 @@ public class MemberServiceImpl implements MemberService {
         MMSAuthentication authentication = authenticationRepository.findLatestValidAuthentication(
                 mmsCompareDto.getAuthenticationNumber(), mmsCompareDto.getPhoneNumber())
             .orElseThrow(AuthenticationNotFoundException::new);
-        log.info(authentication.toString());
         if (mmsCompareDto.getAuthenticationNumber()
             .equals(authentication.getAuthenticationNumber())) {
             return true;
@@ -301,11 +298,9 @@ public class MemberServiceImpl implements MemberService {
 
         HttpStatusCode statusCode = response.getStatusCode();
         if (statusCode.is2xxSuccessful()) {
-            log.info("SSAFY API에 1원인증 성공!");
             getOneWonInformation(userId, accountNo);
             return true;
         }
-        log.info("SSAFY API에 1원인증 실패!");
         return false;
     }
 
@@ -444,7 +439,6 @@ public class MemberServiceImpl implements MemberService {
             entity,
             FindBalanceResponse.class
         );
-        log.info(requestBody.toString());
         Long money = Long.valueOf(response.getBody().getRec().getAccountBalance());
 
         return SavingAccoungResponseDto
@@ -486,7 +480,6 @@ public class MemberServiceImpl implements MemberService {
             entity,
             FindBalanceResponse.class
         );
-        log.info(requestBody.toString());
         Long money = Long.valueOf(response.getBody().getRec().getAccountBalance());
 
         return MemberAccountResponseDto
@@ -500,8 +493,6 @@ public class MemberServiceImpl implements MemberService {
     private void getOneWonInformation(Long userId, String accountNo) throws Exception {
         Members member = membersRepository.findById(userId)
             .orElseThrow(MemberNotFoundException::new);
-
-        log.info("문자보내기쪽 들어옴");
 
         String userKey = member.getUserKey();
 
@@ -526,22 +517,14 @@ public class MemberServiceImpl implements MemberService {
             entity,
             OneWonResponse.class
         );
-        log.info(response.getBody().getRec().toString());
-
         String responseMessage = response.getBody().getHeader().getResponseMessage();
-        log.info("{}", responseMessage);
-
-        log.info("계좌 정보 불러오기 성공");
-
         List<OneWonHistoryDto> history = response.getBody().getRec().getList();
         for (OneWonHistoryDto oneWonHistoryDto : history) {
             if (!oneWonHistoryDto.getTransactionTypeName().equals("입금")
                 || !oneWonHistoryDto.getTransactionBalance().equals("1")) {
-                log.info("1원이나 입금이 아님");
                 continue;
             }
             if (oneWonHistoryDto.getTransactionSummary().matches("^SSAFY.*")) {
-                log.info("찾았다 보낼게 ~ {}", oneWonHistoryDto.getTransactionSummary());
                 mmsService.sendMMS(oneWonHistoryDto.getTransactionSummary(),
                     member.getPhoneNumber());
                 return;

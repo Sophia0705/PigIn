@@ -32,7 +32,6 @@ public class PortfolioController {
     public ResponseEntity<?> setAutoFunding(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                             @RequestBody AutoTradingSetting request) {
         exceptionService.UserIdException(customUserDetails);
-        log.info("setAutoFunding {}", request);
 
         Long userId = customUserDetails.getUserId();
         portfolioService.updateAutoTrading(userId, request.getIsEnabled(), request.getInvestmentAmount());

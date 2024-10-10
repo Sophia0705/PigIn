@@ -68,19 +68,15 @@ public class PayServiceImpl implements PayService {
         mmsService.sendMMS(
             getMessage(member.getName(), memberAccount.getBank(), memberAccount.getAccountNo()),
             member.getPhoneNumber());
-        log.info("문자 발송 후");
 
         //비율이 없으면 아래 로직 설정 필요 x
         if (savingRate == 0) {
-            log.info("자동입금 비율 설정X");
             return;
         }
 
-        log.info("자동입금 비율 설정O");
         //투자 계좌 입금하기
         int money = PRICE * savingRate / 100;
         Boolean isSaving = accountService.depositAccount(userId, Long.valueOf(money));
-        log.info("isSaving = " + isSaving);
         if (!isSaving) {
             throw new DepositErrorException();
         }
