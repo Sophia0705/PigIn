@@ -95,7 +95,6 @@ const SpendingAccountRegisterModal: React.FC = () => {
         accountNumberWithoutHyphen
       );
       if (isVerified) {
-        setIsAccountVerified(true);
         setIsCodeInputVisible(true);
         setSuccessMessage(
           '1원 인증 번호가 전송되었습니다. 계좌 내역을 확인하세요.'
@@ -119,6 +118,7 @@ const SpendingAccountRegisterModal: React.FC = () => {
         verificationCode
       );
       if (isVerified) {
+        setIsAccountVerified(true);
         setSuccessMessage('계좌 인증이 완료되었습니다.');
         setShowSuccessModal(true);
       } else {
@@ -201,7 +201,6 @@ const SpendingAccountRegisterModal: React.FC = () => {
   // 모든 입력 필드가 올바르게 채워졌는지 확인하는 함수
   const isFormValid = () => {
     return (
-      formData.name &&
       formData.bankName &&
       formData.accountNumber &&
       isAccountVerified && // 계좌 인증 여부 확인
@@ -240,16 +239,6 @@ const SpendingAccountRegisterModal: React.FC = () => {
           onSubmit={handleSubmit}
           className="flex flex-col space-y-3 w-full"
         >
-          {/* 이름 입력 필드 */}
-          {/* <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="이름"
-            className="w-full p-2 border-none border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-300"
-          /> */}
-          <hr className="w-full mx-auto border-t border-gray-300 relative top-[-11px]" />
           {/* 은행 선택 필드 */}
           <select
             name="bankName"
@@ -285,7 +274,6 @@ const SpendingAccountRegisterModal: React.FC = () => {
                     ? 'bg-[#9CF8E1] text-gray-900'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
-              disabled={!formData.accountNumber}
             >
               {isCodeInputVisible ? '요청 완료' : '1원 인증'}
             </button>
@@ -300,12 +288,13 @@ const SpendingAccountRegisterModal: React.FC = () => {
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
                   placeholder="인증번호"
-                  className="flex-1 p-2 border-b border-gray-300 rounded-none focus:outline-none focus:ring-0 focus:border-green-300" // 밑줄 추가
+                  className="flex-1 p-2 border-b border-gray-300 rounded-none focus:outline-none focus:ring-0 focus:border-green-300"
+                  disabled={isAccountVerified} // 인증 완료 시 필드 비활성화
                 />
                 <button
                   type="button"
                   onClick={handleVerificationSubmit}
-                  className={`px-3 py-2 rounded ${
+                  className={`px-3 py-2 rounded w-auto justify-center ${
                     isAccountVerified
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed' // 인증 완료 시 회색으로 변경
                       : 'bg-[#9CF8E1] text-gray-700'
