@@ -193,7 +193,9 @@ public class StockServiceImpl implements StockService {
         StockPortfolio stockPortfolio = validateStockPortfolio(stockId, userId, count);
 
         // 1. 보유 주식 수량 감소
-        subStockPortfolio(stockPortfolio, count);
+        if (!isAuto) {
+            subStockPortfolio(stockPortfolio, count);
+        }
         try {
             if (isBusinessHours()) {
                 // 2. 주식 매도 처리
