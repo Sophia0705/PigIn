@@ -51,7 +51,7 @@ public class Members {
 
     private String role;
 
-    private int savingRate = 0;
+    private int savingRate = 10;
 
     private int savingAmount = 0;
 
