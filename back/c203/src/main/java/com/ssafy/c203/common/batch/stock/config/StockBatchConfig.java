@@ -71,7 +71,6 @@ public class StockBatchConfig {
             try {
                 boolean tradeSuccess;
                 if (waitingQueue.getMethod() == TradeMethod.BUY) {
-                    log.info("구매 요청 : memberId: {} ,    StockId{} ,  tradePrice: {}", waitingQueue.getMember().getId(), waitingQueue.getStockItem().getId(), waitingQueue.getTradePrice());
                     // 구매 처리
                     tradeSuccess = stockService.buyStock(
                             waitingQueue.getMember().getId(),
@@ -92,11 +91,9 @@ public class StockBatchConfig {
                 if (tradeSuccess) {
                     return waitingQueue; // 성공한 주문 반환
                 } else {
-                    log.error("주식 거래 실패: {}", waitingQueue.getId());
                     return null; // 실패한 경우 null 반환
                 }
             } catch (Exception e) {
-                log.error("Error processing stock waiting queue (ID: {}): ", waitingQueue.getId(), e);
                 throw e; // 예외를 던져 재시도 가능하도록 처리
             }
         };

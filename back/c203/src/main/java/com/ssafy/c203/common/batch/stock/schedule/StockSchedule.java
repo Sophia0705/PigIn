@@ -25,7 +25,6 @@ public class StockSchedule {
     @Scheduled(cron = "0 31 9 * * *", zone = "Asia/Seoul")
     public void runStockJob() {
         try {
-            log.info("StockSchedule schedule start");
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
             String date = dateFormat.format(new Date());
 
@@ -36,9 +35,7 @@ public class StockSchedule {
 
             // 성공 여부
             JobExecution jobExecution = jobLauncher.run(jobRegistry.getJob("processStockWaitingQueueJob"), jobParameters);
-            log.info("Job Execution Status: {}", jobExecution.getStatus());
-        } catch (Exception e) {
-            log.error("Job failed to run: ", e);
+        } catch (Exception ignored) {
         }
     }
 }

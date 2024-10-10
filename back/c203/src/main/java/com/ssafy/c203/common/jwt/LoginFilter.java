@@ -57,9 +57,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response, FilterChain chain, Authentication authentication) {
-        log.info("===Successful authentication======");
-        log.info("Username: {}", authentication.getName());
-        log.info("URI: {}", request.getRequestURI());
         //유저 정보
         String username = authentication.getName();
 
@@ -85,28 +82,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
-        log.info("access: {} ", response.getHeader("access"));
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, AuthenticationException failed) {
-        log.info("===Unsuccessful authentication======");
-        log.info("Fail   uri: {}", request.getRequestURI());
 
         response.setStatus(401);
     }
 
     private Cookie createCookie(String key, String value) {
-        log.info("===Create cookie======");
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "None"); // 이 속성 추가
         cookie.setHttpOnly(true);
-        log.info("Cookie: {}", key);
         return cookie;
     }
 

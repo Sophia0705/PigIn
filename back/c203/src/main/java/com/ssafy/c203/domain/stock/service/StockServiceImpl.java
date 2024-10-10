@@ -83,7 +83,6 @@ public class StockServiceImpl implements StockService {
 //            mongoStockDetailRepository.count();
             return mongoStockDetailRepository.findLatestForAllStocks();
         } catch (Exception e) {
-            log.error("Error fetching all stocks: ", e);
             throw new InternalServerException("Failed to fetch stocks from database");
         }
     }
@@ -113,10 +112,8 @@ public class StockServiceImpl implements StockService {
             List<MongoStockHistory> tmp = mongoStockHistoryRepository.findByStockCodeAndIntervalOrderByDateDesc(stockCode, intervals.get(interval), pageable);
             return tmp;
         } catch (Exception e) {
-            log.error("Error fetching stock chart: ", e);
             throw new InternalServerException("Failed to fetch stock chart");
         }
-//        log.info("tmp = {}", tmp);
     }
 
     @Override
@@ -163,7 +160,6 @@ public class StockServiceImpl implements StockService {
                             .amount(tradeResult.getResult())
                             .priceAvg(tradeResult.getTradePrice())
                             .build();
-                    log.info("새 포폴 저장 : {}, {}", newPortfolio.getStockItem(), newPortfolio.getPriceAvg());
                     stockPortfolioRepository.save(newPortfolio);
                 }
                 return true;
@@ -175,7 +171,6 @@ public class StockServiceImpl implements StockService {
         } catch (Exception e) {
             // 7. 예외 발생 시 출금 취소
             deposit(userId, price);
-            log.error("주식 매수 중 오류 발생: ", e);
             throw new InternalServerException("주식 매수 처리 중 오류가 발생했습니다.");
         }
         return false;
@@ -213,7 +208,6 @@ public class StockServiceImpl implements StockService {
                 return false;
             }
         } catch (Exception e) {
-            log.error("주식 매도 중 오류 발생: ", e);
             subStockPortfolio(stockPortfolio, -count);
             throw new RuntimeException("주식 매도 처리 중 오류가 발생했습니다.", e);
         }
@@ -259,7 +253,6 @@ public class StockServiceImpl implements StockService {
         MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElseThrow();
         Double currentPrice = Double.parseDouble(stockMinute.getClose());
-        log.info("current price: {}", currentPrice);
         // 수익률 계산: (현재가격 - 평균매입가격) / 평균매입가격 * 100
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
         // 소수점 둘째 자리까지 반올림

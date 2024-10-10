@@ -65,7 +65,6 @@ public class AccountServiceImpl implements AccountService {
             entity,
             FindBalanceResponse.class
         );
-        log.info(requestBody.toString());
         return Long.valueOf(response.getBody().getRec().getAccountBalance());
     }
 
@@ -73,8 +72,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(readOnly = true)
     public Boolean depositAccount(Long memberId, Long price) {
-//        log.info("==============depositAccount==============");
-//        log.info("memberId: {}, price: {}", memberId, price);
         // 1. 계좌번호 가져오기
         SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
             .orElseThrow(RuntimeException::new);
@@ -107,7 +104,6 @@ public class AccountServiceImpl implements AccountService {
             );
             return true;
         } catch (Exception e) {
-            log.error(e.getMessage());
             return false;
         }
     }
@@ -115,8 +111,6 @@ public class AccountServiceImpl implements AccountService {
     // 출금
     @Override
     public Boolean withdrawAccount(Long memberId, Long price) {
-//        log.info("==============withdrawAccount==============");
-//        log.info("memberId: " + memberId + " price: " + price);
         // 1. 계좌번호 가져오기
         SavingsAccount account = savingsAccountRepository.findByMember_Id(memberId)
             .orElseThrow(RuntimeException::new);
@@ -151,11 +145,8 @@ public class AccountServiceImpl implements AccountService {
             );
             return true;
         } catch (Exception e) {
-            log.error(e.getMessage());
             return false;
         }
-
-//        log.info(response.getBody());
 
     }
 
@@ -186,7 +177,6 @@ public class AccountServiceImpl implements AccountService {
             );
             return true;
         } catch (Exception e) {
-            log.error(e.getMessage());
             return false;
         }
     }

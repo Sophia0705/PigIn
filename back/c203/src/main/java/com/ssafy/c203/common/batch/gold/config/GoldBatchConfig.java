@@ -74,12 +74,10 @@ public class GoldBatchConfig {
                         .method(waitingQueue.getMethod().name())
                         .build();
 
-                log.info("금 거래 요청 : memberId: {}, method: {}, tradePrice: {}", waitingQueue.getMember().getId(), waitingQueue.getMethod(), waitingQueue.getTradePrice());
                 goldService.goldTradeRequest(goldTradeDto, waitingQueue.getMember().getId(),true);
 
                 return waitingQueue; // 성공한 주문 반환
             } catch (Exception e) {
-                log.error("Error processing gold waiting queue (ID: {}): ", waitingQueue.getId(), e);
                 throw e; // 예외를 던져 재시도 가능하도록 처리
             }
         };

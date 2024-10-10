@@ -24,7 +24,6 @@ public class GoldSchedule {
     @Scheduled(cron = "0 31 9 * * *", zone = "Asia/Seoul")
     public void runGoldJob() {
         try {
-            log.info("GoldSchedule schedule start");
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
             String date = dateFormat.format(new Date());
 
@@ -34,9 +33,7 @@ public class GoldSchedule {
                     .toJobParameters();
 
             JobExecution jobExecution = jobLauncher.run(jobRegistry.getJob("processGoldWaitingQueueJob"), jobParameters);
-            log.info("Job Execution Status: {}", jobExecution.getStatus());
         } catch (Exception e) {
-            log.error("Job failed to run: ", e);
         }
     }
 }

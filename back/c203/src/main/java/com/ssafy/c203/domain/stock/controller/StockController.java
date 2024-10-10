@@ -39,7 +39,6 @@ public class StockController {
     @GetMapping
     public ResponseEntity<?> findAllStock() {
         List<MongoStockDetail> stockDetails = stockService.findAllStock();
-//        log.info("stockDetails = {}", stockDetails);
         List<FindStockAllResponse> response = stockDetails.stream()
                 .map(FindStockAllResponse::new)
                 .toList();
@@ -48,9 +47,7 @@ public class StockController {
 
     @GetMapping("/search")
     public ResponseEntity<?> findAllStockBySearch(@RequestParam String keyword) {
-//        log.info("findAllStockBySearch: keyword = {}", keyword);
         List<MongoStockDetail> stockDetails = stockService.searchStock(keyword);
-//        log.info("stockDetails = {}", stockDetails);
         List<FindStockAllResponse> response = stockDetails.stream()
                 .map(FindStockAllResponse::new)
                 .toList();
@@ -59,7 +56,6 @@ public class StockController {
 
     @GetMapping("/{stockId}/chart/{interval}")
     public ResponseEntity<?> findStockChart(@PathVariable String stockId, @PathVariable String interval, @RequestParam Integer count) {
-//        log.info("findStockChart: stockId = {}, interval = {} count = {}", stockId, interval, count);
         List<FindStockChartAllResponse> responses;
         if (interval.equals("minute")) {
             List<MongoStockMinute> stockChart = stockService.findStockMinuteChart(stockId, count > 100 ? 100 : count);
@@ -77,21 +73,18 @@ public class StockController {
 
     @GetMapping("/{stockId}")
     public ResponseEntity<?> findStockById(@PathVariable String stockId) {
-//        log.info("findStockById: stockId = {}", stockId);
         FindStockDetailResponse response = new FindStockDetailResponse(stockService.findStockDetail(stockId));
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping(value = "/live", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamStocks() {
-//        log.info("streamStocks");
         return stockEmitterService.addEmitter();
     }
 
     @PostMapping("/{stockId}/sell")
     public ResponseEntity<?> sellStock(@RequestBody StockSellRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) throws InsufficientAmountException {
         exceptionService.UserIdException(customUserDetails);
-        //        log.info("request = {}", request);
         if (stockService.sellStock(customUserDetails.getUserId(), request.getStockCode(), request.getAmount(), false)) {
             return ResponseEntity.ok().body("success");
         }
@@ -101,9 +94,7 @@ public class StockController {
     @PostMapping("/{stockId}/buy")
     public ResponseEntity<?> buyStock(@RequestBody StockBuyRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         exceptionService.UserIdException(customUserDetails);
-//        log.info("request = {}", request);
         if (stockService.buyStock(customUserDetails.getUserId(), request.getStockCode(), request.getPrice(), false)) {
-            log.info("구매 성공");
             return ResponseEntity.ok().body("success");
         }
         return ResponseEntity.ok().body("wait");
@@ -112,9 +103,7 @@ public class StockController {
     @GetMapping("/{stockId}/quantity")
     public ResponseEntity<?> findStockQuantity(@PathVariable String stockId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         exceptionService.UserIdException(customUserDetails);
-//        log.info("findStockQuantity: stockId = {}", stockId);
         StockPortfolio portfolio = stockService.findStockPortfolioByCode(customUserDetails.getUserId(), stockId);
-//        log.info("portfolio = {} : {}", portfolio.getStockItem().getName(), portfolio.getPriceAvg());
         if (portfolio == null) {
             return ResponseEntity.ok().body(new FindStockPortfolioResponse(stockId, stockService.findStockDetail(stockId).getHtsKorIsnm(), 0.0, 0, 0.0));
         }
@@ -126,7 +115,6 @@ public class StockController {
     public ResponseEntity<?> findMyStocks(@AuthenticationPrincipal CustomUserDetails user) {
         exceptionService.UserIdException(user);
         Long userId = user.getUserId();
-//        log.info("findMyStocks: userId = {}", userId);
         List<FindStockPortfolioResponse> stocks = stockService.findStockPortfolio(userId);
 
         Double price = Math.round(stocks.stream()

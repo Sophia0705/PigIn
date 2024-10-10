@@ -78,7 +78,6 @@ public class CoinServiceImpl implements CoinService {
             .stream()
             .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
             .toList();
-        log.info(responses.toString());
         return responses;
     }
 
@@ -102,8 +101,6 @@ public class CoinServiceImpl implements CoinService {
             })
             .map(mongoCoin -> new FindCoinAllResponse(mongoCoin, coinItemMap))
             .toList();
-
-//        log.info("Search results for '{}': {}", keyword, responses);
 
         return responses;
     }
@@ -130,7 +127,6 @@ public class CoinServiceImpl implements CoinService {
             return mongoCoinHistoryRepository.findByCoinAndIntervalOrderByDateDesc(coinCode,
                 interval, pageable);
         } catch (Exception e) {
-            log.error("Error fetching coin chart: ", e);
             throw new InternalServerException("Failed to fetch coin chart");
         }
     }
@@ -142,7 +138,6 @@ public class CoinServiceImpl implements CoinService {
         try {
             return mongoCoinMinuteRepository.findByCoinOrderByDateDescTimeDesc(coinCode, pageable);
         } catch (Exception e) {
-            log.error("Error fetching coin minute chart: ", e);
             throw new InternalServerException("Failed to fetch coin minute chart");
         }
     }
@@ -152,7 +147,6 @@ public class CoinServiceImpl implements CoinService {
         try {
             return mongoCoinMinuteRepository.findLatestDataForEachCoin();
         } catch (Exception e) {
-            log.error("Error fetching coin minute: ", e);
             throw new InternalServerException("Failed to fetch coin minute");
         }
     }
@@ -174,7 +168,6 @@ public class CoinServiceImpl implements CoinService {
             // 3. 거래
             SecuritiesCoinTrade tradeResult = SecuritiesCoinBuy(coinCode, price);
             // 4. 거래내역 저장
-            log.info(tradeResult.toString());
             saveTradeRecode(member, coinItem, tradeResult.getResult(), tradeResult.getTradePrice(),
                 TradeMethod.BUY);
             // 5. 보유 주식 업데이트
@@ -190,12 +183,10 @@ public class CoinServiceImpl implements CoinService {
                     .priceAvg(tradeResult.getTradePrice())
                     .amount(tradeResult.getResult())
                     .build();
-//                log.info("새로운 저장 = {} : {}", newPortfolio.getPriceAvg(), newPortfolio.getAmount());
                 coinPortfolioRepository.save(newPortfolio);
             }
         } catch (Exception e) {
             deposit(userId, price);
-            log.error("Error fetching coin: ", e);
             throw new InternalServerException("거래중 에러 발생");
         }
     }
@@ -229,7 +220,6 @@ public class CoinServiceImpl implements CoinService {
                 throw new InternalServerException("입금 실패");
             }
         } catch (Exception e) {
-            log.error("Error fetching coin: ", e);
             sellCoinPortfolio(coinPortfolio, amount);
             throw new InternalServerException("코인 매도 오류");
         }
@@ -275,7 +265,6 @@ public class CoinServiceImpl implements CoinService {
                 coinCode)
             .orElseThrow(() -> new BadRequestException("No such coin"));
         Double currentPrice = coinMinute.getClose();
-//        log.info("profit calc = ({} - {}) / {} = {}", currentPrice, priceAvg, priceAvg * 100, (currentPrice - priceAvg) / priceAvg * 100);
         double profitRate = (currentPrice - priceAvg) / priceAvg * 100;
         return new PriceAndProfit(currentPrice, Math.round(profitRate * 100.0) / 100.0);
     }
@@ -455,8 +444,6 @@ public class CoinServiceImpl implements CoinService {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-        log.info(entity.toString());
-
         ResponseEntity<SecuritiesCoinTrade> response = restTemplate.exchange(
             url,
             HttpMethod.POST,
@@ -488,8 +475,6 @@ public class CoinServiceImpl implements CoinService {
             entity,
             SecuritiesCoinTrade.class
         );
-
-        log.info(response.toString());
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
             throw new InternalServerException("증권사 API 호출 실패");
@@ -523,7 +508,6 @@ public class CoinServiceImpl implements CoinService {
     private void buyCoinPortfolio(CoinPortfolio coinPortfolio, Double amount, Double price) {
         coinPortfolio.addAmount(amount);
         coinPortfolio.updatePriceAve(price, amount);
-//        log.info("추가 매수 저장 = {} : {}", coinPortfolio.getPriceAvg(), coinPortfolio.getAmount());
         coinPortfolioRepository.save(coinPortfolio);
     }
 
