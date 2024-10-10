@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate 가져오기
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -18,6 +19,7 @@ const formatAccountNumber = (accountNo: string) => {
 };
 
 const AccountSlider: React.FC = () => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
   const {
     isSpendingAccountRegisterModalOpen,
     openSpendingAccountRegisterModal,
@@ -58,6 +60,14 @@ const AccountSlider: React.FC = () => {
     loadAccounts();
   }, []);
 
+  const handleSpendingAccountClick = () => {
+    if (spendingAccount) {
+      navigate('/qr-payment'); // 소비 계좌가 있을 때 qr-payment 페이지로 이동
+    } else {
+      openSpendingAccountRegisterModal(); // 소비 계좌가 없을 때 계좌 등록 모달 열기
+    }
+  };
+
   return (
     <div className="w-[400px] h-[350px] mx-auto mt-0 relative">
       <h2 className="text-2xl font-bold text-center mb-4 text-white">
@@ -94,7 +104,7 @@ const AccountSlider: React.FC = () => {
         </SwiperSlide>
 
         {/* 두 번째 슬라이드 (소비 계좌) */}
-        <SwiperSlide>
+        <SwiperSlide onClick={handleSpendingAccountClick}>
           {spendingAccount ? (
             <div className="p-8 bg-blue-100 rounded-lg shadow-md w-[340px] h-[28vh] flex flex-col items-center justify-center">
               <FaPiggyBank className="text-blue-600 text-5xl mb-4" />
