@@ -75,7 +75,7 @@ public class GoldBatchConfig {
                         .build();
 
                 log.info("금 거래 요청 : memberId: {}, method: {}, tradePrice: {}", waitingQueue.getMember().getId(), waitingQueue.getMethod(), waitingQueue.getTradePrice());
-                goldService.goldTradeRequest(goldTradeDto, waitingQueue.getMember().getId());
+                goldService.goldTradeRequest(goldTradeDto, waitingQueue.getMember().getId(),true);
 
                 return waitingQueue; // 성공한 주문 반환
             } catch (Exception e) {

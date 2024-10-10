@@ -11,10 +11,7 @@ import com.ssafy.c203.domain.members.service.MemberService;
 import com.ssafy.c203.domain.stock.dto.PriceAndProfit;
 import com.ssafy.c203.domain.stock.dto.SecuritiesStockTrade;
 import com.ssafy.c203.domain.stock.dto.StockAutoSetting;
-import com.ssafy.c203.domain.stock.dto.response.FindStockChartAllResponse;
-import com.ssafy.c203.domain.stock.dto.response.FindStockNowResponse;
-import com.ssafy.c203.domain.stock.dto.response.FindStockPortfolioResponse;
-import com.ssafy.c203.domain.stock.dto.response.StockRankDto;
+import com.ssafy.c203.domain.stock.dto.response.*;
 import com.ssafy.c203.domain.stock.entity.*;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockDetail;
 import com.ssafy.c203.domain.stock.entity.mongo.MongoStockHistory;
@@ -53,16 +50,15 @@ public class StockServiceImpl implements StockService {
     private final MongoStockHistoryRepository mongoStockHistoryRepository;
     private final MongoStockMinuteRepository mongoStockMinuteRepository;
     private final StockItemRepository stockItemRepository;
-    private final StockTradeRepository stockTradeRepository; ;
+    private final StockTradeRepository stockTradeRepository;
     private final StockPortfolioRepository stockPortfolioRepository;
     private final StockFavoriteRepository stockFavoriteRepository;
     private final StockAutoFundingRepository stockAutoFundingRepository;
-
+    private final StockWaitingQueueRepository stockWaitingQueueRepository;
 
     private final MemberService memberService;
     private final AccountService accountService;
     private final RestTemplate restTemplate;
-    private final StockWaitingQueueRepository stockWaitingQueueRepository;
     private Map<String, String> intervals;
 
     @Value("${ssafy.securities.url}")
@@ -194,7 +190,9 @@ public class StockServiceImpl implements StockService {
         StockPortfolio stockPortfolio = validateStockPortfolio(stockId, userId, count);
 
         // 1. 보유 주식 수량 감소
-        subStockPortfolio(stockPortfolio, count);
+        if (!isAuto) {
+            subStockPortfolio(stockPortfolio, count);
+        }
         try {
 //            if (isBusinessHours()) {
             if (true) {
@@ -208,7 +206,7 @@ public class StockServiceImpl implements StockService {
                     throw new RuntimeException("매도 금액 입금 실패");
                 }
                 return true;
-            } else if(!isAuto) {
+            } else if (!isAuto) {
                 // 6. 대기 큐에 저장
                 saveToWaitingQueue(member, stockItem, count, 0.0, TradeMethod.SELL);
                 return false;
@@ -384,7 +382,7 @@ public class StockServiceImpl implements StockService {
         findStockNowResponse.setLive(false);
         MongoStockMinute stockMinute = mongoStockMinuteRepository.findTopByStockCodeOrderByDateDescTimeDesc(stockCode)
                 .orElse(null);
-        if (stockMinute != null)  {
+        if (stockMinute != null) {
             findStockNowResponse.setData(new FindStockChartAllResponse(stockMinute));
 
             if (stockMinute.getDate() != null && stockMinute.getTime() != null) {
