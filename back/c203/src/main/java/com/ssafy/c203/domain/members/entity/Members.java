@@ -33,7 +33,7 @@ public class Members {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
