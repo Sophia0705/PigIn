@@ -41,7 +41,7 @@ const PortfolioDetails: React.FC = () => {
   const [loadingItem, setLoadingItem] = useState<boolean>(false);
 
   const items: ItemData[] = useMemo(() => {
-    if (showAllItems) {
+    if (showAllItems || activeIndex === undefined) {
       return [
         ...stocks,
         ...cryptocurrencies,
@@ -208,9 +208,9 @@ const PortfolioDetails: React.FC = () => {
           style={{ height: 'calc(100% - 24px)' }}
         >
           <h2 className="text-xl font-bold pt-4 mb-1 px-4">
-            {showAllItems
+            {showAllItems || activeIndex === undefined
               ? '전체'
-              : ['주식', '암호화폐', '금'][activeIndex ?? 0]}
+              : ['주식', '암호화폐', '금'][activeIndex]}
           </h2>
           <div className="h-full pt-4 pb-10 overflow-y-auto">
             <InfiniteLoader
