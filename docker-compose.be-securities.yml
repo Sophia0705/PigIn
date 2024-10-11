@@ -1,0 +1,23 @@
+services:
+  backend-securities:
+    image: zzun73/pigin-be-securities:securities-latest
+    container_name: pigin-be-securities
+    ports:
+      - "8089:8089"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pigin-postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - myapp_pigin-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8089 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  myapp_pigin-network:
+    external: true

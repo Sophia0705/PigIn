@@ -1,0 +1,19 @@
+services:
+  backend-wallet:
+    image: zzun73/pigin-be-wallet:wallet-latest
+    container_name: pigin-be-wallet
+    ports:
+      - "8088:8088"
+    networks:
+      - pigin-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8088 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  pigin-network:
+    driver: bridge
