@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>유저 상세 정보</title>
+</head>
+<body>
+
+<h1>유저 리스트</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>User Key</th>
+        <th>Phone Number</th>
+        <th>Birth</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 사용자 리스트 반복 -->
+    <tr th:each="user : ${users}">
+        <td th:text="${user.name}">Name</td>
+        <td>
+            <a th:href="@{/accounts(userKey=${user.userKey})}" th:text="${user.email}">Email</a>
+        </td>
+        <td th:text="${user.userKey}">User Key</td>
+        <td th:text="${user.phoneNumber}">Phone Number</td>
+        <td th:text="${user.birth}">Birth</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

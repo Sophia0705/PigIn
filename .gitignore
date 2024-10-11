@@ -1,4 +1,2 @@
 *.idea
-*.properties
-
-*.yml
+.env
