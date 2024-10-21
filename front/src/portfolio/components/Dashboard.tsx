@@ -38,13 +38,7 @@ const CustomLabel = ({
           totalProfitRate >= 0 ? 'fill-green-500' : 'fill-red-500'
         }`}
       >
-        {isFinite(totalProfitRate) ? (
-          <>
-            ({totalProfitRate.toFixed(2)}%{totalProfitRate >= 0 ? '▲' : '▼'})
-          </>
-        ) : (
-          '(0.00%)'
-        )}
+        ({totalProfitRate.toFixed(2)}%{totalProfitRate >= 0 ? '▲' : '▼'})
       </text>
     </g>
   );
@@ -68,9 +62,9 @@ const Dashboard = () => {
 
   const categories = useMemo(
     () => [
-      { name: '주식', value: isNaN(stockPrice) ? 0 : stockPrice },
-      { name: '암호화폐', value: isNaN(cryptoPrice) ? 0 : cryptoPrice },
-      { name: '금', value: isNaN(goldPrice) ? 0 : goldPrice },
+      { name: '주식', value: stockPrice || 0 },
+      { name: '암호화폐', value: cryptoPrice || 0 },
+      { name: '금', value: goldPrice || 0 },
     ],
     [stockPrice, cryptoPrice, goldPrice]
   );
@@ -81,21 +75,24 @@ const Dashboard = () => {
     let validItemsInitialValue = 0;
 
     allItems.forEach((item) => {
-      if (isFinite(Number(item.profitRate)) && Number(item.profitRate) !== 0) {
-        const profit = item.price * (Number(item.profitRate) / 100);
-        const initialValue = item.price / (1 + Number(item.profitRate) / 100);
+      const profitRate = Number(item.profitRate);
+      if (isFinite(profitRate) && profitRate !== 0) {
+        const profit = item.price * (profitRate / 100);
+        const initialValue = item.price / (1 + profitRate / 100);
         validItemsProfit += profit;
         validItemsInitialValue += initialValue;
       }
     });
 
-    const totalProfitRate =
+    const calculatedTotalProfitRate =
       validItemsInitialValue !== 0
         ? (validItemsProfit / validItemsInitialValue) * 100
         : 0;
 
     return {
-      totalProfitRate: isFinite(totalProfitRate) ? totalProfitRate : 0,
+      totalProfitRate: isFinite(calculatedTotalProfitRate)
+        ? calculatedTotalProfitRate
+        : 0,
     };
   }, [stocks, cryptocurrencies, gold]);
 
@@ -167,7 +164,7 @@ const Dashboard = () => {
               </div>
               <div className="pl-3 font-medium text-base">
                 <span>
-                  {((category.value / totalPrice) * 100).toFixed(2)}%{' '}
+                  {((category.value / totalPrice) * 100 || 0).toFixed(2)}%{' '}
                 </span>
                 <span className="font-medium">
                   (

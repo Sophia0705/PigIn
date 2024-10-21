@@ -1,0 +1,59 @@
+services:
+  backend:
+    image: zzun73/pigin-be-main:main-latest
+    container_name: pigin-be-main
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - postgres
+    networks:
+      - pigin-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres:
+    image: postgres:16.4
+    container_name: pigin-postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - pigin-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+  redis:
+    image: redis:latest
+    container_name: pigin-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - pigin-network
+    volumes:
+      - redis-data:/data
+    restart: always
+
+networks:
+  pigin-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
