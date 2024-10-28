@@ -67,7 +67,7 @@
             <img src="" width="140px" /> <br><br> ⛑ 이중현 <br>(Back-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/youngkimi">
             <img src="" width="140px" /> <br><br> ⛑ 최승필 <br>(Front-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com/lainlnya">
+        <td height="140px" align="center"> <a href="https://github.com/Sophia0705">
             <img src="" width="140px" /> <br><br> ⛑ 이예지 <br>(Front-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/NamjunKim12">
             <img src="" width="140px" /> <br><br> ⛑ 김태연 <br>(Front-End) </a> <br></td>
@@ -239,5 +239,5 @@ ex) feature/FE-user
 - [남혁준]() :
 - [이중현]() :
 - [최승필]() :
-- [이예지]() :
+- [이예지](https://github.com/Sophia0705) : 싸피에서 하는 2번째 프로젝트라서 이전 프로젝트 보다는 좀 수월했다고 느꼈지만, 기술적으로 많은 고민과 선택을 해볼 수 있던 기회였습니다. 그래도 팀원들 모두가 함께 하려는 마음이 잘 모여서 마지막까지 무사히 마쳐서 좋았습니다.
 - [김태연](https://github.com/taeyekim) : 처음 해보는 프론트엔드라 어려운 점이 많았지만, 개발과 학습을 병행하고, 트러블 슈팅 시에 팀원들과 머리를 맞대어 고민하여 무사히 개발을 마칠 수 있었습니다.
