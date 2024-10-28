@@ -131,7 +131,7 @@
 - 투자 계좌, 소비 계좌의 잔액을 확인할 수 있습니다.
 
 <img src="front/src/assets/images/MyPage.png" width="50%" />
-
+<img src="front/src/assets/images/APIDocument.png" />
 <!-- <figure class="half">
   <img src='' align='left' width="50%"/>
   <img src='' align='right' width="50%"/>
