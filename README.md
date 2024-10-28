@@ -59,17 +59,17 @@
 
 <table>
     <tr>
-        <td height="140px" align="center"> <a href="https://github.com/heon118">
+        <td height="140px" align="center"> <a href="https://github.com">
             <img src="" width="140px" /> <br><br> 👑 최승현 <br>(Back-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com/hyojin030">
+        <td height="140px" align="center"> <a href="https://github.com">
             <img src="" width="140px" /> <br><br> ⛑ 남혁준 <br>(Back-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com/olrlobt">
+        <td height="140px" align="center"> <a href="https://github.com">
             <img src="" width="140px" /> <br><br> ⛑ 이중현 <br>(Back-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com/youngkimi">
+        <td height="140px" align="center"> <a href="https://github.com">
             <img src="" width="140px" /> <br><br> ⛑ 최승필 <br>(Front-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com/Sophia0705">
+        <td height="140px" align="center"> <a href="(https://github.com/Sophia0705">
             <img src="" width="140px" /> <br><br> ⛑ 이예지 <br>(Front-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com/NamjunKim12">
+        <td height="140px" align="center"> <a href="https://github.com/taeyekim">
             <img src="" width="140px" /> <br><br> ⛑ 김태연 <br>(Front-End) </a> <br></td>
     </tr>
     <tr>
@@ -88,9 +88,7 @@
 
 - 회원가입 시 투자 계좌가 자동 개설되며, 이후 소비 계좌를 연동하여 설정한 저축률에 따라 소비한 금액의 일부가 생성된 투자 계좌로 입금됩니다.
 
-<figure>
   <img src="" align="center" width="50%" />
-</figure>
 
 ## MAIN PAGE
 
@@ -98,18 +96,14 @@
 - '내 투자' 포트폴리오를 확인할 수 있습니다.
 - 이용자들이 많이 거래한 주식, 가상화폐 TOP 5 종목들을 보고 상세페이지로 이동할 수 있습니다.
 
-<figure>
   <img src="front/src/assets/images/MainPage.png" align="center" width="50%" />
-</figure>
 
 ## PORTFOLIO PAGE
 
 - 주식, 암호화폐, 금 3가지 종목에 대한 본인의 투자 정보를 원형 그래프로 쉽게 볼 수 있습니다.
 - 항목 별로 투자한 종목에 대한 비율, 수익 등을 자세하게 볼 수 있습니다.
 
-<figure>
   <img src="front/src/assets/images/MyPortfolio.png" align="center" width="50%" />
-</figure>
 
 ## INVESTMENT PAGE
 
@@ -118,19 +112,16 @@
 - 해당 종목에 대한 뉴스 기사들을 보고 가격 변동 추이를 예측하는데 도움을 줄 수 있습니다.
 - 종목 매수, 매도 시 금액 단위로 퍼센테이지를 보며 거래할 수 있습니다.
 - 자동화 투자 활성화를 통해 금액, 비율을 설정하면 투자 계좌의 돈이 모였을 때 그에 맞게 투자를 진행합니다.
-<figure>
-      <img src="front/src/assets/images/Investment1.png" width="50%" />
-      <img src="front/src/assets/images/Investment2.png" width="50%" />
-</figure>
+
+  <img src="front/src/assets/images/Investment1.png" width="50%" />
+  <img src="front/src/assets/images/Investment2.png" width="50%" />
 
 ## MY FAVORITE PAGE
 
 - 각 항목 페이지에서 원하는 종목을 골라 찜해둘 수 있습니다.
 - 주식, 가상화폐 찜해준 종목에 대한 정보를 간략하게 차트와 함께 볼 수 있고, 상세페이지로의 접근도 제공합니다.
 
-<figure>
-        <img src="front/src/assets/images/FavoritePage.png" width="50%" />
-</figure>
+  <img src="front/src/assets/images/FavoritePage.png" width="50%" />
 
 ## MY PAGE
 
@@ -139,9 +130,7 @@
 - 회원가입 시 투자 계좌는 자동 생성되며, 소비 계좌를 연동하여 쓰는 금액의 일정 비율을 투자 계좌로 저축해둘 수 있습니다.
 - 투자 계좌, 소비 계좌의 잔액을 확인할 수 있습니다.
 
-<figure>
 <img src="front/src/assets/images/MyPage.png" width="50%" />
-</figure>
 
 <!-- <figure class="half">
   <img src='' align='left' width="50%"/>
@@ -235,7 +224,7 @@ ex) feature/FE-user
 
 # 회고
 
-- [최승현(팀장)](https://github.com/cshyun7097) : 초반에 많은 오류로 어려움이 있었지만, 팀원들과 협업으로 끝까지 열심히 진행한 결과 프로젝트를 무사히 끝낼 수 있어 좋았습니다.
+- [최승현(팀장)]() :
 - [남혁준]() :
 - [이중현]() :
 - [최승필]() :
