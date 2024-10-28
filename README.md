@@ -59,7 +59,7 @@
 
 <table>
     <tr>
-        <td height="140px" align="center"> <a href="https://github.com">
+        <td height="140px" align="center"> <a href="(https://github.com/cshyun7097">
             <img src="" width="140px" /> <br><br> 👑 최승현 <br>(Back-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com">
             <img src="" width="140px" /> <br><br> ⛑ 남혁준 <br>(Back-End) </a> <br></td>
@@ -223,7 +223,7 @@ ex) feature/FE-user
 
 # 회고
 
-- [최승현(팀장)]() :
+- [최승현(팀장)](https://github.com/cshyun7097) : 초반에 많은 오류로 어려움이 있었지만, 팀원들과 협업으로 끝까지 열심히 진행한 결과 프로젝트를 무사히 끝낼 수 있어 좋았습니다.
 - [남혁준]() :
 - [이중현]() :
 - [최승필]() :
