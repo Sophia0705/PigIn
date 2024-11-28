@@ -14,6 +14,8 @@
 
 <br/>
 
+<img src="front/src/assets/images/LandingPage.gif" width="600" />
+
 # 서비스 소개
 
 ## 서비스 설명
@@ -59,24 +61,24 @@
 
 <table>
     <tr>
-        <td height="140px" align="center"> <a href="(https://github.com/cshyun7097">
-            <img src="" width="140px" /> <br><br> 👑 최승현 <br>(Back-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com">
-            <img src="" width="140px" /> <br><br> ⛑ 남혁준 <br>(Back-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com">
-            <img src="" width="140px" /> <br><br> ⛑ 이중현 <br>(Back-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="https://github.com">
-            <img src="" width="140px" /> <br><br> ⛑ 최승필 <br>(Front-End) </a> <br></td>
-        <td height="140px" align="center"> <a href="(https://github.com/Sophia0705">
-            <img src="" width="140px" /> <br><br> ⛑ 이예지 <br>(Front-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/cshyun7097">
+            <img src="https://avatars.githubusercontent.com/u/113087570?v=4" width="140px" /> <br><br> 👑 최승현 <br>(Back-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/zzun73">
+            <img src="https://avatars.githubusercontent.com/u/84362747?v=4" width="140px" /> <br><br> ⛑ 남혁준 <br>(Infra, Back-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/Lee-JoungHyun">
+            <img src="https://avatars.githubusercontent.com/u/98592001?v=4" width="140px" /> <br><br> ⛑ 이중현 <br>(Back-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/piilll">
+            <img src="https://avatars.githubusercontent.com/u/156265354?v=4" width="140px" /> <br><br> ⛑ 최승필 <br>(Front-End) </a> <br></td>
+        <td height="140px" align="center"> <a href="https://github.com/Sophia0705">
+            <img src="https://avatars.githubusercontent.com/u/156265319?v=4" width="140px" /> <br><br> ⛑ 이예지 <br>(Front-End) </a> <br></td>
         <td height="140px" align="center"> <a href="https://github.com/taeyekim">
-            <img src="" width="140px" /> <br><br> ⛑ 김태연 <br>(Front-End) </a> <br></td>
+            <img src="https://avatars.githubusercontent.com/u/127179614?v=4" width="140px" /> <br><br> ⛑ 김태연 <br>(Front-End) </a> <br></td>
     </tr>
     <tr>
         <td align="center">Backend</td>
         <td align="center">Backend<br/>CI/CD</td>
-        <td align="center">Backend<</td>
         <td align="center">Backend</td>
+        <td align="center">Frontend</td>
         <td align="center">Frontend</td>
         <td align="center">Frontend</td>
     </tr>
@@ -87,8 +89,6 @@
 ## 투자 계좌 자동 생성, 소비 계좌 연동
 
 - 회원가입 시 투자 계좌가 자동 개설되며, 이후 소비 계좌를 연동하여 설정한 저축률에 따라 소비한 금액의 일부가 생성된 투자 계좌로 입금됩니다.
-
-  <img src="" align="center" width="50%" />
 
 ## MAIN PAGE
 
@@ -105,6 +105,12 @@
 
   <img src="front/src/assets/images/MyPortfolio.png" align="center" width="50%" />
 
+## AUTO INVESTMENT
+
+- 주식, 암호화폐, 금 3가지 종목에 대해 본인이 투자하려고 설정한 금액, 퍼센티지에 맞춰 자동 투자가 가능합니다
+
+  <img src="front/src/assets/images/AutoInvestment.png" align="center" width="50%" />
+  
 ## INVESTMENT PAGE
 
 - 주식, 가상화폐, 금 시세 데이터를 조회할 수 있습니다.
@@ -138,11 +144,11 @@
 
 # 기술 스택
 
-## 1.
+## 1. PostgreSQL
 
 ![기술스택사진]()
 
-설명
+- 동시 거래가 많이 일어나는 거래 특성을 위해 동시성 제어에 강점을 가진 PostgreSQL을 채택하여 데이터베이스를 관리했습니다.
 
 ## 2.
 
@@ -152,11 +158,19 @@
 
 ## 3. 개발 환경
 
-<img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=WebSocket&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
+### **Backend**
+<img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=Gradle&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>  <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
 <img src="https://img.shields.io/badge/Spring Batch-6DB33F?style=for-the-badge&logo=Spring&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
-<img src="https://img.shields.io/badge/Spring Scheduler-6DB33F?style=for-the-badge&logo=Spring&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
-<img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=Gradle&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <br/> <img src="https://img.shields.io/badge/Amazon EC2-569A31?style=for-the-badge&logo=Amazon EC2&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=NGINX&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/mySql-007ec6?style=for-the-badge&logo=mySql&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <br/>
-<img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/zustand-764ABC?style=for-the-badge&logo=react&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Node.js-339939?style=for-the-badge&logo=Node.js&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/GitLab-FCA121?style=for-the-badge&logo=GitLab&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <br/>
+<img src="https://img.shields.io/badge/Spring Scheduler-6DB33F?style=for-the-badge&logo=Spring&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>  <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
+<img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/JSON Web Tokens-000000?style=for-the-badge&logo=JSON Web Tokens&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/WebSocket-000000?style=for-the-badge&logo=WebSocket&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
+ <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <br/>
+ <img src="https://img.shields.io/badge/mySql-007ec6?style=for-the-badge&logo=mySql&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
+### **Frontend**
+<img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/zustand-764ABC?style=for-the-badge&logo=react&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Node.js-339939?style=for-the-badge&logo=Node.js&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> 
+### **Infra**
+<img src="https://img.shields.io/badge/Amazon EC2-569A31?style=for-the-badge&logo=Amazon EC2&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=Amazon S3&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
+<img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=NGINX&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Docker Compose-2496ED?style=for-the-badge&logo=Docker&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;">  <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>  <br/>
+<img src="https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/> <img src="https://img.shields.io/badge/GitLab-FCA121?style=for-the-badge&logo=GitLab&logoColor=white" style="height : auto; margin-left : 10px; margin-right : 10px;"/>
 
 # 💌프로젝트 산출물
 
@@ -219,13 +233,13 @@ ex) feature/FE-user
 
 ### 5. 포팅 매뉴얼
 
-[포팅 매뉴얼](/assets/porting-manual.md)
+[포팅 매뉴얼](/exec/PigIn_포팅_매뉴얼.pdf)
 
 # 회고
 
 - [최승현(팀장)](https://github.com/cshyun7097) : 초반에 많은 오류로 어려움이 있었지만, 팀원들과 협업으로 끝까지 열심히 진행한 결과 프로젝트를 무사히 끝낼 수 있어 좋았습니다.
-- [남혁준]() :
+- [남혁준](https://github.com/zzun73) :핀테크 도메인으로 팀원들과 함께 프로젝트를 진행하며 도메인에 대한 이해도를 높일 수 있어 좋았고, 처음으로 CI/CD를 진행하면서 여러 개의 서버를 관리한 경험을 통해 인프라 환경에 대한 이해도를 높일 수 있어 좋았습니다.
 - [이중현]() :
-- [최승필]() :
+- [최승필](https://github.com/piilll) : 다소 생소했던 도메인이었던 만큼, 구현의 과정에 있어 어려움이 꽤 많았던 프로젝트였다고 생각합니다. 그래도 포기하지 않고 끝까지 모두가 몰두하여 좋은 마무리를 지어서 뿌듯합니다.
 - [이예지](https://github.com/Sophia0705) : 싸피에서 하는 2번째 프로젝트라서 이전 프로젝트 보다는 좀 수월했다고 느꼈지만, 기술적으로 많은 고민과 선택을 해볼 수 있던 기회였습니다. 그래도 팀원들 모두가 함께 하려는 마음이 잘 모여서 마지막까지 무사히 마쳐서 좋았습니다.
 - [김태연](https://github.com/taeyekim) : 처음 해보는 프론트엔드라 어려운 점이 많았지만, 개발과 학습을 병행하고, 트러블 슈팅 시에 팀원들과 머리를 맞대어 고민하여 무사히 개발을 마칠 수 있었습니다.
